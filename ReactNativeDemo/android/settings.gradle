@@ -1,0 +1,7 @@
+rootProject.name = 'ReactNativeDemo'
+include ':react-native-applovin-max'
+project(':react-native-applovin-max').projectDir = new File(rootProject.projectDir, '../../react-native-applovin-max/android')
+include ':react-native-appodeal'
+project(':react-native-appodeal').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-appodeal/android')
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
+include ':app'
