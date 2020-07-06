@@ -1,5 +1,3 @@
-import { NativeModules } from 'react-native';
+import AppLovinMAX from './RNAppLovinMAX';
 
-const { AppLovinMAX } = NativeModules;
-
-export default AppLovinMAX;
+module.exports = { AppLovinMAX };
