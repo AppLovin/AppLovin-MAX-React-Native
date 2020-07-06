@@ -31,5 +31,9 @@
   "peerDependencies": {
     "react": "^16.13.1",
     "react-native": "^0.62.2"
+  },
+  "devDependencies": {
+    "react": "^16.13.1",
+    "react-native": "^0.62.2"
   }
 }
