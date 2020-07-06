@@ -33,6 +33,14 @@
 
 // Parent Fields
 @property (nonatomic, weak) ALSdk *sdk;
+@property (nonatomic, assign, getter=isPluginInitialized) BOOL pluginInitialized;
+@property (nonatomic, assign, getter=isSdkInitialized) BOOL sdkInitialized;
+@property (nonatomic, strong) ALSdkConfiguration *sdkConfiguration;
+
+// Store these values if pub attempts to set it before initializing
+@property (nonatomic,   copy, nullable) NSString *userIdentifierToSet;
+@property (nonatomic, strong, nullable) NSArray<NSString *> *testDeviceIdentifiersToSet;
+@property (nonatomic, strong, nullable) NSNumber *verboseLoggingToSet;
 
 // Fullscreen Ad Fields
 @property (nonatomic, strong) NSMutableDictionary<NSString *, MAInterstitialAd *> *interstitials;
@@ -58,9 +66,6 @@
 @implementation RCTAppLovinMAX
 static NSString *const SDK_TAG = @"AppLovinSdk";
 static NSString *const TAG = @"RCTAppLovinMAX";
-
-// TODO: Put in separate file
-static NSString *ALEVENT;
 
 // To export a module named AppLovinMAX ("RCT" automatically removed)
 RCT_EXPORT_MODULE()
@@ -91,8 +96,14 @@ RCT_EXPORT_MODULE()
     return self;
 }
 
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isInitialized)
+{
+    return @([self isPluginInitialized] && [self isSdkInitialized]);
+}
+
 RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion sdkKey:(NSString *)sdkKey)
 {
+    // TODO: Guard against calling init multiple times
     [self log: @"Initializing AppLovin MAX React Native v%@...", pluginVersion];
     
     // If SDK key passed in is empty, check Info.plist
@@ -110,15 +121,171 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion sdkKey:(NSString *)sdkKey
     
     // Initialize SDK
     self.sdk = [ALSdk sharedWithKey: sdkKey];
-    [self.sdk setPluginVersion: [@"Max-Cordova-" stringByAppendingString: pluginVersion]];
+    [self.sdk setPluginVersion: [@"React-Native-" stringByAppendingString: pluginVersion]];
     [self.sdk setMediationProvider: ALMediationProviderMAX];
     [self.sdk initializeSdkWithCompletionHandler:^(ALSdkConfiguration *configuration)
      {
         [self log: @"SDK initialized"];
-        //        [self forwardCordovaEventWithCommandStatus: CDVCommandStatus_OK
-        //                                        callbackId: command.callbackId
-        //                                              args: @{@"consentDialogState": @(configuration.consentDialogState).stringValue}];
+        
+        self.sdkConfiguration = configuration;
+        self.sdkInitialized = YES;
+        
+        // Set user id if needed
+        if ( [self.userIdentifierToSet al_isValidString] )
+        {
+            self.sdk.userIdentifier = self.userIdentifierToSet;
+            self.userIdentifierToSet = nil;
+        }
+        
+        // Set test device ids if needed
+        if ( self.testDeviceIdentifiersToSet )
+        {
+            self.sdk.settings.testDeviceAdvertisingIdentifiers = self.testDeviceIdentifiersToSet;
+            self.testDeviceIdentifiersToSet = nil;
+        }
+        
+        // Set verbose logging state if needed
+        if ( self.verboseLoggingToSet )
+        {
+            self.sdk.settings.isVerboseLogging = self.verboseLoggingToSet.boolValue;
+            self.verboseLoggingToSet = nil;
+        }
+        
+        // TODO: Should we use enum instead or something
+        NSString *consentDialogStateStr = @(configuration.consentDialogState).stringValue;
+        [self sendReactNativeEventWithName: @"OnSdkInitializedEvent" body: @{@"consentDialogState" : @"asdfasdfasdf"}];
     }];
+    
+    self.pluginInitialized = YES;
+}
+
+#pragma mark - General Public API (non-ads)
+
+RCT_EXPORT_METHOD(showMediationDebugger)
+{
+    if ( !_sdk )
+    {
+        NSLog(@"[%@] Failed to show mediation debugger - please ensure the AppLovin MAX Unity Plugin has been initialized by calling 'MaxSdk.InitializeSdk();'!", TAG);
+        return;
+    }
+    
+    [self.sdk showMediationDebugger];
+}
+
+// TODO: Consider if string is kosher and figure this method out...
+//RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getConsentDialogState)
+//{
+//    if ( [self isPluginInitialized] ) return ALConsentDialogStateUnknown;
+//
+//    return (int) _sdkConfiguration.consentDialogState;
+//}
+
+RCT_EXPORT_METHOD(setUserId:(NSString *)userId)
+{
+    if ( [self isPluginInitialized] )
+    {
+        self.sdk.userIdentifier = userId;
+        self.userIdentifierToSet = nil;
+    }
+    else
+    {
+        self.userIdentifierToSet = userId;
+    }
+}
+
+RCT_EXPORT_METHOD(setHasUserConsent:(BOOL)hasUserConsent)
+{
+    [ALPrivacySettings setHasUserConsent: hasUserConsent];
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(hasUserConsent)
+{
+    return @([ALPrivacySettings hasUserConsent]);
+}
+
+RCT_EXPORT_METHOD(setIsAgeRestrictedUser:(BOOL)isAgeRestrictedUser)
+{
+    [ALPrivacySettings setIsAgeRestrictedUser: isAgeRestrictedUser];
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isAgeRestrictedUser)
+{
+    return @([ALPrivacySettings isAgeRestrictedUser]);
+}
+
+RCT_EXPORT_METHOD(setDoNotSell:(BOOL)doNotSell)
+{
+    [ALPrivacySettings setDoNotSell: doNotSell];
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isDoNotSell)
+{
+    return @([ALPrivacySettings isDoNotSell]);
+}
+
+RCT_EXPORT_METHOD(setMuted:(BOOL)muted)
+{
+    if ( ![self isPluginInitialized] ) return;
+    
+    self.sdk.settings.muted = muted;
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isMuted)
+{
+    if ( ![self isPluginInitialized] ) return @(NO);
+    
+    return @(self.sdk.settings.muted);
+}
+
+RCT_EXPORT_METHOD(setVerboseLogging:(BOOL)enabled)
+{
+    if ( [self isPluginInitialized] )
+    {
+        self.sdk.settings.isVerboseLogging = enabled;
+        self.verboseLoggingToSet = nil;
+    }
+    else
+    {
+        self.verboseLoggingToSet = @(enabled);
+    }
+}
+
+RCT_EXPORT_METHOD(setTestDeviceAdvertisingIds:(NSArray<NSString *> *)testDeviceAdvertisingIds)
+{
+    if ( [self isPluginInitialized] )
+    {
+        self.sdk.settings.testDeviceAdvertisingIdentifiers = testDeviceAdvertisingIds;
+        self.testDeviceIdentifiersToSet = nil;
+    }
+    else
+    {
+        self.testDeviceIdentifiersToSet = testDeviceAdvertisingIds;
+    }
+}
+
+#pragma mark - Event Tracking
+
+RCT_EXPORT_METHOD(trackEvent:(NSString *)event :(NSDictionary<NSString *, id> *)parameters)
+{
+    [self.sdk.eventService trackEvent: event parameters: parameters];
+}
+
+#pragma mark - Ad Info
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getAdInfo:(NSString *)adUnitIdentifier)
+{
+    if ( adUnitIdentifier.length == 0 ) return @"";
+    
+    MAAd *ad;
+    @synchronized ( self.adInfoDictLock )
+    {
+        ad = self.adInfoDict[adUnitIdentifier];
+    }
+    
+    if ( !ad ) return @"";
+    
+    return @{@"adUnitId" : adUnitIdentifier,
+             @"networkName" : ad.networkName};
 }
 
 // RCT_EXPORT_METHOD exposes methods to JS
@@ -272,31 +439,6 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 {
     MARewardedAd *rewardedAd = [self retrieveRewardedAdForAdUnitIdentifier: adUnitIdentifier];
     [rewardedAd setExtraParameterForKey: key value: value];
-}
-
-#pragma mark - Event Tracking
-
-RCT_EXPORT_METHOD(trackEvent:(NSString *)event :(NSDictionary<NSString *, id> *)parameters)
-{
-    [self.sdk.eventService trackEvent: event parameters: parameters];
-}
-
-#pragma mark - Ad Info
-
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getAdInfo:(NSString *)adUnitIdentifier)
-{
-    if ( adUnitIdentifier.length == 0 ) return @"";
-    
-    MAAd *ad;
-    @synchronized ( self.adInfoDictLock )
-    {
-        ad = self.adInfoDict[adUnitIdentifier];
-    }
-    
-    if ( !ad ) return @"";
-    
-    return @{@"adUnitId" : adUnitIdentifier,
-             @"networkName" : ad.networkName};
 }
 
 #pragma mark - Ad Callbacks
@@ -877,7 +1019,34 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getAdInfo:(NSString *)adUnitIdentifier)
 
 - (NSArray<NSString *> *)supportedEvents
 {
-    return @[@"EventReminder"];
+    return @[@"OnSdkInitializedEvent",
+             
+             @"OnMRecAdLoadedEvent",
+             @"OnMRecAdLoadFailedEvent",
+             @"OnMRecAdClickedEvent",
+             @"OnMRecAdCollapsedEvent",
+             @"OnMRecAdExpandedEvent",
+             
+             @"OnBannerAdLoadedEvent",
+             @"OnBannerAdLoadFailedEvent",
+             @"OnBannerAdClickedEvent",
+             @"OnBannerAdCollapsedEvent",
+             @"OnBannerAdExpandedEvent",
+             
+             @"OnInterstitialLoadedEvent",
+             @"OnInterstitialLoadFailedEvent",
+             @"OnInterstitialClickedEvent",
+             @"OnInterstitialDisplayedEvent",
+             @"OnInterstitialAdFailedToDisplayEvent",
+             @"OnInterstitialHiddenEvent",
+             
+             @"OnRewardedAdLoadedEvent",
+             @"OnRewardedAdLoadFailedEvent",
+             @"OnRewardedAdClickedEvent",
+             @"OnRewardedAdDisplayedEvent",
+             @"OnRewardedAdFailedToDisplayEvent",
+             @"OnRewardedAdHiddenEvent",
+             @"OnRewardedAdReceivedRewardEvent"];
 }
 
 - (void)startObserving
