@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1D2E4A8724B1890A00746202 /* AppLovinMAX.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D2E4A8524B1890A00746202 /* AppLovinMAX.m */; };
+		1020C2E452FC1C2A329044A7 /* libPods-AppLovinMAX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DF0C0046468FAE60C22FCDA0 /* libPods-AppLovinMAX.a */; };
+		1D2E4A8724B1890A00746202 /* RCTAppLovinMAX.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D2E4A8524B1890A00746202 /* RCTAppLovinMAX.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,8 +25,11 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libAppLovinMAX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libAppLovinMAX.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		1D2E4A8524B1890A00746202 /* AppLovinMAX.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppLovinMAX.m; sourceTree = "<group>"; };
-		1D2E4A8624B1890A00746202 /* AppLovinMAX.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppLovinMAX.h; sourceTree = "<group>"; };
+		1D2E4A8524B1890A00746202 /* RCTAppLovinMAX.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTAppLovinMAX.m; sourceTree = "<group>"; };
+		1D2E4A8624B1890A00746202 /* RCTAppLovinMAX.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTAppLovinMAX.h; sourceTree = "<group>"; };
+		C20359E7EEF166AC5DDD5F3F /* Pods-AppLovinMAX.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppLovinMAX.debug.xcconfig"; path = "Target Support Files/Pods-AppLovinMAX/Pods-AppLovinMAX.debug.xcconfig"; sourceTree = "<group>"; };
+		D22B05AD12D8D7AB8D082545 /* Pods-AppLovinMAX.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppLovinMAX.release.xcconfig"; path = "Target Support Files/Pods-AppLovinMAX/Pods-AppLovinMAX.release.xcconfig"; sourceTree = "<group>"; };
+		DF0C0046468FAE60C22FCDA0 /* libPods-AppLovinMAX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AppLovinMAX.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,6 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1020C2E452FC1C2A329044A7 /* libPods-AppLovinMAX.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -50,10 +55,19 @@
 		1D2E4A8424B1890200746202 /* AppLovinMAX */ = {
 			isa = PBXGroup;
 			children = (
-				1D2E4A8624B1890A00746202 /* AppLovinMAX.h */,
-				1D2E4A8524B1890A00746202 /* AppLovinMAX.m */,
+				1D2E4A8624B1890A00746202 /* RCTAppLovinMAX.h */,
+				1D2E4A8524B1890A00746202 /* RCTAppLovinMAX.m */,
 			);
 			name = AppLovinMAX;
+			sourceTree = "<group>";
+		};
+		5876D751462FF251531943B8 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				C20359E7EEF166AC5DDD5F3F /* Pods-AppLovinMAX.debug.xcconfig */,
+				D22B05AD12D8D7AB8D082545 /* Pods-AppLovinMAX.release.xcconfig */,
+			);
+			path = Pods;
 			sourceTree = "<group>";
 		};
 		58B511D21A9E6C8500147676 = {
@@ -61,7 +75,17 @@
 			children = (
 				1D2E4A8424B1890200746202 /* AppLovinMAX */,
 				134814211AA4EA7D00B7C361 /* Products */,
+				5876D751462FF251531943B8 /* Pods */,
+				A7FEBBC5FAC5B635B7EC6B47 /* Frameworks */,
 			);
+			sourceTree = "<group>";
+		};
+		A7FEBBC5FAC5B635B7EC6B47 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				DF0C0046468FAE60C22FCDA0 /* libPods-AppLovinMAX.a */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -71,6 +95,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "AppLovinMAX" */;
 			buildPhases = (
+				2AED75AFC4713F97E4573A88 /* [CP] Check Pods Manifest.lock */,
 				58B511D71A9E6C8500147676 /* Sources */,
 				58B511D81A9E6C8500147676 /* Frameworks */,
 				58B511D91A9E6C8500147676 /* CopyFiles */,
@@ -116,12 +141,37 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		2AED75AFC4713F97E4573A88 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-AppLovinMAX-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		58B511D71A9E6C8500147676 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1D2E4A8724B1890A00746202 /* AppLovinMAX.m in Sources */,
+				1D2E4A8724B1890A00746202 /* RCTAppLovinMAX.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,12 +291,13 @@
 		};
 		58B511F01A9E6C8500147676 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C20359E7EEF166AC5DDD5F3F /* Pods-AppLovinMAX.debug.xcconfig */;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)/**";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../../React/**",
-					"$(SRCROOT)/../../react-native/React/**",
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
@@ -257,12 +308,13 @@
 		};
 		58B511F11A9E6C8500147676 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D22B05AD12D8D7AB8D082545 /* Pods-AppLovinMAX.release.xcconfig */;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)/**";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../../React/**",
-					"$(SRCROOT)/../../react-native/React/**",
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";

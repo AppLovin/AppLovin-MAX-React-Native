@@ -1,0 +1,7 @@
+/Pods
+UserInterfaceState.xcuserstate
+IDEWorkspaceChecks.plist
+Breakpoints_v2.xcbkptlist
+
+*.lock
+.DS_Store
