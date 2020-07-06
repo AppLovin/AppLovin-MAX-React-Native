@@ -249,7 +249,7 @@ const App = () => {
         title="Mediation Debugger"
         enabled={isInitialized}
         onPress={() => {
-          alert('Launch Mediation Debugger');
+          AppLovinMAX.showMediationDebugger();
         }}
       />
       <AppButton
