@@ -79,11 +79,6 @@ target 'ReactNativeDemo' do
 
   pod 'react-native-applovin-max', :path => '../node_modules/react-native-applovin-max'
 
-  target 'ReactNativeDemoTests' do
-    inherit! :complete
-    # Pods for testing
-  end
-
   use_native_modules!
 
   # Enables Flipper.
