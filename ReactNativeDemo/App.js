@@ -9,7 +9,7 @@ import AppButton from './components/AppButton';
 //   AppodealLogLevel,
 // } from 'react-native-appodeal';
 
-// import AppLovinMAX from 'react-native-applovin-max';
+import AppLovinMAX from 'react-native-applovin-max';
 
 // Suyash
 // import Interstitials from '../AppLovin/Interstitials';
@@ -186,6 +186,33 @@ const App = () => {
         }
       });
   */
+
+  // RCT_EXPORT_METHOD exposes methods to JS
+/*
+ in JS we can call
+ 
+ import { NativeModules } from 'react-native';
+ var AppLovinMAX = NativeModules.AppLovinMAX;
+ AppLovinMAX.sampleMethod(
+ 'Birthday Party',
+ '4',
+ new function() {
+ 
+ } // realy
+ );
+ */
+
+/*
+ 
+ CalendarManager.addEvent('Birthday Party', {
+ location: '4 Privet Drive, Surrey',
+ time: date.getTime(),
+ description: '...'
+ });
+ dictionary of events paramt^
+ */
+// NOTE: The name of the method exported to JavaScript is the native method's name up to the first colon
+// `RCT_REMAP_METHOD` is available for mapping if too many methods conflict if same name up to first colon
 
   setTimeout(function() {
     setIsInitialized(true);

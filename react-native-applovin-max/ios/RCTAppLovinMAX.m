@@ -288,33 +288,6 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getAdInfo:(NSString *)adUnitIdentifier)
              @"networkName" : ad.networkName};
 }
 
-// RCT_EXPORT_METHOD exposes methods to JS
-/*
- in JS we can call
- 
- import { NativeModules } from 'react-native';
- var AppLovinMAX = NativeModules.AppLovinMAX;
- AppLovinMAX.sampleMethod(
- 'Birthday Party',
- '4',
- new function() {
- 
- } // realy
- );
- */
-
-/*
- 
- CalendarManager.addEvent('Birthday Party', {
- location: '4 Privet Drive, Surrey',
- time: date.getTime(),
- description: '...'
- });
- dictionary of events paramt^
- */
-// NOTE: The name of the method exported to JavaScript is the native method's name up to the first colon
-// `RCT_REMAP_METHOD` is available for mapping if too many methods conflict if same name up to first colon
-
 #pragma mark - Banners
 
 RCT_EXPORT_METHOD(createBanner:(NSString *)adUnitIdentifier :(NSString *)bannerPosition)
