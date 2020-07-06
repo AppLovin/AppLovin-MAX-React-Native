@@ -214,6 +214,7 @@ const App = () => {
 // NOTE: The name of the method exported to JavaScript is the native method's name up to the first colon
 // `RCT_REMAP_METHOD` is available for mapping if too many methods conflict if same name up to first colon
 
+  // AppLovinMAX.initialize("", "");
   setTimeout(function() {
     setIsInitialized(true);
   }, 2000);
