@@ -20,7 +20,9 @@
     "baseUrl": "https://github.com/github_account/react-native-applovin-max"
   },
   "keywords": [
-    "react-native"
+    "react-native",
+    "ios",
+    "android"
   ],
   "author": {
     "name": "Thomas So"
