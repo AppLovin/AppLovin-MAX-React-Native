@@ -1,4 +1,4 @@
-package com.reactnativeapplovinmax
+package com.applovin.reactnative
 
 import java.util.Arrays
 import java.util.Collections

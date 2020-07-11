@@ -1,7 +1,7 @@
 {
   "name": "react-native-applovin-max-example",
   "description": "Example App for the AppLovin MAX React Native Module for Android and iOS",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "android": "react-native run-android",

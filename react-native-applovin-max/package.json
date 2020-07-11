@@ -1,6 +1,6 @@
 {
   "name": "react-native-applovin-max",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "AppLovin MAX React Native Plugin for Android and iOS",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
