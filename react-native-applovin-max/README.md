@@ -1,17 +1,27 @@
 # react-native-applovin-max
 
-## Getting started
+AppLovin MAX React Native Plugin for Android and iOS
 
-`$ npm install react-native-applovin-max --save`
+## Installation
 
-### Mostly automatic installation
-
-`$ react-native link react-native-applovin-max`
+```sh
+npm install react-native-applovin-max
+```
 
 ## Usage
-```javascript
-import ApplovinMax from 'react-native-applovin-max';
 
-// TODO: What to do with the module?
-AppLovinMAX;
+```js
+import AppLovinMAX from "react-native-applovin-max";
+
+// ...
+
+const result = await AppLovinMAX.multiply(3, 7);
 ```
+
+## Contributing
+
+See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
+
+## License
+
+MIT

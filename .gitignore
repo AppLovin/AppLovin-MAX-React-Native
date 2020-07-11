@@ -1,0 +1,7 @@
+
+react-native-applovin-max/.circleci/config.yml
+react-native-applovin-max/.editorconfig
+react-native-applovin-max/.gitattributes
+react-native-applovin-max/.vscode/settings.json
+react-native-applovin-max/android/.project
+react-native-applovin-max/android/.settings/org.eclipse.buildship.core.prefs
