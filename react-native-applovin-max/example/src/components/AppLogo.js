@@ -1,12 +1,12 @@
 import React from 'react';
-import {View, Image, StyleSheet} from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 
 const AppLogo = () => {
   return (
     <View style={styles.container}>
       <Image
         style={styles.logo}
-        source={require('./../resources/applovin_logo.png')}
+        source={require('../resources/applovin_logo.png')}
       />
     </View>
   );

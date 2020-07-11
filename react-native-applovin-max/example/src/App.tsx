@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Platform, Alert } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import AppLovinMAX from '../../src/index';
 import AppLogo from './components/AppLogo';
 import AppButton from './components/AppButton';
@@ -130,7 +130,6 @@ const App = () => {
         enabled={isInitialized}
         onPress={() => {
           if (AppLovinMAX.isInitialized()) {
-            AppLovinMAX.setDoNotSell(true);
             AppLovinMAX.showMediationDebugger();
           }
         }}
