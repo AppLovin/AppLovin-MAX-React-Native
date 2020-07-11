@@ -162,7 +162,7 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion sdkKey:(NSString *)sdkKey
         }
         
         [self sendReactNativeEventWithName: @"OnSdkInitializedEvent"
-                                      body: @{@"consent_dialog_state" : @(configuration.consentDialogState).stringValue}];
+                                      body: @{@"consentDialogState" : @(configuration.consentDialogState).stringValue}];
     }];
 }
 
