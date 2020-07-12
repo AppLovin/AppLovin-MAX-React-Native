@@ -11,6 +11,6 @@ public class MainActivity
   @Override
   protected String getMainComponentName()
   {
-    return "ApplovinMaxExample";
+    return "AppLovinMAXExample";
   }
 }
