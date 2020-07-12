@@ -127,7 +127,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.example.reactnativeapplovinmax"
+        applicationId "com.applovin.enterprise.apps.demoapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
