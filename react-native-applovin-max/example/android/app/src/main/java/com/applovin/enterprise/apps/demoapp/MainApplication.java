@@ -3,7 +3,7 @@ package com.applovin.enterprise.apps.demoapp;
 import android.app.Application;
 import android.content.Context;
 
-import com.applovin.reactnative.ApplovinMaxPackage;
+import com.applovin.reactnative.AppLovinMAXPackage;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
@@ -33,9 +33,9 @@ public class MainApplication
       {
         @SuppressWarnings("UnnecessaryLocalVariable")
         List<ReactPackage> packages = new PackageList( this ).getPackages();
-        // Packages that cannot be autolinked yet can be added manually here, for ApplovinMaxExample:
+        // Packages that cannot be autolinked yet can be added manually here, for AppLovinMAXExample:
         // packages.add(new MyReactNativePackage());
-        packages.add( new ApplovinMaxPackage() );
+        packages.add( new AppLovinMAXPackage() );
 
         return packages;
       }
