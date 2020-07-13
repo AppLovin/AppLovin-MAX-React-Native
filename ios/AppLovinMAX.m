@@ -32,7 +32,7 @@
 @interface AppLovinMAX()<MAAdDelegate, MAAdViewAdDelegate, MARewardedAdDelegate>
 
 // Parent Fields
-@property (nonatomic, weak) ALSdk *sdk;
+@property (nonatomic,  weak) ALSdk *sdk;
 @property (nonatomic, assign, getter=isPluginInitialized) BOOL pluginInitialized;
 @property (nonatomic, assign, getter=isSdkInitialized) BOOL sdkInitialized;
 @property (nonatomic, strong) ALSdkConfiguration *sdkConfiguration;
@@ -125,7 +125,8 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion sdkKey:(NSString *)sdkKey
         }
         else
         {
-            [NSException raise: NSInternalInconsistencyException format: @"Unable to initialize AppLovin SDK - no SDK key provided"];
+            [NSException raise: NSInternalInconsistencyException
+                        format: @"Unable to initialize AppLovin SDK - no SDK key provided and not found in Info.plist!"];
         }
     }
     
@@ -162,17 +163,17 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion sdkKey:(NSString *)sdkKey
         }
         
         [self sendReactNativeEventWithName: @"OnSdkInitializedEvent"
-                                      body: @{@"consentDialogState" : @(configuration.consentDialogState).stringValue}];
+                                      body: @{@"consentDialogState" : @(configuration.consentDialogState)}];
     }];
 }
 
-#pragma mark - General Public API (non-ads)
+#pragma mark - General Public API
 
 RCT_EXPORT_METHOD(showMediationDebugger)
 {
     if ( !_sdk )
     {
-        NSLog(@"[%@] Failed to show mediation debugger - please ensure the AppLovin MAX Unity Plugin has been initialized by calling 'MaxSdk.InitializeSdk();'!", TAG);
+        NSLog(@"[%@] Failed to show mediation debugger - please ensure the AppLovin MAX Unity Plugin has been initialized by calling 'AppLovinMAX.initialize(...);'!", TAG);
         return;
     }
     
@@ -181,22 +182,9 @@ RCT_EXPORT_METHOD(showMediationDebugger)
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getConsentDialogState)
 {
-    if ( [self isPluginInitialized] ) return @(ALConsentDialogStateUnknown).stringValue;
+    if ( [self isInitialized] ) return @(ALConsentDialogStateUnknown);
     
-    return @(self.sdkConfiguration.consentDialogState).stringValue;
-}
-
-RCT_EXPORT_METHOD(setUserId:(NSString *)userId)
-{
-    if ( [self isPluginInitialized] )
-    {
-        self.sdk.userIdentifier = userId;
-        self.userIdentifierToSet = nil;
-    }
-    else
-    {
-        self.userIdentifierToSet = userId;
-    }
+    return @(self.sdkConfiguration.consentDialogState);
 }
 
 RCT_EXPORT_METHOD(setHasUserConsent:(BOOL)hasUserConsent)
@@ -229,6 +217,19 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isDoNotSell)
     return @([ALPrivacySettings isDoNotSell]);
 }
 
+RCT_EXPORT_METHOD(setUserId:(NSString *)userId)
+{
+    if ( [self isPluginInitialized] )
+    {
+        self.sdk.userIdentifier = userId;
+        self.userIdentifierToSet = nil;
+    }
+    else
+    {
+        self.userIdentifierToSet = userId;
+    }
+}
+
 RCT_EXPORT_METHOD(setMuted:(BOOL)muted)
 {
     if ( ![self isPluginInitialized] ) return;
@@ -256,6 +257,7 @@ RCT_EXPORT_METHOD(setVerboseLogging:(BOOL)enabled)
     }
 }
 
+// TODO: Test this
 RCT_EXPORT_METHOD(setTestDeviceAdvertisingIds:(NSArray<NSString *> *)testDeviceAdvertisingIds)
 {
     if ( [self isPluginInitialized] )
@@ -360,14 +362,14 @@ RCT_EXPORT_METHOD(showMRec:(NSString *)adUnitIdentifier)
     [self showAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
 }
 
-RCT_EXPORT_METHOD(destroyMRec:(NSString *)adUnitIdentifier)
-{
-    [self destroyAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
-}
-
 RCT_EXPORT_METHOD(hideMRec:(NSString *)adUnitIdentifier)
 {
     [self hideAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
+}
+
+RCT_EXPORT_METHOD(destroyMRec:(NSString *)adUnitIdentifier)
+{
+    [self destroyAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
 }
 
 #pragma mark - Interstitials
@@ -1021,13 +1023,14 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     }
 }
 
+#pragma mark - React Native Event Bridge
+
 - (void)sendReactNativeEventWithName:(NSString *)name body:(NSDictionary<NSString *, id> *)body
 {
     [self sendEventWithName: name body: body];
 }
 
-#pragma mark - React Native Event Emitter Protocol
-
+// From RCTBridgeModule protocol
 - (NSArray<NSString *> *)supportedEvents
 {
     return @[@"OnSdkInitializedEvent",
