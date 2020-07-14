@@ -12,21 +12,20 @@ var adLoadState = {
 
 const App = () => {
   // Create constants
-  const SDK_KEY =
-    '05TMDQ5tZabpXQ45_UTbmEGNUtVAzSTzT6KmWQc5_CuWdzccS4DCITZoL3yIWUG3bbq60QC_d4WF28tUC4gVTF';
+  const SDK_KEY = 'YOUR_SDK_KEY_HERE';
 
   const INTERSTITIAL_AD_UNIT_ID = Platform.select({
-    ios: '669b9232b93315b8', //'ENTER_IOS_INTERSTITIAL_AD_UNIT_ID_HERE',
+    ios: 'ENTER_IOS_INTERSTITIAL_AD_UNIT_ID_HERE',
     android: 'ENTER_ANDROID_INTERSTITIAL_AD_UNIT_ID_HERE',
   });
 
   const REWARDED_AD_UNIT_ID = Platform.select({
-    ios: '72948f99c2065dfa', //'ENTER_IOS_REWARDED_AD_UNIT_ID_HERE',
+    ios: 'ENTER_IOS_REWARDED_AD_UNIT_ID_HERE',
     android: 'ENTER_ANDROID_REWARDED_AD_UNIT_ID_HERE',
   });
 
   const BANNER_AD_UNIT_ID = Platform.select({
-    ios: 'ee3f36bb0f16e195', //'ENTER_IOS_BANNER_AD_UNIT_ID_HERE',
+    ios: 'ENTER_IOS_BANNER_AD_UNIT_ID_HERE',
     android: 'ENTER_ANDROID_BANNER_AD_UNIT_ID_HERE',
   });
 
@@ -171,7 +170,6 @@ const App = () => {
             AppLovinMAX.showBanner(BANNER_AD_UNIT_ID);
           }
 
-          // Toggle banner show state
           setIsBannerShowing(!isBannerShowing);
         }}
       />
