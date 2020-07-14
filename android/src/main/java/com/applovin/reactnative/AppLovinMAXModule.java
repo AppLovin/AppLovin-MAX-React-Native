@@ -95,19 +95,6 @@ public class AppLovinMAXModule
   public AppLovinMAXModule(@NonNull final ReactApplicationContext reactContext)
   {
     super( reactContext );
-
-    // Enable orientation change listener, so that the position can be updated for vertical banners.
-    new OrientationEventListener( getCurrentActivity() )
-    {
-      @Override
-      public void onOrientationChanged(final int orientation)
-      {
-        for ( final Map.Entry<String, MaxAdFormat> adUnitFormats : mVerticalAdViewFormats.entrySet() )
-        {
-          positionAdView( adUnitFormats.getKey(), adUnitFormats.getValue() );
-        }
-      }
-    }.enable();
   }
 
   @Override
@@ -127,7 +114,7 @@ public class AppLovinMAXModule
   {
     // Check if Activity is available
     Activity currentActivity = getCurrentActivity();
-    assert currentActivity != null : "No Activity found";
+    if ( currentActivity == null ) throw new IllegalStateException( "No Activity found" );
 
     // Guard against running init logic multiple times
     if ( isPluginInitialized ) return;
@@ -194,6 +181,19 @@ public class AppLovinMAXModule
           sdk.getSettings().setVerboseLogging( verboseLoggingToSet );
           verboseLoggingToSet = null;
         }
+
+        // Enable orientation change listener, so that the position can be updated for vertical banners.
+        new OrientationEventListener( getCurrentActivity() )
+        {
+          @Override
+          public void onOrientationChanged(final int orientation)
+          {
+            for ( final Map.Entry<String, MaxAdFormat> adUnitFormats : mVerticalAdViewFormats.entrySet() )
+            {
+              positionAdView( adUnitFormats.getKey(), adUnitFormats.getValue() );
+            }
+          }
+        }.enable();
 
         WritableMap params = Arguments.createMap();
         params.putInt( "consentDialogState", configuration.getConsentDialogState().ordinal() );
@@ -459,7 +459,7 @@ public class AppLovinMAXModule
     interstitial.loadAd();
   }
 
-  @ReactMethod()
+  @ReactMethod(isBlockingSynchronousMethod = true)
   public boolean isInterstitialReady(final String adUnitId)
   {
     MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
@@ -489,7 +489,7 @@ public class AppLovinMAXModule
     rewardedAd.loadAd();
   }
 
-  @ReactMethod()
+  @ReactMethod(isBlockingSynchronousMethod = true)
   public boolean isRewardedAdReady(final String adUnitId)
   {
     MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
