@@ -51,7 +51,8 @@ const App = () => {
     );
 
     // Set background color for banners to be fully functional
-    AppLovinMAX.setBannerBackgroundColor(BANNER_AD_UNIT_ID, '000000');
+    // In this case we are setting it to black - PLEASE USE HEX STRINGS ONLY
+    AppLovinMAX.setBannerBackgroundColor(BANNER_AD_UNIT_ID, '#000000');
   });
 
   // Interstitial Listeners
