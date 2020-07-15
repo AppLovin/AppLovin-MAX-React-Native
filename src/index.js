@@ -58,13 +58,15 @@ export default {
   AdViewPosition,
   addEventListener,
   removeEventListener,
+  // Use callback to avoid need for attaching listeners at top level on each re-render
   initialize(sdkKey, callback) {
-    // Use callback to avoid need for attaching listeners at top level on each re-render
-    AppLovinMAX.initialize(VERSION, sdkKey, callback);
+    AppLovinMAX.initialize(VERSION, sdkKey, callback); // Inject VERSION into native code
   },
+  // Support for showing ad without placement
   showInterstitial(adUnitId) {
     AppLovinMAX.showInterstitial(adUnitId, '');
   },
+  // Support for showing ad without placement
   showRewardedAd(adUnitId) {
     AppLovinMAX.showRewardedAd(adUnitId, '');
   },
