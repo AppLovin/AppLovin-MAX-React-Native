@@ -38,10 +38,13 @@ const App = () => {
     adLoadState.notLoaded
   );
   const [isBannerShowing, setIsBannerShowing] = useState(false);
+  const [statusText, setStatusText] = useState('Initializing SDK...');
 
   // Attach Listeners
   AppLovinMAX.addEventListener('OnSdkInitializedEvent', () => {
     setIsInitialized(true);
+
+    logStatus('SDK Initialized');
 
     // Create banner - banners are automatically sized to 320x50 on phones and 728x90 on tablets
     AppLovinMAX.createBanner(
@@ -57,42 +60,70 @@ const App = () => {
   // Interstitial Listeners
   AppLovinMAX.addEventListener('OnInterstitialLoadedEvent', () => {
     setInterstitialAdLoadState(adLoadState.loaded);
+
+    var adInfo = AppLovinMAX.getAdInfo(INTERSTITIAL_AD_UNIT_ID);
+    logStatus('Interstitial ad loaded from ' + adInfo.networkName);
   });
   AppLovinMAX.addEventListener('OnInterstitialLoadFailedEvent', () => {
     setInterstitialAdLoadState(adLoadState.notLoaded);
+    logStatus('Interstitial ad failed to load');
   });
-  AppLovinMAX.addEventListener('OnInterstitialClickedEvent', () => {});
-  AppLovinMAX.addEventListener('OnInterstitialDisplayedEvent', () => {});
+  AppLovinMAX.addEventListener('OnInterstitialClickedEvent', () => {
+    logStatus('Interstitial ad clicked');
+  });
+  AppLovinMAX.addEventListener('OnInterstitialDisplayedEvent', () => {
+    logStatus('Interstitial ad displayed');
+  });
   AppLovinMAX.addEventListener('OnInterstitialAdFailedToDisplayEvent', () => {
     setInterstitialAdLoadState(adLoadState.notLoaded);
+    logStatus('Interstitial ad failed to display');
   });
   AppLovinMAX.addEventListener('OnInterstitialHiddenEvent', () => {
     setInterstitialAdLoadState(adLoadState.notLoaded);
+    logStatus('Interstitial ad hidden');
   });
 
   // Rewarded Ad Listeners
   AppLovinMAX.addEventListener('OnRewardedAdLoadedEvent', () => {
     setRewardedAdLoadState(adLoadState.loaded);
+
+    var adInfo = AppLovinMAX.getAdInfo(REWARDED_AD_UNIT_ID);
+    logStatus('Rewarded ad loaded from ' + adInfo.networkName);
   });
   AppLovinMAX.addEventListener('OnRewardedAdLoadFailedEvent', () => {
     setRewardedAdLoadState(adLoadState.notLoaded);
+    logStatus('Rewarded ad failed to load');
   });
-  AppLovinMAX.addEventListener('OnRewardedAdClickedEvent', () => {});
-  AppLovinMAX.addEventListener('OnRewardedAdDisplayedEvent', () => {});
+  AppLovinMAX.addEventListener('OnRewardedAdClickedEvent', () => {
+    logStatus('Rewarded ad clicked');
+  });
+  AppLovinMAX.addEventListener('OnRewardedAdDisplayedEvent', () => {
+    logStatus('Rewarded ad displayed');
+  });
   AppLovinMAX.addEventListener('OnRewardedAdFailedToDisplayEvent', () => {
-    setInterstitialAdLoadState(adLoadState.notLoaded);
+    setRewardedAdLoadState(adLoadState.notLoaded);
+    logStatus('Rewarded ad failed to display');
   });
   AppLovinMAX.addEventListener('OnRewardedAdHiddenEvent', () => {
-    setInterstitialAdLoadState(adLoadState.notLoaded);
+    setRewardedAdLoadState(adLoadState.notLoaded);
+    logStatus('Rewarded ad hidden');
   });
-  AppLovinMAX.addEventListener('OnRewardedAdReceivedRewardEvent', () => {});
+  AppLovinMAX.addEventListener('OnRewardedAdReceivedRewardEvent', () => {
+    logStatus('Rewarded ad granted reward');
+  });
 
   // Banner Ad Listeners
-  AppLovinMAX.addEventListener('OnBannerAdLoadedEvent', () => {});
+  AppLovinMAX.addEventListener('OnBannerAdLoadedEvent', () => {
+    var adInfo = AppLovinMAX.getAdInfo(BANNER_AD_UNIT_ID);
+    logStatus('Banner ad loaded from ' + adInfo.networkName);
+  });
   AppLovinMAX.addEventListener('OnBannerAdLoadFailedEvent', () => {
     setRewardedAdLoadState(adLoadState.notLoaded);
+    logStatus('Banner ad failed to load');
   });
-  AppLovinMAX.addEventListener('OnBannerAdClickedEvent', () => {});
+  AppLovinMAX.addEventListener('OnBannerAdClickedEvent', () => {
+    logStatus('Banner ad clicked');
+  });
   AppLovinMAX.addEventListener('OnBannerAdCollapsedEvent', () => {});
   AppLovinMAX.addEventListener('OnBannerAdExpandedEvent', () => {});
 
@@ -119,11 +150,16 @@ const App = () => {
     }
   }
 
+  function logStatus(status) {
+    console.log(status);
+    setStatusText(status);
+  }
+
   return (
     <View style={styles.container}>
       <AppLogo />
       <Text style={styles.statusText}>
-        {isInitialized ? 'SDK Initialized' : 'Initializing SDK...'}
+        {statusText}
       </Text>
       <AppButton
         title="Mediation Debugger"
