@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="480" height="480"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BbE-Kr-zki">
+                    <rect key="frame" x="150" y="116" width="180" height="248"/>
+                    <subviews>
+                        <imageView opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="a0X-ke-ESe">
+                            <rect key="frame" x="0.0" y="0.0" width="180" height="180"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="180" id="7EI-EM-EK5"/>
+                                <constraint firstAttribute="width" secondItem="a0X-ke-ESe" secondAttribute="height" multiplier="1:1" id="ecG-Ur-mlk"/>
+                                <constraint firstAttribute="height" constant="180" id="fNB-O4-n3R"/>
+                            </constraints>
+                        </imageView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qsd-XC-eC6">
+                            <rect key="frame" x="0.0" y="180" width="180" height="29"/>
+                            <attributedString key="attributedText">
+                                <fragment content="App">
+                                    <attributes>
+                                        <color key="NSColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <font key="NSFont" size="24" name="HelveticaNeue-Bold"/>
+                                        <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
+                                    </attributes>
+                                </fragment>
+                                <fragment content="Lovin">
+                                    <attributes>
+                                        <color key="NSColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <font key="NSFont" size="24" name="HelveticaNeue"/>
+                                        <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
+                                    </attributes>
+                                </fragment>
+                            </attributedString>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="MAX Demo App" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GMI-2H-2Yr">
+                            <rect key="frame" x="0.0" y="219" width="180" height="29"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstItem="GMI-2H-2Yr" firstAttribute="leading" secondItem="BbE-Kr-zki" secondAttribute="leading" id="4as-4M-D4o"/>
+                        <constraint firstItem="a0X-ke-ESe" firstAttribute="leading" secondItem="BbE-Kr-zki" secondAttribute="leading" id="LNf-Ub-G2J"/>
+                        <constraint firstAttribute="trailing" secondItem="Qsd-XC-eC6" secondAttribute="trailing" id="O9S-Z4-ugl"/>
+                        <constraint firstItem="a0X-ke-ESe" firstAttribute="top" secondItem="BbE-Kr-zki" secondAttribute="top" id="Pbn-hc-V9r"/>
+                        <constraint firstItem="Qsd-XC-eC6" firstAttribute="leading" secondItem="BbE-Kr-zki" secondAttribute="leading" id="TBd-6S-jTz"/>
+                        <constraint firstAttribute="trailing" secondItem="a0X-ke-ESe" secondAttribute="trailing" id="dy9-C7-tNR"/>
+                        <constraint firstAttribute="bottom" secondItem="GMI-2H-2Yr" secondAttribute="bottom" id="n66-SO-YOD"/>
+                        <constraint firstAttribute="trailing" secondItem="GMI-2H-2Yr" secondAttribute="trailing" id="umK-5t-AyH"/>
+                        <constraint firstItem="GMI-2H-2Yr" firstAttribute="top" secondItem="Qsd-XC-eC6" secondAttribute="bottom" constant="10" id="y5m-Hg-tI8"/>
+                        <constraint firstItem="Qsd-XC-eC6" firstAttribute="top" secondItem="a0X-ke-ESe" secondAttribute="bottom" id="zrM-h0-rVF"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="0.071899749339999999" green="0.50966221089999997" blue="0.66668885950000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+            <constraints>
+                <constraint firstItem="BbE-Kr-zki" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="Ra7-c2-nGs"/>
+                <constraint firstItem="BbE-Kr-zki" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="ihZ-bo-WAQ"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="548" y="455"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="logo" width="180" height="180"/>
+    </resources>
+</document>
