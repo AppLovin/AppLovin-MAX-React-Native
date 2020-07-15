@@ -31,20 +31,21 @@ const App = () => {
 
   // Create states
   const [isInitialized, setIsInitialized] = useState(false);
-  const [interstitialAdLoadState, setInterstitialAdLoadState] = useState(
-    adLoadState.notLoaded
-  );
-  const [rewardedAdLoadState, setRewardedAdLoadState] = useState(
-    adLoadState.notLoaded
-  );
+  const [interstitialAdLoadState, setInterstitialAdLoadState] = useState(adLoadState.notLoaded);
+  const [interstitialRetryAttempt, setInterstitialRetryAttempt] = useState(0);
+  const [rewardedAdLoadState, setRewardedAdLoadState] = useState(adLoadState.notLoaded);
+  const [rewardedAdRetryAttempt, setRewardedAdRetryAttempt] = useState(0);
   const [isBannerShowing, setIsBannerShowing] = useState(false);
   const [statusText, setStatusText] = useState('Initializing SDK...');
-
-  // Attach Listeners
-  AppLovinMAX.addEventListener('OnSdkInitializedEvent', () => {
+  
+  AppLovinMAX.setVerboseLogging(true);
+  AppLovinMAX.initialize(SDK_KEY, (sdkConfiguration) => {
     setIsInitialized(true);
 
     logStatus('SDK Initialized');
+
+    // Attach ad listeners for interstitial ads, rewarded ads, and banner ads
+    attachAdListeners();
 
     // Create banner - banners are automatically sized to 320x50 on phones and 728x90 on tablets
     AppLovinMAX.createBanner(
@@ -57,78 +58,109 @@ const App = () => {
     AppLovinMAX.setBannerBackgroundColor(BANNER_AD_UNIT_ID, '#000000');
   });
 
-  // Interstitial Listeners
-  AppLovinMAX.addEventListener('OnInterstitialLoadedEvent', () => {
-    setInterstitialAdLoadState(adLoadState.loaded);
+  function attachAdListeners() {
 
-    var adInfo = AppLovinMAX.getAdInfo(INTERSTITIAL_AD_UNIT_ID);
-    logStatus('Interstitial ad loaded from ' + adInfo.networkName);
-  });
-  AppLovinMAX.addEventListener('OnInterstitialLoadFailedEvent', () => {
-    setInterstitialAdLoadState(adLoadState.notLoaded);
-    logStatus('Interstitial ad failed to load');
-  });
-  AppLovinMAX.addEventListener('OnInterstitialClickedEvent', () => {
-    logStatus('Interstitial ad clicked');
-  });
-  AppLovinMAX.addEventListener('OnInterstitialDisplayedEvent', () => {
-    logStatus('Interstitial ad displayed');
-  });
-  AppLovinMAX.addEventListener('OnInterstitialAdFailedToDisplayEvent', () => {
-    setInterstitialAdLoadState(adLoadState.notLoaded);
-    logStatus('Interstitial ad failed to display');
-  });
-  AppLovinMAX.addEventListener('OnInterstitialHiddenEvent', () => {
-    setInterstitialAdLoadState(adLoadState.notLoaded);
-    logStatus('Interstitial ad hidden');
-  });
+    // Interstitial Listeners
+    AppLovinMAX.addEventListener('OnInterstitialLoadedEvent', () => {
+      setInterstitialAdLoadState(adLoadState.loaded);
 
-  // Rewarded Ad Listeners
-  AppLovinMAX.addEventListener('OnRewardedAdLoadedEvent', () => {
-    setRewardedAdLoadState(adLoadState.loaded);
+      // Interstitial ad is ready to be shown. AppLovinMAX.isInterstitialReady(INTERSTITIAL_AD_UNIT_ID) will now return 'true'
+      var adInfo = AppLovinMAX.getAdInfo(INTERSTITIAL_AD_UNIT_ID);
+      logStatus('Interstitial ad loaded from ' + adInfo.networkName);
 
-    var adInfo = AppLovinMAX.getAdInfo(REWARDED_AD_UNIT_ID);
-    logStatus('Rewarded ad loaded from ' + adInfo.networkName);
-  });
-  AppLovinMAX.addEventListener('OnRewardedAdLoadFailedEvent', () => {
-    setRewardedAdLoadState(adLoadState.notLoaded);
-    logStatus('Rewarded ad failed to load');
-  });
-  AppLovinMAX.addEventListener('OnRewardedAdClickedEvent', () => {
-    logStatus('Rewarded ad clicked');
-  });
-  AppLovinMAX.addEventListener('OnRewardedAdDisplayedEvent', () => {
-    logStatus('Rewarded ad displayed');
-  });
-  AppLovinMAX.addEventListener('OnRewardedAdFailedToDisplayEvent', () => {
-    setRewardedAdLoadState(adLoadState.notLoaded);
-    logStatus('Rewarded ad failed to display');
-  });
-  AppLovinMAX.addEventListener('OnRewardedAdHiddenEvent', () => {
-    setRewardedAdLoadState(adLoadState.notLoaded);
-    logStatus('Rewarded ad hidden');
-  });
-  AppLovinMAX.addEventListener('OnRewardedAdReceivedRewardEvent', () => {
-    logStatus('Rewarded ad granted reward');
-  });
+      // Reset retry attempt
+      setInterstitialRetryAttempt(0)
+    });
+    AppLovinMAX.addEventListener('OnInterstitialLoadFailedEvent', () => {
 
-  // Banner Ad Listeners
-  AppLovinMAX.addEventListener('OnBannerAdLoadedEvent', () => {
-    var adInfo = AppLovinMAX.getAdInfo(BANNER_AD_UNIT_ID);
-    logStatus('Banner ad loaded from ' + adInfo.networkName);
-  });
-  AppLovinMAX.addEventListener('OnBannerAdLoadFailedEvent', () => {
-    setRewardedAdLoadState(adLoadState.notLoaded);
-    logStatus('Banner ad failed to load');
-  });
-  AppLovinMAX.addEventListener('OnBannerAdClickedEvent', () => {
-    logStatus('Banner ad clicked');
-  });
-  AppLovinMAX.addEventListener('OnBannerAdCollapsedEvent', () => {});
-  AppLovinMAX.addEventListener('OnBannerAdExpandedEvent', () => {});
+      // Interstitial ad failed to load 
+      // We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds)
+      setInterstitialRetryAttempt(interstitialRetryAttempt + 1);
 
-  AppLovinMAX.setVerboseLogging(true);
-  AppLovinMAX.initialize(SDK_KEY);
+      var retryDelay = Math.pow(2, Math.min(6, interstitialRetryAttempt));
+      logStatus('Interstitial ad failed to load - retrying in ' + retryDelay + 's');
+      
+      setTimeout(function() {
+        AppLovinMAX.loadInterstitial(INTERSTITIAL_AD_UNIT_ID);
+      }, retryDelay * 1000);
+    });
+    AppLovinMAX.addEventListener('OnInterstitialClickedEvent', () => {
+      logStatus('Interstitial ad clicked');
+    });
+    AppLovinMAX.addEventListener('OnInterstitialDisplayedEvent', () => {
+      logStatus('Interstitial ad displayed');
+    });
+    AppLovinMAX.addEventListener('OnInterstitialAdFailedToDisplayEvent', () => {
+      setInterstitialAdLoadState(adLoadState.notLoaded);
+      logStatus('Interstitial ad failed to display');
+    });
+    AppLovinMAX.addEventListener('OnInterstitialHiddenEvent', () => {
+      setInterstitialAdLoadState(adLoadState.notLoaded);
+      logStatus('Interstitial ad hidden');
+    });
+
+    // Rewarded Ad Listeners
+    AppLovinMAX.addEventListener('OnRewardedAdLoadedEvent', () => {
+      setRewardedAdLoadState(adLoadState.loaded);
+
+      // Rewarded ad is ready to be shown. AppLovinMAX.isRewardedAdReady(REWARDED_AD_UNIT_ID) will now return 'true'
+      var adInfo = AppLovinMAX.getAdInfo(REWARDED_AD_UNIT_ID);
+      logStatus('Rewarded ad loaded from ' + adInfo.networkName);
+
+      // Reset retry attempt
+      setRewardedAdRetryAttempt(0);
+    });
+    AppLovinMAX.addEventListener('OnRewardedAdLoadFailedEvent', () => {
+      setRewardedAdLoadState(adLoadState.notLoaded);
+
+      // Rewarded ad failed to load 
+      // We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds)
+      setRewardedAdRetryAttempt(rewardedAdRetryAttempt + 1);
+
+      var retryDelay = Math.pow(2, Math.min(6, rewardedAdRetryAttempt));
+      logStatus('Rewarded ad failed to load - retrying in ' + retryDelay + 's');
+      
+      setTimeout(function() {
+        AppLovinMAX.loadRewardedAd(REWARDED_AD_UNIT_ID);
+      }, retryDelay * 1000);
+    });
+    AppLovinMAX.addEventListener('OnRewardedAdClickedEvent', () => {
+      logStatus('Rewarded ad clicked');
+    });
+    AppLovinMAX.addEventListener('OnRewardedAdDisplayedEvent', () => {
+      logStatus('Rewarded ad displayed');
+    });
+    AppLovinMAX.addEventListener('OnRewardedAdFailedToDisplayEvent', () => {
+      setRewardedAdLoadState(adLoadState.notLoaded);
+      logStatus('Rewarded ad failed to display');
+    });
+    AppLovinMAX.addEventListener('OnRewardedAdHiddenEvent', () => {
+      setRewardedAdLoadState(adLoadState.notLoaded);
+      logStatus('Rewarded ad hidden');
+    });
+    AppLovinMAX.addEventListener('OnRewardedAdReceivedRewardEvent', () => {
+      logStatus('Rewarded ad granted reward');
+    });
+
+    // Banner Ad Listeners
+    AppLovinMAX.addEventListener('OnBannerAdLoadedEvent', () => {
+      var adInfo = AppLovinMAX.getAdInfo(BANNER_AD_UNIT_ID);
+      logStatus('Banner ad loaded from ' + adInfo.networkName);
+    });
+    AppLovinMAX.addEventListener('OnBannerAdLoadFailedEvent', () => {
+      setRewardedAdLoadState(adLoadState.notLoaded);
+      logStatus('Banner ad failed to load');
+    });
+    AppLovinMAX.addEventListener('OnBannerAdClickedEvent', () => {
+      logStatus('Banner ad clicked');
+    });
+    AppLovinMAX.addEventListener('OnBannerAdExpandedEvent', () => {
+      logStatus('Banner ad expanded') 
+    });
+    AppLovinMAX.addEventListener('OnBannerAdCollapsedEvent', () => {
+      logStatus('Banner ad collapsed') 
+    });
+  }
 
   function getInterstitialButtonTitle() {
     if (interstitialAdLoadState === adLoadState.notLoaded) {

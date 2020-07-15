@@ -58,8 +58,9 @@ export default {
   AdViewPosition,
   addEventListener,
   removeEventListener,
-  initialize(sdkKey) {
-    AppLovinMAX.initialize(VERSION, sdkKey);
+  initialize(sdkKey, callback) {
+    // Use callback to avoid need for attaching listeners at top level on each re-render
+    AppLovinMAX.initialize(VERSION, sdkKey, callback);
   },
   showInterstitial(adUnitId) {
     AppLovinMAX.showInterstitial(adUnitId, '');
@@ -68,35 +69,3 @@ export default {
     AppLovinMAX.showRewardedAd(adUnitId, '');
   },
 };
-
-// // const eventMap = {
-// //     adLoaded: 'interstitialAdLoaded',
-// //     adFailedToLoad: 'interstitialAdFailedToLoad',
-// //     adOpened: 'interstitialAdOpened',
-// //     adClosed: 'interstitialAdClosed',
-// //     adLeftApplication: 'interstitialAdLeftApplication',
-// //   };
-
-// // //   const addEventListener = (event, handler) => {
-// // //     const mappedEvent = eventMap[event];
-// // //     if (mappedEvent) {
-// // //       let listener;
-// // //       if (event === 'adFailedToLoad') {
-// // //         listener = eventEmitter.addListener(mappedEvent, (error) =>
-// // //           handler(createErrorFromErrorData(error))
-// // //         );
-// // //       } else {
-// // //         listener = eventEmitter.addListener(mappedEvent, handler);
-// // //       }
-// // //       _subscriptions.set(handler, listener);
-// // //       return {
-// // //         remove: () => removeEventListener(event, handler),
-// // //       };
-// // //     } else {
-// // //       // eslint-disable-next-line no-console
-// // //       console.warn(`Trying to subscribe to unknown event: "${event}"`);
-// // //       return {
-// // //         remove: () => {},
-// // //       };
-// // //     }
-// // //   };

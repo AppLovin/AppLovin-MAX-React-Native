@@ -32,6 +32,8 @@ import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkSettings;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -61,7 +63,6 @@ public class AppLovinMAXModule
 
   // Parent Fields
   private AppLovinSdk              sdk;
-  private String                   sSdkKey;
   private boolean                  isPluginInitialized;
   private boolean                  isSdkInitialized;
   private AppLovinSdkConfiguration sdkConfiguration;
@@ -79,19 +80,12 @@ public class AppLovinMAXModule
   private final Map<String, MaxAdView>   mAdViews                    = new HashMap<>( 2 );
   private final Map<String, MaxAdFormat> mAdViewAdFormats            = new HashMap<>( 2 );
   private final Map<String, String>      mAdViewPositions            = new HashMap<>( 2 );
-  private final Map<String, MaxAdFormat> mVerticalAdViewFormats      = new HashMap<>( 2 ); // TODO: Remove to skim one-off
+  private final Map<String, MaxAdFormat> mVerticalAdViewFormats      = new HashMap<>( 2 );
   private final List<String>             mAdUnitIdsToShowAfterCreate = new ArrayList<>( 2 );
 
   private final Map<String, MaxAd> mAdInfoMap     = new HashMap<>();
   private final Object             mAdInfoMapLock = new Object();
 
-  /*
-  TODO: FIX:
-
-  WARNING: in the vast majority of cases, you should use RCT_EXPORT_METHOD which allows your native module methods to be called asynchronously: calling methods synchronously can have strong performance penalties and introduce threading-related bugs to your native modules.
-
-  https://medium.com/@some_day_man/synchronous-returns-in-react-native-native-modules-453af33d5999
-   */
   public AppLovinMAXModule(@NonNull final ReactApplicationContext reactContext)
   {
     super( reactContext );
@@ -110,7 +104,7 @@ public class AppLovinMAXModule
   }
 
   @ReactMethod
-  public void initialize(final String pluginVersion, final String sdkKey)
+  public void initialize(final String pluginVersion, final String sdkKey, final Callback callback)
   {
     // Check if Activity is available
     Activity currentActivity = getCurrentActivity();
@@ -195,9 +189,9 @@ public class AppLovinMAXModule
           }
         }.enable();
 
-        WritableMap params = Arguments.createMap();
-        params.putInt( "consentDialogState", configuration.getConsentDialogState().ordinal() );
-        sendReactNativeEvent( "OnSdkInitializedEvent", params );
+        WritableMap sdkConfiguration = Arguments.createMap();
+        sdkConfiguration.putInt( "consentDialogState", configuration.getConsentDialogState().ordinal() );
+        callback.invoke( sdkConfiguration );
       }
     } );
   }
