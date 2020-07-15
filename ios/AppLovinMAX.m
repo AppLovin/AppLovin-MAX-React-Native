@@ -107,7 +107,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isInitialized)
     return @([self isPluginInitialized] && [self isSdkInitialized]);
 }
 
-RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion sdkKey:(NSString *)sdkKey)
+RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCTResponseSenderBlock)callback)
 {
     // Guard against running init logic multiple times
     if ( self.pluginInitialized ) return;
@@ -162,8 +162,7 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion sdkKey:(NSString *)sdkKey
             self.verboseLoggingToSet = nil;
         }
         
-        [self sendReactNativeEventWithName: @"OnSdkInitializedEvent"
-                                      body: @{@"consentDialogState" : @(configuration.consentDialogState)}];
+        callback(@[@{@"consentDialogState" : @(configuration.consentDialogState)}]);
     }];
 }
 
@@ -1033,9 +1032,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 // From RCTBridgeModule protocol
 - (NSArray<NSString *> *)supportedEvents
 {
-    return @[@"OnSdkInitializedEvent",
-             
-             @"OnMRecAdLoadedEvent",
+    return @[@"OnMRecAdLoadedEvent",
              @"OnMRecAdLoadFailedEvent",
              @"OnMRecAdClickedEvent",
              @"OnMRecAdCollapsedEvent",
