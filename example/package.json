@@ -1,27 +1,15 @@
 {
+  "name": "AppLovin-MAX-Native-Plugin-Demo",
   "author": "AppLovin Corporation",
-  "name": "react-native-applovin-max",
   "version": "1.0.0",
   "description": "Example App for the AppLovin MAX React Native Module for Android and iOS",
   "homepage": "https://applovin.com",
-  "main": "src/index.js",
-  "license": "MIT",
+  "private": true,
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start"
   },
-  "files": [
-    "android",
-    "ios",
-    "src",
-    "package.json"
-  ]
-  "keywords": [
-    "react-native",
-    "applovin",
-    "max"
-  ],
   "dependencies": {
     "react": "16.11.0",
     "react-native": "0.62.2"
