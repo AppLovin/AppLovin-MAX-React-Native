@@ -12,7 +12,6 @@ npm install react-native-applovin-max
 
 ```js
 import AppLovinMAX from "react-native-applovin-max";
-
 ...
 ```
 
