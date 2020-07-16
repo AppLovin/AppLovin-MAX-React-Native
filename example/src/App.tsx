@@ -39,7 +39,7 @@ const App = () => {
   const [statusText, setStatusText] = useState('Initializing SDK...');
   
   AppLovinMAX.setVerboseLogging(true);
-  AppLovinMAX.initialize(SDK_KEY, (sdkConfiguration) => {
+  AppLovinMAX.initialize(SDK_KEY, () => {
     setIsInitialized(true);
 
     logStatus('SDK Initialized');
