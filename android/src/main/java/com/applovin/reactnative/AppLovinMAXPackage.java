@@ -15,20 +15,20 @@ import androidx.annotation.NonNull;
  * Created by Thomas So on July 11 2020
  */
 public class AppLovinMAXPackage
-  implements ReactPackage
+        implements ReactPackage
 {
-  @Override
-  @NonNull
-  public List<NativeModule> createNativeModules(@NonNull final ReactApplicationContext reactContext)
-  {
-    List<NativeModule> module = new ArrayList<>( 1 );
-    module.add( new AppLovinMAXModule( reactContext ) );
-    return module;
-  }
+    @Override
+    @NonNull
+    public List<NativeModule> createNativeModules(@NonNull final ReactApplicationContext reactContext)
+    {
+        List<NativeModule> module = new ArrayList<>( 1 );
+        module.add( new AppLovinMAXModule( reactContext ) );
+        return module;
+    }
 
-  @Override
-  @NonNull public List<ViewManager> createViewManagers(@NonNull final ReactApplicationContext reactContext)
-  {
-    return Collections.emptyList();
-  }
+    @Override
+    @NonNull public List<ViewManager> createViewManagers(@NonNull final ReactApplicationContext reactContext)
+    {
+        return Collections.emptyList();
+    }
 }
