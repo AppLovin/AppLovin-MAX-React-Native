@@ -70,4 +70,85 @@ export default {
   showRewardedAd(adUnitId) {
     AppLovinMAX.showRewardedAd(adUnitId, '');
   },
+  
+  /*----------------------*/
+  /** AUTO-DECLARED APIs **/
+  /*----------------------*/
+
+  /*----------------*/
+  /* INITIALIZATION */
+  /*----------------*/
+  /* isInitialized() */
+  /* initialize(pluginVersion, sdkKey, callback) */
+  /* showMediationDebugger() */
+
+  /*--------------*/
+  /* PRIVACY APIs */
+  /*--------------*/
+  /* getConsentDialogState() */
+  /* setHasUserConsent(hasUserConsent) */
+  /* hasUserConsent() */
+  /* setIsAgeRestrictedUser(isAgeRestrictedUser) */
+  /* isAgeRestrictedUser() */
+  /* setDoNotSell(doNotSell) */
+  /* isDoNotSell() */
+
+  /*--------------------*/
+  /* GENERAL PUBLIC API */
+  /*--------------------*/
+  /* setUserId(userId) */
+  /* setMuted(muted) */
+  /* isMuted() */
+  /* setVerboseLogging(verboseLoggingEnabled) */
+  /* setTestDeviceAdvertisingIds(advertisingIds) */
+
+  /*----------------*/
+  /* EVENT TRACKING */
+  /*----------------*/
+  /* trackEvent(event, parameters) */
+  
+  /*---------*/
+  /* AD INFO */
+  /*---------*/
+  /* getAdInfo(adUnitId) */
+
+  /*---------*/
+  /* BANNERS */
+  /*---------*/
+  /* createBanner(adUnitId, bannerPosition) */
+  /* setBannerBackgroundColor(adUnitId, hexColorCode) */
+  /* setBannerPlacement(adUnitId, placement) */
+  /* updateBannerPosition(adUnitId, bannerPosition) */
+  /* setBannerExtraParameter(adUnitId, key, value) */
+  /* showBanner(adUnitId) */
+  /* hideBanner(adUnitId) */
+  /* destroyBanner(adUnitId) */
+
+  /*-------*/
+  /* MRECS */
+  /*-------*/
+  /* createMRec(adUnitId, mrecPosition) */
+  /* setMRecBackgroundColor(adUnitId, hexColorCode) */
+  /* setMRecPlacement(adUnitId, placement) */
+  /* updateMRecPosition(adUnitId, mrecPosition) */
+  /* setMRecExtraParameter(adUnitId, key, value) */
+  /* showMRec(adUnitId) */
+  /* hideMRec(adUnitId) */
+  /* destroyMRec
+  
+  /*---------------*/
+  /* INTERSTITIALS */
+  /*---------------*/
+  /* loadInterstitial(adUnitId) */
+  /* isInterstitialReady(adUnitId) */
+  /* showInterstitial(adUnitId, placement) */
+  /* setInterstitialExtraParameter(adUnitId, key, value) */
+   
+  /*----------*/
+  /* REWARDED */
+  /*----------*/
+  /* loadRewardedAd(adUnitId) */
+  /* isRewardedAdReady(adUnitId) */
+  /* showRewardedAd(adUnitId, placement) */
+  /* setRewardedAdExtraParameter(adUnitId, key, value) */
 };
