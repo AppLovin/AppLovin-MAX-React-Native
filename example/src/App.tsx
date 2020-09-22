@@ -148,7 +148,6 @@ const App = () => {
       logStatus('Banner ad loaded from ' + adInfo.networkName);
     });
     AppLovinMAX.addEventListener('OnBannerAdLoadFailedEvent', () => {
-      setRewardedAdLoadState(adLoadState.notLoaded);
       logStatus('Banner ad failed to load');
     });
     AppLovinMAX.addEventListener('OnBannerAdClickedEvent', () => {
