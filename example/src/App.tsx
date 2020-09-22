@@ -210,6 +210,7 @@ const App = () => {
           if (AppLovinMAX.isInterstitialReady(INTERSTITIAL_AD_UNIT_ID)) {
             AppLovinMAX.showInterstitial(INTERSTITIAL_AD_UNIT_ID);
           } else {
+            logStatus('Loading interstitial ad...');
             setInterstitialAdLoadState(adLoadState.loading);
             AppLovinMAX.loadInterstitial(INTERSTITIAL_AD_UNIT_ID);
           }
@@ -222,6 +223,7 @@ const App = () => {
           if (AppLovinMAX.isRewardedAdReady(REWARDED_AD_UNIT_ID)) {
             AppLovinMAX.showRewardedAd(REWARDED_AD_UNIT_ID);
           } else {
+            logStatus('Loading rewarded ad...');
             setRewardedAdLoadState(adLoadState.loading);
             AppLovinMAX.loadRewardedAd(REWARDED_AD_UNIT_ID);
           }

@@ -130,8 +130,8 @@ android {
         applicationId "com.applovin.enterprise.apps.demoapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 1000000
+        versionName "1.0.0"
     }
     splits {
         abi {
@@ -172,7 +172,6 @@ android {
                 output.versionCodeOverride =
                         versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
             }
-
         }
     }
 
@@ -209,6 +208,7 @@ dependencies {
         implementation jscFlavor
     }
 
+    // Pull in the native module
     implementation project(':reactnativeapplovinmax')
 }
 
