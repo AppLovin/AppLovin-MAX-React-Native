@@ -7,7 +7,6 @@
 //
 
 #import "AppLovinMAX.h"
-#import <AppLovinSDK/AppLovinSDK.h>
 
 #define DEVICE_SPECIFIC_ADVIEW_AD_FORMAT ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) ? MAAdFormat.leader : MAAdFormat.banner
 #define ROOT_VIEW_CONTROLLER (UIApplication.sharedApplication.keyWindow.rootViewController)
@@ -67,6 +66,8 @@
 static NSString *const SDK_TAG = @"AppLovinSdk";
 static NSString *const TAG = @"AppLovinMAX";
 
+static AppLovinMAX *AppLovinMAXShared; // Shared instance of this bridge module.
+
 // To export a module named AppLovinMAX ("RCT" automatically removed)
 RCT_EXPORT_MODULE()
 
@@ -76,11 +77,18 @@ RCT_EXPORT_MODULE()
     return YES;
 }
 
++ (AppLovinMAX *)shared
+{
+    return AppLovinMAXShared;
+}
+
 - (instancetype)init
 {
     self = [super init];
     if ( self )
     {
+        AppLovinMAXShared = self;
+        
         self.interstitials = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.rewardedAds = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.adViews = [NSMutableDictionary dictionaryWithCapacity: 2];
@@ -162,11 +170,19 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
             self.verboseLoggingToSet = nil;
         }
         
+        [[NSNotificationCenter defaultCenter] postNotificationName: AppLovinMAXNotificationNameSDKInitialized
+                                                            object: self.sdk];
+        
         callback(@[@{@"consentDialogState" : @(configuration.consentDialogState)}]);
     }];
 }
 
 #pragma mark - General Public API
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isTablet)
+{
+    return @([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad);
+}
 
 RCT_EXPORT_METHOD(showMediationDebugger)
 {
@@ -901,10 +917,10 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     [NSLayoutConstraint deactivateConstraints: self.safeAreaBackground.constraints];
     self.safeAreaBackground.hidden = NO;
     
-    CGSize adViewSize = [self adViewSizeForAdFormat: adFormat];
+    CGSize adViewSize = [[self class] adViewSizeForAdFormat: adFormat];
     
     // All positions have constant height
-    NSMutableArray<NSLayoutConstraint*> *constraints = [NSMutableArray arrayWithObject: [adView.heightAnchor constraintEqualToConstant: adViewSize.height]];
+    NSMutableArray<NSLayoutConstraint *> *constraints = [NSMutableArray arrayWithObject: [adView.heightAnchor constraintEqualToConstant: adViewSize.height]];
     
     UILayoutGuide *layoutGuide;
     if ( @available(iOS 11.0, *) )
@@ -917,7 +933,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     }
     
     // If top of bottom center, stretch width of screen
-    if ( [adViewPosition isEqual: @"TopCenter"] || [adViewPosition isEqual: @"BottomCenter"] )
+    if ( [adViewPosition isEqual: @"top_center"] || [adViewPosition isEqual: @"bottom_center"] )
     {
         // If publisher actually provided a banner background color, span the banner across the realm
         if ( self.publisherBannerBackgroundColor && adFormat != MAAdFormat.mrec )
@@ -925,7 +941,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
             [constraints addObjectsFromArray: @[[self.safeAreaBackground.leftAnchor constraintEqualToAnchor: superview.leftAnchor],
                                                 [self.safeAreaBackground.rightAnchor constraintEqualToAnchor: superview.rightAnchor]]];
             
-            if ( [adViewPosition isEqual: @"TopCenter"] )
+            if ( [adViewPosition isEqual: @"top_center"] )
             {
                 [constraints addObjectsFromArray: @[[adView.topAnchor constraintEqualToAnchor: layoutGuide.topAnchor],
                                                     [adView.leftAnchor constraintEqualToAnchor: superview.leftAnchor],
@@ -951,7 +967,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
             [constraints addObject: [adView.widthAnchor constraintEqualToConstant: adViewSize.width]];
             [constraints addObject: [adView.centerXAnchor constraintEqualToAnchor: layoutGuide.centerXAnchor]];
             
-            if ( [adViewPosition isEqual: @"TopCenter"] )
+            if ( [adViewPosition isEqual: @"top_center"] )
             {
                 [constraints addObject: [adView.topAnchor constraintEqualToAnchor: layoutGuide.topAnchor]];
             }
@@ -969,27 +985,27 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         // Assign constant width of 320 or 728
         [constraints addObject: [adView.widthAnchor constraintEqualToConstant: adViewSize.width]];
         
-        if ( [adViewPosition isEqual: @"TopLeft"] )
+        if ( [adViewPosition isEqual: @"top_left"] )
         {
             [constraints addObjectsFromArray: @[[adView.topAnchor constraintEqualToAnchor: layoutGuide.topAnchor],
                                                 [adView.leftAnchor constraintEqualToAnchor: superview.leftAnchor]]];
         }
-        else if ( [adViewPosition isEqual: @"TopRight"] )
+        else if ( [adViewPosition isEqual: @"top_right"] )
         {
             [constraints addObjectsFromArray: @[[adView.topAnchor constraintEqualToAnchor: layoutGuide.topAnchor],
                                                 [adView.rightAnchor constraintEqualToAnchor: superview.rightAnchor]]];
         }
-        else if ( [adViewPosition isEqual: @"Centered"] )
+        else if ( [adViewPosition isEqual: @"centered"] )
         {
             [constraints addObjectsFromArray: @[[adView.centerXAnchor constraintEqualToAnchor: layoutGuide.centerXAnchor],
                                                 [adView.centerYAnchor constraintEqualToAnchor: layoutGuide.centerYAnchor]]];
         }
-        else if ( [adViewPosition isEqual: @"BottomLeft"] )
+        else if ( [adViewPosition isEqual: @"bottom_left"] )
         {
             [constraints addObjectsFromArray: @[[adView.bottomAnchor constraintEqualToAnchor: layoutGuide.bottomAnchor],
                                                 [adView.leftAnchor constraintEqualToAnchor: superview.leftAnchor]]];
         }
-        else if ( [adViewPosition isEqual: @"BottomRight"] )
+        else if ( [adViewPosition isEqual: @"bottom_right"] )
         {
             [constraints addObjectsFromArray: @[[adView.bottomAnchor constraintEqualToAnchor: layoutGuide.bottomAnchor],
                                                 [adView.rightAnchor constraintEqualToAnchor: superview.rightAnchor]]];
@@ -1001,7 +1017,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     [NSLayoutConstraint activateConstraints: constraints];
 }
 
-- (CGSize)adViewSizeForAdFormat:(MAAdFormat *)adFormat
++ (CGSize)adViewSizeForAdFormat:(MAAdFormat *)adFormat
 {
     if ( MAAdFormat.leader == adFormat )
     {
