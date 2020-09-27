@@ -1,7 +1,5 @@
 package com.applovin.reactnative;
 
-import android.app.Activity;
-
 import com.applovin.mediation.MaxAdFormat;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.SimpleViewManager;
@@ -40,15 +38,8 @@ class AppLovinMAXAdViewManager
     }
 
     @Override
-    protected @NotNull AppLovinMAXAdView createViewInstance(final ThemedReactContext reactContext)
+    protected @NotNull AppLovinMAXAdView createViewInstance(@NotNull final ThemedReactContext reactContext)
     {
-        Activity currentActivity = reactContext.getCurrentActivity();
-        if ( currentActivity == null )
-        {
-            AppLovinMAXModule.e( "Unable to create AdView - no current Activity found" );
-            return new AppLovinMAXAdView( reactApplicationContext );
-        }
-
         // NOTE: Do not set frame or backgroundColor as RN will overwrite the values set by your custom class in order to match your JavaScript component's layout props - hence wrapper
         adView = new AppLovinMAXAdView( reactContext );
         return adView;

@@ -2,7 +2,6 @@ package com.applovin.reactnative;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.ViewGroup;
@@ -55,7 +54,6 @@ class AppLovinMAXAdView
             return;
         }
 
-        // Run after delay to ensure SDK is attached to main module first
         currentActivity.runOnUiThread( new Runnable()
         {
             @Override
