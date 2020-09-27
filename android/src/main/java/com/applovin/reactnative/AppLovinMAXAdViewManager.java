@@ -25,14 +25,15 @@ import androidx.annotation.Nullable;
  * Created by Thomas So on September 26 2020
  */
 class AppLovinMAXAdViewManager
-        extends SimpleViewManager<ViewGroup>
+        extends SimpleViewManager<AppLovinMAXAdView>
 {
     // Parent fields
     private ReactApplicationContext reactApplicationContext;
 
     // View fields
-    private RelativeLayout containerLayout;
-    private MaxAdView      adView;
+    private AppLovinMAXAdView containerLayout;
+//    private RelativeLayout containerLayout;
+//    private MaxAdView      adView;
 
     // Fields that need to be set before creating MaxAdView
     private String      adUnitId;
@@ -50,29 +51,29 @@ class AppLovinMAXAdViewManager
     }
 
     @Override
-    protected @NotNull ViewGroup createViewInstance(final ThemedReactContext reactContext)
+    protected @NotNull AppLovinMAXAdView createViewInstance(final ThemedReactContext reactContext)
     {
         Activity currentActivity = reactContext.getCurrentActivity();
         if ( currentActivity == null )
         {
             AppLovinMAXModule.e( "Unable to create AdView - no current Activity found" );
-            return new ReactViewGroup( reactContext );
+            return new AppLovinMAXAdView( reactContext );
         }
 
         // NOTE: Do not set frame or backgroundColor as RN will overwrite the values set by your custom class in order to match your JavaScript component's layout props - hence wrapper
-        containerLayout = new RelativeLayout( reactContext );
+        containerLayout = new AppLovinMAXAdView( reactContext );
         return containerLayout;
     }
 
     @ReactProp(name = "adUnitId")
-    public void setAdUnitId(final ViewGroup view, final @Nullable String adUnitId)
+    public void setAdUnitId(final AppLovinMAXAdView view, final @Nullable String adUnitId)
     {
         this.adUnitId = adUnitId;
         maybeAttachAdView( adUnitId, adFormat );
     }
 
     @ReactProp(name = "adFormat")
-    public void setAdFormat(final ViewGroup view, final @Nullable String adFormatStr)
+    public void setAdFormat(final AppLovinMAXAdView view, final @Nullable String adFormatStr)
     {
         if ( "banner".equals( adFormatStr ) )
         {
@@ -106,19 +107,19 @@ class AppLovinMAXAdViewManager
                 if ( !TextUtils.isEmpty( adUnitId ) && adFormat != null )
                 {
                     // Check if there's a previously-attached AdView
-                    if ( adView != null )
-                    {
-                        ViewGroup parent = (ViewGroup) adView.getParent();
-                        if ( parent != null )
-                        {
-                            parent.removeView( adView );
-                        }
+//                    if ( adView != null )
+//                    {
+//                        ViewGroup parent = (ViewGroup) adView.getParent();
+//                        if ( parent != null )
+//                        {
+//                            parent.removeView( adView );
+//                        }
+//
+//                        adView.stopAutoRefresh();
+//                        adView = null;
+//                    }
 
-                        adView.stopAutoRefresh();
-                        adView = null;
-                    }
-
-                    adView = AppLovinMAXModule.getInstance().retrieveAdView( adUnitId, adFormat, "" );
+                    MaxAdView adView = AppLovinMAXModule.getInstance().retrieveAdView( adUnitId, adFormat, "" );
 
                     // Set the height of the banner ad based on the device type.
                     AppLovinMAXModule.AdViewSize adViewSize = AppLovinMAXModule.getAdViewSize( adFormat );
@@ -127,12 +128,13 @@ class AppLovinMAXAdViewManager
 
                     containerLayout.addView( adView );
 
-                    RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) adView.getLayoutParams();
+                    ViewGroup.LayoutParams layoutParams = (ViewGroup.LayoutParams) adView.getLayoutParams();
                     //                    RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams( 100, 100 );
-                    layoutParams.addRule( RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE );
+//                    layoutParams.addRule( RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE );
                     layoutParams.width = widthPx;
                     layoutParams.height = heightPx;
                     adView.setLayoutParams( layoutParams );
+                    adView.setGravity(Gravity.CENTER);
 
                     adView.loadAd();
                     adView.setBackgroundColor( Color.RED );
