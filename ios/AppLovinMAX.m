@@ -8,7 +8,6 @@
 
 #import "AppLovinMAX.h"
 
-#define DEVICE_SPECIFIC_ADVIEW_AD_FORMAT ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) ? MAAdFormat.leader : MAAdFormat.banner
 #define ROOT_VIEW_CONTROLLER (UIApplication.sharedApplication.keyWindow.rootViewController)
 
 // Internal
@@ -169,9 +168,6 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
             self.sdk.settings.isVerboseLogging = self.verboseLoggingToSet.boolValue;
             self.verboseLoggingToSet = nil;
         }
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName: AppLovinMAXNotificationNameSDKInitialized
-                                                            object: sdkKey];
         
         callback(@[@{@"consentDialogState" : @(configuration.consentDialogState)}]);
     }];
@@ -871,19 +867,27 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 
 - (MAAdView *)retrieveAdViewForAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat atPosition:(NSString *)adViewPosition
 {
+    return [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: adViewPosition attach: YES];
+}
+
+- (MAAdView *)retrieveAdViewForAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat atPosition:(NSString *)adViewPosition attach:(BOOL)attach
+{
     MAAdView *result = self.adViews[adUnitIdentifier];
     if ( !result && adViewPosition )
     {
         result = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitIdentifier adFormat: adFormat sdk: self.sdk];
-        // There is a Unity bug where if an empty UIView is on screen with user interaction enabled, and a user interacts with it, it just passes the events to random parts of the screen.
+        result.delegate = self;
         result.userInteractionEnabled = NO;
         result.translatesAutoresizingMaskIntoConstraints = NO;
-        result.delegate = self;
         
         self.adViews[adUnitIdentifier] = result;
-        self.adViewPositions[adUnitIdentifier] = adViewPosition;
         
-        [ROOT_VIEW_CONTROLLER.view addSubview: result];
+        // If this is programmatic (non native RN)
+        if ( attach )
+        {
+            self.adViewPositions[adUnitIdentifier] = adViewPosition;
+            [ROOT_VIEW_CONTROLLER.view addSubview: result];
+        }
     }
     
     return result;

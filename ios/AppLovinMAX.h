@@ -11,17 +11,14 @@
 #import <React/RCTEventEmitter.h>
 #import <AppLovinSDK/AppLovinSDK.h>
 
+#define DEVICE_SPECIFIC_ADVIEW_AD_FORMAT ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) ? MAAdFormat.leader : MAAdFormat.banner
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
  * The primary bridge between JS <-> native code for the AppLovin MAX React Native module.
  */
 @interface AppLovinMAX : RCTEventEmitter<RCTBridgeModule>
-
-/**
- * Custom notification to be sent when the AppLovin MAX SDK initializes.
- */
-extern NSNotificationName const AppLovinMAXNotificationNameSDKInitialized = @"sdk_initialized";
 
 /**
  * Shared instance of this bridge module.
@@ -32,6 +29,14 @@ extern NSNotificationName const AppLovinMAXNotificationNameSDKInitialized = @"sd
  * Utility method for getting the width and height for a given ad format.
  */
 + (CGSize)adViewSizeForAdFormat:(MAAdFormat *)adFormat;
+
+/**
+ * Dedicated method for retrieving a MAAdView.
+ */
+- (MAAdView *)retrieveAdViewForAdUnitIdentifier:(NSString *)adUnitIdentifier
+                                       adFormat:(MAAdFormat *)adFormat
+                                     atPosition:(NSString *)adViewPosition
+                                         attach:(BOOL)attach;
 
 @end
 
