@@ -530,7 +530,13 @@ public class AppLovinMAXModule
         if ( MaxAdFormat.BANNER == adFormat || MaxAdFormat.LEADER == adFormat || MaxAdFormat.MREC == adFormat )
         {
             name = ( MaxAdFormat.MREC == adFormat ) ? "OnMRecAdLoadedEvent" : "OnBannerAdLoadedEvent";
-            positionAdView( ad );
+
+            String adViewPosition = mAdViewPositions.get( ad.getAdUnitId() );
+            if ( !TextUtils.isEmpty( adViewPosition ) )
+            {
+                // Only position ad if not native UI component
+                positionAdView( ad );
+            }
 
             // Do not auto-refresh by default if the ad view is not showing yet (e.g. first load during app launch and publisher does not automatically show banner upon load success)
             // We will resume auto-refresh in {@link #showBanner(String)}.
@@ -539,24 +545,6 @@ public class AppLovinMAXModule
             {
                 adView.stopAutoRefresh();
             }
-
-            // https://stackoverflow.com/a/39838774/5477988
-//            adView.setBackgroundColor( Color.TRANSPARENT );
-//            adView.requestLayout();
-//            RelativeLayout parent = (RelativeLayout) adView.getParent();
-//            parent.measure( View.MeasureSpec.makeMeasureSpec( parent.getWidth(), View.MeasureSpec.EXACTLY ),
-//                            View.MeasureSpec.makeMeasureSpec( parent.getHeight(), View.MeasureSpec.EXACTLY ) );
-//            parent.layout( parent.getLeft(), parent.getTop(), parent.getRight(), parent.getBottom() );
-//
-//            parent.setBackgroundColor( Color.BLACK );
-//            parent.removeAllViews();
-//
-//            parent.addView( adView );
-//            parent.requestLayout();
-//
-            adView.measure( View.MeasureSpec.makeMeasureSpec( adView.getWidth(), View.MeasureSpec.EXACTLY ),
-                            View.MeasureSpec.makeMeasureSpec( adView.getHeight(), View.MeasureSpec.EXACTLY ) );
-            adView.layout( adView.getLeft(), adView.getTop(), adView.getRight(), adView.getBottom() );
         }
         else if ( MaxAdFormat.INTERSTITIAL == adFormat )
         {

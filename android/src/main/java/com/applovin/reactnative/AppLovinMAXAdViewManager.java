@@ -1,21 +1,12 @@
 package com.applovin.reactnative;
 
 import android.app.Activity;
-import android.graphics.Color;
-import android.text.TextUtils;
-import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 
 import com.applovin.mediation.MaxAdFormat;
-import com.applovin.mediation.ads.MaxAdView;
-import com.applovin.sdk.AppLovinSdkUtils;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.views.view.ReactViewGroup;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -31,9 +22,7 @@ class AppLovinMAXAdViewManager
     private ReactApplicationContext reactApplicationContext;
 
     // View fields
-    private AppLovinMAXAdView containerLayout;
-//    private RelativeLayout containerLayout;
-//    private MaxAdView      adView;
+    private AppLovinMAXAdView adView;
 
     // Fields that need to be set before creating MaxAdView
     private String      adUnitId;
@@ -57,19 +46,19 @@ class AppLovinMAXAdViewManager
         if ( currentActivity == null )
         {
             AppLovinMAXModule.e( "Unable to create AdView - no current Activity found" );
-            return new AppLovinMAXAdView( reactContext );
+            return new AppLovinMAXAdView( reactApplicationContext );
         }
 
         // NOTE: Do not set frame or backgroundColor as RN will overwrite the values set by your custom class in order to match your JavaScript component's layout props - hence wrapper
-        containerLayout = new AppLovinMAXAdView( reactContext );
-        return containerLayout;
+        adView = new AppLovinMAXAdView( reactContext );
+        return adView;
     }
 
     @ReactProp(name = "adUnitId")
     public void setAdUnitId(final AppLovinMAXAdView view, final @Nullable String adUnitId)
     {
         this.adUnitId = adUnitId;
-        maybeAttachAdView( adUnitId, adFormat );
+        adView.maybeAttachAdView( adUnitId, adFormat );
     }
 
     @ReactProp(name = "adFormat")
@@ -84,67 +73,6 @@ class AppLovinMAXAdViewManager
             adFormat = MaxAdFormat.MREC;
         }
 
-        maybeAttachAdView( adUnitId, adFormat );
-    }
-
-    private void maybeAttachAdView(final String adUnitId, final MaxAdFormat adFormat)
-    {
-        final Activity currentActivity = reactApplicationContext.getCurrentActivity();
-        if ( currentActivity == null )
-        {
-            AppLovinMAXModule.e( "Unable to attach AdView - no current Activity found" );
-            return;
-        }
-
-        // Run after delay to ensure SDK is attached to main module first
-        //        AppLovinSdkUtils.runOnUiThreadDelayed( new Runnable()
-        currentActivity.runOnUiThread( new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                // If ad unit id and format has been set - create and attach AdView
-                if ( !TextUtils.isEmpty( adUnitId ) && adFormat != null )
-                {
-                    // Check if there's a previously-attached AdView
-//                    if ( adView != null )
-//                    {
-//                        ViewGroup parent = (ViewGroup) adView.getParent();
-//                        if ( parent != null )
-//                        {
-//                            parent.removeView( adView );
-//                        }
-//
-//                        adView.stopAutoRefresh();
-//                        adView = null;
-//                    }
-
-                    MaxAdView adView = AppLovinMAXModule.getInstance().retrieveAdView( adUnitId, adFormat, "" );
-
-                    // Set the height of the banner ad based on the device type.
-                    AppLovinMAXModule.AdViewSize adViewSize = AppLovinMAXModule.getAdViewSize( adFormat );
-                    int widthPx = AppLovinSdkUtils.dpToPx( reactApplicationContext, adViewSize.widthDp );
-                    int heightPx = AppLovinSdkUtils.dpToPx( reactApplicationContext, adViewSize.heightDp );
-
-                    containerLayout.addView( adView );
-
-                    ViewGroup.LayoutParams layoutParams = (ViewGroup.LayoutParams) adView.getLayoutParams();
-                    //                    RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams( 100, 100 );
-//                    layoutParams.addRule( RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE );
-                    layoutParams.width = widthPx;
-                    layoutParams.height = heightPx;
-                    adView.setLayoutParams( layoutParams );
-                    adView.setGravity(Gravity.CENTER);
-
-                    adView.loadAd();
-                    adView.setBackgroundColor( Color.RED );
-
-                    adView.measure( View.MeasureSpec.makeMeasureSpec( widthPx, View.MeasureSpec.EXACTLY ),
-                                    View.MeasureSpec.makeMeasureSpec( heightPx, View.MeasureSpec.EXACTLY ) );
-                    adView.layout( adView.getLeft(), adView.getTop(), adView.getRight(), adView.getBottom() );
-                }
-            }
-        } );
-        //        }, TimeUnit.SECONDS.toMillis( 1 ) );
+        adView.maybeAttachAdView( adUnitId, adFormat );
     }
 }

@@ -11,6 +11,10 @@ var adLoadState = {
 };
 
 const App = () => {
+
+  // Whether or not to use the native UI component for banners
+  const USE_NATIVE_UI_BANNER = true;
+
   // Create constants
   const SDK_KEY = 'YOUR_SDK_KEY_HERE';
 
@@ -47,16 +51,30 @@ const App = () => {
     // Attach ad listeners for interstitial ads, rewarded ads, and banner ads
     attachAdListeners();
 
-    // Create banner - banners are automatically sized to 320x50 on phones and 728x90 on tablets
-    AppLovinMAX.createBanner(
-      BANNER_AD_UNIT_ID,
-      AppLovinMAX.AdViewPosition.BOTTOM_CENTER
-    );
+    if (!USE_NATIVE_UI_BANNER) {
+      // Create banner - banners are automatically sized to 320x50 on phones and 728x90 on tablets
+      AppLovinMAX.createBanner(
+        BANNER_AD_UNIT_ID,
+        AppLovinMAX.AdViewPosition.BOTTOM_CENTER
+      );
 
-    // Set background color for banners to be fully functional
-    // In this case we are setting it to black - PLEASE USE HEX STRINGS ONLY
-    AppLovinMAX.setBannerBackgroundColor(BANNER_AD_UNIT_ID, '#000000');
+      // Set background color for banners to be fully functional
+      // In this case we are setting it to black - PLEASE USE HEX STRINGS ONLY
+      AppLovinMAX.setBannerBackgroundColor(BANNER_AD_UNIT_ID, '#000000');
+
+      // Initially hide banner
+      AppLovinMAX.hideBanner(BANNER_AD_UNIT_ID);
+    }
   });
+
+  function maybeRenderBanner() {
+    if (USE_NATIVE_UI_BANNER) {
+      return (
+        <AppLovinMAX.AdView adUnitId={BANNER_AD_UNIT_ID} adFormat={AppLovinMAX.AdFormat.BANNER} style={styles.banner} />
+      );
+    }
+    return null;
+  }
 
   function attachAdListeners() {
 
@@ -229,19 +247,25 @@ const App = () => {
           }
         }}
       />
-      <AppButton
-        title={isBannerShowing ? 'Hide Banner' : 'Show Banner Ad'}
-        enabled={isInitialized}
-        onPress={() => {
-          if (isBannerShowing) {
-            AppLovinMAX.hideBanner(BANNER_AD_UNIT_ID);
-          } else {
-            AppLovinMAX.showBanner(BANNER_AD_UNIT_ID);
-          }
+      {
+        (() => {
+          return !USE_NATIVE_UI_BANNER ?
+            <AppButton
+              title={isBannerShowing ? 'Hide Banner' : 'Show Banner Ad'}
+              enabled={isInitialized}
+              onPress={() => {
+                if (isBannerShowing) {
+                  AppLovinMAX.hideBanner(BANNER_AD_UNIT_ID);
+                } else {
+                  AppLovinMAX.showBanner(BANNER_AD_UNIT_ID);
+                }
 
-          setIsBannerShowing(!isBannerShowing);
-        }}
-      />
+                setIsBannerShowing(!isBannerShowing);
+              }}
+            /> : null;
+         })()
+      }
+      { maybeRenderBanner() }
     </View>
   );
 };
@@ -249,6 +273,7 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     paddingTop: 80,
+    flex: 1, // Enables flexbox column layout
   },
   statusText: {
     marginBottom: 10,
@@ -257,6 +282,17 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: 'center',
   },
+  banner: {
+    // Set background color for banners to be fully functional
+    backgroundColor: '#000000',
+    position: 'absolute',
+    width: '100%',
+    height: AppLovinMAX.isTablet() ? 90 : 50,
+    bottom:  Platform.select({
+      ios: 36, // For bottom safe area
+      android: 0,
+    })
+  }
 });
 
 export default App;
