@@ -1,8 +1,9 @@
-import { NativeModules, NativeEventEmitter } from 'react-native';
+import { NativeModules, NativeEventEmitter } from "react-native";
+import AdView from "./AppLovinMAXAdView";
 
 const { AppLovinMAX } = NativeModules;
 
-const VERSION = '1.0.0';
+const VERSION = "1.0.0";
 
 /**
  * This enum represents whether or not the consent dialog should be shown for this user.
@@ -25,16 +26,23 @@ const ConsentDialogState = {
   DOES_NOT_APPLY: 2,
 };
 
-const AdViewPosition = {
-  TOP_CENTER: 'TopCenter',
-  TOP_RIGHT: 'TopRight',
-  CENTERED: 'Centered',
-  CENTER_LEFT: 'CenterLeft',
-  CENTER_RIGHT: 'CenterRight',
-  BOTTOM_LEFT: 'BottomLeft',
-  BOTTOM_CENTER: 'BottomCenter',
-  BOTTOM_RIGHT: 'BottomRight',
+const AdFormat = {
+  BANNER: "banner",
+  MREC: "mrec",
 };
+
+const AdViewPosition = {
+  TOP_CENTER: "top_center",
+  TOP_RIGHT: "top_right",
+  CENTERED: "centered",
+  CENTER_LEFT: "center_left",
+  CENTER_RIGHT: "center_right",
+  BOTTOM_LEFT: "bottom_left",
+  BOTTOM_CENTER: "bottom_center",
+  BOTTOM_RIGHT: "bottom_right",
+};
+
+// const AdView = AppLovinMAXAdView;
 
 const emitter = new NativeEventEmitter(AppLovinMAX);
 const subscriptions = {};
@@ -54,8 +62,10 @@ const removeEventListener = (event) => {
 
 export default {
   ...AppLovinMAX,
+  AdView,
   ConsentDialogState,
   AdViewPosition,
+  AdFormat,
   addEventListener,
   removeEventListener,
   // Use callback to avoid need for attaching listeners at top level on each re-render
@@ -64,13 +74,13 @@ export default {
   },
   // Support for showing ad without placement
   showInterstitial(adUnitId) {
-    AppLovinMAX.showInterstitial(adUnitId, '');
+    AppLovinMAX.showInterstitial(adUnitId, "");
   },
   // Support for showing ad without placement
   showRewardedAd(adUnitId) {
-    AppLovinMAX.showRewardedAd(adUnitId, '');
+    AppLovinMAX.showRewardedAd(adUnitId, "");
   },
-  
+
   /*----------------------*/
   /** AUTO-DECLARED APIs **/
   /*----------------------*/
@@ -96,6 +106,7 @@ export default {
   /*--------------------*/
   /* GENERAL PUBLIC API */
   /*--------------------*/
+  /* isTablet() */
   /* setUserId(userId) */
   /* setMuted(muted) */
   /* isMuted() */
@@ -106,7 +117,7 @@ export default {
   /* EVENT TRACKING */
   /*----------------*/
   /* trackEvent(event, parameters) */
-  
+
   /*---------*/
   /* AD INFO */
   /*---------*/
@@ -143,7 +154,7 @@ export default {
   /* isInterstitialReady(adUnitId) */
   /* showInterstitial(adUnitId, placement) */
   /* setInterstitialExtraParameter(adUnitId, key, value) */
-   
+
   /*----------*/
   /* REWARDED */
   /*----------*/

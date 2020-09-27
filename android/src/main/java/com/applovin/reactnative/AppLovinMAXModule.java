@@ -1,6 +1,7 @@
 package com.applovin.reactnative;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -60,6 +61,8 @@ public class AppLovinMAXModule
     private static final String SDK_TAG = "AppLovinSdk";
     private static final String TAG     = "AppLovinMAXModule";
 
+    public static AppLovinMAXModule instance;
+
     // Parent Fields
     private AppLovinSdk              sdk;
     private boolean                  isPluginInitialized;
@@ -85,9 +88,16 @@ public class AppLovinMAXModule
     private final Map<String, MaxAd> mAdInfoMap     = new HashMap<>();
     private final Object             mAdInfoMapLock = new Object();
 
+    public static AppLovinMAXModule getInstance()
+    {
+        return instance;
+    }
+
     public AppLovinMAXModule(@NonNull final ReactApplicationContext reactContext)
     {
         super( reactContext );
+
+        instance = this;
     }
 
     @Override
@@ -196,6 +206,13 @@ public class AppLovinMAXModule
     }
 
     // General Public API
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public boolean isTablet()
+    {
+        Context contextToUse = ( getCurrentActivity() != null ) ? getCurrentActivity() : getReactApplicationContext();
+        return AppLovinSdkUtils.isTablet( contextToUse );
+    }
 
     @ReactMethod
     public void showMediationDebugger()
@@ -359,49 +376,49 @@ public class AppLovinMAXModule
     @ReactMethod()
     public void createBanner(final String adUnitId, final String bannerPosition)
     {
-        createAdView( adUnitId, getDeviceSpecificAdViewAdFormat(), bannerPosition );
+        createAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), bannerPosition );
     }
 
     @ReactMethod()
     public void setBannerBackgroundColor(final String adUnitId, final String hexColorCode)
     {
-        setAdViewBackgroundColor( adUnitId, getDeviceSpecificAdViewAdFormat(), hexColorCode );
+        setAdViewBackgroundColor( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), hexColorCode );
     }
 
     @ReactMethod()
     public void setBannerPlacement(final String adUnitId, final String placement)
     {
-        setAdViewPlacement( adUnitId, getDeviceSpecificAdViewAdFormat(), placement );
+        setAdViewPlacement( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), placement );
     }
 
     @ReactMethod()
     public void updateBannerPosition(final String adUnitId, final String bannerPosition)
     {
-        updateAdViewPosition( adUnitId, bannerPosition, getDeviceSpecificAdViewAdFormat() );
+        updateAdViewPosition( adUnitId, bannerPosition, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
     @ReactMethod()
     public void setBannerExtraParameter(final String adUnitId, final String key, final String value)
     {
-        setAdViewExtraParameters( adUnitId, getDeviceSpecificAdViewAdFormat(), value, key );
+        setAdViewExtraParameters( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), value, key );
     }
 
     @ReactMethod()
     public void showBanner(final String adUnitId)
     {
-        showAdView( adUnitId, getDeviceSpecificAdViewAdFormat() );
+        showAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
     @ReactMethod()
     public void hideBanner(final String adUnitId)
     {
-        hideAdView( adUnitId, getDeviceSpecificAdViewAdFormat() );
+        hideAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
     @ReactMethod()
     public void destroyBanner(final String adUnitId)
     {
-        destroyAdView( adUnitId, getDeviceSpecificAdViewAdFormat() );
+        destroyAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
     // MRECS
@@ -513,7 +530,13 @@ public class AppLovinMAXModule
         if ( MaxAdFormat.BANNER == adFormat || MaxAdFormat.LEADER == adFormat || MaxAdFormat.MREC == adFormat )
         {
             name = ( MaxAdFormat.MREC == adFormat ) ? "OnMRecAdLoadedEvent" : "OnBannerAdLoadedEvent";
-            positionAdView( ad );
+
+            String adViewPosition = mAdViewPositions.get( ad.getAdUnitId() );
+            if ( !TextUtils.isEmpty( adViewPosition ) )
+            {
+                // Only position ad if not native UI component
+                positionAdView( ad );
+            }
 
             // Do not auto-refresh by default if the ad view is not showing yet (e.g. first load during app launch and publisher does not automatically show banner upon load success)
             // We will resume auto-refresh in {@link #showBanner(String)}.
@@ -975,7 +998,7 @@ public class AppLovinMAXModule
                     }
                     else
                     {
-                        forcedAdFormat = getDeviceSpecificAdViewAdFormat();
+                        forcedAdFormat = getDeviceSpecificBannerAdViewAdFormat();
                     }
 
                     mAdViewAdFormats.put( adUnitId, forcedAdFormat );
@@ -995,13 +1018,13 @@ public class AppLovinMAXModule
         e( Log.getStackTraceString( e ) );
     }
 
-    private void d(final String message)
+    public static void d(final String message)
     {
         final String fullMessage = "[" + TAG + "] " + message;
         Log.d( SDK_TAG, fullMessage );
     }
 
-    private void e(final String message)
+    public static void e(final String message)
     {
         final String fullMessage = "[" + TAG + "] " + message;
         Log.e( SDK_TAG, fullMessage );
@@ -1040,7 +1063,7 @@ public class AppLovinMAXModule
         return retrieveAdView( adUnitId, adFormat, null );
     }
 
-    private MaxAdView retrieveAdView(String adUnitId, MaxAdFormat adFormat, String adViewPosition)
+    public MaxAdView retrieveAdView(String adUnitId, MaxAdFormat adFormat, String adViewPosition)
     {
         MaxAdView result = mAdViews.get( adUnitId );
         if ( result == null && adViewPosition != null )
@@ -1074,8 +1097,8 @@ public class AppLovinMAXModule
 
         // Size the ad
         final AdViewSize adViewSize = getAdViewSize( adFormat );
-        final int width = AppLovinSdkUtils.dpToPx( getCurrentActivity(), adViewSize.mWidthDp );
-        final int height = AppLovinSdkUtils.dpToPx( getCurrentActivity(), adViewSize.mHeightDp );
+        final int width = AppLovinSdkUtils.dpToPx( getCurrentActivity(), adViewSize.widthDp );
+        final int height = AppLovinSdkUtils.dpToPx( getCurrentActivity(), adViewSize.heightDp );
 
         final RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) adView.getLayoutParams();
         params.height = height;
@@ -1090,31 +1113,31 @@ public class AppLovinMAXModule
         params.setMargins( 0, 0, 0, 0 );
         mVerticalAdViewFormats.remove( adUnitId );
 
-        if ( "Centered".equalsIgnoreCase( adViewPosition ) )
+        if ( "centered".equalsIgnoreCase( adViewPosition ) )
         {
             gravity = Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL;
         }
         else
         {
             // Figure out vertical params
-            if ( adViewPosition.contains( "Top" ) )
+            if ( adViewPosition.contains( "top" ) )
             {
                 gravity = Gravity.TOP;
             }
-            else if ( adViewPosition.contains( "Bottom" ) )
+            else if ( adViewPosition.contains( "bottom" ) )
             {
                 gravity = Gravity.BOTTOM;
             }
 
             // Figure out horizontal params
-            if ( adViewPosition.contains( "Center" ) )
+            if ( adViewPosition.contains( "center" ) )
             {
                 gravity |= Gravity.CENTER_HORIZONTAL;
                 params.width = ( MaxAdFormat.MREC == adFormat ) ? width : RelativeLayout.LayoutParams.MATCH_PARENT; // Stretch width if banner
 
                 // Check if the publisher wants the ad view to be vertical and update the position accordingly ('CenterLeft' or 'CenterRight').
-                final boolean containsLeft = adViewPosition.contains( "Left" );
-                final boolean containsRight = adViewPosition.contains( "Right" );
+                final boolean containsLeft = adViewPosition.contains( "left" );
+                final boolean containsRight = adViewPosition.contains( "right" );
                 if ( containsLeft || containsRight )
                 {
                     // First, center the ad view in the view.
@@ -1124,7 +1147,7 @@ public class AppLovinMAXModule
                     // Android by default clips a view bounds if it goes over the size of the screen. We can overcome it by setting negative margins to match our required size.
                     if ( MaxAdFormat.MREC == adFormat )
                     {
-                        gravity |= adViewPosition.contains( "Left" ) ? Gravity.LEFT : Gravity.RIGHT;
+                        gravity |= adViewPosition.contains( "left" ) ? Gravity.LEFT : Gravity.RIGHT;
                     }
                     else
                     {
@@ -1178,11 +1201,11 @@ public class AppLovinMAXModule
             {
                 params.width = width;
 
-                if ( adViewPosition.contains( "Left" ) )
+                if ( adViewPosition.contains( "left" ) )
                 {
                     gravity |= Gravity.LEFT;
                 }
-                else if ( adViewPosition.contains( "Right" ) )
+                else if ( adViewPosition.contains( "right" ) )
                 {
                     gravity |= Gravity.RIGHT;
                 }
@@ -1194,24 +1217,29 @@ public class AppLovinMAXModule
 
     // Utility Methods
 
-    private MaxAdFormat getDeviceSpecificAdViewAdFormat()
+    private MaxAdFormat getDeviceSpecificBannerAdViewAdFormat()
     {
-        return AppLovinSdkUtils.isTablet( getCurrentActivity() ) ? MaxAdFormat.LEADER : MaxAdFormat.BANNER;
+        return getDeviceSpecificBannerAdViewAdFormat( getReactApplicationContext() );
     }
 
-    private static class AdViewSize
+    public static MaxAdFormat getDeviceSpecificBannerAdViewAdFormat(final Context context)
     {
-        private final int mWidthDp;
-        private final int mHeightDp;
+        return AppLovinSdkUtils.isTablet( context ) ? MaxAdFormat.LEADER : MaxAdFormat.BANNER;
+    }
+
+    protected static class AdViewSize
+    {
+        public final int widthDp;
+        public final int heightDp;
 
         private AdViewSize(final int widthDp, final int heightDp)
         {
-            mWidthDp = widthDp;
-            mHeightDp = heightDp;
+            this.widthDp = widthDp;
+            this.heightDp = heightDp;
         }
     }
 
-    private AdViewSize getAdViewSize(MaxAdFormat format)
+    public static AdViewSize getAdViewSize(final MaxAdFormat format)
     {
         if ( MaxAdFormat.LEADER == format )
         {
