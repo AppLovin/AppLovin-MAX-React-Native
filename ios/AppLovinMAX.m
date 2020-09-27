@@ -33,7 +33,7 @@
 // Parent Fields
 @property (nonatomic,  weak) ALSdk *sdk;
 @property (nonatomic, assign, getter=isPluginInitialized) BOOL pluginInitialized;
-@property (nonatomic, assign, getter=isSdkInitialized) BOOL sdkInitialized;
+@property (nonatomic, assign, getter=isSDKInitialized) BOOL sdkInitialized;
 @property (nonatomic, strong) ALSdkConfiguration *sdkConfiguration;
 
 // Store these values if pub attempts to set it before initializing
@@ -112,7 +112,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isInitialized)
 {
-    return @([self isPluginInitialized] && [self isSdkInitialized]);
+    return @([self isPluginInitialized] && [self isSDKInitialized]);
 }
 
 RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCTResponseSenderBlock)callback)
@@ -171,7 +171,7 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         }
         
         [[NSNotificationCenter defaultCenter] postNotificationName: AppLovinMAXNotificationNameSDKInitialized
-                                                            object: self.sdk];
+                                                            object: sdkKey];
         
         callback(@[@{@"consentDialogState" : @(configuration.consentDialogState)}]);
     }];

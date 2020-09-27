@@ -33,6 +33,11 @@
 @implementation AppLovinMAXAdViewManager
 RCT_EXPORT_MODULE(AppLovinMAXAdView)
 
++ (BOOL)requiresMainQueueSetup
+{
+    return NO;
+}
+
 - (instancetype)init
 {
     self = [super init];
@@ -58,7 +63,7 @@ RCT_CUSTOM_VIEW_PROPERTY(adUnitId, NSString, MAAdView)
 {
     self.adUnitIdentifier = [RCTConvert NSString: json];
     
-    [self attachAdViewIfNeededForAdUnitIdentifier: self.adUnitIdentifier format: self.adFormat sdk: self.sdk];
+    [self attachAdViewIfNeededForAdUnitIdentifier: self.adUnitIdentifier adFormat: self.adFormat sdk: self.sdk];
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(adFormat, NSString, MAAdView)
@@ -74,24 +79,25 @@ RCT_CUSTOM_VIEW_PROPERTY(adFormat, NSString, MAAdView)
         self.adFormat = MAAdFormat.mrec;
     }
     
-    [self attachAdViewIfNeededForAdUnitIdentifier: self.adUnitIdentifier format: self.adFormat sdk: self.sdk];
+    [self attachAdViewIfNeededForAdUnitIdentifier: self.adUnitIdentifier adFormat: self.adFormat sdk: self.sdk];
 }
 
 - (void)handleSDKInitialized:(NSNotification *)notification
 {
     [[NSNotificationCenter defaultCenter] removeObserver: self];
     
-    self.sdk = notification.object;
+    NSString *sdkKey = notification.object;
+    self.sdk = [ALSdk sharedWithKey: sdkKey];
     
-    [self attachAdViewIfNeededForAdUnitIdentifier: self.adUnitIdentifier format: self.adFormat sdk: self.sdk];
+    [self attachAdViewIfNeededForAdUnitIdentifier: self.adUnitIdentifier adFormat: self.adFormat sdk: self.sdk];
 }
 
-- (void)attachAdViewIfNeededForAdUnitIdentifier:(NSString *)adUnitIdentifier format:(MAAdFormat *)format sdk:(ALSdk *)sdk
+- (void)attachAdViewIfNeededForAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat sdk:(ALSdk *)sdk
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         
-        // If both ad unit id and format has been set - create and attach AdView
-        if ( [adUnitIdentifier al_isValidString] && format && sdk )
+        // If ad unit id, format, and sdk has been set - create and attach AdView
+        if ( [adUnitIdentifier al_isValidString] && adFormat && sdk )
         {
             // Check if there's a previously-attached AdView
             if ( self.adView )
@@ -102,7 +108,7 @@ RCT_CUSTOM_VIEW_PROPERTY(adFormat, NSString, MAAdView)
                 self.adView = nil;
             }
             
-            self.adView = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitIdentifier adFormat: format sdk: sdk];
+            self.adView = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitIdentifier adFormat: adFormat sdk: sdk];
             self.adView.translatesAutoresizingMaskIntoConstraints = NO;
             self.adView.delegate = (id<MAAdDelegate, MAAdViewAdDelegate>) AppLovinMAX.shared;
             
@@ -110,7 +116,7 @@ RCT_CUSTOM_VIEW_PROPERTY(adFormat, NSString, MAAdView)
             
             [self.containerView addSubview: self.adView];
             
-            CGSize adViewSize = [AppLovinMAX adViewSizeForAdFormat: format];
+            CGSize adViewSize = [AppLovinMAX adViewSizeForAdFormat: adFormat];
             [NSLayoutConstraint activateConstraints: @[[self.adView.widthAnchor constraintEqualToConstant: adViewSize.width],
                                                        [self.adView.heightAnchor constraintEqualToConstant: adViewSize.height],
                                                        [self.adView.centerXAnchor constraintEqualToAnchor: self.containerView.centerXAnchor],
