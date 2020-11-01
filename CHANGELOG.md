@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 1.1.1
     * Fix `AppLovinMAX.removeEventListener()` crash.
 ## 1.1.0
     * Add support for native banner / MREC UI components via `<AppLovinMAX.AdView adUnitId={...} adFormat={...} />`.
