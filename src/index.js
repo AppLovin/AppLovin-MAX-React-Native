@@ -53,11 +53,7 @@ const addEventListener = (event, handler) => {
 };
 
 const removeEventListener = (event) => {
-  let subscription = subscriptions[event];
-  if (subscription == null) return;
-
-  subscriptions.delete(event);
-  delete subscription[event];
+  delete subscriptions[event];
 };
 
 export default {
