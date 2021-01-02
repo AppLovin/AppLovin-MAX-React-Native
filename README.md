@@ -2,18 +2,8 @@
 
 AppLovin MAX React Native Module for Android and iOS.
 
-## Installation
-
-```sh
-npm install react-native-applovin-max
-```
-
-## Usage
-
-```js
-import AppLovinMAX from "react-native-applovin-max";
-...
-```
+## Documentation
+Check out our integration docs [here](https://dash.applovin.com/documentation/mediation/react-native/getting-started/integration).
 
 ## License
 MIT
