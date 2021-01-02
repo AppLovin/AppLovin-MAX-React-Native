@@ -111,3 +111,5 @@ package-lock.json
 
 .circleci/config.yml
 .vscode/settings.json
+.gitattributes
+.editorconfig
