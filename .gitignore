@@ -108,3 +108,6 @@ buck-out/
 *.keystore
 
 package-lock.json
+
+.circleci/config.yml
+.vscode/settings.json
