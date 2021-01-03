@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 1.1.2
     * Fix `ConsentDialogState.UNKNOWN` being returned for `getConsentDialogState()` on iOS.
 
 ## 1.1.1
