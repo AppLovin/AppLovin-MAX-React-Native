@@ -117,7 +117,11 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isInitialized)
 RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCTResponseSenderBlock)callback)
 {
     // Guard against running init logic multiple times
-    if ( self.pluginInitialized ) return;
+    if ( [self isPluginInitialized] )
+    {
+        callback(@[@{@"consentDialogState" : @(self.sdk.configuration.consentDialogState)}]);
+        return;
+    }
     
     self.pluginInitialized = YES;
     
@@ -184,7 +188,7 @@ RCT_EXPORT_METHOD(showMediationDebugger)
 {
     if ( !_sdk )
     {
-        NSLog(@"[%@] Failed to show mediation debugger - please ensure the AppLovin MAX Unity Plugin has been initialized by calling 'AppLovinMAX.initialize(...);'!", TAG);
+        [self log: @"Failed to show mediation debugger - please ensure the AppLovin MAX Unity Plugin has been initialized by calling 'AppLovinMAX.initialize(...);'!"];
         return;
     }
     
@@ -268,7 +272,6 @@ RCT_EXPORT_METHOD(setVerboseLogging:(BOOL)enabled)
     }
 }
 
-// TODO: Test this
 RCT_EXPORT_METHOD(setTestDeviceAdvertisingIds:(NSArray<NSString *> *)testDeviceAdvertisingIds)
 {
     if ( [self isPluginInitialized] )
@@ -309,7 +312,6 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getAdInfo:(NSString *)adUnitIdentifier)
 
 #pragma mark - Banners
 
-// TODO: Bridge banners as a native React Native view
 RCT_EXPORT_METHOD(createBanner:(NSString *)adUnitIdentifier :(NSString *)bannerPosition)
 {
     [self createAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT atPosition: bannerPosition];
@@ -352,7 +354,6 @@ RCT_EXPORT_METHOD(destroyBanner:(NSString *)adUnitIdentifier)
 
 #pragma mark - MRECs
 
-// TODO: Bridge banners as a native React Native view
 RCT_EXPORT_METHOD(createMRec:(NSString *)adUnitIdentifier :(NSString *)mrecPosition)
 {
     [self createAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec atPosition: mrecPosition];
