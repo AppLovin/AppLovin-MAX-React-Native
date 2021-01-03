@@ -24,7 +24,7 @@
 @end
 
 @interface NSString (ALUtils)
-@property (assign, readonly, getter=al_isValidString) BOOL al_validString;
+@property (nonatomic, assign, readonly, getter=al_isValidString) BOOL al_validString;
 @end
 
 @interface AppLovinMAX()<MAAdDelegate, MAAdViewAdDelegate, MARewardedAdDelegate>
@@ -197,7 +197,7 @@ RCT_EXPORT_METHOD(showMediationDebugger)
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getConsentDialogState)
 {
-    if ( [self isInitialized] ) return @(ALConsentDialogStateUnknown);
+    if ( ![self isInitialized] ) return @(ALConsentDialogStateUnknown);
     
     return @(self.sdkConfiguration.consentDialogState);
 }
@@ -605,19 +605,6 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     [self sendReactNativeEventWithName: name body: @{@"adUnitId" : ad.adUnitIdentifier}];
 }
 
-- (void)didCollapseAd:(MAAd *)ad
-{
-    MAAdFormat *adFormat = ad.format;
-    if ( adFormat != MAAdFormat.banner && adFormat != MAAdFormat.leader && adFormat != MAAdFormat.mrec )
-    {
-        [self logInvalidAdFormat: adFormat];
-        return;
-    }
-    
-    [self sendReactNativeEventWithName: ( MAAdFormat.mrec == adFormat ) ? @"OnMRecAdCollapsedEvent" : @"OnBannerAdCollapsedEvent"
-                                  body: @{@"adUnitId" : ad.adUnitIdentifier}];
-}
-
 - (void)didExpandAd:(MAAd *)ad
 {
     MAAdFormat *adFormat = ad.format;
@@ -629,6 +616,19 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     
     [self sendReactNativeEventWithName: ( MAAdFormat.mrec == adFormat ) ? @"OnMRecAdExpandedEvent" : @"OnBannerAdExpandedEvent"
                                   body: @{@"adUnitId": ad.adUnitIdentifier}];
+}
+
+- (void)didCollapseAd:(MAAd *)ad
+{
+    MAAdFormat *adFormat = ad.format;
+    if ( adFormat != MAAdFormat.banner && adFormat != MAAdFormat.leader && adFormat != MAAdFormat.mrec )
+    {
+        [self logInvalidAdFormat: adFormat];
+        return;
+    }
+    
+    [self sendReactNativeEventWithName: ( MAAdFormat.mrec == adFormat ) ? @"OnMRecAdCollapsedEvent" : @"OnBannerAdCollapsedEvent"
+                                  body: @{@"adUnitId" : ad.adUnitIdentifier}];
 }
 
 - (void)didCompleteRewardedVideoForAd:(MAAd *)ad

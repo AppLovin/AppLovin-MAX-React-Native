@@ -333,8 +333,6 @@ public class AppLovinMAXModule
     @ReactMethod()
     public void trackEvent(final String event, final ReadableMap parameters)
     {
-        if ( sdk == null ) return;
-
         // Convert Map<String, Object> type of `parameters.toHashMap()` to Map<String, String>
         Map<String, String> parametersToUse = new HashMap<>();
         if ( parameters != null )
@@ -709,21 +707,6 @@ public class AppLovinMAXModule
     }
 
     @Override
-    public void onAdCollapsed(final MaxAd ad)
-    {
-        final MaxAdFormat adFormat = ad.getFormat();
-        if ( adFormat != MaxAdFormat.BANNER && adFormat != MaxAdFormat.LEADER && adFormat != MaxAdFormat.MREC )
-        {
-            logInvalidAdFormat( adFormat );
-            return;
-        }
-
-        WritableMap params = Arguments.createMap();
-        params.putString( "adUnitId", ad.getAdUnitId() );
-        sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? "OnMRecAdCollapsedEvent" : "OnBannerAdCollapsedEvent", params );
-    }
-
-    @Override
     public void onAdExpanded(final MaxAd ad)
     {
         final MaxAdFormat adFormat = ad.getFormat();
@@ -736,6 +719,21 @@ public class AppLovinMAXModule
         WritableMap params = Arguments.createMap();
         params.putString( "adUnitId", ad.getAdUnitId() );
         sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? "OnMrecAdCollapsedEvent" : "OnBannerAdExpandedEvent", params );
+    }
+
+    @Override
+    public void onAdCollapsed(final MaxAd ad)
+    {
+        final MaxAdFormat adFormat = ad.getFormat();
+        if ( adFormat != MaxAdFormat.BANNER && adFormat != MaxAdFormat.LEADER && adFormat != MaxAdFormat.MREC )
+        {
+            logInvalidAdFormat( adFormat );
+            return;
+        }
+
+        WritableMap params = Arguments.createMap();
+        params.putString( "adUnitId", ad.getAdUnitId() );
+        sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? "OnMRecAdCollapsedEvent" : "OnBannerAdCollapsedEvent", params );
     }
 
     @Override
