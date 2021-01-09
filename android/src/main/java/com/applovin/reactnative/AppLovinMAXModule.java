@@ -154,6 +154,28 @@ public class AppLovinMAXModule
         sdk = AppLovinSdk.getInstance( sdkKey, new AppLovinSdkSettings( getReactApplicationContext() ), currentActivity );
         sdk.setPluginVersion( "React-Native-" + pluginVersion );
         sdk.setMediationProvider( AppLovinMediationProvider.MAX );
+
+        // Set user id if needed
+        if ( !TextUtils.isEmpty( userIdToSet ) )
+        {
+            sdk.setUserIdentifier( userIdToSet );
+            userIdToSet = null;
+        }
+
+        // Set test device ids if needed
+        if ( testDeviceAdvertisingIdsToSet != null )
+        {
+            sdk.getSettings().setTestDeviceAdvertisingIds( testDeviceAdvertisingIdsToSet );
+            testDeviceAdvertisingIdsToSet = null;
+        }
+
+        // Set verbose logging state if needed
+        if ( verboseLoggingToSet != null )
+        {
+            sdk.getSettings().setVerboseLogging( verboseLoggingToSet );
+            verboseLoggingToSet = null;
+        }
+
         sdk.initializeSdk( new AppLovinSdk.SdkInitializationListener()
         {
             @Override
@@ -163,27 +185,6 @@ public class AppLovinMAXModule
 
                 sdkConfiguration = configuration;
                 isSdkInitialized = true;
-
-                // Set user id if needed
-                if ( !TextUtils.isEmpty( userIdToSet ) )
-                {
-                    sdk.setUserIdentifier( userIdToSet );
-                    userIdToSet = null;
-                }
-
-                // Set test device ids if needed
-                if ( testDeviceAdvertisingIdsToSet != null )
-                {
-                    sdk.getSettings().setTestDeviceAdvertisingIds( testDeviceAdvertisingIdsToSet );
-                    testDeviceAdvertisingIdsToSet = null;
-                }
-
-                // Set verbose logging state if needed
-                if ( verboseLoggingToSet != null )
-                {
-                    sdk.getSettings().setVerboseLogging( verboseLoggingToSet );
-                    verboseLoggingToSet = null;
-                }
 
                 // Enable orientation change listener, so that the position can be updated for vertical banners.
                 new OrientationEventListener( getCurrentActivity() )
@@ -273,7 +274,7 @@ public class AppLovinMAXModule
     @ReactMethod()
     public void setUserId(String userId)
     {
-        if ( sdk != null )
+        if ( isPluginInitialized )
         {
             sdk.setUserIdentifier( userId );
             userIdToSet = null;
@@ -287,7 +288,7 @@ public class AppLovinMAXModule
     @ReactMethod()
     public void setMuted(final boolean muted)
     {
-        if ( !isInitialized() ) return;
+        if ( !isPluginInitialized ) return;
 
         sdk.getSettings().setMuted( muted );
     }
@@ -295,7 +296,7 @@ public class AppLovinMAXModule
     @ReactMethod(isBlockingSynchronousMethod = true)
     public boolean isMuted()
     {
-        if ( !isInitialized() ) return false;
+        if ( !isPluginInitialized ) return false;
 
         return sdk.getSettings().isMuted();
     }
@@ -303,7 +304,7 @@ public class AppLovinMAXModule
     @ReactMethod()
     public void setVerboseLogging(final boolean verboseLoggingEnabled)
     {
-        if ( sdk != null )
+        if ( isPluginInitialized )
         {
             sdk.getSettings().setVerboseLogging( verboseLoggingEnabled );
             verboseLoggingToSet = null;
@@ -317,7 +318,7 @@ public class AppLovinMAXModule
     @ReactMethod()
     public void setTestDeviceAdvertisingIds(final String[] advertisingIds)
     {
-        if ( sdk != null )
+        if ( isPluginInitialized )
         {
             sdk.getSettings().setTestDeviceAdvertisingIds( Arrays.asList( advertisingIds ) );
             testDeviceAdvertisingIdsToSet = null;

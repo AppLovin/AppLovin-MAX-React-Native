@@ -145,33 +145,34 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     self.sdk = [ALSdk sharedWithKey: sdkKey];
     [self.sdk setPluginVersion: [@"React-Native-" stringByAppendingString: pluginVersion]];
     [self.sdk setMediationProvider: ALMediationProviderMAX];
+    
+    // Set user id if needed
+    if ( [self.userIdentifierToSet al_isValidString] )
+    {
+        self.sdk.userIdentifier = self.userIdentifierToSet;
+        self.userIdentifierToSet = nil;
+    }
+    
+    // Set test device ids if needed
+    if ( self.testDeviceIdentifiersToSet )
+    {
+        self.sdk.settings.testDeviceAdvertisingIdentifiers = self.testDeviceIdentifiersToSet;
+        self.testDeviceIdentifiersToSet = nil;
+    }
+    
+    // Set verbose logging state if needed
+    if ( self.verboseLoggingToSet )
+    {
+        self.sdk.settings.isVerboseLogging = self.verboseLoggingToSet.boolValue;
+        self.verboseLoggingToSet = nil;
+    }
+    
     [self.sdk initializeSdkWithCompletionHandler:^(ALSdkConfiguration *configuration)
      {
         [self log: @"SDK initialized"];
         
         self.sdkConfiguration = configuration;
         self.sdkInitialized = YES;
-        
-        // Set user id if needed
-        if ( [self.userIdentifierToSet al_isValidString] )
-        {
-            self.sdk.userIdentifier = self.userIdentifierToSet;
-            self.userIdentifierToSet = nil;
-        }
-        
-        // Set test device ids if needed
-        if ( self.testDeviceIdentifiersToSet )
-        {
-            self.sdk.settings.testDeviceAdvertisingIdentifiers = self.testDeviceIdentifiersToSet;
-            self.testDeviceIdentifiersToSet = nil;
-        }
-        
-        // Set verbose logging state if needed
-        if ( self.verboseLoggingToSet )
-        {
-            self.sdk.settings.isVerboseLogging = self.verboseLoggingToSet.boolValue;
-            self.verboseLoggingToSet = nil;
-        }
         
         callback(@[@{@"consentDialogState" : @(configuration.consentDialogState)}]);
     }];
