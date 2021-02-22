@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 1.1.3
     * Ensure values such as user id is set before initializing SDK.
     * Add workaround for `getCurrentActivity()` returning `null`.
 ## 1.1.2
