@@ -40,15 +40,17 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThreadDelayed;
 import static com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
 /**
@@ -61,7 +63,8 @@ public class AppLovinMAXModule
     private static final String SDK_TAG = "AppLovinSdk";
     private static final String TAG     = "AppLovinMAXModule";
 
-    public static AppLovinMAXModule instance;
+    public static  AppLovinMAXModule       instance;
+    private static WeakReference<Activity> currentActivityRef = new WeakReference<Activity>( null );
 
     // Parent Fields
     private AppLovinSdk              sdk;
@@ -93,7 +96,7 @@ public class AppLovinMAXModule
         return instance;
     }
 
-    public AppLovinMAXModule(@NonNull final ReactApplicationContext reactContext)
+    public AppLovinMAXModule(final ReactApplicationContext reactContext)
     {
         super( reactContext );
 
@@ -106,6 +109,20 @@ public class AppLovinMAXModule
         return "AppLovinMAX";
     }
 
+    @Nullable
+    private Activity maybeGetCurrentActivity()
+    {
+        // React Native has a bug where `getCurrentActivity()` returns null: https://github.com/facebook/react-native/issues/18345
+        // To alleviate the issue - we will store a weak reference
+        Activity currentActivity = getCurrentActivity();
+        if ( currentActivity != null )
+        {
+            currentActivityRef = new WeakReference<>( currentActivity );
+        }
+
+        return currentActivityRef.get();
+    }
+
     @ReactMethod(isBlockingSynchronousMethod = true)
     public boolean isInitialized()
     {
@@ -116,9 +133,35 @@ public class AppLovinMAXModule
     public void initialize(final String pluginVersion, final String sdkKey, final Callback callback)
     {
         // Check if Activity is available
-        Activity currentActivity = getCurrentActivity();
-        if ( currentActivity == null ) throw new IllegalStateException( "No Activity found" );
+        Activity currentActivity = maybeGetCurrentActivity();
+        if ( currentActivity != null )
+        {
+            performInitialization( pluginVersion, sdkKey, currentActivity, callback );
+        }
+        else
+        {
+            w( "No current Activity found! Delaying initialization..." );
 
+            runOnUiThreadDelayed( new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    Context contextToUse = maybeGetCurrentActivity();
+                    if ( contextToUse == null )
+                    {
+                        w( "Still unable to find current Activity - initializing SDK with application context" );
+                        contextToUse = getReactApplicationContext();
+                    }
+
+                    performInitialization( pluginVersion, sdkKey, contextToUse, callback );
+                }
+            }, TimeUnit.SECONDS.toMillis( 3 ) );
+        }
+    }
+
+    private void performInitialization(final String pluginVersion, final String sdkKey, final Context contextToUse, final Callback callback)
+    {
         // Guard against running init logic multiple times
         if ( isPluginInitialized ) return;
 
@@ -151,7 +194,7 @@ public class AppLovinMAXModule
         }
 
         // Initialize SDK
-        sdk = AppLovinSdk.getInstance( sdkKey, new AppLovinSdkSettings( getReactApplicationContext() ), currentActivity );
+        sdk = AppLovinSdk.getInstance( sdkKey, new AppLovinSdkSettings( getReactApplicationContext() ), contextToUse );
         sdk.setPluginVersion( "React-Native-" + pluginVersion );
         sdk.setMediationProvider( AppLovinMediationProvider.MAX );
 
@@ -187,7 +230,7 @@ public class AppLovinMAXModule
                 isSdkInitialized = true;
 
                 // Enable orientation change listener, so that the position can be updated for vertical banners.
-                new OrientationEventListener( getCurrentActivity() )
+                new OrientationEventListener( contextToUse )
                 {
                     @Override
                     public void onOrientationChanged(final int orientation)
@@ -211,7 +254,7 @@ public class AppLovinMAXModule
     @ReactMethod(isBlockingSynchronousMethod = true)
     public boolean isTablet()
     {
-        Context contextToUse = ( getCurrentActivity() != null ) ? getCurrentActivity() : getReactApplicationContext();
+        Context contextToUse = ( maybeGetCurrentActivity() != null ) ? maybeGetCurrentActivity() : getReactApplicationContext();
         return AppLovinSdkUtils.isTablet( contextToUse );
     }
 
@@ -238,37 +281,37 @@ public class AppLovinMAXModule
     @ReactMethod()
     public void setHasUserConsent(boolean hasUserConsent)
     {
-        AppLovinPrivacySettings.setHasUserConsent( hasUserConsent, getCurrentActivity() );
+        AppLovinPrivacySettings.setHasUserConsent( hasUserConsent, maybeGetCurrentActivity() );
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     public boolean hasUserConsent()
     {
-        return AppLovinPrivacySettings.hasUserConsent( getCurrentActivity() );
+        return AppLovinPrivacySettings.hasUserConsent( maybeGetCurrentActivity() );
     }
 
     @ReactMethod()
     public void setIsAgeRestrictedUser(boolean isAgeRestrictedUser)
     {
-        AppLovinPrivacySettings.setIsAgeRestrictedUser( isAgeRestrictedUser, getCurrentActivity() );
+        AppLovinPrivacySettings.setIsAgeRestrictedUser( isAgeRestrictedUser, maybeGetCurrentActivity() );
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     public boolean isAgeRestrictedUser()
     {
-        return AppLovinPrivacySettings.isAgeRestrictedUser( getCurrentActivity() );
+        return AppLovinPrivacySettings.isAgeRestrictedUser( maybeGetCurrentActivity() );
     }
 
     @ReactMethod()
     public void setDoNotSell(final boolean doNotSell)
     {
-        AppLovinPrivacySettings.setDoNotSell( doNotSell, getCurrentActivity() );
+        AppLovinPrivacySettings.setDoNotSell( doNotSell, maybeGetCurrentActivity() );
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     public boolean isDoNotSell()
     {
-        return AppLovinPrivacySettings.isDoNotSell( getCurrentActivity() );
+        return AppLovinPrivacySettings.isDoNotSell( maybeGetCurrentActivity() );
     }
 
     @ReactMethod()
@@ -422,7 +465,6 @@ public class AppLovinMAXModule
 
     // MRECS
 
-    // TODO: Bridge banners as a native React Native view
     @ReactMethod()
     public void createMRec(final String adUnitId, final String mrecPosition)
     {
@@ -793,7 +835,7 @@ public class AppLovinMAXModule
 
                 if ( adView.getParent() == null )
                 {
-                    final Activity currentActivity = getCurrentActivity();
+                    final Activity currentActivity = maybeGetCurrentActivity();
                     final RelativeLayout relativeLayout = new RelativeLayout( currentActivity );
                     currentActivity.addContentView( relativeLayout, new LinearLayout.LayoutParams( LinearLayout.LayoutParams.MATCH_PARENT,
                                                                                                    LinearLayout.LayoutParams.MATCH_PARENT ) );
@@ -1023,6 +1065,12 @@ public class AppLovinMAXModule
         Log.d( SDK_TAG, fullMessage );
     }
 
+    public static void w(final String message)
+    {
+        final String fullMessage = "[" + TAG + "] " + message;
+        Log.w( SDK_TAG, fullMessage );
+    }
+
     public static void e(final String message)
     {
         final String fullMessage = "[" + TAG + "] " + message;
@@ -1034,7 +1082,7 @@ public class AppLovinMAXModule
         MaxInterstitialAd result = mInterstitials.get( adUnitId );
         if ( result == null )
         {
-            result = new MaxInterstitialAd( adUnitId, sdk, getCurrentActivity() );
+            result = new MaxInterstitialAd( adUnitId, sdk, maybeGetCurrentActivity() );
             result.setListener( this );
 
             mInterstitials.put( adUnitId, result );
@@ -1048,7 +1096,7 @@ public class AppLovinMAXModule
         MaxRewardedAd result = mRewardedAds.get( adUnitId );
         if ( result == null )
         {
-            result = MaxRewardedAd.getInstance( adUnitId, sdk, getCurrentActivity() );
+            result = MaxRewardedAd.getInstance( adUnitId, sdk, maybeGetCurrentActivity() );
             result.setListener( this );
 
             mRewardedAds.put( adUnitId, result );
@@ -1067,7 +1115,7 @@ public class AppLovinMAXModule
         MaxAdView result = mAdViews.get( adUnitId );
         if ( result == null && adViewPosition != null )
         {
-            result = new MaxAdView( adUnitId, adFormat, sdk, getCurrentActivity() );
+            result = new MaxAdView( adUnitId, adFormat, sdk, maybeGetCurrentActivity() );
             result.setListener( this );
 
             mAdViews.put( adUnitId, result );
@@ -1096,8 +1144,8 @@ public class AppLovinMAXModule
 
         // Size the ad
         final AdViewSize adViewSize = getAdViewSize( adFormat );
-        final int width = AppLovinSdkUtils.dpToPx( getCurrentActivity(), adViewSize.widthDp );
-        final int height = AppLovinSdkUtils.dpToPx( getCurrentActivity(), adViewSize.heightDp );
+        final int width = AppLovinSdkUtils.dpToPx( maybeGetCurrentActivity(), adViewSize.widthDp );
+        final int height = AppLovinSdkUtils.dpToPx( maybeGetCurrentActivity(), adViewSize.heightDp );
 
         final RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) adView.getLayoutParams();
         params.height = height;
