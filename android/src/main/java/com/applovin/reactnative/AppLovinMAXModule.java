@@ -160,7 +160,7 @@ public class AppLovinMAXModule
         }
     }
 
-    private void performInitialization(final String pluginVersion, final String sdkKey, final Context contextToUse, final Callback callback)
+    private void performInitialization(final String pluginVersion, final String sdkKey, final Context context, final Callback callback)
     {
         // Guard against running init logic multiple times
         if ( isPluginInitialized ) return;
@@ -194,7 +194,7 @@ public class AppLovinMAXModule
         }
 
         // Initialize SDK
-        sdk = AppLovinSdk.getInstance( sdkKey, new AppLovinSdkSettings( getReactApplicationContext() ), contextToUse );
+        sdk = AppLovinSdk.getInstance( sdkKey, new AppLovinSdkSettings( getReactApplicationContext() ), context );
         sdk.setPluginVersion( "React-Native-" + pluginVersion );
         sdk.setMediationProvider( AppLovinMediationProvider.MAX );
 
@@ -230,7 +230,7 @@ public class AppLovinMAXModule
                 isSdkInitialized = true;
 
                 // Enable orientation change listener, so that the position can be updated for vertical banners.
-                new OrientationEventListener( contextToUse )
+                new OrientationEventListener( context )
                 {
                     @Override
                     public void onOrientationChanged(final int orientation)
