@@ -1,5 +1,8 @@
 ## Versions
 
+## x.x.x
+    * Fix Android banners not working for fast refreshes.
+    * FIx iOS module's podspec pointing to invalid tag.
 ## 1.1.3
     * Ensure values such as user id is set before initializing SDK.
     * Add workaround for `getCurrentActivity()` returning `null`.

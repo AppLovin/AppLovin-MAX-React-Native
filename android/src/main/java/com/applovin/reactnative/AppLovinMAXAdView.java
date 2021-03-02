@@ -5,6 +5,7 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.ads.MaxAdView;
@@ -64,6 +65,13 @@ class AppLovinMAXAdView
                 {
                     adView = AppLovinMAXModule.getInstance().retrieveAdView( adUnitId, adFormat, "" );
                     adView.loadAd();
+
+                    // Handle fast refresh cases of re-adding adView
+                    ViewParent closeButtonParent = adView.getParent();
+                    if ( closeButtonParent instanceof ViewGroup )
+                    {
+                        ( (ViewGroup) closeButtonParent ).removeView( adView );
+                    }
 
                     addView( adView );
 
