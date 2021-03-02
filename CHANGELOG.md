@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 1.1.4
     * Fix Android banners not working for fast refreshes.
     * FIx iOS module's podspec pointing to invalid tag.
 ## 1.1.3
