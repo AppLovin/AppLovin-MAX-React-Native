@@ -49,11 +49,19 @@ const subscriptions = {};
 
 const addEventListener = (event, handler) => {
   let subscription = emitter.addListener(event, handler);
+  let currentSubscription = subscriptions[event];
+  if (currentSubscription) {
+    currentSubscription.remove();
+  }
   subscriptions[event] = subscription;
 };
 
 const removeEventListener = (event) => {
-  delete subscriptions[event];
+  let currentSubscription = subscriptions[event];
+  if (currentSubscription) {
+    currentSubscription.remove();
+    delete subscriptions[event];
+  }
 };
 
 export default {

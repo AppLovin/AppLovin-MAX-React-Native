@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+    * Fix `removeEventListener()` not working by explicitly calling `remove()`.
 ## 1.1.4
     * Fix Android banners not working for fast refreshes.
     * FIx iOS module's podspec pointing to invalid tag.
