@@ -67,10 +67,10 @@ class AppLovinMAXAdView
                     adView.loadAd();
 
                     // Handle fast refresh cases of re-adding adView
-                    ViewParent closeButtonParent = adView.getParent();
-                    if ( closeButtonParent instanceof ViewGroup )
+                    ViewParent parent = adView.getParent();
+                    if ( parent instanceof ViewGroup )
                     {
-                        ( (ViewGroup) closeButtonParent ).removeView( adView );
+                        ( (ViewGroup) parent ).removeView( adView );
                     }
 
                     addView( adView );
@@ -80,7 +80,7 @@ class AppLovinMAXAdView
                     int widthPx = AppLovinSdkUtils.dpToPx( reactContext, adViewSize.widthDp );
                     int heightPx = AppLovinSdkUtils.dpToPx( reactContext, adViewSize.heightDp );
 
-                    ViewGroup.LayoutParams layoutParams = (ViewGroup.LayoutParams) adView.getLayoutParams();
+                    ViewGroup.LayoutParams layoutParams = adView.getLayoutParams();
                     layoutParams.width = widthPx;
                     layoutParams.height = heightPx;
                     adView.setGravity( Gravity.CENTER );
