@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+    * Attempt fix for `loadInterstitial()` or `loadRewardedAd()` due to current Activity being null.
 ## 1.1.5
     * Fix `removeEventListener()` not working by explicitly calling `remove()`.
 ## 1.1.4

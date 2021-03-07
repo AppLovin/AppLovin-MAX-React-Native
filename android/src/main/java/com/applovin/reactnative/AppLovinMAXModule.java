@@ -21,6 +21,7 @@ import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxAdListener;
 import com.applovin.mediation.MaxAdViewAdListener;
+import com.applovin.mediation.MaxErrorCodes;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.MaxRewardedAdListener;
 import com.applovin.mediation.ads.MaxAdView;
@@ -40,7 +41,6 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -63,8 +63,8 @@ public class AppLovinMAXModule
     private static final String SDK_TAG = "AppLovinSdk";
     private static final String TAG     = "AppLovinMAXModule";
 
-    public static  AppLovinMAXModule       instance;
-    private static WeakReference<Activity> currentActivityRef = new WeakReference<Activity>( null );
+    public static  AppLovinMAXModule instance;
+    private static Activity          sCurrentActivity;
 
     // Parent Fields
     private AppLovinSdk              sdk;
@@ -101,6 +101,7 @@ public class AppLovinMAXModule
         super( reactContext );
 
         instance = this;
+        sCurrentActivity = reactContext.getCurrentActivity();
     }
 
     @Override
@@ -113,14 +114,13 @@ public class AppLovinMAXModule
     private Activity maybeGetCurrentActivity()
     {
         // React Native has a bug where `getCurrentActivity()` returns null: https://github.com/facebook/react-native/issues/18345
-        // To alleviate the issue - we will store a weak reference
-        Activity currentActivity = getCurrentActivity();
-        if ( currentActivity != null )
+        // To alleviate the issue - we will store as a static reference (WeakReference unfortunately did not suffice)
+        if ( getReactApplicationContext().hasCurrentActivity() )
         {
-            currentActivityRef = new WeakReference<>( currentActivity );
+            sCurrentActivity = getReactApplicationContext().getCurrentActivity();
         }
 
-        return currentActivityRef.get();
+        return sCurrentActivity;
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
@@ -507,6 +507,12 @@ public class AppLovinMAXModule
     public void loadInterstitial(final String adUnitId)
     {
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
+        if ( interstitial == null )
+        {
+            sendReactNativeEventForAdLoadFailed( "OnInterstitialLoadFailedEvent", adUnitId, MaxErrorCodes.UNSPECIFIED_ERROR );
+            return;
+        }
+
         interstitial.loadAd();
     }
 
@@ -537,6 +543,12 @@ public class AppLovinMAXModule
     public void loadRewardedAd(final String adUnitId)
     {
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
+        if ( rewardedAd == null )
+        {
+            sendReactNativeEventForAdLoadFailed( "OnRewardedAdLoadFailedEvent", adUnitId, MaxErrorCodes.UNSPECIFIED_ERROR );
+            return;
+        }
+
         rewardedAd.loadAd();
     }
 
@@ -612,7 +624,7 @@ public class AppLovinMAXModule
     }
 
     @Override
-    public void onAdLoadFailed(String adUnitId, final int errorCode)
+    public void onAdLoadFailed(final String adUnitId, final int errorCode)
     {
         if ( TextUtils.isEmpty( adUnitId ) )
         {
@@ -644,6 +656,11 @@ public class AppLovinMAXModule
             mAdInfoMap.remove( adUnitId );
         }
 
+        sendReactNativeEventForAdLoadFailed( name, adUnitId, errorCode );
+    }
+
+    private void sendReactNativeEventForAdLoadFailed(final String name, final String adUnitId, final int errorCode)
+    {
         WritableMap params = Arguments.createMap();
         params.putString( "adUnitId", adUnitId );
         params.putString( "errorCode", Integer.toString( errorCode ) );
@@ -1077,12 +1094,16 @@ public class AppLovinMAXModule
         Log.e( SDK_TAG, fullMessage );
     }
 
+    @Nullable
     private MaxInterstitialAd retrieveInterstitial(String adUnitId)
     {
+        Activity currentActivity = maybeGetCurrentActivity();
+        if ( currentActivity == null ) return null;
+
         MaxInterstitialAd result = mInterstitials.get( adUnitId );
         if ( result == null )
         {
-            result = new MaxInterstitialAd( adUnitId, sdk, maybeGetCurrentActivity() );
+            result = new MaxInterstitialAd( adUnitId, sdk, currentActivity );
             result.setListener( this );
 
             mInterstitials.put( adUnitId, result );
@@ -1091,12 +1112,16 @@ public class AppLovinMAXModule
         return result;
     }
 
+    @Nullable
     private MaxRewardedAd retrieveRewardedAd(String adUnitId)
     {
+        Activity currentActivity = maybeGetCurrentActivity();
+        if ( currentActivity == null ) return null;
+
         MaxRewardedAd result = mRewardedAds.get( adUnitId );
         if ( result == null )
         {
-            result = MaxRewardedAd.getInstance( adUnitId, sdk, maybeGetCurrentActivity() );
+            result = MaxRewardedAd.getInstance( adUnitId, sdk, currentActivity );
             result.setListener( this );
 
             mRewardedAds.put( adUnitId, result );
