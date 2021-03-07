@@ -31,8 +31,8 @@ android {
   defaultConfig {
     minSdkVersion 16
     targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
-    versionCode 1010500
-    versionName "1.1.5"
+    versionCode 1010600
+    versionName "1.1.6"
   }
 
   buildTypes {
