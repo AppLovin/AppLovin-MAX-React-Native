@@ -77,7 +77,10 @@ RCT_CUSTOM_VIEW_PROPERTY(adFormat, NSString, MAAdView)
                 self.adView = nil;
             }
             
-            self.adView = [AppLovinMAX.shared retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: @"" attach: NO];
+            self.adView = [AppLovinMAX.shared retrieveAdViewForAdUnitIdentifier: adUnitIdentifier
+                                                                       adFormat: adFormat
+                                                                     atPosition: @""
+                                                                         attach: NO];
             [self.adView loadAd];
             
             [self.containerView addSubview: self.adView];

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import React, {useState} from 'react';
+import {Platform, StyleSheet, Text, View} from 'react-native';
 import AppLovinMAX from '../../src/index';
 import AppLogo from './components/AppLogo';
 import AppButton from './components/AppButton';
@@ -41,7 +41,7 @@ const App = () => {
   const [rewardedAdRetryAttempt, setRewardedAdRetryAttempt] = useState(0);
   const [isBannerShowing, setIsBannerShowing] = useState(false);
   const [statusText, setStatusText] = useState('Initializing SDK...');
-  
+
   AppLovinMAX.setVerboseLogging(true);
   AppLovinMAX.initialize(SDK_KEY, () => {
     setIsInitialized(true);
@@ -70,14 +70,13 @@ const App = () => {
   function maybeRenderBanner() {
     if (USE_NATIVE_UI_BANNER) {
       return (
-        <AppLovinMAX.AdView adUnitId={BANNER_AD_UNIT_ID} adFormat={AppLovinMAX.AdFormat.BANNER} style={styles.banner} />
+        <AppLovinMAX.AdView adUnitId={BANNER_AD_UNIT_ID} adFormat={AppLovinMAX.AdFormat.BANNER} style={styles.banner}/>
       );
     }
     return null;
   }
 
   function attachAdListeners() {
-
     // Interstitial Listeners
     AppLovinMAX.addEventListener('OnInterstitialLoadedEvent', () => {
       setInterstitialAdLoadState(adLoadState.loaded);
@@ -90,15 +89,14 @@ const App = () => {
       setInterstitialRetryAttempt(0)
     });
     AppLovinMAX.addEventListener('OnInterstitialLoadFailedEvent', () => {
-
-      // Interstitial ad failed to load 
+      // Interstitial ad failed to load
       // We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds)
       setInterstitialRetryAttempt(interstitialRetryAttempt + 1);
 
       var retryDelay = Math.pow(2, Math.min(6, interstitialRetryAttempt));
       logStatus('Interstitial ad failed to load - retrying in ' + retryDelay + 's');
-      
-      setTimeout(function() {
+
+      setTimeout(function () {
         AppLovinMAX.loadInterstitial(INTERSTITIAL_AD_UNIT_ID);
       }, retryDelay * 1000);
     });
@@ -131,14 +129,14 @@ const App = () => {
     AppLovinMAX.addEventListener('OnRewardedAdLoadFailedEvent', () => {
       setRewardedAdLoadState(adLoadState.notLoaded);
 
-      // Rewarded ad failed to load 
+      // Rewarded ad failed to load
       // We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds)
       setRewardedAdRetryAttempt(rewardedAdRetryAttempt + 1);
 
       var retryDelay = Math.pow(2, Math.min(6, rewardedAdRetryAttempt));
       logStatus('Rewarded ad failed to load - retrying in ' + retryDelay + 's');
-      
-      setTimeout(function() {
+
+      setTimeout(function () {
         AppLovinMAX.loadRewardedAd(REWARDED_AD_UNIT_ID);
       }, retryDelay * 1000);
     });
@@ -172,10 +170,10 @@ const App = () => {
       logStatus('Banner ad clicked');
     });
     AppLovinMAX.addEventListener('OnBannerAdExpandedEvent', () => {
-      logStatus('Banner ad expanded') 
+      logStatus('Banner ad expanded')
     });
     AppLovinMAX.addEventListener('OnBannerAdCollapsedEvent', () => {
-      logStatus('Banner ad collapsed') 
+      logStatus('Banner ad collapsed')
     });
   }
 
@@ -206,7 +204,7 @@ const App = () => {
 
   return (
     <View style={styles.container}>
-      <AppLogo />
+      <AppLogo/>
       <Text style={styles.statusText}>
         {statusText}
       </Text>
@@ -263,9 +261,9 @@ const App = () => {
                 setIsBannerShowing(!isBannerShowing);
               }}
             /> : null;
-         })()
+        })()
       }
-      { maybeRenderBanner() }
+      {maybeRenderBanner()}
     </View>
   );
 };
@@ -288,7 +286,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: AppLovinMAX.isTablet() ? 90 : 50,
-    bottom:  Platform.select({
+    bottom: Platform.select({
       ios: 36, // For bottom safe area
       android: 0,
     })
