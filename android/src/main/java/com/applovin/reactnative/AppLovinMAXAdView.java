@@ -50,9 +50,9 @@ class AppLovinMAXAdView
 
 
 
-    public void maybeAttachAdView(final String adUnitId, final MaxAdFormat maxAdFormat) {
+    public void maybeAttachAdView(final String adUnitId, final MaxAdFormat adFormat) {
 
-
+        Activity activity = (Activity) reactContext.getCurrentActivity();
         //destroy oldview
         final MaxAdView oldView = (MaxAdView) getChildAt(0);
 
@@ -61,13 +61,8 @@ class AppLovinMAXAdView
             oldView.destroy();
         }
 
-        if (!TextUtils.isEmpty(adUnitId) && maxAdFormat != null) {
-           final MaxAdView adView = new MaxAdView(adUnitId, maxAdFormat,reactContext.getCurrentActivity());
-
-           ViewParent parent = adView.getParent();
-           if (parent instanceof ViewGroup) {
-               ((ViewGroup) parent).removeView(adView);
-           }
+        if (!TextUtils.isEmpty(adUnitId) && adFormat != null && activity != null) {
+           final MaxAdView adView = new MaxAdView(adUnitId, adFormat,activity);
 
            addView(adView);
            createAdViewIfCan();
@@ -77,6 +72,12 @@ class AppLovinMAXAdView
     private void createAdViewIfCan() {
         final MaxAdView adView = (MaxAdView) getChildAt(0);
         adView.loadAd();
+
+        ViewParent parent = adView.getParent();
+        if (parent instanceof ViewGroup) {
+            ((ViewGroup) parent).removeView(adView);
+        }
+
         createEvent();
     }
 
@@ -131,12 +132,5 @@ class AppLovinMAXAdView
                 AppLovinMAXModule.e("onAdDisplayFailed");
             }
         });
-    }
-
-    public void setAdID(final String adUnitId) {
-    }
-
-    public void setAdFormat(final MaxAdFormat ad) {
-
     }
 }
