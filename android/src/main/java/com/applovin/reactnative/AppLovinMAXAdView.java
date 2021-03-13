@@ -23,8 +23,8 @@ class AppLovinMAXAdView
         extends ReactViewGroup
 {
     private final ThemedReactContext reactContext;
-    private String adID = "adid";
-    private MaxAdFormat adFormat = MaxAdFormat.BANNER;
+    private String adID;
+    private MaxAdFormat adFormat;
 
     public AppLovinMAXAdView(final Context context)
     {
@@ -52,7 +52,7 @@ class AppLovinMAXAdView
 
 
 
-    public void maybeAttachAdView(final String adUnitId, final MaxAdFormat adFormat) {
+    public void maybeAttachAdView(final String adUnitId, final MaxAdFormat maxAdFormat) {
 
         //destroy oldview
         final MaxAdView oldView = (MaxAdView) getChildAt(0);
@@ -61,6 +61,8 @@ class AppLovinMAXAdView
             oldView.destroy();
         }
 
+        adID = adUnitId;
+        adFormat = maxAdFormat;
         createAdViewIfCan();
     }
 
@@ -137,12 +139,14 @@ class AppLovinMAXAdView
     }
 
     public void setAdID(final String adUnitId) {
-        adID = adUnitId;
+        final MaxAdView oldView = (MaxAdView) getChildAt(0);
+        oldView.removeAllViews();
         createAdViewIfCan();
     }
 
     public void setAdFormat(final MaxAdFormat ad) {
-        adFormat = ad;
+        final MaxAdView oldView = (MaxAdView) getChildAt(0);
+        oldView.removeAllViews();
         createAdViewIfCan();
     }
 }

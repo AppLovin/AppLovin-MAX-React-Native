@@ -41,15 +41,13 @@ class AppLovinMAXAdViewManager
     protected @NotNull AppLovinMAXAdView createViewInstance(@NotNull final ThemedReactContext reactContext)
     {
         // NOTE: Do not set frame or backgroundColor as RN will overwrite the values set by your custom class in order to match your JavaScript component's layout props - hence wrapper
-        adView = new AppLovinMAXAdView( reactContext );
-        return adView;
+        return new AppLovinMAXAdView( reactContext );
     }
 
     @ReactProp(name = "adUnitId")
     public void setAdUnitId(final AppLovinMAXAdView view, final @Nullable String adUnitId)
     {
         this.adUnitId = adUnitId;
-        adView.setAdID(adUnitId);
         view.setAdID(adUnitId);
         adView.maybeAttachAdView( adUnitId, adFormat );
     }
@@ -66,7 +64,6 @@ class AppLovinMAXAdViewManager
             adFormat = MaxAdFormat.MREC;
         }
 
-        adView.setAdFormat(adFormat);
         view.setAdFormat(adFormat);
         adView.maybeAttachAdView( adUnitId, adFormat );
     }
