@@ -43,54 +43,55 @@ class AppLovinMAXAdView
     };
 
     @Override
-    public void requestLayout()
-    {
+    public void requestLayout() {
         super.requestLayout();
         if (adView != null) {
             post(measureRunnable);
         }
     }
 
-    public void maybeAttachAdView(final String adUnitId, final MaxAdFormat adFormat)
-    {
+    public void maybeAttachAdView(final String adUnitId, final MaxAdFormat adFormat) {
+        if (adView != null) {
+            adView.destroy();
+            removeAllViews();
+            adView = null;
+            createAdViewIfCan(adUnitId, adFormat);
+        } else {
+            removeAllViews();
+            createAdViewIfCan(adUnitId, adFormat);
+        }
+    }
+
+    private void createAdViewIfCan(final String adUnitId, final MaxAdFormat adFormat) {
         Activity currentActivity = reactContext.getCurrentActivity();
-        if ( currentActivity == null )
-        {
+        if (currentActivity == null) {
             AppLovinMAXModule.e( "Unable to attach AdView - no current Activity found" );
             return;
         }
 
-        currentActivity.runOnUiThread( new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                // If ad unit id and format has been set - create and attach AdView
-                if ( !TextUtils.isEmpty( adUnitId ) && adFormat != null )
-                {
-                    adView = AppLovinMAXModule.getInstance().retrieveAdView( adUnitId, adFormat, "" );
-                    adView.loadAd();
+        if (!TextUtils.isEmpty( adUnitId ) && adFormat != null) {
 
-                    // Handle fast refresh cases of re-adding adView
-                    ViewParent parent = adView.getParent();
-                    if ( parent instanceof ViewGroup )
-                    {
-                        ( (ViewGroup) parent ).removeView( adView );
-                    }
+            adView = AppLovinMAXModule.getInstance().retrieveAdView( adUnitId, adFormat, "" );
+            adView.loadAd();
 
-                    addView( adView );
-
-                    // Set the height of the banner ad based on the device type.
-                    AppLovinMAXModule.AdViewSize adViewSize = AppLovinMAXModule.getAdViewSize( adFormat );
-                    int widthPx = AppLovinSdkUtils.dpToPx( reactContext, adViewSize.widthDp );
-                    int heightPx = AppLovinSdkUtils.dpToPx( reactContext, adViewSize.heightDp );
-
-                    ViewGroup.LayoutParams layoutParams = adView.getLayoutParams();
-                    layoutParams.width = widthPx;
-                    layoutParams.height = heightPx;
-                    adView.setGravity( Gravity.CENTER );
-                }
+            ViewParent parent = adView.getParent();
+            if (parent instanceof ViewGroup) {
+                ((ViewGroup) parent).removeView(adView);
             }
-        } );
+
+            addView(adView);
+            AppLovinMAXModule.AdViewSize adViewSize = AppLovinMAXModule.getAdViewSize( adFormat );
+            int widthPx = AppLovinSdkUtils.dpToPx( reactContext, adViewSize.widthDp );
+            int heightPx = AppLovinSdkUtils.dpToPx( reactContext, adViewSize.heightDp );
+
+            ViewGroup.LayoutParams layoutParams = adView.getLayoutParams();
+            layoutParams.width = widthPx;
+            layoutParams.height = heightPx;
+            adView.setGravity( Gravity.CENTER );
+
+        } else {
+            AppLovinMAXModule.e("required set unit & format");
+            return;
+        }
     }
 }
