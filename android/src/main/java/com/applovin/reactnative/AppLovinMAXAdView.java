@@ -4,13 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.Gravity;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
-import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdFormat;
-import com.applovin.mediation.MaxAdViewAdListener;
 import com.applovin.mediation.ads.MaxAdView;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -24,6 +21,8 @@ class AppLovinMAXAdView
 {
     private final ThemedReactContext reactContext;
 
+    private MaxAdView adView;
+
     public AppLovinMAXAdView(final Context context)
     {
         super( context );
@@ -31,112 +30,63 @@ class AppLovinMAXAdView
         this.reactContext = (ThemedReactContext) context;
     }
 
-    private final Runnable measureRunnable = () -> {
-        for (int i = 0;i < getChildCount();i++) {
-            View child = getChildAt(i);
-            child.measure(
-                    MeasureSpec.makeMeasureSpec(getMeasuredWidth(),MeasureSpec.EXACTLY),
-                    MeasureSpec.makeMeasureSpec(getMeasuredHeight(),MeasureSpec.EXACTLY)
-            );
-            child.layout(0,0,child.getMeasuredWidth(),child.getMeasuredHeight());
-        }
-    };
-
     @Override
-    public void requestLayout() {
+    public void requestLayout()
+    {
         super.requestLayout();
-        post(measureRunnable);
-    }
 
-
-
-    public void maybeAttachAdView(final String adUnitId, final MaxAdFormat adFormat) {
-
-
-        //destroy oldview
-        final MaxAdView oldView = (MaxAdView) getChildAt(0);
-
-        if (oldView != null) {
-            oldView.removeAllViews();
-            oldView.destroy();
-        }
-
-        if (!TextUtils.isEmpty(adUnitId) && adFormat != null) {
-           final MaxAdView adView = new MaxAdView(adUnitId, adFormat,reactContext.getCurrentActivity());
-           addView(adView);
-           createAdViewIfCan();
+        // https://stackoverflow.com/a/39838774/5477988 - This is required to ensure ad refreshes render correctly in RN Android due to known issue
+        if ( adView != null )
+        {
+            adView.measure(
+                    MeasureSpec.makeMeasureSpec( getMeasuredWidth(), MeasureSpec.EXACTLY ),
+                    MeasureSpec.makeMeasureSpec( getMeasuredHeight(), MeasureSpec.EXACTLY )
+            );
+            adView.layout( 0, 0, adView.getMeasuredWidth(), adView.getMeasuredHeight() );
         }
     }
 
-    private void createAdViewIfCan() {
-        final MaxAdView adView = (MaxAdView) getChildAt(0);
-        adView.loadAd();
+    public void maybeAttachAdView(final String adUnitId, final MaxAdFormat adFormat)
+    {
 
-        ViewParent parent = adView.getParent();
-        if (parent instanceof ViewGroup) {
-            ((ViewGroup) parent).removeView(adView);
+        Activity currentActivity = reactContext.getCurrentActivity();
+        if ( currentActivity == null )
+        {
+            AppLovinMAXModule.e( "Unable to attach AdView - no current Activity found" );
+            return;
         }
 
-        createEvent();
-    }
-
-    private void createEvent() {
-        final MaxAdView adView = (MaxAdView) getChildAt(0);
-        adView.setListener(new MaxAdViewAdListener() {
+        currentActivity.runOnUiThread( new Runnable()
+        {
             @Override
-            public void onAdExpanded(MaxAd ad) {
-                AppLovinMAXModule.e("onAdExpanded");
+            public void run()
+            {
+                // If ad unit id and format has been set - create and attach AdView
+                if ( !TextUtils.isEmpty( adUnitId ) && adFormat != null )
+                {
+                    adView = AppLovinMAXModule.getInstance().retrieveAdView( adUnitId, adFormat, "" );
+                    adView.loadAd();
+
+                    // Handle fast refresh cases of re-adding adView
+                    ViewParent parent = adView.getParent();
+                    if ( parent instanceof ViewGroup )
+                    {
+                        ( (ViewGroup) parent ).removeView( adView );
+                    }
+
+                    addView( adView );
+
+                    // Set the height of the banner ad based on the device type.
+                    AppLovinMAXModule.AdViewSize adViewSize = AppLovinMAXModule.getAdViewSize( adFormat );
+                    int widthPx = AppLovinSdkUtils.dpToPx( reactContext, adViewSize.widthDp );
+                    int heightPx = AppLovinSdkUtils.dpToPx( reactContext, adViewSize.heightDp );
+
+                    ViewGroup.LayoutParams layoutParams = adView.getLayoutParams();
+                    layoutParams.width = widthPx;
+                    layoutParams.height = heightPx;
+                    adView.setGravity( Gravity.CENTER );
+                }
             }
-
-            @Override
-            public void onAdCollapsed(MaxAd ad) {
-                AppLovinMAXModule.e("onAdCollapsed");
-            }
-
-            @Override
-            public void onAdLoaded(MaxAd ad) {
-                AppLovinMAXModule.e("onAdLoaded");
-
-//                AppLovinMAXModule.AdViewSize adViewSize = AppLovinMAXModule.getAdViewSize( adFormat );
-                int widthPx = AppLovinSdkUtils.dpToPx( reactContext, ad.getFormat().getSize().getWidth() );
-                int heightPx = AppLovinSdkUtils.dpToPx( reactContext, ad.getFormat().getSize().getHeight() );
-                ViewGroup.LayoutParams layoutParams = adView.getLayoutParams();
-                layoutParams.width = widthPx;
-                layoutParams.height = heightPx;
-                adView.setGravity( Gravity.CENTER );
-            }
-
-            @Override
-            public void onAdLoadFailed(String adUnitId, int errorCode) {
-                AppLovinMAXModule.e("onAdLoadFailed");
-            }
-
-            @Override
-            public void onAdDisplayed(MaxAd ad) {
-                AppLovinMAXModule.e("onAdLoadFailed");
-            }
-
-            @Override
-            public void onAdHidden(MaxAd ad) {
-                AppLovinMAXModule.e("onAdHidden");
-            }
-
-            @Override
-            public void onAdClicked(MaxAd ad) {
-                AppLovinMAXModule.e("onAdClicked");
-            }
-
-            @Override
-            public void onAdDisplayFailed(MaxAd ad, int errorCode) {
-                AppLovinMAXModule.e("onAdDisplayFailed");
-            }
-        });
-    }
-
-    public void setAdID(final String adUnitId) {
-    }
-
-    public void setAdFormat(final MaxAdFormat ad) {
-
+        } );
     }
 }
