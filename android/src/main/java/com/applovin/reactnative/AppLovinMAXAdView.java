@@ -95,16 +95,17 @@ class AppLovinMAXAdView
         adView.setListener(new MaxAdViewAdListener() {
             @Override
             public void onAdExpanded(MaxAd ad) {
-
+                AppLovinMAXModule.e("onAdExpanded");
             }
 
             @Override
             public void onAdCollapsed(MaxAd ad) {
-
+                AppLovinMAXModule.e("onAdCollapsed");
             }
 
             @Override
             public void onAdLoaded(MaxAd ad) {
+                AppLovinMAXModule.e("onAdLoaded");
                 AppLovinMAXModule.AdViewSize adViewSize = AppLovinMAXModule.getAdViewSize( adFormat );
                 int widthPx = AppLovinSdkUtils.dpToPx( reactContext, adViewSize.widthDp );
                 int heightPx = AppLovinSdkUtils.dpToPx( reactContext, adViewSize.heightDp );
@@ -116,27 +117,27 @@ class AppLovinMAXAdView
 
             @Override
             public void onAdLoadFailed(String adUnitId, int errorCode) {
-
+                AppLovinMAXModule.e("onAdLoadFailed");
             }
 
             @Override
             public void onAdDisplayed(MaxAd ad) {
-
+                AppLovinMAXModule.e("onAdLoadFailed");
             }
 
             @Override
             public void onAdHidden(MaxAd ad) {
-
+                AppLovinMAXModule.e("onAdHidden");
             }
 
             @Override
             public void onAdClicked(MaxAd ad) {
-
+                AppLovinMAXModule.e("onAdClicked");
             }
 
             @Override
             public void onAdDisplayFailed(MaxAd ad, int errorCode) {
-
+                AppLovinMAXModule.e("onAdDisplayFailed");
             }
         });
     }
