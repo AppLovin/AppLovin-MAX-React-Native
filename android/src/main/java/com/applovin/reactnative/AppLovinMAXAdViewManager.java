@@ -2,8 +2,8 @@ package com.applovin.reactnative;
 
 import com.applovin.mediation.MaxAdFormat;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
  * Created by Thomas So on September 26 2020
  */
 class AppLovinMAXAdViewManager
-        extends SimpleViewManager<AppLovinMAXAdView>
+        extends ViewGroupManager<AppLovinMAXAdView>
 {
     // Parent fields
     private ReactApplicationContext reactApplicationContext;

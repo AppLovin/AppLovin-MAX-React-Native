@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
@@ -30,19 +31,23 @@ class AppLovinMAXAdView
         this.reactContext = (ThemedReactContext) context;
     }
 
+    private final Runnable measureRunnable = () -> {
+        for (int i = 0;i < getChildCount();i++) {
+            View child = getChildAt(i);
+            child.measure(
+                    MeasureSpec.makeMeasureSpec(getMeasuredWidth(),MeasureSpec.EXACTLY),
+                    MeasureSpec.makeMeasureSpec(getMeasuredHeight(),MeasureSpec.EXACTLY)
+            );
+            child.layout(0,0,child.getMeasuredWidth(),child.getMeasuredHeight());
+        }
+    };
+
     @Override
     public void requestLayout()
     {
         super.requestLayout();
-
-        // https://stackoverflow.com/a/39838774/5477988 - This is required to ensure ad refreshes render correctly in RN Android due to known issue
-        if ( adView != null )
-        {
-            adView.measure(
-                    MeasureSpec.makeMeasureSpec( getMeasuredWidth(), MeasureSpec.EXACTLY ),
-                    MeasureSpec.makeMeasureSpec( getMeasuredHeight(), MeasureSpec.EXACTLY )
-            );
-            adView.layout( 0, 0, adView.getMeasuredWidth(), adView.getMeasuredHeight() );
+        if (adView != null) {
+            post(measureRunnable);
         }
     }
 
