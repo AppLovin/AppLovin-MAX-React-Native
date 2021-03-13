@@ -63,7 +63,6 @@ class AppLovinMAXAdView
 
         if (!TextUtils.isEmpty(adUnitId) && adFormat != null && activity != null) {
            final MaxAdView adView = new MaxAdView(adUnitId, adFormat,activity);
-
            addView(adView);
            createAdViewIfCan();
         }

@@ -24,7 +24,7 @@ class AppLovinMAXAdViewManager
 
     // Fields that need to be set before creating MaxAdView
     private String      adUnitId;
-    private MaxAdFormat adFormat = MaxAdFormat.BANNER;
+    private MaxAdFormat adFormat;
 
     public AppLovinMAXAdViewManager(final ReactApplicationContext reactApplicationContext)
     {
@@ -48,21 +48,21 @@ class AppLovinMAXAdViewManager
     public void setAdUnitId(final AppLovinMAXAdView view, final @Nullable String adUnitId)
     {
         this.adUnitId = adUnitId;
-        adView.maybeAttachAdView( adUnitId, adFormat );
+        adView.maybeAttachAdView( adUnitId, MaxAdFormat.BANNER );
     }
 
     @ReactProp(name = "adFormat")
     public void setAdFormat(final AppLovinMAXAdView view, final @Nullable String adFormatStr)
     {
-        if ( "banner".equals( adFormatStr ) )
-        {
-            adFormat = AppLovinMAXModule.getDeviceSpecificBannerAdViewAdFormat( reactApplicationContext );
-        }
-        else if ( "mrec".equals( adFormatStr ) )
-        {
-            adFormat = MaxAdFormat.MREC;
-        }
+//        if ( "banner".equals( adFormatStr ) )
+//        {
+//            adFormat = AppLovinMAXModule.getDeviceSpecificBannerAdViewAdFormat( reactApplicationContext );
+//        }
+//        else if ( "mrec".equals( adFormatStr ) )
+//        {
+//            adFormat = MaxAdFormat.MREC;
+//        }
 
-        adView.maybeAttachAdView( adUnitId, adFormat );
+        adView.maybeAttachAdView( adUnitId, MaxAdFormat.BANNER );
     }
 }
