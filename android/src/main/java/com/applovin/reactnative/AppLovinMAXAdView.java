@@ -45,9 +45,7 @@ class AppLovinMAXAdView
     @Override
     public void requestLayout() {
         super.requestLayout();
-        if (adView != null) {
-            post(measureRunnable);
-        }
+        post(measureRunnable);
     }
 
     public void maybeAttachAdView(final String adUnitId, final MaxAdFormat adFormat) {
