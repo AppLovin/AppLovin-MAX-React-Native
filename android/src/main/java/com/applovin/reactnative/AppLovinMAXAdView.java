@@ -84,6 +84,13 @@ class AppLovinMAXAdView
 
         if (!TextUtils.isEmpty( adUnitId ) && adFormat != null) {
             MaxAdView maxAdView = AppLovinMAXModule.getInstance().retrieveAdView( adUnitId, adFormat, "" );
+
+            ViewParent parent = maxAdView.getParent();
+            if ( parent instanceof ViewGroup )
+            {
+                ( (ViewGroup) parent ).removeView( maxAdView );
+            }
+
             addView(maxAdView);
             maxAdView.loadAd();
             createEvent(adFormat);
