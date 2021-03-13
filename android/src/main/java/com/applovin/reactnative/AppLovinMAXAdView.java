@@ -135,14 +135,10 @@ class AppLovinMAXAdView
     }
 
     public void setAdID(final String adUnitId) {
-        final MaxAdView oldView = (MaxAdView) getChildAt(0);
-        oldView.removeAllViews();
         createAdViewIfCan();
     }
 
     public void setAdFormat(final MaxAdFormat ad) {
-        final MaxAdView oldView = (MaxAdView) getChildAt(0);
-        oldView.removeAllViews();
         createAdViewIfCan();
     }
 }
