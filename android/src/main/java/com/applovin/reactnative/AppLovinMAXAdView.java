@@ -60,6 +60,7 @@ class AppLovinMAXAdView
             removeAllViews();
             adView = null;
             createAdViewIfCan(adUnitId, adFormat);
+            requestLayout();
         }
     }
 
