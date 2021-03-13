@@ -58,10 +58,6 @@ class AppLovinMAXAdView
         final MaxAdView oldView = (MaxAdView) getChildAt(0);
 
         if (oldView != null) {
-            ViewParent parent = oldView.getParent();
-            if (parent instanceof ViewGroup) {
-                ((ViewGroup) parent).removeView(oldView);
-            }
             oldView.destroy();
         }
 
@@ -80,11 +76,15 @@ class AppLovinMAXAdView
             MaxAdView maxAdView = AppLovinMAXModule.getInstance().retrieveAdView( adID, adFormat, "" );
             addView(maxAdView);
             maxAdView.loadAd();
-            createEvent(adFormat);
+            ViewParent parent = maxAdView.getParent();
+            if (parent instanceof ViewGroup) {
+                ((ViewGroup) parent).removeView(maxAdView);
+            }
+            createEvent();
         }
     }
 
-    private void createEvent(final MaxAdFormat adFormat) {
+    private void createEvent() {
         final MaxAdView adView = (MaxAdView) getChildAt(0);
         adView.setListener(new MaxAdViewAdListener() {
             @Override
