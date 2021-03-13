@@ -54,14 +54,17 @@ class AppLovinMAXAdView
             removeAllViews();
             adView = null;
             createAdViewIfCan(adUnitId, adFormat);
+            AppLovinMAXModule.d("createAdViewIfCan true");
         } else {
             removeAllViews();
             createAdViewIfCan(adUnitId, adFormat);
+            AppLovinMAXModule.d("createAdViewIfCan false");
         }
     }
 
     private void createAdViewIfCan(final String adUnitId, final MaxAdFormat adFormat) {
         Activity currentActivity = reactContext.getCurrentActivity();
+        AppLovinMAXModule.d("createAdViewIfCan");
         if (currentActivity == null) {
             AppLovinMAXModule.e( "Unable to attach AdView - no current Activity found" );
             return;
@@ -70,7 +73,7 @@ class AppLovinMAXAdView
         if (!TextUtils.isEmpty( adUnitId ) && adFormat != null) {
 
             adView = AppLovinMAXModule.getInstance().retrieveAdView( adUnitId, adFormat, "" );
-            adView.loadAd();
+
 
             ViewParent parent = adView.getParent();
             if (parent instanceof ViewGroup) {
@@ -78,6 +81,9 @@ class AppLovinMAXAdView
             }
 
             addView(adView);
+
+            adView.loadAd();
+
             AppLovinMAXModule.AdViewSize adViewSize = AppLovinMAXModule.getAdViewSize( adFormat );
             int widthPx = AppLovinSdkUtils.dpToPx( reactContext, adViewSize.widthDp );
             int heightPx = AppLovinSdkUtils.dpToPx( reactContext, adViewSize.heightDp );
