@@ -23,8 +23,6 @@ class AppLovinMAXAdView
         extends ReactViewGroup
 {
     private final ThemedReactContext reactContext;
-    private String adID;
-    private MaxAdFormat adFormat;
 
     public AppLovinMAXAdView(final Context context)
     {
@@ -59,6 +57,7 @@ class AppLovinMAXAdView
         final MaxAdView oldView = (MaxAdView) getChildAt(0);
 
         if (oldView != null) {
+            oldView.removeAllViews();
             oldView.destroy();
         }
 
@@ -135,10 +134,9 @@ class AppLovinMAXAdView
     }
 
     public void setAdID(final String adUnitId) {
-        createAdViewIfCan();
     }
 
     public void setAdFormat(final MaxAdFormat ad) {
-        createAdViewIfCan();
+
     }
 }
