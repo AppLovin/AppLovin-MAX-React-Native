@@ -48,21 +48,21 @@ class AppLovinMAXAdViewManager
     public void setAdUnitId(final AppLovinMAXAdView view, final @Nullable String adUnitId)
     {
         this.adUnitId = adUnitId;
-        adView.maybeAttachAdView( adUnitId, MaxAdFormat.BANNER );
+        adView.maybeAttachAdView( adUnitId, adFormat );
     }
 
     @ReactProp(name = "adFormat")
     public void setAdFormat(final AppLovinMAXAdView view, final @Nullable String adFormatStr)
     {
-//        if ( "banner".equals( adFormatStr ) )
-//        {
-//            adFormat = AppLovinMAXModule.getDeviceSpecificBannerAdViewAdFormat( reactApplicationContext );
-//        }
-//        else if ( "mrec".equals( adFormatStr ) )
-//        {
-//            adFormat = MaxAdFormat.MREC;
-//        }
+        if ( "banner".equals( adFormatStr ) )
+        {
+            adFormat = AppLovinMAXModule.getDeviceSpecificBannerAdViewAdFormat( reactApplicationContext );
+        }
+        else if ( "mrec".equals( adFormatStr ) )
+        {
+            adFormat = MaxAdFormat.MREC;
+        }
 
-        adView.maybeAttachAdView( adUnitId, MaxAdFormat.BANNER );
+        adView.maybeAttachAdView( adUnitId, adFormat );
     }
 }
