@@ -23,6 +23,8 @@ class AppLovinMAXAdView
         extends ReactViewGroup
 {
     private final ThemedReactContext reactContext;
+    private String adID = "adid";
+    private MaxAdFormat adFormat = MaxAdFormat.BANNER;
 
     public AppLovinMAXAdView(final Context context)
     {
@@ -48,33 +50,25 @@ class AppLovinMAXAdView
         post(measureRunnable);
     }
 
+
+
     public void maybeAttachAdView(final String adUnitId, final MaxAdFormat adFormat) {
 
         //destroy oldview
         final MaxAdView oldView = (MaxAdView) getChildAt(0);
-        removeAllViews();
+
         if (oldView != null) {
+            ViewParent parent = oldView.getParent();
+            if (parent instanceof ViewGroup) {
+                ((ViewGroup) parent).removeView(oldView);
+            }
             oldView.destroy();
         }
 
-        createAdViewIfCan(adUnitId, adFormat);
-
-//        AppLovinMAXModule.d("createAdViewIfCan");
-//        if (adView == null) {
-//            AppLovinMAXModule.d("createAdViewIfCan false");
-//            removeAllViews();
-//            createAdViewIfCan(adUnitId, adFormat);
-//        } else {
-//            AppLovinMAXModule.d("createAdViewIfCan true");
-//            adView.destroy();
-//            removeAllViews();
-//            adView = null;
-//            createAdViewIfCan(adUnitId, adFormat);
-//            requestLayout();
-//        }
+        createAdViewIfCan();
     }
 
-    private void createAdViewIfCan(final String adUnitId, final MaxAdFormat adFormat) {
+    private void createAdViewIfCan() {
         Activity currentActivity = reactContext.getCurrentActivity();
         AppLovinMAXModule.e("createAdViewIfCan");
         if (currentActivity == null) {
@@ -82,15 +76,8 @@ class AppLovinMAXAdView
             return;
         }
 
-        if (!TextUtils.isEmpty( adUnitId ) && adFormat != null) {
-            MaxAdView maxAdView = AppLovinMAXModule.getInstance().retrieveAdView( adUnitId, adFormat, "" );
-
-            ViewParent parent = maxAdView.getParent();
-            if ( parent instanceof ViewGroup )
-            {
-                ( (ViewGroup) parent ).removeView( maxAdView );
-            }
-
+        if (!TextUtils.isEmpty( adID ) && adFormat != null) {
+            MaxAdView maxAdView = AppLovinMAXModule.getInstance().retrieveAdView( adID, adFormat, "" );
             addView(maxAdView);
             maxAdView.loadAd();
             createEvent(adFormat);
@@ -147,5 +134,15 @@ class AppLovinMAXAdView
                 AppLovinMAXModule.e("onAdDisplayFailed");
             }
         });
+    }
+
+    public void setAdID(final String adUnitId) {
+        adID = adUnitId;
+        createAdViewIfCan();
+    }
+
+    public void setAdFormat(final MaxAdFormat ad) {
+        adFormat = ad;
+        createAdViewIfCan();
     }
 }

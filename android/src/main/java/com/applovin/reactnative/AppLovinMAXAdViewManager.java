@@ -49,6 +49,8 @@ class AppLovinMAXAdViewManager
     public void setAdUnitId(final AppLovinMAXAdView view, final @Nullable String adUnitId)
     {
         this.adUnitId = adUnitId;
+        adView.setAdID(adUnitId);
+        view.setAdID(adUnitId);
         adView.maybeAttachAdView( adUnitId, adFormat );
     }
 
@@ -64,6 +66,8 @@ class AppLovinMAXAdViewManager
             adFormat = MaxAdFormat.MREC;
         }
 
+        adView.setAdFormat(adFormat);
+        view.setAdFormat(adFormat);
         adView.maybeAttachAdView( adUnitId, adFormat );
     }
 }
