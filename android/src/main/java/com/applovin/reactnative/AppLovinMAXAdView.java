@@ -50,15 +50,15 @@ class AppLovinMAXAdView
 
     public void maybeAttachAdView(final String adUnitId, final MaxAdFormat adFormat) {
         AppLovinMAXModule.d("createAdViewIfCan");
-        if (adView != null) {
+        if (adView == null) {
+            AppLovinMAXModule.d("createAdViewIfCan false");
+            removeAllViews();
+            createAdViewIfCan(adUnitId, adFormat);
+        } else {
             AppLovinMAXModule.d("createAdViewIfCan true");
             adView.destroy();
             removeAllViews();
             adView = null;
-            createAdViewIfCan(adUnitId, adFormat);
-        } else {
-            AppLovinMAXModule.d("createAdViewIfCan false");
-            removeAllViews();
             createAdViewIfCan(adUnitId, adFormat);
         }
     }
