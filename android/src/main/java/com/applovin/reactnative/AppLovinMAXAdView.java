@@ -54,6 +54,7 @@ class AppLovinMAXAdView
 
     public void maybeAttachAdView(final String adUnitId, final MaxAdFormat maxAdFormat) {
 
+
         //destroy oldview
         final MaxAdView oldView = (MaxAdView) getChildAt(0);
 
@@ -61,29 +62,23 @@ class AppLovinMAXAdView
             oldView.destroy();
         }
 
-        adID = adUnitId;
-        adFormat = maxAdFormat;
-        createAdViewIfCan();
+        if (!TextUtils.isEmpty(adUnitId) && maxAdFormat != null) {
+           final MaxAdView adView = new MaxAdView(adUnitId, maxAdFormat,reactContext.getCurrentActivity());
+
+           ViewParent parent = adView.getParent();
+           if (parent instanceof ViewGroup) {
+               ((ViewGroup) parent).removeView(adView);
+           }
+
+           addView(adView);
+           createAdViewIfCan();
+        }
     }
 
     private void createAdViewIfCan() {
-        Activity currentActivity = reactContext.getCurrentActivity();
-        AppLovinMAXModule.e("createAdViewIfCan");
-        if (currentActivity == null) {
-            AppLovinMAXModule.e( "Unable to attach AdView - no current Activity found" );
-            return;
-        }
-
-        if (!TextUtils.isEmpty( adID ) && adFormat != null) {
-            MaxAdView maxAdView = AppLovinMAXModule.getInstance().retrieveAdView( adID, adFormat, "" );
-            addView(maxAdView);
-            maxAdView.loadAd();
-            ViewParent parent = maxAdView.getParent();
-            if (parent instanceof ViewGroup) {
-                ((ViewGroup) parent).removeView(maxAdView);
-            }
-            createEvent();
-        }
+        final MaxAdView adView = (MaxAdView) getChildAt(0);
+        adView.loadAd();
+        createEvent();
     }
 
     private void createEvent() {
@@ -102,9 +97,10 @@ class AppLovinMAXAdView
             @Override
             public void onAdLoaded(MaxAd ad) {
                 AppLovinMAXModule.e("onAdLoaded");
-                AppLovinMAXModule.AdViewSize adViewSize = AppLovinMAXModule.getAdViewSize( adFormat );
-                int widthPx = AppLovinSdkUtils.dpToPx( reactContext, adViewSize.widthDp );
-                int heightPx = AppLovinSdkUtils.dpToPx( reactContext, adViewSize.heightDp );
+
+//                AppLovinMAXModule.AdViewSize adViewSize = AppLovinMAXModule.getAdViewSize( adFormat );
+                int widthPx = AppLovinSdkUtils.dpToPx( reactContext, ad.getFormat().getSize().getWidth() );
+                int heightPx = AppLovinSdkUtils.dpToPx( reactContext, ad.getFormat().getSize().getHeight() );
                 ViewGroup.LayoutParams layoutParams = adView.getLayoutParams();
                 layoutParams.width = widthPx;
                 layoutParams.height = heightPx;
