@@ -2,8 +2,8 @@ package com.applovin.reactnative;
 
 import com.applovin.mediation.MaxAdFormat;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
  * Created by Thomas So on September 26 2020
  */
 class AppLovinMAXAdViewManager
-        extends ViewGroupManager<AppLovinMAXAdView>
+        extends SimpleViewManager<AppLovinMAXAdView>
 {
     // Parent fields
     private ReactApplicationContext reactApplicationContext;
@@ -41,7 +41,8 @@ class AppLovinMAXAdViewManager
     protected @NotNull AppLovinMAXAdView createViewInstance(@NotNull final ThemedReactContext reactContext)
     {
         // NOTE: Do not set frame or backgroundColor as RN will overwrite the values set by your custom class in order to match your JavaScript component's layout props - hence wrapper
-        return new AppLovinMAXAdView( reactContext );
+        adView = new AppLovinMAXAdView( reactContext );
+        return adView;
     }
 
     @ReactProp(name = "adUnitId")
