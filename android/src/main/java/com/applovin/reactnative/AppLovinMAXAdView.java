@@ -124,14 +124,16 @@ class AppLovinMAXAdView
                 ((ViewGroup) parent).removeView(adView);
             }
 
-            int width = LayoutParams.MATCH_PARENT;
-            int heightDp = MaxAdFormat.BANNER.getAdaptiveSize(currentActivity).getHeight();
-            int heightPx = AppLovinSdkUtils.dpToPx(reactContext, heightDp);
-            adView.setLayoutParams(new FrameLayout.LayoutParams(width, heightPx));
-            AppLovinMAXModule.e("adView");
+
+            AppLovinMAXModule.AdViewSize adViewSize = AppLovinMAXModule.getAdViewSize(adFormat);
+            int widthPx = AppLovinSdkUtils.dpToPx(reactContext, adViewSize.widthDp);
+            int heightPx = AppLovinSdkUtils.dpToPx(reactContext, adViewSize.heightDp);
+
+            adView.setLayoutParams(new FrameLayout.LayoutParams(widthPx, heightPx));
             addView(adView);
             adView.loadAd();
             requestLayout();
+
 
         }
 
