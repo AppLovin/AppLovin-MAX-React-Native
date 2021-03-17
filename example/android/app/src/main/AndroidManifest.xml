@@ -23,6 +23,11 @@
             </intent-filter>
         </activity>
         <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+
+        <meta-data
+            android:name="applovin.sdk.verbose_logging"
+            android:value="false" />
+
     </application>
 
 </manifest>

@@ -43,7 +43,6 @@ const App = () => {
   const [isNativeUIBannerShowing, setIsNativeUIBannerShowing] = useState(false);
   const [statusText, setStatusText] = useState('Initializing SDK...');
 
-  AppLovinMAX.setVerboseLogging(true);
   AppLovinMAX.setTestDeviceAdvertisingIds([]);
   AppLovinMAX.initialize(SDK_KEY, () => {
     setIsInitialized(true);
