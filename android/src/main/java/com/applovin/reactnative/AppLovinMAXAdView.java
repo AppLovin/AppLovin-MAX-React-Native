@@ -3,13 +3,11 @@ package com.applovin.reactnative;
 import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.ads.MaxAdView;
-import com.applovin.sdk.AppLovinSdkUtils;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.views.view.ReactViewGroup;
 
@@ -22,11 +20,12 @@ class AppLovinMAXAdView
     private final ThemedReactContext reactContext;
 
     private MaxAdView adView;
+    private int       currentWidthPx;
+    private int       currentHeightPx;
 
     public AppLovinMAXAdView(final Context context)
     {
         super( context );
-
         this.reactContext = (ThemedReactContext) context;
     }
 
@@ -35,14 +34,37 @@ class AppLovinMAXAdView
     {
         super.requestLayout();
 
-        // https://stackoverflow.com/a/39838774/5477988 - This is required to ensure ad refreshes render correctly in RN Android due to known issue
+        // https://stackoverflow.com/a/39838774/5477988
+        // This is required to ensure ad refreshes render correctly in RN Android due to known issue where `getWidth()` and `getHeight()` return 0 on attach
         if ( adView != null )
         {
             adView.measure(
-                    MeasureSpec.makeMeasureSpec( getMeasuredWidth(), MeasureSpec.EXACTLY ),
-                    MeasureSpec.makeMeasureSpec( getMeasuredHeight(), MeasureSpec.EXACTLY )
+                    MeasureSpec.makeMeasureSpec( currentWidthPx, MeasureSpec.EXACTLY ),
+                    MeasureSpec.makeMeasureSpec( currentHeightPx, MeasureSpec.EXACTLY )
             );
-            adView.layout( 0, 0, adView.getMeasuredWidth(), adView.getMeasuredHeight() );
+            adView.layout( 0, 0, currentWidthPx, currentHeightPx );
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow()
+    {
+        super.onDetachedFromWindow();
+
+        if ( adView != null )
+        {
+            adView.stopAutoRefresh();
+        }
+    }
+
+    @Override
+    protected void onAttachedToWindow()
+    {
+        super.onAttachedToWindow();
+
+        if ( adView != null )
+        {
+            adView.startAutoRefresh();
         }
     }
 
@@ -55,7 +77,8 @@ class AppLovinMAXAdView
             return;
         }
 
-        currentActivity.runOnUiThread( new Runnable()
+        // Run in next run loop when view is laid out and `getWidth()` / `getHeight()` has appropriate values
+        post( new Runnable()
         {
             @Override
             public void run()
@@ -66,6 +89,9 @@ class AppLovinMAXAdView
                     adView = AppLovinMAXModule.getInstance().retrieveAdView( adUnitId, adFormat, "" );
                     adView.loadAd();
 
+                    currentWidthPx = getWidth();
+                    currentHeightPx = getHeight();
+
                     // Handle fast refresh cases of re-adding adView
                     ViewParent parent = adView.getParent();
                     if ( parent instanceof ViewGroup )
@@ -74,16 +100,6 @@ class AppLovinMAXAdView
                     }
 
                     addView( adView );
-
-                    // Set the height of the banner ad based on the device type.
-                    AppLovinMAXModule.AdViewSize adViewSize = AppLovinMAXModule.getAdViewSize( adFormat );
-                    int widthPx = AppLovinSdkUtils.dpToPx( reactContext, adViewSize.widthDp );
-                    int heightPx = AppLovinSdkUtils.dpToPx( reactContext, adViewSize.heightDp );
-
-                    ViewGroup.LayoutParams layoutParams = adView.getLayoutParams();
-                    layoutParams.width = widthPx;
-                    layoutParams.height = heightPx;
-                    adView.setGravity( Gravity.CENTER );
                 }
             }
         } );

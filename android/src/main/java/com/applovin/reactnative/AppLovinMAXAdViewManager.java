@@ -46,14 +46,14 @@ class AppLovinMAXAdViewManager
     }
 
     @ReactProp(name = "adUnitId")
-    public void setAdUnitId(final AppLovinMAXAdView view, final @Nullable String adUnitId)
+    public void setAdUnitId(final AppLovinMAXAdView view, @Nullable final String adUnitId)
     {
         this.adUnitId = adUnitId;
         adView.maybeAttachAdView( adUnitId, adFormat );
     }
 
     @ReactProp(name = "adFormat")
-    public void setAdFormat(final AppLovinMAXAdView view, final @Nullable String adFormatStr)
+    public void setAdFormat(final AppLovinMAXAdView view, @Nullable final String adFormatStr)
     {
         if ( "banner".equals( adFormatStr ) )
         {

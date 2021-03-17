@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+    * Fix Android native UI banners rendering issues when mounting / unmounting. 
     * Add support for setting test device(s) using the advertising identifier (GAID / IDFA) printed in the initialization logs.
 ## 1.1.6
     * Attempt fix for `loadInterstitial()` or `loadRewardedAd()` due to current Activity being null.
