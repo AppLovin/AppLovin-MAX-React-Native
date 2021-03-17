@@ -2,5 +2,13 @@ rootProject.name = 'AppLovinMAXExample'
 apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 include ':app'
 
+File applovinSDKRoot = new File(settingsDir, "../../../SDK-Android")
+if (file(applovinSDKRoot).exists())
+{
+    include ':Android-SDK'
+    project(':Android-SDK').projectDir = new File(applovinSDKRoot, 'Android-SDK')
+}
+
 include ':reactnativeapplovinmax'
 project(':reactnativeapplovinmax').projectDir = new File(rootProject.projectDir, '../../android')
+

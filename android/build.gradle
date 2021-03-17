@@ -2,6 +2,14 @@ buildscript {
   // Buildscript is evaluated before everything else so we can't use getExtOrDefault
   def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['AppLovinMAX_kotlinVersion']
 
+  ext.versions = [
+          'minSdk'                : 16,
+          'compileSdk'            : 29,
+          'targetSdk'             : 29,
+          'playServicesIdentifier': "16.0.0",
+          "exoplayer"             : "2.12.1"
+  ]
+
   repositories {
     google()
     jcenter()
@@ -11,6 +19,8 @@ buildscript {
     classpath 'com.android.tools.build:gradle:3.5.2'
     // noinspection DifferentKotlinGradleVersion
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+
+    classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.0"
   }
 }
 
@@ -33,6 +43,16 @@ android {
     targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
     versionCode 1010600
     versionName "1.1.6"
+  }
+
+  flavorDimensions("default")
+  productFlavors {
+    create("standalone") {
+      buildConfigField("boolean", "IS_TEST_APP", "false")
+    }
+    create("app") {
+      buildConfigField("boolean", "IS_TEST_APP", "true")
+    }
   }
 
   buildTypes {
@@ -125,6 +145,13 @@ def kotlin_version = getExtOrDefault('kotlinVersion')
 dependencies {
   // noinspection GradleDynamicVersion
   api 'com.facebook.react:react-native:+'
+
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  implementation 'com.applovin:applovin-sdk:+'
+
+  if (findProject(':Android-SDK') != null) {
+    implementation "com.google.android.gms:play-services-ads-identifier:${versions.playServicesIdentifier}"
+    implementation project(':Android-SDK')
+  } else {
+    implementation 'com.applovin:applovin-sdk:+'
+  }
 }
