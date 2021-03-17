@@ -38,11 +38,11 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -359,16 +359,24 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
-    public void setTestDeviceAdvertisingIds(final String[] advertisingIds)
+    public void setTestDeviceAdvertisingIds(final ReadableArray rawAdvertisingIds)
     {
+        List<String> advertisingIds = new ArrayList<>( rawAdvertisingIds.size() );
+
+        // Convert to String List
+        for ( Object rawAdvertisingId : rawAdvertisingIds.toArrayList() )
+        {
+            advertisingIds.add( (String) rawAdvertisingId );
+        }
+
         if ( isPluginInitialized )
         {
-            sdk.getSettings().setTestDeviceAdvertisingIds( Arrays.asList( advertisingIds ) );
+            sdk.getSettings().setTestDeviceAdvertisingIds( advertisingIds );
             testDeviceAdvertisingIdsToSet = null;
         }
         else
         {
-            testDeviceAdvertisingIdsToSet = Arrays.asList( advertisingIds );
+            testDeviceAdvertisingIdsToSet = advertisingIds;
         }
     }
 
