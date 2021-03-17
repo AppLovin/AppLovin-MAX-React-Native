@@ -3,6 +3,8 @@ import {Platform, StyleSheet, Text, View} from 'react-native';
 import AppLovinMAX from '../../src/index';
 import AppLogo from './components/AppLogo';
 import AppButton from './components/AppButton';
+import 'react-native-gesture-handler';
+import {NavigationContainer} from "@react-navigation/native";
 
 var adLoadState = {
   notLoaded: 'NOT_LOADED',
@@ -11,9 +13,6 @@ var adLoadState = {
 };
 
 const App = () => {
-
-  // Whether or not to use the native UI component for banners
-  const USE_NATIVE_UI_BANNER = true;
 
   // Create constants
   const SDK_KEY = 'YOUR_SDK_KEY_HERE';
@@ -39,10 +38,13 @@ const App = () => {
   const [interstitialRetryAttempt, setInterstitialRetryAttempt] = useState(0);
   const [rewardedAdLoadState, setRewardedAdLoadState] = useState(adLoadState.notLoaded);
   const [rewardedAdRetryAttempt, setRewardedAdRetryAttempt] = useState(0);
-  const [isBannerShowing, setIsBannerShowing] = useState(false);
+  const [isProgrammaticBannerCreated, setIsProgrammaticBannerCreated] = useState(false);
+  const [isProgrammaticBannerShowing, setIsProgrammaticBannerShowing] = useState(false);
+  const [isNativeUIBannerShowing, setIsNativeUIBannerShowing] = useState(false);
   const [statusText, setStatusText] = useState('Initializing SDK...');
 
   AppLovinMAX.setVerboseLogging(true);
+  AppLovinMAX.setTestDeviceAdvertisingIds([]);
   AppLovinMAX.initialize(SDK_KEY, () => {
     setIsInitialized(true);
 
@@ -50,31 +52,7 @@ const App = () => {
 
     // Attach ad listeners for interstitial ads, rewarded ads, and banner ads
     attachAdListeners();
-
-    if (!USE_NATIVE_UI_BANNER) {
-      // Create banner - banners are automatically sized to 320x50 on phones and 728x90 on tablets
-      AppLovinMAX.createBanner(
-        BANNER_AD_UNIT_ID,
-        AppLovinMAX.AdViewPosition.BOTTOM_CENTER
-      );
-
-      // Set background color for banners to be fully functional
-      // In this case we are setting it to black - PLEASE USE HEX STRINGS ONLY
-      AppLovinMAX.setBannerBackgroundColor(BANNER_AD_UNIT_ID, '#000000');
-
-      // Initially hide banner
-      AppLovinMAX.hideBanner(BANNER_AD_UNIT_ID);
-    }
   });
-
-  function maybeRenderBanner() {
-    if (USE_NATIVE_UI_BANNER) {
-      return (
-        <AppLovinMAX.AdView adUnitId={BANNER_AD_UNIT_ID} adFormat={AppLovinMAX.AdFormat.BANNER} style={styles.banner}/>
-      );
-    }
-    return null;
-  }
 
   function attachAdListeners() {
     // Interstitial Listeners
@@ -203,68 +181,98 @@ const App = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <AppLogo/>
-      <Text style={styles.statusText}>
-        {statusText}
-      </Text>
-      <AppButton
-        title="Mediation Debugger"
-        enabled={isInitialized}
-        onPress={() => {
-          if (AppLovinMAX.isInitialized()) {
-            AppLovinMAX.showMediationDebugger();
+    <NavigationContainer>
+      <View style={styles.container}>
+        <AppLogo/>
+        <Text style={styles.statusText}>
+          {statusText}
+        </Text>
+        <AppButton
+          title="Mediation Debugger"
+          enabled={isInitialized}
+          onPress={() => {
+            if (AppLovinMAX.isInitialized()) {
+              AppLovinMAX.showMediationDebugger();
+            }
+          }}
+        />
+        <AppButton
+          title={getInterstitialButtonTitle()}
+          enabled={
+            isInitialized && interstitialAdLoadState !== adLoadState.loading
           }
-        }}
-      />
-      <AppButton
-        title={getInterstitialButtonTitle()}
-        enabled={
-          isInitialized && interstitialAdLoadState !== adLoadState.loading
-        }
-        onPress={() => {
-          if (AppLovinMAX.isInterstitialReady(INTERSTITIAL_AD_UNIT_ID)) {
-            AppLovinMAX.showInterstitial(INTERSTITIAL_AD_UNIT_ID);
-          } else {
-            logStatus('Loading interstitial ad...');
-            setInterstitialAdLoadState(adLoadState.loading);
-            AppLovinMAX.loadInterstitial(INTERSTITIAL_AD_UNIT_ID);
-          }
-        }}
-      />
-      <AppButton
-        title={getRewardedButtonTitle()}
-        enabled={isInitialized && rewardedAdLoadState !== adLoadState.loading}
-        onPress={() => {
-          if (AppLovinMAX.isRewardedAdReady(REWARDED_AD_UNIT_ID)) {
-            AppLovinMAX.showRewardedAd(REWARDED_AD_UNIT_ID);
-          } else {
-            logStatus('Loading rewarded ad...');
-            setRewardedAdLoadState(adLoadState.loading);
-            AppLovinMAX.loadRewardedAd(REWARDED_AD_UNIT_ID);
-          }
-        }}
-      />
-      {
-        (() => {
-          return !USE_NATIVE_UI_BANNER ?
-            <AppButton
-              title={isBannerShowing ? 'Hide Banner' : 'Show Banner Ad'}
-              enabled={isInitialized}
-              onPress={() => {
-                if (isBannerShowing) {
-                  AppLovinMAX.hideBanner(BANNER_AD_UNIT_ID);
-                } else {
-                  AppLovinMAX.showBanner(BANNER_AD_UNIT_ID);
-                }
+          onPress={() => {
+            if (AppLovinMAX.isInterstitialReady(INTERSTITIAL_AD_UNIT_ID)) {
+              AppLovinMAX.showInterstitial(INTERSTITIAL_AD_UNIT_ID);
+            } else {
+              logStatus('Loading interstitial ad...');
+              setInterstitialAdLoadState(adLoadState.loading);
+              AppLovinMAX.loadInterstitial(INTERSTITIAL_AD_UNIT_ID);
+            }
+          }}
+        />
+        <AppButton
+          title={getRewardedButtonTitle()}
+          enabled={isInitialized && rewardedAdLoadState !== adLoadState.loading}
+          onPress={() => {
+            if (AppLovinMAX.isRewardedAdReady(REWARDED_AD_UNIT_ID)) {
+              AppLovinMAX.showRewardedAd(REWARDED_AD_UNIT_ID);
+            } else {
+              logStatus('Loading rewarded ad...');
+              setRewardedAdLoadState(adLoadState.loading);
+              AppLovinMAX.loadRewardedAd(REWARDED_AD_UNIT_ID);
+            }
+          }}
+        />
+        <AppButton
+          title={isProgrammaticBannerShowing ? 'Hide Programmatic Banner' : 'Show Programmatic Banner'}
+          enabled={isInitialized && !isNativeUIBannerShowing}
+          onPress={() => {
+            if (isProgrammaticBannerShowing) {
+              AppLovinMAX.hideBanner(BANNER_AD_UNIT_ID);
+            } else {
 
-                setIsBannerShowing(!isBannerShowing);
-              }}
-            /> : null;
-        })()
-      }
-      {maybeRenderBanner()}
-    </View>
+              if (!isProgrammaticBannerCreated) {
+
+                //
+                // Programmatic banner creation - banners are automatically sized to 320x50 on phones and 728x90 on tablets
+                //
+                AppLovinMAX.createBanner(
+                  BANNER_AD_UNIT_ID,
+                  AppLovinMAX.AdViewPosition.BOTTOM_CENTER
+                );
+
+                // Set background color for banners to be fully functional
+                // In this case we are setting it to black - PLEASE USE HEX STRINGS ONLY
+                AppLovinMAX.setBannerBackgroundColor(BANNER_AD_UNIT_ID, '#000000');
+
+                setIsProgrammaticBannerCreated(true);
+              }
+
+              AppLovinMAX.showBanner(BANNER_AD_UNIT_ID);
+            }
+
+            setIsProgrammaticBannerShowing(!isProgrammaticBannerShowing);
+          }}
+        />
+        <AppButton
+          title={isNativeUIBannerShowing ? 'Hide Native UI Banner' : 'Show Native UI Banner'}
+          enabled={isInitialized && !isProgrammaticBannerShowing}
+          onPress={() => {
+            setIsNativeUIBannerShowing(!isNativeUIBannerShowing);
+          }}
+        />
+        {
+          (() => {
+            if (isNativeUIBannerShowing) {
+              return (
+                <AppLovinMAX.AdView adUnitId={BANNER_AD_UNIT_ID} adFormat={AppLovinMAX.AdFormat.BANNER} style={styles.banner}/>
+              );
+            }
+          })()
+        }
+      </View>
+    </NavigationContainer>
   );
 };
 
