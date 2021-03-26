@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+    * Remove need to define Android product flavors in `build.gradle`.
 ## 1.1.7
     * Fix Android native UI banners rendering issues when mounting / unmounting. 
     * Add support for setting test device(s) using the advertising identifier (GAID / IDFA) printed in the initialization logs.
