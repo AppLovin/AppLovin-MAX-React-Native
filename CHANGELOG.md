@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 1.1.8
     * Remove need to define Android product flavors in `build.gradle`.
 ## 1.1.7
     * Fix Android native UI banners rendering issues when mounting / unmounting. 
