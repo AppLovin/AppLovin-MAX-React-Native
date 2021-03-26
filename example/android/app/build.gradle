@@ -152,15 +152,13 @@ android {
     }
     flavorDimensions("default")
     productFlavors {
-        create("standalone") {
-            if (findProject(':Android-SDK') != null) {
-                buildConfigField("boolean", "IS_TEST_APP", "false")
-            }
-        }
-        create("app") {
-            if (findProject(':Android-SDK') != null) {
-                buildConfigField("boolean", "IS_TEST_APP", "true")
-            }
+        if (findProject(':Android-SDK') != null) {
+          create("standalone") {
+              buildConfigField("boolean", "IS_TEST_APP", "false")
+          }
+          create("app") {
+              buildConfigField("boolean", "IS_TEST_APP", "true")
+          }
         }
     }
     buildTypes {

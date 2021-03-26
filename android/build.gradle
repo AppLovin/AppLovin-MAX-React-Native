@@ -47,13 +47,11 @@ android {
 
   flavorDimensions("default")
   productFlavors {
-    create("standalone") {
-      if (findProject(':Android-SDK') != null) {
+    if (findProject(':Android-SDK') != null) {
+      create("standalone") {
         buildConfigField("boolean", "IS_TEST_APP", "false")
       }
-    }
-    create("app") {
-      if (findProject(':Android-SDK') != null) {
+      create("app") {
         buildConfigField("boolean", "IS_TEST_APP", "true")
       }
     }
