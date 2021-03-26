@@ -1,5 +1,7 @@
 ## Versions
 
+## 1.1.9
+    * Fix React Native version not being passed through to native SDKs.
 ## 1.1.8
     * Remove need to define Android product flavors in `build.gradle`.
 ## 1.1.7
