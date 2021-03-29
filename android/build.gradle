@@ -155,6 +155,6 @@ dependencies {
     implementation "com.google.android.gms:play-services-ads-identifier:${versions.playServicesIdentifier}"
     implementation project(':Android-SDK')
   } else {
-    implementation 'com.applovin:applovin-sdk:+'
+    implementation 'com.applovin:applovin-sdk:10.1.1'
   }
 }

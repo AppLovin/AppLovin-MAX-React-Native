@@ -1,11 +1,13 @@
 ## Versions
 
+## x.x.x
+    * Hardcode Android SDK version to 10.1.1.
 ## 1.1.9
     * Fix React Native version not being passed through to native SDKs.
 ## 1.1.8
     * Remove need to define Android product flavors in `build.gradle`.
 ## 1.1.7
-    * Fix Android native UI banners rendering issues when mounting / unmounting. 
+    * Fix Android native UI banners rendering issues when mounting / unmounting.
     * Add support for setting test device(s) using the advertising identifier (GAID / IDFA) printed in the initialization logs.
 ## 1.1.6
     * Attempt fix for `loadInterstitial()` or `loadRewardedAd()` due to current Activity being null.
