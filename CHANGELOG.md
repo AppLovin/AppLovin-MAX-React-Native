@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 1.1.10
     * Hardcode Android SDK version to 10.1.1.
 ## 1.1.9
     * Fix React Native version not being passed through to native SDKs.

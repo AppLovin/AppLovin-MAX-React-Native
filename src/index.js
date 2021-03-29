@@ -3,7 +3,7 @@ import AdView from "./AppLovinMAXAdView";
 
 const { AppLovinMAX } = NativeModules;
 
-const VERSION = "1.1.9";
+const VERSION = "1.1.10";
 
 /**
  * This enum represents whether or not the consent dialog should be shown for this user.
