@@ -76,6 +76,7 @@ public class AppLovinMAXModule
     private String       userIdToSet;
     private List<String> testDeviceAdvertisingIdsToSet;
     private Boolean      verboseLoggingToSet;
+    private Boolean      creativeDebuggerEnabledToSet;
 
     // Fullscreen Ad Fields
     private final Map<String, MaxInterstitialAd> mInterstitials = new HashMap<>( 2 );
@@ -217,6 +218,13 @@ public class AppLovinMAXModule
         {
             sdk.getSettings().setVerboseLogging( verboseLoggingToSet );
             verboseLoggingToSet = null;
+        }
+
+        // Set creative debugger enabled if needed.
+        if ( creativeDebuggerEnabledToSet != null )
+        {
+            sdk.getSettings().setCreativeDebuggerEnabled( creativeDebuggerEnabledToSet );
+            creativeDebuggerEnabledToSet = null;
         }
 
         sdk.initializeSdk( new AppLovinSdk.SdkInitializationListener()
@@ -377,6 +385,20 @@ public class AppLovinMAXModule
         else
         {
             testDeviceAdvertisingIdsToSet = advertisingIds;
+        }
+    }
+
+    @ReactMethod()
+    public void setCreativeDebuggerEnabled(final boolean enabled)
+    {
+        if ( isPluginInitialized )
+        {
+            sdk.getSettings().setCreativeDebuggerEnabled( enabled );
+            creativeDebuggerEnabledToSet = null;
+        }
+        else
+        {
+            creativeDebuggerEnabledToSet = enabled;
         }
     }
 
