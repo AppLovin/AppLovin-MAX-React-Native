@@ -171,8 +171,8 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     // Set creative debugger enabled if needed.
     if ( self.creativeDebuggerEnabledToSet )
     {
-      self.sdk.settings.creativeDebuggerEnabled = self.creativeDebuggerEnabledToSet.boolValue;
-      self.creativeDebuggerEnabledToSet = nil;
+        self.sdk.settings.creativeDebuggerEnabled = self.creativeDebuggerEnabledToSet.boolValue;
+        self.creativeDebuggerEnabledToSet = nil;
     }
     
     [self.sdk initializeSdkWithCompletionHandler:^(ALSdkConfiguration *configuration)
