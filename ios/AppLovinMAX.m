@@ -39,6 +39,7 @@
 @property (nonatomic,   copy, nullable) NSString *userIdentifierToSet;
 @property (nonatomic, strong, nullable) NSArray<NSString *> *testDeviceIdentifiersToSet;
 @property (nonatomic, strong, nullable) NSNumber *verboseLoggingToSet;
+@property (nonatomic, strong, nullable) NSNumber *creativeDebuggerEnabledToSet;
 
 // Fullscreen Ad Fields
 @property (nonatomic, strong) NSMutableDictionary<NSString *, MAInterstitialAd *> *interstitials;
@@ -167,6 +168,13 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         self.verboseLoggingToSet = nil;
     }
     
+    // Set creative debugger enabled if needed.
+    if ( self.creativeDebuggerEnabledToSet )
+    {
+        self.sdk.settings.creativeDebuggerEnabled = self.creativeDebuggerEnabledToSet.boolValue;
+        self.creativeDebuggerEnabledToSet = nil;
+    }
+    
     [self.sdk initializeSdkWithCompletionHandler:^(ALSdkConfiguration *configuration)
      {
         [self log: @"SDK initialized"];
@@ -284,6 +292,19 @@ RCT_EXPORT_METHOD(setTestDeviceAdvertisingIds:(NSArray<NSString *> *)testDeviceA
     {
         self.testDeviceIdentifiersToSet = testDeviceAdvertisingIds;
     }
+}
+
+RCT_EXPORT_METHOD(setCreativeDebuggerEnabled:(BOOL)enabled)
+{
+  if ( [self isPluginInitialized] )
+  {
+      self.sdk.settings.creativeDebuggerEnabled = enabled;
+      self.creativeDebuggerEnabledToSet = nil;
+  }
+  else
+  {
+      self.creativeDebuggerEnabledToSet = @(enabled);
+  }
 }
 
 #pragma mark - Event Tracking

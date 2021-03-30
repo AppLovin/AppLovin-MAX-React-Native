@@ -116,6 +116,7 @@ export default {
   /* isMuted() */
   /* setVerboseLogging(verboseLoggingEnabled) */
   /* setTestDeviceAdvertisingIds(advertisingIds) */
+  /* setCreativeDebuggerEnabled(enabled) */
 
   /*----------------*/
   /* EVENT TRACKING */
