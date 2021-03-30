@@ -367,6 +367,20 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
+    public void setCreativeDebuggerEnabled(final boolean enabled)
+    {
+        if ( isPluginInitialized )
+        {
+            sdk.getSettings().setCreativeDebuggerEnabled( enabled );
+            creativeDebuggerEnabledToSet = null;
+        }
+        else
+        {
+            creativeDebuggerEnabledToSet = enabled;
+        }
+    }
+
+    @ReactMethod()
     public void setTestDeviceAdvertisingIds(final ReadableArray rawAdvertisingIds)
     {
         List<String> advertisingIds = new ArrayList<>( rawAdvertisingIds.size() );
@@ -385,20 +399,6 @@ public class AppLovinMAXModule
         else
         {
             testDeviceAdvertisingIdsToSet = advertisingIds;
-        }
-    }
-
-    @ReactMethod()
-    public void setCreativeDebuggerEnabled(final boolean enabled)
-    {
-        if ( isPluginInitialized )
-        {
-            sdk.getSettings().setCreativeDebuggerEnabled( enabled );
-            creativeDebuggerEnabledToSet = null;
-        }
-        else
-        {
-            creativeDebuggerEnabledToSet = enabled;
         }
     }
 
