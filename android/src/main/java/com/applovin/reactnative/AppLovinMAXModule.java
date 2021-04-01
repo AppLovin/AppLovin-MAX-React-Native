@@ -406,7 +406,7 @@ public class AppLovinMAXModule
     public void setConsentFlowEnabled(final boolean enabled) {}
         
     @ReactMethod()
-    public void setPrivacyPolicyURL(final String urlString) {}
+    public void setPrivacyPolicyUrl(final String urlString) {}
 
     // EVENT TRACKING
 

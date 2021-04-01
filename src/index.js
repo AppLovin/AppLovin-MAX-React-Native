@@ -118,7 +118,7 @@ export default {
   /* setTestDeviceAdvertisingIds(advertisingIds) */
   /* setCreativeDebuggerEnabled(enabled) */
   /* setConsentFlowEnabled(enabled) */
-  /* setPrivacyPolicyURL(urlString) */
+  /* setPrivacyPolicyUrl(urlString) */
 
   /*----------------*/
   /* EVENT TRACKING */

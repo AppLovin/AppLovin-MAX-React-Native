@@ -318,7 +318,7 @@ RCT_EXPORT_METHOD(setConsentFlowEnabled:(BOOL)enabled)
     self.consentFlowEnabledToSet = @(enabled);
 }
 
-RCT_EXPORT_METHOD(setPrivacyPolicyURL:(NSString *)urlString)
+RCT_EXPORT_METHOD(setPrivacyPolicyUrl:(NSString *)urlString)
 {
     self.privacyPolicyURLToSet = [NSURL URLWithString: urlString];
 }
