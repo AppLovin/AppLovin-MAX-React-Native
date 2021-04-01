@@ -40,6 +40,8 @@
 @property (nonatomic, strong, nullable) NSArray<NSString *> *testDeviceIdentifiersToSet;
 @property (nonatomic, strong, nullable) NSNumber *verboseLoggingToSet;
 @property (nonatomic, strong, nullable) NSNumber *creativeDebuggerEnabledToSet;
+@property (nonatomic, strong, nullable) NSNumber *consentFlowEnabledToSet;
+@property (nonatomic, strong, nullable) NSURL *privacyPolicyURLToSet;
 
 // Fullscreen Ad Fields
 @property (nonatomic, strong) NSMutableDictionary<NSString *, MAInterstitialAd *> *interstitials;
@@ -142,8 +144,12 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         }
     }
     
+    ALSdkSettings *settings = [[ALSdkSettings alloc] init];
+    settings.consentFlowSettings.enabled = self.consentFlowEnabledToSet.boolValue ?: NO;
+    settings.consentFlowSettings.privacyPolicyURL = self.privacyPolicyURLToSet;
+    
     // Initialize SDK
-    self.sdk = [ALSdk sharedWithKey: sdkKey];
+    self.sdk = [ALSdk sharedWithKey: sdkKey settings: settings];
     [self.sdk setPluginVersion: [@"React-Native-" stringByAppendingString: pluginVersion]];
     [self.sdk setMediationProvider: ALMediationProviderMAX];
     
@@ -305,6 +311,16 @@ RCT_EXPORT_METHOD(setCreativeDebuggerEnabled:(BOOL)enabled)
   {
       self.creativeDebuggerEnabledToSet = @(enabled);
   }
+}
+
+RCT_EXPORT_METHOD(setConsentFlowEnabled:(BOOL)enabled)
+{
+    self.consentFlowEnabledToSet = @(enabled);
+}
+
+RCT_EXPORT_METHOD(setPrivacyPolicyURL:(NSString *)urlString)
+{
+    self.privacyPolicyURLToSet = [NSURL URLWithString: urlString];
 }
 
 #pragma mark - Event Tracking
