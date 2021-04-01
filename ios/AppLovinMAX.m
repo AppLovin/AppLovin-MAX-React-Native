@@ -145,8 +145,11 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     }
     
     ALSdkSettings *settings = [[ALSdkSettings alloc] init];
-    settings.consentFlowSettings.enabled = self.consentFlowEnabledToSet.boolValue ?: NO;
+    settings.consentFlowSettings.enabled = self.consentFlowEnabledToSet.boolValue;
     settings.consentFlowSettings.privacyPolicyURL = self.privacyPolicyURLToSet;
+    
+    self.consentFlowEnabledToSet = nil;
+    self.privacyPolicyURLToSet = nil;
     
     // Initialize SDK
     self.sdk = [ALSdk sharedWithKey: sdkKey settings: settings];
