@@ -2,7 +2,7 @@
 
 ## x.x.x
     * Add `AppLovinMAX.setCreativeDebuggerEnabled()` API to enable the creative debugger button.
-    * Revert from using the hardcoded SDK value of 10.1.1 to using +
+    * Revert from using the hardcoded SDK value of 10.1.1 to using +.
 ## 1.1.10
     * Hardcode Android SDK version to 10.1.1.
 ## 1.1.9
