@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 2.0.0
     * Initial support for MAX consent flow. Please see our documentation for instructions on enabling it.
     * Add `AppLovinMAX.setCreativeDebuggerEnabled()` API to enable the creative debugger button.
     * Revert from using the hardcoded SDK value of 10.1.1 to using +.
