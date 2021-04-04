@@ -808,7 +808,7 @@ public class AppLovinMAXModule
 
         WritableMap params = Arguments.createMap();
         params.putString( "adUnitId", ad.getAdUnitId() );
-        sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? "OnMrecAdCollapsedEvent" : "OnBannerAdExpandedEvent", params );
+        sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? "OnMrecAdExpandedEvent" : "OnBannerAdExpandedEvent", params );
     }
 
     @Override
