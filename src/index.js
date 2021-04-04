@@ -117,6 +117,8 @@ export default {
   /* setVerboseLogging(verboseLoggingEnabled) */
   /* setTestDeviceAdvertisingIds(advertisingIds) */
   /* setCreativeDebuggerEnabled(enabled) */
+  /* setConsentFlowEnabled(enabled) */
+  /* setPrivacyPolicyUrl(urlString) */
 
   /*----------------*/
   /* EVENT TRACKING */

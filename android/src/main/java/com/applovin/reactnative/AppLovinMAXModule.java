@@ -401,6 +401,12 @@ public class AppLovinMAXModule
             testDeviceAdvertisingIdsToSet = advertisingIds;
         }
     }
+    
+    @ReactMethod()
+    public void setConsentFlowEnabled(final boolean enabled) {}
+        
+    @ReactMethod()
+    public void setPrivacyPolicyUrl(final String urlString) {}
 
     // EVENT TRACKING
 
