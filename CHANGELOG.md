@@ -3,6 +3,7 @@
 ## x.x.x
     * Add `AppLovinMAX.setCreativeDebuggerEnabled()` API to enable the creative debugger button.
     * Revert from using the hardcoded SDK value of 10.1.1 to using +.
+    * Fix MRec ad expanded event not working on Android.
 ## 1.1.10
     * Hardcode Android SDK version to 10.1.1.
 ## 1.1.9
