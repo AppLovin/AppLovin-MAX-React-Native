@@ -1,5 +1,5 @@
 PODS:
-  - AppLovinSDK (6.14.3)
+  - AppLovinSDK (10.2.0)
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.63.2)
@@ -186,8 +186,8 @@ PODS:
     - React-cxxreact (= 0.63.2)
     - React-jsi (= 0.63.2)
   - React-jsinspector (0.63.2)
-  - react-native-applovin-max (1.1.7):
-    - AppLovinSDK
+  - react-native-applovin-max (2.0.0):
+    - AppLovinSDK (= 10.2.0)
     - React
   - react-native-safe-area-context (3.2.0):
     - React-Core
@@ -396,7 +396,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  AppLovinSDK: cf6599cf6e997c34d2aa4a6e49b5ff627b17183f
+  AppLovinSDK: 5a38c9f21cdf0357c8a3c8e6ba9f95a64ddcac5d
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   FBLazyVector: 3ef4a7f62e7db01092f9d517d2ebc0d0677c4a37
@@ -413,7 +413,7 @@ SPEC CHECKSUMS:
   React-jsi: 54245e1d5f4b690dec614a73a3795964eeef13a8
   React-jsiexecutor: 8ca588cc921e70590820ce72b8789b02c67cce38
   React-jsinspector: b14e62ebe7a66e9231e9581279909f2fc3db6606
-  react-native-applovin-max: 2dcd5371bfd2c92b9d10a78a9e67c3c610be62dd
+  react-native-applovin-max: 97e7bde9ef5d59d94ac3b4de5d09768dfdab3bff
   react-native-safe-area-context: e471852c5ed67eea4b10c5d9d43c1cebae3b231d
   React-RCTActionSheet: 910163b6b09685a35c4ebbc52b66d1bfbbe39fc5
   React-RCTAnimation: 9a883bbe1e9d2e158d4fb53765ed64c8dc2200c6
@@ -431,6 +431,6 @@ SPEC CHECKSUMS:
   RNScreens: f7ad633b2e0190b77b6a7aab7f914fad6f198d8d
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
 
-PODFILE CHECKSUM: be4d3137a121c986348ebc40758f63bbd54bacca
+PODFILE CHECKSUM: 77dfc3f21e7f7ec2d32107cb078281cf04a8d45f
 
 COCOAPODS: 1.10.1

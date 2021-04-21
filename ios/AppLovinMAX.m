@@ -79,6 +79,12 @@ RCT_EXPORT_MODULE()
     return YES;
 }
 
+// Invoke all exported methods from main queue
+- (dispatch_queue_t)methodQueue
+{
+    return dispatch_get_main_queue();
+}
+
 + (AppLovinMAX *)shared
 {
     return AppLovinMAXShared;

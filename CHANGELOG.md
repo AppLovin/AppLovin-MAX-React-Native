@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+    * Ensure exported iOS methods are invoked on the main queue.
 ## 2.0.0
     * Initial support for MAX consent flow. Please see our documentation for instructions on enabling it.
     * Add `AppLovinMAX.setCreativeDebuggerEnabled()` API to enable the creative debugger button.
