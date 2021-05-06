@@ -27,6 +27,11 @@ const App = () => {
     android: 'ENTER_ANDROID_REWARDED_AD_UNIT_ID_HERE',
   });
 
+  const MREC_AD_UNIT_ID = Platform.select({
+    ios: 'ENTER_IOS_MREC_AD_UNIT_ID_HERE',
+    android: 'ENTER_ANDROID_MREC_AD_UNIT_ID_HERE',
+  });
+
   const BANNER_AD_UNIT_ID = Platform.select({
     ios: 'ENTER_IOS_BANNER_AD_UNIT_ID_HERE',
     android: 'ENTER_ANDROID_BANNER_AD_UNIT_ID_HERE',
@@ -41,6 +46,10 @@ const App = () => {
   const [isProgrammaticBannerCreated, setIsProgrammaticBannerCreated] = useState(false);
   const [isProgrammaticBannerShowing, setIsProgrammaticBannerShowing] = useState(false);
   const [isNativeUIBannerShowing, setIsNativeUIBannerShowing] = useState(false);
+  const [isProgrammaticMRecCreated, setIsProgrammaticMRecCreated] = useState(false);
+  const [isProgrammaticMRecShowing, setIsProgrammaticMRecShowing] = useState(false);
+  const [isNativeUIMRecCreated, setIsNativeUIMRecCreated] = useState(false);
+  const [isNativeUIMRecShowing, setIsNativeUIMRecShowing] = useState(false);
   const [statusText, setStatusText] = useState('Initializing SDK...');
 
   AppLovinMAX.setTestDeviceAdvertisingIds([]);
@@ -151,6 +160,24 @@ const App = () => {
     });
     AppLovinMAX.addEventListener('OnBannerAdCollapsedEvent', () => {
       logStatus('Banner ad collapsed')
+    });
+
+    // MREC Ad Listeners
+    AppLovinMAX.addEventListener('OnMRecAdLoadedEvent', () => {
+      var adInfo = AppLovinMAX.getAdInfo(BANNER_AD_UNIT_ID);
+      logStatus('MREC ad loaded from ' + adInfo.networkName);
+    });
+    AppLovinMAX.addEventListener('OnMRecAdLoadFailedEvent', () => {
+      logStatus('MREC ad failed to load');
+    });
+    AppLovinMAX.addEventListener('OnMRecAdClickedEvent', () => {
+      logStatus('MREC ad clicked');
+    });
+    AppLovinMAX.addEventListener('OnMRecAdExpandedEvent', () => {
+      logStatus('MREC ad expanded')
+    });
+    AppLovinMAX.addEventListener('OnMRecAdCollapsedEvent', () => {
+      logStatus('MREC ad collapsed')
     });
   }
 
@@ -270,6 +297,46 @@ const App = () => {
             }
           })()
         }
+        <AppButton
+          title={isNativeUIMRecShowing ? 'Hide Native UI MRec' : 'Show Native UI MRec'}
+          enabled={isInitialized && !isProgrammaticMRecCreated}
+          onPress={() => {
+            setIsNativeUIMRecShowing(!isNativeUIMRecShowing);
+            setIsNativeUIMRecCreated(true);
+          }}
+        />
+        {
+          (() => {
+            if (isNativeUIMRecShowing) {
+              return (
+                <AppLovinMAX.AdView adUnitId={MREC_AD_UNIT_ID} adFormat={AppLovinMAX.AdFormat.MREC} style={styles.mrec}/>
+              );
+            }
+          })()
+        }
+        <AppButton
+          title={isProgrammaticMRecShowing ? 'Hide Programmatic MRec' : 'Show Programmatic MRec'}
+          enabled={isInitialized && !isNativeUIMRecCreated}
+          onPress={() => {
+            if (isProgrammaticMRecShowing) {
+              AppLovinMAX.hideMRec(MREC_AD_UNIT_ID);
+            } else {
+
+              if (!isProgrammaticMRecCreated) {
+                AppLovinMAX.createMRec(
+                  MREC_AD_UNIT_ID,
+                  AppLovinMAX.AdViewPosition.BOTTOM_LEFT
+                );
+
+                setIsProgrammaticMRecCreated(true);
+              }
+
+              AppLovinMAX.showMRec(MREC_AD_UNIT_ID);
+            }
+
+            setIsProgrammaticMRecShowing(!isProgrammaticMRecShowing);
+          }}
+        />
       </View>
     </NavigationContainer>
   );
@@ -293,6 +360,15 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: AppLovinMAX.isTablet() ? 90 : 50,
+    bottom: Platform.select({
+      ios: 36, // For bottom safe area
+      android: 0,
+    })
+  },
+    mrec: {
+    position: 'absolute',
+    width: '100%',
+    height: 250,
     bottom: Platform.select({
       ios: 36, // For bottom safe area
       android: 0,
