@@ -1,5 +1,8 @@
 ## Versions
 
+## 2.0.2
+    * Remove `getAdInfo(adUnitId)` API in lieu of ad callbacks.
+    * Return more data in ad callbacks in addition to `ad.adUnitId` (e.g. `adInfo.creativeId`, `adInfo.networkName`, `adInfo.placement`, `adInfo.revenue`).
 ## 2.0.1
     * Ensure exported iOS methods are invoked on the main queue.
 ## 2.0.0
