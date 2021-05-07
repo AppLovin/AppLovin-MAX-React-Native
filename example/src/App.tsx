@@ -309,7 +309,7 @@ const App = () => {
           })()
         }
         <AppButton
-          title={isProgrammaticMRecShowing ? 'Hide Programmatic MRec' : 'Show Programmatic MRec'}
+          title={isProgrammaticMRecShowing ? 'Hide Programmatic MREC' : 'Show Programmatic MREC'}
           enabled={isInitialized && !isNativeUIMRecShowing}
           onPress={() => {
             if (isProgrammaticMRecShowing) {
