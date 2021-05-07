@@ -1,5 +1,7 @@
 ## Versions
 
+## 2.0.3
+    * Fix ad callbacks not returning.
 ## 2.0.2
     * Remove `getAdInfo(adUnitId)` API in lieu of ad callbacks.
     * Return more data in ad callbacks in addition to `ad.adUnitId` (e.g. `adInfo.creativeId`, `adInfo.networkName`, `adInfo.placement`, `adInfo.revenue`).
