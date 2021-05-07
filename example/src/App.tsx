@@ -48,7 +48,6 @@ const App = () => {
   const [isNativeUIBannerShowing, setIsNativeUIBannerShowing] = useState(false);
   const [isProgrammaticMRecCreated, setIsProgrammaticMRecCreated] = useState(false);
   const [isProgrammaticMRecShowing, setIsProgrammaticMRecShowing] = useState(false);
-  const [isNativeUIMRecCreated, setIsNativeUIMRecCreated] = useState(false);
   const [isNativeUIMRecShowing, setIsNativeUIMRecShowing] = useState(false);
   const [statusText, setStatusText] = useState('Initializing SDK...');
 
@@ -68,8 +67,7 @@ const App = () => {
       setInterstitialAdLoadState(adLoadState.loaded);
 
       // Interstitial ad is ready to be shown. AppLovinMAX.isInterstitialReady(INTERSTITIAL_AD_UNIT_ID) will now return 'true'
-      var completeAdInfo = AppLovinMAX.getAdInfo(INTERSTITIAL_AD_UNIT_ID);
-      logStatus('Interstitial ad loaded from ' + completeAdInfo.networkName);
+      logStatus('Interstitial ad loaded from ' + adInfo.networkName);
 
       // Reset retry attempt
       setInterstitialRetryAttempt(0)
@@ -106,8 +104,7 @@ const App = () => {
       setRewardedAdLoadState(adLoadState.loaded);
 
       // Rewarded ad is ready to be shown. AppLovinMAX.isRewardedAdReady(REWARDED_AD_UNIT_ID) will now return 'true'
-      var completeAdInfo = AppLovinMAX.getAdInfo(REWARDED_AD_UNIT_ID);
-      logStatus('Rewarded ad loaded from ' + completeAdInfo.networkName);
+     logStatus('Rewarded ad loaded from ' + adInfo.networkName);
 
       // Reset retry attempt
       setRewardedAdRetryAttempt(0);
@@ -146,8 +143,7 @@ const App = () => {
 
     // Banner Ad Listeners
     AppLovinMAX.addEventListener('OnBannerAdLoadedEvent', (adInfo) => {
-      var completeAdInfo = AppLovinMAX.getAdInfo(BANNER_AD_UNIT_ID);
-      logStatus('Banner ad loaded from ' + completeAdInfo.networkName);
+      logStatus('Banner ad loaded from ' + adInfo.networkName);
     });
     AppLovinMAX.addEventListener('OnBannerAdLoadFailedEvent', (adInfo) => {
       logStatus('Banner ad failed to load');
@@ -164,8 +160,7 @@ const App = () => {
 
     // MREC Ad Listeners
     AppLovinMAX.addEventListener('OnMRecAdLoadedEvent', (adInfo) => {
-      var completeAdInfo = AppLovinMAX.getAdInfo(MREC_AD_UNIT_ID);
-      logStatus('MREC ad loaded from ' + completeAdInfo.networkName);
+      logStatus('MREC ad loaded from ' + adInfo.networkName);
     });
     AppLovinMAX.addEventListener('OnMRecAdLoadFailedEvent', (adInfo) => {
       logStatus('MREC ad failed to load');
@@ -299,10 +294,9 @@ const App = () => {
         }
         <AppButton
           title={isNativeUIMRecShowing ? 'Hide Native UI MRec' : 'Show Native UI MRec'}
-          enabled={isInitialized && !isProgrammaticMRecCreated}
+          enabled={isInitialized && !isProgrammaticMRecShowing}
           onPress={() => {
             setIsNativeUIMRecShowing(!isNativeUIMRecShowing);
-            setIsNativeUIMRecCreated(true);
           }}
         />
         {
@@ -316,7 +310,7 @@ const App = () => {
         }
         <AppButton
           title={isProgrammaticMRecShowing ? 'Hide Programmatic MRec' : 'Show Programmatic MRec'}
-          enabled={isInitialized && !isNativeUIMRecCreated}
+          enabled={isInitialized && !isNativeUIMRecShowing}
           onPress={() => {
             if (isProgrammaticMRecShowing) {
               AppLovinMAX.hideMRec(MREC_AD_UNIT_ID);
