@@ -89,9 +89,6 @@ public class AppLovinMAXModule
     private final Map<String, MaxAdFormat> mVerticalAdViewFormats      = new HashMap<>( 2 );
     private final List<String>             mAdUnitIdsToShowAfterCreate = new ArrayList<>( 2 );
 
-    private final Map<String, MaxAd> mAdInfoMap     = new HashMap<>();
-    private final Object             mAdInfoMapLock = new Object();
-
     public static AppLovinMAXModule getInstance()
     {
         return instance;
@@ -401,10 +398,10 @@ public class AppLovinMAXModule
             testDeviceAdvertisingIdsToSet = advertisingIds;
         }
     }
-    
+
     @ReactMethod()
     public void setConsentFlowEnabled(final boolean enabled) {}
-        
+
     @ReactMethod()
     public void setPrivacyPolicyUrl(final String urlString) {}
 
@@ -425,27 +422,6 @@ public class AppLovinMAXModule
         }
 
         sdk.getEventService().trackEvent( event, parametersToUse );
-    }
-
-    // AD INFO
-
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public WritableMap getAdInfo(final String adUnitId)
-    {
-        if ( TextUtils.isEmpty( adUnitId ) ) return Arguments.createMap();
-
-        final MaxAd ad;
-        synchronized ( mAdInfoMapLock )
-        {
-            ad = mAdInfoMap.get( adUnitId );
-        }
-
-        if ( ad == null ) return Arguments.createMap();
-
-        WritableMap adInfo = Arguments.createMap();
-        adInfo.putString( "adUnitId", adUnitId );
-        adInfo.putString( "networkName", ad.getNetworkName() );
-        return adInfo;
     }
 
     // BANNERS
@@ -649,14 +625,7 @@ public class AppLovinMAXModule
             return;
         }
 
-        synchronized ( mAdInfoMapLock )
-        {
-            mAdInfoMap.put( ad.getAdUnitId(), ad );
-        }
-
-        WritableMap params = Arguments.createMap();
-        params.putString( "adUnitId", ad.getAdUnitId() );
-        sendReactNativeEvent( name, params );
+        sendReactNativeEvent( name, getAdInfo( ad ) );
     }
 
     @Override
@@ -685,11 +654,6 @@ public class AppLovinMAXModule
         {
             logStackTrace( new IllegalStateException( "invalid adUnitId: " + adUnitId ) );
             return;
-        }
-
-        synchronized ( mAdInfoMapLock )
-        {
-            mAdInfoMap.remove( adUnitId );
         }
 
         sendReactNativeEventForAdLoadFailed( name, adUnitId, errorCode );
@@ -730,9 +694,7 @@ public class AppLovinMAXModule
             return;
         }
 
-        WritableMap params = Arguments.createMap();
-        params.putString( "adUnitId", ad.getAdUnitId() );
-        sendReactNativeEvent( name, params );
+        sendReactNativeEvent( name, getAdInfo( ad ) );
     }
 
     @Override
@@ -752,9 +714,7 @@ public class AppLovinMAXModule
             name = "OnRewardedAdDisplayedEvent";
         }
 
-        WritableMap params = Arguments.createMap();
-        params.putString( "adUnitId", ad.getAdUnitId() );
-        sendReactNativeEvent( name, params );
+        sendReactNativeEvent( name, getAdInfo( ad ) );
     }
 
     @Override
@@ -774,9 +734,9 @@ public class AppLovinMAXModule
             name = "OnRewardedAdFailedToDisplayEvent";
         }
 
-        WritableMap params = Arguments.createMap();
-        params.putString( "adUnitId", ad.getAdUnitId() );
-        params.putString( "errorCode", Integer.toString( errorCode ) );
+        WritableMap params = getAdInfo( ad );
+        params.putInt( "errorCode", errorCode );
+
         sendReactNativeEvent( name, params );
     }
 
@@ -797,9 +757,7 @@ public class AppLovinMAXModule
             name = "OnRewardedAdHiddenEvent";
         }
 
-        WritableMap params = Arguments.createMap();
-        params.putString( "adUnitId", ad.getAdUnitId() );
-        sendReactNativeEvent( name, params );
+        sendReactNativeEvent( name, getAdInfo( ad ) );
     }
 
     @Override
@@ -812,9 +770,7 @@ public class AppLovinMAXModule
             return;
         }
 
-        WritableMap params = Arguments.createMap();
-        params.putString( "adUnitId", ad.getAdUnitId() );
-        sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? "OnMRecAdExpandedEvent" : "OnBannerAdExpandedEvent", params );
+        sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? "OnMRecAdExpandedEvent" : "OnBannerAdExpandedEvent", getAdInfo( ad ) );
     }
 
     @Override
@@ -827,9 +783,7 @@ public class AppLovinMAXModule
             return;
         }
 
-        WritableMap params = Arguments.createMap();
-        params.putString( "adUnitId", ad.getAdUnitId() );
-        sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? "OnMRecAdCollapsedEvent" : "OnBannerAdCollapsedEvent", params );
+        sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? "OnMRecAdCollapsedEvent" : "OnBannerAdCollapsedEvent", getAdInfo( ad ) );
     }
 
     @Override
@@ -857,8 +811,7 @@ public class AppLovinMAXModule
         final String rewardLabel = reward != null ? reward.getLabel() : "";
         final int rewardAmount = reward != null ? reward.getAmount() : 0;
 
-        WritableMap params = Arguments.createMap();
-        params.putString( "adUnitId", ad.getAdUnitId() );
+        WritableMap params = getAdInfo( ad );
         params.putString( "rewardLabel", rewardLabel );
         params.putInt( "rewardAmount", rewardAmount );
         sendReactNativeEvent( "OnRewardedAdReceivedRewardEvent", params );
@@ -1333,6 +1286,18 @@ public class AppLovinMAXModule
     public static MaxAdFormat getDeviceSpecificBannerAdViewAdFormat(final Context context)
     {
         return AppLovinSdkUtils.isTablet( context ) ? MaxAdFormat.LEADER : MaxAdFormat.BANNER;
+    }
+
+    private WritableMap getAdInfo(final MaxAd ad)
+    {
+        WritableMap adInfo = Arguments.createMap();
+        adInfo.putString( "adUnitId", ad.getAdUnitId() );
+        adInfo.putString( "creativeId", !TextUtils.isEmpty( ad.getCreativeId() ) ? ad.getCreativeId() : "" );
+        adInfo.putString( "networkName", ad.getNetworkName() );
+        adInfo.putString( "placement", !TextUtils.isEmpty( ad.getPlacement() ) ? ad.getPlacement() : "" );
+        adInfo.putDouble( "revenue", ad.getRevenue() );
+
+        return adInfo;
     }
 
     protected static class AdViewSize
