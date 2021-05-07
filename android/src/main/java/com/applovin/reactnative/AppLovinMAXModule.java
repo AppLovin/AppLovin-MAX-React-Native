@@ -401,10 +401,10 @@ public class AppLovinMAXModule
             testDeviceAdvertisingIdsToSet = advertisingIds;
         }
     }
-    
+
     @ReactMethod()
     public void setConsentFlowEnabled(final boolean enabled) {}
-        
+
     @ReactMethod()
     public void setPrivacyPolicyUrl(final String urlString) {}
 
@@ -442,10 +442,7 @@ public class AppLovinMAXModule
 
         if ( ad == null ) return Arguments.createMap();
 
-        WritableMap adInfo = Arguments.createMap();
-        adInfo.putString( "adUnitId", adUnitId );
-        adInfo.putString( "networkName", ad.getNetworkName() );
-        return adInfo;
+        return getAdInfo( ad );
     }
 
     // BANNERS
@@ -654,9 +651,7 @@ public class AppLovinMAXModule
             mAdInfoMap.put( ad.getAdUnitId(), ad );
         }
 
-        WritableMap params = Arguments.createMap();
-        params.putString( "adUnitId", ad.getAdUnitId() );
-        sendReactNativeEvent( name, params );
+        sendReactNativeEvent( name, getAdInfo( ad ) );
     }
 
     @Override
@@ -685,11 +680,6 @@ public class AppLovinMAXModule
         {
             logStackTrace( new IllegalStateException( "invalid adUnitId: " + adUnitId ) );
             return;
-        }
-
-        synchronized ( mAdInfoMapLock )
-        {
-            mAdInfoMap.remove( adUnitId );
         }
 
         sendReactNativeEventForAdLoadFailed( name, adUnitId, errorCode );
@@ -730,9 +720,7 @@ public class AppLovinMAXModule
             return;
         }
 
-        WritableMap params = Arguments.createMap();
-        params.putString( "adUnitId", ad.getAdUnitId() );
-        sendReactNativeEvent( name, params );
+        sendReactNativeEvent( name, getAdInfo( ad ) );
     }
 
     @Override
@@ -752,9 +740,7 @@ public class AppLovinMAXModule
             name = "OnRewardedAdDisplayedEvent";
         }
 
-        WritableMap params = Arguments.createMap();
-        params.putString( "adUnitId", ad.getAdUnitId() );
-        sendReactNativeEvent( name, params );
+        sendReactNativeEvent( name, getAdInfo( ad ) );
     }
 
     @Override
@@ -774,9 +760,14 @@ public class AppLovinMAXModule
             name = "OnRewardedAdFailedToDisplayEvent";
         }
 
-        WritableMap params = Arguments.createMap();
-        params.putString( "adUnitId", ad.getAdUnitId() );
-        params.putString( "errorCode", Integer.toString( errorCode ) );
+        synchronized ( mAdInfoMapLock )
+        {
+            mAdInfoMap.remove( ad.getAdUnitId() );
+        }
+
+        WritableMap params = getAdInfo( ad );
+        params.putInt( "errorCode", errorCode );
+
         sendReactNativeEvent( name, params );
     }
 
@@ -797,9 +788,12 @@ public class AppLovinMAXModule
             name = "OnRewardedAdHiddenEvent";
         }
 
-        WritableMap params = Arguments.createMap();
-        params.putString( "adUnitId", ad.getAdUnitId() );
-        sendReactNativeEvent( name, params );
+        synchronized ( mAdInfoMapLock )
+        {
+            mAdInfoMap.remove( ad.getAdUnitId() );
+        }
+
+        sendReactNativeEvent( name, getAdInfo( ad ) );
     }
 
     @Override
@@ -812,9 +806,7 @@ public class AppLovinMAXModule
             return;
         }
 
-        WritableMap params = Arguments.createMap();
-        params.putString( "adUnitId", ad.getAdUnitId() );
-        sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? "OnMRecAdExpandedEvent" : "OnBannerAdExpandedEvent", params );
+        sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? "OnMRecAdExpandedEvent" : "OnBannerAdExpandedEvent", getAdInfo( ad ) );
     }
 
     @Override
@@ -827,9 +819,7 @@ public class AppLovinMAXModule
             return;
         }
 
-        WritableMap params = Arguments.createMap();
-        params.putString( "adUnitId", ad.getAdUnitId() );
-        sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? "OnMRecAdCollapsedEvent" : "OnBannerAdCollapsedEvent", params );
+        sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? "OnMRecAdCollapsedEvent" : "OnBannerAdCollapsedEvent", getAdInfo( ad ) );
     }
 
     @Override
@@ -857,8 +847,7 @@ public class AppLovinMAXModule
         final String rewardLabel = reward != null ? reward.getLabel() : "";
         final int rewardAmount = reward != null ? reward.getAmount() : 0;
 
-        WritableMap params = Arguments.createMap();
-        params.putString( "adUnitId", ad.getAdUnitId() );
+        WritableMap params = getAdInfo( ad );
         params.putString( "rewardLabel", rewardLabel );
         params.putInt( "rewardAmount", rewardAmount );
         sendReactNativeEvent( "OnRewardedAdReceivedRewardEvent", params );
@@ -1333,6 +1322,18 @@ public class AppLovinMAXModule
     public static MaxAdFormat getDeviceSpecificBannerAdViewAdFormat(final Context context)
     {
         return AppLovinSdkUtils.isTablet( context ) ? MaxAdFormat.LEADER : MaxAdFormat.BANNER;
+    }
+
+    private WritableMap getAdInfo(final MaxAd ad)
+    {
+        WritableMap adInfo = Arguments.createMap();
+        adInfo.putString( "adUnitId", ad.getAdUnitId() );
+        adInfo.putString( "creativeId", ad.getCreativeId() );
+        adInfo.putString( "networkName", ad.getNetworkName() );
+        adInfo.putString( "placement", ad.getPlacement() );
+        adInfo.putDouble( "revenue", ad.getRevenue() );
+
+        return adInfo;
     }
 
     protected static class AdViewSize

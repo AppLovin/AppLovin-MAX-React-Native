@@ -311,15 +311,15 @@ RCT_EXPORT_METHOD(setTestDeviceAdvertisingIds:(NSArray<NSString *> *)testDeviceA
 
 RCT_EXPORT_METHOD(setCreativeDebuggerEnabled:(BOOL)enabled)
 {
-  if ( [self isPluginInitialized] )
-  {
-      self.sdk.settings.creativeDebuggerEnabled = enabled;
-      self.creativeDebuggerEnabledToSet = nil;
-  }
-  else
-  {
-      self.creativeDebuggerEnabledToSet = @(enabled);
-  }
+    if ( [self isPluginInitialized] )
+    {
+        self.sdk.settings.creativeDebuggerEnabled = enabled;
+        self.creativeDebuggerEnabledToSet = nil;
+    }
+    else
+    {
+        self.creativeDebuggerEnabledToSet = @(enabled);
+    }
 }
 
 RCT_EXPORT_METHOD(setConsentFlowEnabled:(BOOL)enabled)
