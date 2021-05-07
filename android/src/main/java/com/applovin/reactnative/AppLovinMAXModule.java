@@ -1294,7 +1294,7 @@ public class AppLovinMAXModule
         adInfo.putString( "adUnitId", ad.getAdUnitId() );
         adInfo.putString( "creativeId", !TextUtils.isEmpty( ad.getCreativeId() ) ? ad.getCreativeId() : "" );
         adInfo.putString( "networkName", ad.getNetworkName() );
-        adInfo.putString( "placement", ad.getPlacement() );
+        adInfo.putString( "placement", !TextUtils.isEmpty( ad.getPlacement() ) ? ad.getPlacement() : "" );
         adInfo.putDouble( "revenue", ad.getRevenue() );
 
         return adInfo;
