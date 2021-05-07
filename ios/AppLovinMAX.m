@@ -1062,7 +1062,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 - (NSDictionary<NSString *, id> *)adInfoForAd:(MAAd *)ad
 {
     return @{@"adUnitId" : ad.adUnitIdentifier,
-             @"creativeId" : ad.creativeIdentifier,
+             @"creativeId" : ad.creativeIdentifier ?: @"",
              @"networkName" : ad.networkName,
              @"placement" : ad.placement,
              @"revenue" : @(ad.revenue)};
