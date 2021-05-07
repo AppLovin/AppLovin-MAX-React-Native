@@ -89,9 +89,6 @@ public class AppLovinMAXModule
     private final Map<String, MaxAdFormat> mVerticalAdViewFormats      = new HashMap<>( 2 );
     private final List<String>             mAdUnitIdsToShowAfterCreate = new ArrayList<>( 2 );
 
-    private final Map<String, MaxAd> mAdInfoMap     = new HashMap<>();
-    private final Object             mAdInfoMapLock = new Object();
-
     public static AppLovinMAXModule getInstance()
     {
         return instance;
@@ -427,24 +424,6 @@ public class AppLovinMAXModule
         sdk.getEventService().trackEvent( event, parametersToUse );
     }
 
-    // AD INFO
-
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public WritableMap getAdInfo(final String adUnitId)
-    {
-        if ( TextUtils.isEmpty( adUnitId ) ) return Arguments.createMap();
-
-        final MaxAd ad;
-        synchronized ( mAdInfoMapLock )
-        {
-            ad = mAdInfoMap.get( adUnitId );
-        }
-
-        if ( ad == null ) return Arguments.createMap();
-
-        return getAdInfo( ad );
-    }
-
     // BANNERS
 
     // TODO: Bridge banners as a native React Native view
@@ -646,11 +625,6 @@ public class AppLovinMAXModule
             return;
         }
 
-        synchronized ( mAdInfoMapLock )
-        {
-            mAdInfoMap.put( ad.getAdUnitId(), ad );
-        }
-
         sendReactNativeEvent( name, getAdInfo( ad ) );
     }
 
@@ -760,11 +734,6 @@ public class AppLovinMAXModule
             name = "OnRewardedAdFailedToDisplayEvent";
         }
 
-        synchronized ( mAdInfoMapLock )
-        {
-            mAdInfoMap.remove( ad.getAdUnitId() );
-        }
-
         WritableMap params = getAdInfo( ad );
         params.putInt( "errorCode", errorCode );
 
@@ -786,11 +755,6 @@ public class AppLovinMAXModule
         else // REWARDED
         {
             name = "OnRewardedAdHiddenEvent";
-        }
-
-        synchronized ( mAdInfoMapLock )
-        {
-            mAdInfoMap.remove( ad.getAdUnitId() );
         }
 
         sendReactNativeEvent( name, getAdInfo( ad ) );

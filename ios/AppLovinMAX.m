@@ -56,9 +56,6 @@
 @property (nonatomic, strong) UIView *safeAreaBackground;
 @property (nonatomic, strong, nullable) UIColor *publisherBannerBackgroundColor;
 
-@property (nonatomic, strong) NSMutableDictionary<NSString *, MAAd *> *adInfoDict;
-@property (nonatomic, strong) NSObject *adInfoDictLock;
-
 // React Native's proposed optimizations to not emit events if no listeners
 @property (nonatomic, assign) BOOL hasListeners;
 
@@ -111,9 +108,6 @@ RCT_EXPORT_MODULE()
         self.safeAreaBackground.translatesAutoresizingMaskIntoConstraints = NO;
         self.safeAreaBackground.userInteractionEnabled = NO;
         [ROOT_VIEW_CONTROLLER.view addSubview: self.safeAreaBackground];
-        
-        self.adInfoDict = [NSMutableDictionary dictionary];
-        self.adInfoDictLock = [[NSObject alloc] init];
     }
     return self;
 }
@@ -339,23 +333,6 @@ RCT_EXPORT_METHOD(trackEvent:(NSString *)event :(NSDictionary<NSString *, id> *)
     [self.sdk.eventService trackEvent: event parameters: parameters];
 }
 
-#pragma mark - Ad Info
-
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getAdInfo:(NSString *)adUnitIdentifier)
-{
-    if ( adUnitIdentifier.length == 0 ) return @"";
-    
-    MAAd *ad;
-    @synchronized ( self.adInfoDictLock )
-    {
-        ad = self.adInfoDict[adUnitIdentifier];
-    }
-    
-    if ( !ad ) return @"";
-    
-    return [self adInfoForAd: ad];
-}
-
 #pragma mark - Banners
 
 RCT_EXPORT_METHOD(createBanner:(NSString *)adUnitIdentifier :(NSString *)bannerPosition)
@@ -518,11 +495,6 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         return;
     }
     
-    @synchronized ( self.adInfoDictLock )
-    {
-        self.adInfoDict[ad.adUnitIdentifier] = ad;
-    }
-    
     [self sendReactNativeEventWithName: name body: [self adInfoForAd: ad]];
 }
 
@@ -622,11 +594,6 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         name = @"OnRewardedAdFailedToDisplayEvent";
     }
     
-    @synchronized ( self.adInfoDictLock )
-    {
-        [self.adInfoDict removeObjectForKey: ad.adUnitIdentifier];
-    }
-    
     NSMutableDictionary *body = [@{@"errorCode" : @(errorCode)} mutableCopy];
     [body addEntriesFromDictionary: [self adInfoForAd: ad]];
     
@@ -647,11 +614,6 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     else // REWARDED
     {
         name = @"OnRewardedAdHiddenEvent";
-    }
-    
-    @synchronized ( self.adInfoDictLock )
-    {
-        [self.adInfoDict removeObjectForKey: ad.adUnitIdentifier];
     }
     
     [self sendReactNativeEventWithName: name body: [self adInfoForAd: ad]];

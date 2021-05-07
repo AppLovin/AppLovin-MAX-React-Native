@@ -126,11 +126,6 @@ export default {
   /* trackEvent(event, parameters) */
 
   /*---------*/
-  /* AD INFO */
-  /*---------*/
-  /* getAdInfo(adUnitId) */
-
-  /*---------*/
   /* BANNERS */
   /*---------*/
   /* createBanner(adUnitId, bannerPosition) */
