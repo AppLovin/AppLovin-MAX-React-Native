@@ -353,8 +353,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getAdInfo:(NSString *)adUnitIdentifier)
     
     if ( !ad ) return @"";
     
-    return @{@"adUnitId" : adUnitIdentifier,
-             @"networkName" : ad.networkName};
+    return [self adInfoForAd: ad];
 }
 
 #pragma mark - Banners
@@ -524,7 +523,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         self.adInfoDict[ad.adUnitIdentifier] = ad;
     }
     
-    [self sendReactNativeEventWithName: name body: @{@"adUnitId" : ad.adUnitIdentifier}];
+    [self sendReactNativeEventWithName: name body: [self adInfoForAd: ad]];
 }
 
 - (void)didFailToLoadAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withErrorCode:(NSInteger)errorCode
@@ -552,11 +551,6 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     {
         [self log: @"invalid adUnitId from %@", [NSThread callStackSymbols]];
         return;
-    }
-    
-    @synchronized ( self.adInfoDictLock )
-    {
-        [self.adInfoDict removeObjectForKey: adUnitIdentifier];
     }
     
     NSString *errorCodeStr = [@(errorCode) stringValue];
@@ -590,7 +584,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         return;
     }
     
-    [self sendReactNativeEventWithName: name body: @{@"adUnitId" : ad.adUnitIdentifier}];
+    [self sendReactNativeEventWithName: name body: [self adInfoForAd: ad]];
 }
 
 - (void)didDisplayAd:(MAAd *)ad
@@ -628,9 +622,15 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         name = @"OnRewardedAdFailedToDisplayEvent";
     }
     
-    NSString *errorCodeStr = [@(errorCode) stringValue];
-    [self sendReactNativeEventWithName: name body: @{@"adUnitId" : ad.adUnitIdentifier,
-                                                     @"errorCode" : errorCodeStr}];
+    @synchronized ( self.adInfoDictLock )
+    {
+        [self.adInfoDict removeObjectForKey: ad.adUnitIdentifier];
+    }
+    
+    NSMutableDictionary *body = [@{@"errorCode" : @(errorCode)} mutableCopy];
+    [body addEntriesFromDictionary: [self adInfoForAd: ad]];
+    
+    [self sendReactNativeEventWithName: name body: body];
 }
 
 - (void)didHideAd:(MAAd *)ad
@@ -649,7 +649,12 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         name = @"OnRewardedAdHiddenEvent";
     }
     
-    [self sendReactNativeEventWithName: name body: @{@"adUnitId" : ad.adUnitIdentifier}];
+    @synchronized ( self.adInfoDictLock )
+    {
+        [self.adInfoDict removeObjectForKey: ad.adUnitIdentifier];
+    }
+    
+    [self sendReactNativeEventWithName: name body: [self adInfoForAd: ad]];
 }
 
 - (void)didExpandAd:(MAAd *)ad
@@ -662,7 +667,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     }
     
     [self sendReactNativeEventWithName: ( MAAdFormat.mrec == adFormat ) ? @"OnMRecAdExpandedEvent" : @"OnBannerAdExpandedEvent"
-                                  body: @{@"adUnitId": ad.adUnitIdentifier}];
+                                  body: [self adInfoForAd: ad]];
 }
 
 - (void)didCollapseAd:(MAAd *)ad
@@ -675,7 +680,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     }
     
     [self sendReactNativeEventWithName: ( MAAdFormat.mrec == adFormat ) ? @"OnMRecAdCollapsedEvent" : @"OnBannerAdCollapsedEvent"
-                                  body: @{@"adUnitId" : ad.adUnitIdentifier}];
+                                  body: [self adInfoForAd: ad]];
 }
 
 - (void)didCompleteRewardedVideoForAd:(MAAd *)ad
@@ -701,9 +706,11 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     NSInteger rewardAmountInt = reward ? reward.amount : 0;
     NSString *rewardAmount = [@(rewardAmountInt) stringValue];
     
-    [self sendReactNativeEventWithName: @"OnRewardedAdReceivedRewardEvent" body: @{@"adUnitId": ad.adUnitIdentifier,
-                                                                                   @"rewardLabel": rewardLabel,
-                                                                                   @"rewardAmount": rewardAmount}];
+    NSMutableDictionary *body = [@{@"rewardLabel": rewardLabel,
+                                   @"rewardAmount": rewardAmount} mutableCopy];
+    [body addEntriesFromDictionary: [self adInfoForAd: ad]];
+    
+    [self sendReactNativeEventWithName: @"OnRewardedAdReceivedRewardEvent" body: body];
 }
 
 #pragma mark - Internal Methods
@@ -1088,6 +1095,15 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         [NSException raise: NSInvalidArgumentException format: @"Invalid ad format"];
         return CGSizeZero;
     }
+}
+
+- (NSDictionary<NSString *, id> *)adInfoForAd:(MAAd *)ad
+{
+    return @{@"adUnitId" : ad.adUnitIdentifier,
+             @"creativeId" : ad.creativeIdentifier,
+             @"networkName" : ad.networkName,
+             @"placement" : ad.placement,
+             @"revenue" : @(ad.revenue)};
 }
 
 #pragma mark - React Native Event Bridge
