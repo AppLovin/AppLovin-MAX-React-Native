@@ -104,7 +104,7 @@ const App = () => {
       setRewardedAdLoadState(adLoadState.loaded);
 
       // Rewarded ad is ready to be shown. AppLovinMAX.isRewardedAdReady(REWARDED_AD_UNIT_ID) will now return 'true'
-     logStatus('Rewarded ad loaded from ' + adInfo.networkName);
+      logStatus('Rewarded ad loaded from ' + adInfo.networkName);
 
       // Reset retry attempt
       setRewardedAdRetryAttempt(0);
