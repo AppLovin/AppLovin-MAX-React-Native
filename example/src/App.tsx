@@ -325,7 +325,7 @@ const App = () => {
               if (!isProgrammaticMRecCreated) {
                 AppLovinMAX.createMRec(
                   MREC_AD_UNIT_ID,
-                  AppLovinMAX.AdViewPosition.BOTTOM_LEFT
+                  AppLovinMAX.AdViewPosition.TOP_CENTER
                 );
 
                 setIsProgrammaticMRecCreated(true);
