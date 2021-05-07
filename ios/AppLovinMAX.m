@@ -603,7 +603,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         name = @"OnRewardedAdDisplayedEvent";
     }
     
-    [self sendReactNativeEventWithName: name body: @{@"adUnitId" : ad.adUnitIdentifier}];
+    [self sendReactNativeEventWithName: name body: [self adInfoForAd: ad]];
 }
 
 - (void)didFailToDisplayAd:(MAAd *)ad withErrorCode:(NSInteger)errorCode
