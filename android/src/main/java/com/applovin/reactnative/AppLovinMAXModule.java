@@ -1292,7 +1292,7 @@ public class AppLovinMAXModule
     {
         WritableMap adInfo = Arguments.createMap();
         adInfo.putString( "adUnitId", ad.getAdUnitId() );
-        adInfo.putString( "creativeId", ad.getCreativeId() );
+        adInfo.putString( "creativeId", !TextUtils.isEmpty( ad.getCreativeId() ) ? ad.getCreativeId() : "" );
         adInfo.putString( "networkName", ad.getNetworkName() );
         adInfo.putString( "placement", ad.getPlacement() );
         adInfo.putDouble( "revenue", ad.getRevenue() );
