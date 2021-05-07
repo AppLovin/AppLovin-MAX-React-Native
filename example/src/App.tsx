@@ -293,7 +293,7 @@ const App = () => {
           })()
         }
         <AppButton
-          title={isNativeUIMRecShowing ? 'Hide Native UI MRec' : 'Show Native UI MRec'}
+          title={isNativeUIMRecShowing ? 'Hide Native UI MREC' : 'Show Native UI MREC'}
           enabled={isInitialized && !isProgrammaticMRecShowing}
           onPress={() => {
             setIsNativeUIMRecShowing(!isNativeUIMRecShowing);
