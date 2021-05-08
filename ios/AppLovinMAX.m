@@ -122,7 +122,8 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     // Guard against running init logic multiple times
     if ( [self isPluginInitialized] )
     {
-        callback(@[@{@"consentDialogState" : @(self.sdk.configuration.consentDialogState)}]);
+        callback(@[@{@"consentDialogState" : @(self.sdk.configuration.consentDialogState),
+                     @"countryCode" : self.sdk.configuration.countryCode}]);
         return;
     }
     
@@ -191,7 +192,8 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         self.sdkConfiguration = configuration;
         self.sdkInitialized = YES;
         
-        callback(@[@{@"consentDialogState" : @(configuration.consentDialogState)}]);
+        callback(@[@{@"consentDialogState" : @(configuration.consentDialogState),
+                     @"countryCode" : self.sdk.configuration.countryCode}]);
     }];
 }
 

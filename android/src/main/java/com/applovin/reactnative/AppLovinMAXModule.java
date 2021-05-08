@@ -249,6 +249,7 @@ public class AppLovinMAXModule
 
                 WritableMap sdkConfiguration = Arguments.createMap();
                 sdkConfiguration.putInt( "consentDialogState", configuration.getConsentDialogState().ordinal() );
+                sdkConfiguration.putString( "countryCode", configuration.getCountryCode() );
                 callback.invoke( sdkConfiguration );
             }
         } );

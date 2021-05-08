@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+    * Pass `"countryCode"` in initialization callback.
 ## 2.0.3
     * Fix ad callbacks not returning.
 ## 2.0.2
