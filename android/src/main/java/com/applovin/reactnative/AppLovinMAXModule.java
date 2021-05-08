@@ -42,6 +42,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -167,7 +168,7 @@ public class AppLovinMAXModule
 
         d( "Initializing AppLovin MAX React Native v" + pluginVersion + "..." );
 
-        // If SDK key passed in is empty, check Info.plist
+        // If SDK key passed in is empty, check Android Manifest
         String sdkKeyToUse = sdkKey;
         if ( TextUtils.isEmpty( sdkKey ) )
         {
@@ -269,7 +270,7 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            Log.e( "[" + TAG + "]", "Failed to show mediation debugger - please ensure the AppLovin MAX Unity Plugin has been initialized by calling 'AppLovinMAX.initialize(...);'!" );
+            Log.e( "[" + TAG + "]", "Failed to show mediation debugger - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!" );
             return;
         }
 
@@ -701,7 +702,7 @@ public class AppLovinMAXModule
     @Override
     public void onAdDisplayed(final MaxAd ad)
     {
-        // BMLs do not support [DISPLAY] events in Unity
+        // BMLs do not support [DISPLAY] events
         final MaxAdFormat adFormat = ad.getFormat();
         if ( adFormat != MaxAdFormat.INTERSTITIAL && adFormat != MaxAdFormat.REWARDED ) return;
 
@@ -721,7 +722,7 @@ public class AppLovinMAXModule
     @Override
     public void onAdDisplayFailed(final MaxAd ad, final int errorCode)
     {
-        // BMLs do not support [DISPLAY] events in Unity
+        // BMLs do not support [DISPLAY] events
         final MaxAdFormat adFormat = ad.getFormat();
         if ( adFormat != MaxAdFormat.INTERSTITIAL && adFormat != MaxAdFormat.REWARDED ) return;
 
@@ -744,7 +745,7 @@ public class AppLovinMAXModule
     @Override
     public void onAdHidden(final MaxAd ad)
     {
-        // BMLs do not support [HIDDEN] events in Unity
+        // BMLs do not support [HIDDEN] events
         final MaxAdFormat adFormat = ad.getFormat();
         if ( adFormat != MaxAdFormat.INTERSTITIAL && adFormat != MaxAdFormat.REWARDED ) return;
 
@@ -1289,18 +1290,6 @@ public class AppLovinMAXModule
         return AppLovinSdkUtils.isTablet( context ) ? MaxAdFormat.LEADER : MaxAdFormat.BANNER;
     }
 
-    private WritableMap getAdInfo(final MaxAd ad)
-    {
-        WritableMap adInfo = Arguments.createMap();
-        adInfo.putString( "adUnitId", ad.getAdUnitId() );
-        adInfo.putString( "creativeId", !TextUtils.isEmpty( ad.getCreativeId() ) ? ad.getCreativeId() : "" );
-        adInfo.putString( "networkName", ad.getNetworkName() );
-        adInfo.putString( "placement", !TextUtils.isEmpty( ad.getPlacement() ) ? ad.getPlacement() : "" );
-        adInfo.putDouble( "revenue", ad.getRevenue() );
-
-        return adInfo;
-    }
-
     protected static class AdViewSize
     {
         public final int widthDp;
@@ -1331,6 +1320,18 @@ public class AppLovinMAXModule
         {
             throw new IllegalArgumentException( "Invalid ad format" );
         }
+    }
+
+    private WritableMap getAdInfo(final MaxAd ad)
+    {
+        WritableMap adInfo = Arguments.createMap();
+        adInfo.putString( "adUnitId", ad.getAdUnitId() );
+        adInfo.putString( "creativeId", !TextUtils.isEmpty( ad.getCreativeId() ) ? ad.getCreativeId() : "" );
+        adInfo.putString( "networkName", ad.getNetworkName() );
+        adInfo.putString( "placement", !TextUtils.isEmpty( ad.getPlacement() ) ? ad.getPlacement() : "" );
+        adInfo.putDouble( "revenue", ad.getRevenue() );
+
+        return adInfo;
     }
 
     // React Native Bridge
