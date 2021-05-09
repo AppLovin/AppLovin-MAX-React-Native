@@ -193,7 +193,7 @@ public class AppLovinMAXModule
         }
 
         // Initialize SDK
-        sdk = AppLovinSdk.getInstance( sdkKey, new AppLovinSdkSettings( getReactApplicationContext() ), context );
+        sdk = AppLovinSdk.getInstance( sdkKeyToUse, new AppLovinSdkSettings( getReactApplicationContext() ), context );
         sdk.setPluginVersion( "React-Native-" + pluginVersion );
         sdk.setMediationProvider( AppLovinMediationProvider.MAX );
 

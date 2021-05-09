@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+    * Fallback to SDK key in Android Manifest and Info.plist if not passed programmatically.
 ## 2.0.4
     * Pass `"countryCode"` in initialization callback.
 ## 2.0.3
