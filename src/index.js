@@ -132,9 +132,11 @@ export default {
   /* setBannerBackgroundColor(adUnitId, hexColorCode) */
   /* setBannerPlacement(adUnitId, placement) */
   /* updateBannerPosition(adUnitId, bannerPosition) */
+  /* setBannerWidth(adUnitId, width) */
   /* setBannerExtraParameter(adUnitId, key, value) */
   /* showBanner(adUnitId) */
   /* hideBanner(adUnitId) */
+  /* destroyBanner(adUnitId) */
   /* destroyBanner(adUnitId) */
 
   /*-------*/
