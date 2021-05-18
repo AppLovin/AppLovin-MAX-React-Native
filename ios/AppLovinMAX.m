@@ -1008,23 +1008,21 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         // If publisher actually provided a banner background color, span the banner across the realm
         if ( self.publisherBannerBackgroundColor && adFormat != MAAdFormat.mrec )
         {
-            [constraints addObjectsFromArray: @[[self.safeAreaBackground.leftAnchor constraintEqualToAnchor: superview.leftAnchor],
-                                                [self.safeAreaBackground.rightAnchor constraintEqualToAnchor: superview.rightAnchor]]];
+            [constraints addObjectsFromArray: @[[adView.widthAnchor constraintEqualToConstant: adViewWidth],
+                                                [adView.centerXAnchor constraintEqualToAnchor: layoutGuide.centerXAnchor],
+                                                [self.safeAreaBackground.widthAnchor constraintEqualToConstant: adViewWidth],
+                                                [self.safeAreaBackground.centerXAnchor constraintEqualToAnchor: layoutGuide.centerXAnchor]]];
             
             if ( [adViewPosition isEqual: @"top_center"] )
             {
                 [constraints addObjectsFromArray: @[[adView.topAnchor constraintEqualToAnchor: layoutGuide.topAnchor],
-                                                    [adView.leftAnchor constraintEqualToAnchor: superview.leftAnchor],
-                                                    [adView.rightAnchor constraintEqualToAnchor: superview.rightAnchor]]];
-                [constraints addObjectsFromArray: @[[self.safeAreaBackground.topAnchor constraintEqualToAnchor: superview.topAnchor],
+                                                    [self.safeAreaBackground.topAnchor constraintEqualToAnchor: superview.topAnchor],
                                                     [self.safeAreaBackground.bottomAnchor constraintEqualToAnchor: adView.topAnchor]]];
             }
-            else // BottomCenter
+            else // bottom_center
             {
                 [constraints addObjectsFromArray: @[[adView.bottomAnchor constraintEqualToAnchor: layoutGuide.bottomAnchor],
-                                                    [adView.leftAnchor constraintEqualToAnchor: superview.leftAnchor],
-                                                    [adView.rightAnchor constraintEqualToAnchor: superview.rightAnchor]]];
-                [constraints addObjectsFromArray: @[[self.safeAreaBackground.topAnchor constraintEqualToAnchor: adView.bottomAnchor],
+                                                    [self.safeAreaBackground.topAnchor constraintEqualToAnchor: adView.bottomAnchor],
                                                     [self.safeAreaBackground.bottomAnchor constraintEqualToAnchor: superview.bottomAnchor]]];
             }
         }
@@ -1034,8 +1032,8 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
             self.safeAreaBackground.hidden = YES;
             
             // Assign constant width of 320 or 728
-            [constraints addObject: [adView.widthAnchor constraintEqualToConstant: adViewWidth]];
-            [constraints addObject: [adView.centerXAnchor constraintEqualToAnchor: layoutGuide.centerXAnchor]];
+            [constraints addObjectsFromArray: @[[adView.widthAnchor constraintEqualToConstant: adViewWidth],
+                                                [adView.centerXAnchor constraintEqualToAnchor: layoutGuide.centerXAnchor]]];
             
             if ( [adViewPosition isEqual: @"top_center"] )
             {
