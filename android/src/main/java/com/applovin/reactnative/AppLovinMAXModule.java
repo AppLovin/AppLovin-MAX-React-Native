@@ -42,7 +42,6 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -87,6 +86,7 @@ public class AppLovinMAXModule
     private final Map<String, MaxAdView>   mAdViews                    = new HashMap<>( 2 );
     private final Map<String, MaxAdFormat> mAdViewAdFormats            = new HashMap<>( 2 );
     private final Map<String, String>      mAdViewPositions            = new HashMap<>( 2 );
+    private final Map<String, Integer>     mAdViewWidths               = new HashMap<>( 2 );
     private final Map<String, MaxAdFormat> mVerticalAdViewFormats      = new HashMap<>( 2 );
     private final List<String>             mAdUnitIdsToShowAfterCreate = new ArrayList<>( 2 );
 
@@ -445,6 +445,12 @@ public class AppLovinMAXModule
     public void setBannerPlacement(final String adUnitId, final String placement)
     {
         setAdViewPlacement( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), placement );
+    }
+
+    @ReactMethod()
+    public void setBannerWidth(final String adUnitId, final int widthDp)
+    {
+        setAdViewWidth( adUnitId, widthDp, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
     @ReactMethod()
@@ -887,6 +893,27 @@ public class AppLovinMAXModule
         } );
     }
 
+    private void setAdViewWidth(final String adUnitId, final int widthDp, final MaxAdFormat adFormat)
+    {
+        getReactApplicationContext().runOnUiQueueThread( new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                d( "Setting width " + widthDp + " for \"" + adFormat + "\" with ad unit identifier \"" + adUnitId + "\"" );
+
+                int minWidthDp = adFormat.getSize().getWidth();
+                if ( widthDp < minWidthDp )
+                {
+                    e( "The provided width: " + widthDp + "dp is smaller than the minimum required width: " + minWidthDp + "dp for ad format: " + adFormat + ". Please set the width higher than the minimum required." );
+                }
+
+                mAdViewWidths.put( adUnitId, widthDp );
+                positionAdView( adUnitId, adFormat );
+            }
+        } );
+    }
+
     private void updateAdViewPosition(final String adUnitId, final String adViewPosition, final MaxAdFormat adFormat)
     {
         getReactApplicationContext().runOnUiQueueThread( new Runnable()
@@ -990,6 +1017,7 @@ public class AppLovinMAXModule
                 mAdViews.remove( adUnitId );
                 mAdViewAdFormats.remove( adUnitId );
                 mAdViewPositions.remove( adUnitId );
+                mAdViewWidths.remove( adUnitId );
                 mVerticalAdViewFormats.remove( adUnitId );
             }
         } );
@@ -1156,15 +1184,41 @@ public class AppLovinMAXModule
         }
 
         final String adViewPosition = mAdViewPositions.get( adUnitId );
-        final RelativeLayout relativeLayout = (RelativeLayout) adView.getParent();
+        final boolean isWidthDpOverridden = mAdViewWidths.containsKey( adUnitId );
 
-        // Size the ad
-        final AdViewSize adViewSize = getAdViewSize( adFormat );
-        final int width = AppLovinSdkUtils.dpToPx( maybeGetCurrentActivity(), adViewSize.widthDp );
-        final int height = AppLovinSdkUtils.dpToPx( maybeGetCurrentActivity(), adViewSize.heightDp );
+        final RelativeLayout relativeLayout = (RelativeLayout) adView.getParent();
+        final Rect windowRect = new Rect();
+        relativeLayout.getWindowVisibleDisplayFrame( windowRect );
+
+        //
+        // Determine ad width
+        //
+        final int adViewWidthDp;
+
+        // Check if publisher has overridden width as dp
+        if ( isWidthDpOverridden )
+        {
+            adViewWidthDp = mAdViewWidths.get( adUnitId );
+        }
+        // Top center / bottom center stretches full screen
+        else if ( "top_center".equalsIgnoreCase( adViewPosition ) || "bottom_center".equalsIgnoreCase( adViewPosition ) )
+        {
+            int adViewWidthPx = windowRect.width();
+            adViewWidthDp = AppLovinSdkUtils.pxToDp( getCurrentActivity(), adViewWidthPx );
+        }
+        // Else use standard widths of 320, 728, or 300
+        else
+        {
+            adViewWidthDp = adFormat.getSize().getWidth();
+        }
+
+        final int adViewHeightDp = adFormat.getSize().getHeight();
+
+        final int widthPx = AppLovinSdkUtils.dpToPx( getCurrentActivity(), adViewWidthDp );
+        final int heightPx = AppLovinSdkUtils.dpToPx( getCurrentActivity(), adViewHeightDp );
 
         final RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) adView.getLayoutParams();
-        params.height = height;
+        params.height = heightPx;
         adView.setLayoutParams( params );
 
         // Parse gravity
@@ -1179,6 +1233,15 @@ public class AppLovinMAXModule
         if ( "centered".equalsIgnoreCase( adViewPosition ) )
         {
             gravity = Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL;
+
+            if ( MaxAdFormat.MREC == adFormat || isWidthDpOverridden )
+            {
+                params.width = widthPx;
+            }
+            else
+            {
+                params.width = RelativeLayout.LayoutParams.MATCH_PARENT;
+            }
         }
         else
         {
@@ -1196,7 +1259,15 @@ public class AppLovinMAXModule
             if ( adViewPosition.contains( "center" ) )
             {
                 gravity |= Gravity.CENTER_HORIZONTAL;
-                params.width = ( MaxAdFormat.MREC == adFormat ) ? width : RelativeLayout.LayoutParams.MATCH_PARENT; // Stretch width if banner
+
+                if ( MaxAdFormat.MREC == adFormat || isWidthDpOverridden )
+                {
+                    params.width = widthPx;
+                }
+                else
+                {
+                    params.width = RelativeLayout.LayoutParams.MATCH_PARENT;
+                }
 
                 // Check if the publisher wants the ad view to be vertical and update the position accordingly ('CenterLeft' or 'CenterRight').
                 final boolean containsLeft = adViewPosition.contains( "left" );
@@ -1234,8 +1305,6 @@ public class AppLovinMAXModule
                          *                  |   |           |
                          *                  +---+-----------+
                          */
-                        final Rect windowRect = new Rect();
-                        relativeLayout.getWindowVisibleDisplayFrame( windowRect );
 
                         final int windowWidth = windowRect.width();
                         final int windowHeight = windowRect.height();
@@ -1245,7 +1314,7 @@ public class AppLovinMAXModule
                         params.setMargins( -margin, 0, -margin, 0 );
 
                         // The view is now at the center of the screen and so is it's pivot point. Move its center such that when rotated, it snaps into the vertical position we need.
-                        final int translationRaw = ( windowWidth / 2 ) - ( height / 2 );
+                        final int translationRaw = ( windowWidth / 2 ) - ( heightPx / 2 );
                         final int translationX = containsLeft ? -translationRaw : translationRaw;
                         adView.setTranslationX( translationX );
 
@@ -1262,7 +1331,7 @@ public class AppLovinMAXModule
             }
             else
             {
-                params.width = width;
+                params.width = widthPx;
 
                 if ( adViewPosition.contains( "left" ) )
                 {

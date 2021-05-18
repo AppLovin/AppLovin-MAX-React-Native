@@ -131,6 +131,7 @@ export default {
   /* createBanner(adUnitId, bannerPosition) */
   /* setBannerBackgroundColor(adUnitId, hexColorCode) */
   /* setBannerPlacement(adUnitId, placement) */
+  /* setBannerWidth(adUnitId, width) */
   /* updateBannerPosition(adUnitId, bannerPosition) */
   /* setBannerExtraParameter(adUnitId, key, value) */
   /* showBanner(adUnitId) */

@@ -51,6 +51,7 @@
 @property (nonatomic, strong) NSMutableDictionary<NSString *, MAAdView *> *adViews;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, MAAdFormat *> *adViewAdFormats;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSString *> *adViewPositions;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *adViewWidths;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSArray<NSLayoutConstraint *> *> *adViewConstraints;
 @property (nonatomic, strong) NSMutableArray<NSString *> *adUnitIdentifiersToShowAfterCreate;
 @property (nonatomic, strong) UIView *safeAreaBackground;
@@ -99,6 +100,7 @@ RCT_EXPORT_MODULE()
         self.adViews = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.adViewAdFormats = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.adViewPositions = [NSMutableDictionary dictionaryWithCapacity: 2];
+        self.adViewWidths = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.adViewConstraints = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.adUnitIdentifiersToShowAfterCreate = [NSMutableArray arrayWithCapacity: 2];
         
@@ -355,6 +357,11 @@ RCT_EXPORT_METHOD(setBannerPlacement:(nullable NSString *)placement :(NSString *
 RCT_EXPORT_METHOD(updateBannerPosition:(NSString *)bannerPosition :(NSString *)adUnitIdentifier)
 {
     [self updateAdViewPosition: bannerPosition forAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
+}
+
+RCT_EXPORT_METHOD(setBannerWidth:(NSString *)adUnitIdentifier :(CGFloat)width)
+{
+    [self setAdViewWidth: width forAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
 }
 
 RCT_EXPORT_METHOD(setBannerExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
@@ -739,6 +746,22 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     });
 }
 
+- (void)setAdViewWidth:(CGFloat)width forAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self log: @"Setting width %f for \"%@\" with ad unit identifier \"%@\"", width, adFormat, adUnitIdentifier];
+
+        CGFloat minWidth = adFormat.size.width;
+        if ( width < minWidth )
+        {
+            [self log: @"The provided with: %f is smaller than the minimum required width: %f for ad format: %@. Please set the width higher than the minimum required.", width, minWidth, adFormat];   
+        }
+
+        self.adViewWidths[adUnitIdentifier] = @(width);
+        [self positionAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
+    });
+}
+
 - (void)updateAdViewPosition:(NSString *)adViewPosition forAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat
 {
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -832,6 +855,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         
         [self.adViews removeObjectForKey: adUnitIdentifier];
         [self.adViewPositions removeObjectForKey: adUnitIdentifier];
+        [self.adViewWidths removeObjectForKey: adUnitIdentifier];
         [self.adViewAdFormats removeObjectForKey: adUnitIdentifier];
     });
 }
@@ -921,7 +945,8 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 {
     MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
     NSString *adViewPosition = self.adViewPositions[adUnitIdentifier];
-    
+    BOOL isWidthPtsOverridden = self.adViewWidths[adUnitIdentifier] != nil;
+
     UIView *superview = adView.superview;
     if ( !superview ) return;
     
@@ -940,7 +965,29 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     [NSLayoutConstraint deactivateConstraints: self.safeAreaBackground.constraints];
     self.safeAreaBackground.hidden = NO;
     
-    CGSize adViewSize = [[self class] adViewSizeForAdFormat: adFormat];
+    //
+    // Determine ad width
+    //
+    CGFloat adViewWidth;
+
+    // Check if publisher has overridden width as points
+    if ( isWidthPtsOverridden )
+    {
+        adViewWidth = self.adViewWidths[adUnitIdentifier].floatValue;
+    }
+    // Top center / bottom center stretches full screen
+    else if ( [adViewPosition isEqual: @"top_center"] || [adViewPosition isEqual: @"bottom_center"] )
+    {
+        adViewWidth = CGRectGetWidth(KEY_WINDOW.bounds);
+    }
+    // Else use standard widths of 320, 728, or 300
+    else
+    {
+        adViewWidth = adFormat.size.width;
+    }
+
+    CGFloat adViewHeight = adFormat.size.height;
+    CGSize adViewSize = CGSizeMake(adViewWidth, adViewHeight);
     
     // All positions have constant height
     NSMutableArray<NSLayoutConstraint *> *constraints = [NSMutableArray arrayWithObject: [adView.heightAnchor constraintEqualToConstant: adViewSize.height]];
@@ -961,23 +1008,21 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         // If publisher actually provided a banner background color, span the banner across the realm
         if ( self.publisherBannerBackgroundColor && adFormat != MAAdFormat.mrec )
         {
-            [constraints addObjectsFromArray: @[[self.safeAreaBackground.leftAnchor constraintEqualToAnchor: superview.leftAnchor],
-                                                [self.safeAreaBackground.rightAnchor constraintEqualToAnchor: superview.rightAnchor]]];
+            [constraints addObjectsFromArray: @[[adView.widthAnchor constraintEqualToConstant: adViewWidth],
+                                                [adView.centerXAnchor constraintEqualToAnchor: layoutGuide.centerXAnchor],
+                                                [self.safeAreaBackground.widthAnchor constraintEqualToConstant: adViewWidth],
+                                                [self.safeAreaBackground.centerXAnchor constraintEqualToAnchor: layoutGuide.centerXAnchor]]];
             
             if ( [adViewPosition isEqual: @"top_center"] )
             {
                 [constraints addObjectsFromArray: @[[adView.topAnchor constraintEqualToAnchor: layoutGuide.topAnchor],
-                                                    [adView.leftAnchor constraintEqualToAnchor: superview.leftAnchor],
-                                                    [adView.rightAnchor constraintEqualToAnchor: superview.rightAnchor]]];
-                [constraints addObjectsFromArray: @[[self.safeAreaBackground.topAnchor constraintEqualToAnchor: superview.topAnchor],
+                                                    [self.safeAreaBackground.topAnchor constraintEqualToAnchor: superview.topAnchor],
                                                     [self.safeAreaBackground.bottomAnchor constraintEqualToAnchor: adView.topAnchor]]];
             }
-            else // BottomCenter
+            else // bottom_center
             {
                 [constraints addObjectsFromArray: @[[adView.bottomAnchor constraintEqualToAnchor: layoutGuide.bottomAnchor],
-                                                    [adView.leftAnchor constraintEqualToAnchor: superview.leftAnchor],
-                                                    [adView.rightAnchor constraintEqualToAnchor: superview.rightAnchor]]];
-                [constraints addObjectsFromArray: @[[self.safeAreaBackground.topAnchor constraintEqualToAnchor: adView.bottomAnchor],
+                                                    [self.safeAreaBackground.topAnchor constraintEqualToAnchor: adView.bottomAnchor],
                                                     [self.safeAreaBackground.bottomAnchor constraintEqualToAnchor: superview.bottomAnchor]]];
             }
         }
@@ -987,8 +1032,8 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
             self.safeAreaBackground.hidden = YES;
             
             // Assign constant width of 320 or 728
-            [constraints addObject: [adView.widthAnchor constraintEqualToConstant: adViewSize.width]];
-            [constraints addObject: [adView.centerXAnchor constraintEqualToAnchor: layoutGuide.centerXAnchor]];
+            [constraints addObjectsFromArray: @[[adView.widthAnchor constraintEqualToConstant: adViewWidth],
+                                                [adView.centerXAnchor constraintEqualToAnchor: layoutGuide.centerXAnchor]]];
             
             if ( [adViewPosition isEqual: @"top_center"] )
             {
@@ -1006,7 +1051,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         self.safeAreaBackground.hidden = YES;
         
         // Assign constant width of 320 or 728
-        [constraints addObject: [adView.widthAnchor constraintEqualToConstant: adViewSize.width]];
+        [constraints addObject: [adView.widthAnchor constraintEqualToConstant: adViewWidth]];
         
         if ( [adViewPosition isEqual: @"top_left"] )
         {

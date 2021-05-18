@@ -11,6 +11,7 @@
 #import <React/RCTEventEmitter.h>
 #import <AppLovinSDK/AppLovinSDK.h>
 
+#define KEY_WINDOW [UIApplication sharedApplication].keyWindow
 #define DEVICE_SPECIFIC_ADVIEW_AD_FORMAT ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) ? MAAdFormat.leader : MAAdFormat.banner
 
 NS_ASSUME_NONNULL_BEGIN

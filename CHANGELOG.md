@@ -2,6 +2,7 @@
 
 ## x.x.x
     * Fallback to SDK key in Android Manifest and Info.plist if not passed programmatically.
+    * Add support for setting banner width.
 ## 2.0.4
     * Pass `"countryCode"` in initialization callback.
 ## 2.0.3
