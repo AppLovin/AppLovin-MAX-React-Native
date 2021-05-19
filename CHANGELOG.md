@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 2.0.5
     * Fallback to SDK key in Android Manifest and Info.plist if not passed programmatically.
     * Add support for setting banner width.
 ## 2.0.4
