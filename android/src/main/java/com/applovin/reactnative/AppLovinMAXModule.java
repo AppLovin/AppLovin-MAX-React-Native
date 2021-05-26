@@ -21,6 +21,7 @@ import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxAdListener;
 import com.applovin.mediation.MaxAdViewAdListener;
+import com.applovin.mediation.MaxError;
 import com.applovin.mediation.MaxErrorCodes;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.MaxRewardedAdListener;
@@ -637,7 +638,7 @@ public class AppLovinMAXModule
     }
 
     @Override
-    public void onAdLoadFailed(final String adUnitId, final int errorCode)
+    public void onAdLoadFailed(final String adUnitId, final MaxError error)
     {
         if ( TextUtils.isEmpty( adUnitId ) )
         {
@@ -664,7 +665,7 @@ public class AppLovinMAXModule
             return;
         }
 
-        sendReactNativeEventForAdLoadFailed( name, adUnitId, errorCode );
+        sendReactNativeEventForAdLoadFailed( name, adUnitId, error.getCode() );
     }
 
     private void sendReactNativeEventForAdLoadFailed(final String name, final String adUnitId, final int errorCode)
@@ -672,6 +673,7 @@ public class AppLovinMAXModule
         WritableMap params = Arguments.createMap();
         params.putString( "adUnitId", adUnitId );
         params.putString( "errorCode", Integer.toString( errorCode ) );
+        // TODO: Add "code", "message", and "adLoadFailureInfo"
         sendReactNativeEvent( name, params );
     }
 
@@ -726,7 +728,7 @@ public class AppLovinMAXModule
     }
 
     @Override
-    public void onAdDisplayFailed(final MaxAd ad, final int errorCode)
+    public void onAdDisplayFailed(final MaxAd ad, final MaxError error)
     {
         // BMLs do not support [DISPLAY] events
         final MaxAdFormat adFormat = ad.getFormat();
@@ -743,7 +745,8 @@ public class AppLovinMAXModule
         }
 
         WritableMap params = getAdInfo( ad );
-        params.putInt( "errorCode", errorCode );
+        // TODO: Add "code", "message", and "adLoadFailureInfo"
+        params.putInt( "errorCode", error.getCode() );
 
         sendReactNativeEvent( name, params );
     }
@@ -823,6 +826,12 @@ public class AppLovinMAXModule
         params.putString( "rewardLabel", rewardLabel );
         params.putInt( "rewardAmount", rewardAmount );
         sendReactNativeEvent( "OnRewardedAdReceivedRewardEvent", params );
+    }
+
+    @Override
+    public void onAdRevenuePaid(final MaxAd ad)
+    {
+        // TODO: Implement
     }
 
     // INTERNAL METHODS

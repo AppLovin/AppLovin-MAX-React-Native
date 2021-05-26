@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+    * Add support for latest SDKs v10.3.0 with new callbacks.
 ## 2.0.5
     * Fallback to SDK key in Android Manifest and Info.plist if not passed programmatically.
     * Add support for setting banner width.
