@@ -72,13 +72,13 @@ const App = () => {
       // Reset retry attempt
       setInterstitialRetryAttempt(0)
     });
-    AppLovinMAX.addEventListener('OnInterstitialLoadFailedEvent', (adInfo) => {
+    AppLovinMAX.addEventListener('OnInterstitialLoadFailedEvent', (errorInfo) => {
       // Interstitial ad failed to load
       // We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds)
       setInterstitialRetryAttempt(interstitialRetryAttempt + 1);
 
       var retryDelay = Math.pow(2, Math.min(6, interstitialRetryAttempt));
-      logStatus('Interstitial ad failed to load - retrying in ' + retryDelay + 's');
+      logStatus('Interstitial ad failed to load with code ' + errorInfo["code"] + ' - retrying in ' + retryDelay + 's');
 
       setTimeout(function () {
         AppLovinMAX.loadInterstitial(INTERSTITIAL_AD_UNIT_ID);
@@ -109,7 +109,7 @@ const App = () => {
       // Reset retry attempt
       setRewardedAdRetryAttempt(0);
     });
-    AppLovinMAX.addEventListener('OnRewardedAdLoadFailedEvent', (adInfo) => {
+    AppLovinMAX.addEventListener('OnRewardedAdLoadFailedEvent', (errorInfo) => {
       setRewardedAdLoadState(adLoadState.notLoaded);
 
       // Rewarded ad failed to load
@@ -117,7 +117,7 @@ const App = () => {
       setRewardedAdRetryAttempt(rewardedAdRetryAttempt + 1);
 
       var retryDelay = Math.pow(2, Math.min(6, rewardedAdRetryAttempt));
-      logStatus('Rewarded ad failed to load - retrying in ' + retryDelay + 's');
+      logStatus('Rewarded ad failed to load with code ' + errorInfo["code"] + ' - retrying in ' + retryDelay + 's');
 
       setTimeout(function () {
         AppLovinMAX.loadRewardedAd(REWARDED_AD_UNIT_ID);
@@ -145,8 +145,8 @@ const App = () => {
     AppLovinMAX.addEventListener('OnBannerAdLoadedEvent', (adInfo) => {
       logStatus('Banner ad loaded from ' + adInfo.networkName);
     });
-    AppLovinMAX.addEventListener('OnBannerAdLoadFailedEvent', (adInfo) => {
-      logStatus('Banner ad failed to load');
+    AppLovinMAX.addEventListener('OnBannerAdLoadFailedEvent', (errorInfo) => {
+      logStatus('Banner ad failed to load with error code ' + errorInfo["code"] + ' and message: ' + errorInfo["message"]);
     });
     AppLovinMAX.addEventListener('OnBannerAdClickedEvent', (adInfo) => {
       logStatus('Banner ad clicked');
@@ -162,8 +162,8 @@ const App = () => {
     AppLovinMAX.addEventListener('OnMRecAdLoadedEvent', (adInfo) => {
       logStatus('MREC ad loaded from ' + adInfo.networkName);
     });
-    AppLovinMAX.addEventListener('OnMRecAdLoadFailedEvent', (adInfo) => {
-      logStatus('MREC ad failed to load');
+    AppLovinMAX.addEventListener('OnMRecAdLoadFailedEvent', (errorInfo) => {
+      logStatus('MREC ad failed to load with error code ' + errorInfo["code"] + ' and message: ' + errorInfo["message"]);
     });
     AppLovinMAX.addEventListener('OnMRecAdClickedEvent', (adInfo) => {
       logStatus('MREC ad clicked');
