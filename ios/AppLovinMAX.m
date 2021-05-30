@@ -507,7 +507,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     [self sendReactNativeEventWithName: name body: [self adInfoForAd: ad]];
 }
 
-- (void)didFailToLoadAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withErrorCode:(NSInteger)errorCode
+- (void)didFailToLoadAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(MAError *)error
 {
     if ( !adUnitIdentifier )
     {
@@ -534,9 +534,10 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         return;
     }
     
-    NSString *errorCodeStr = [@(errorCode) stringValue];
     [self sendReactNativeEventWithName: name body: @{@"adUnitId" : adUnitIdentifier,
-                                                     @"errorCode" : errorCodeStr}];
+                                                     @"code" : @(error.code),
+                                                     @"message" : error.message,
+                                                     @"adLoadFailureInfo" : error.adLoadFailureInfo ?: @""}];
 }
 
 - (void)didClickAd:(MAAd *)ad
@@ -587,7 +588,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     [self sendReactNativeEventWithName: name body: [self adInfoForAd: ad]];
 }
 
-- (void)didFailToDisplayAd:(MAAd *)ad withErrorCode:(NSInteger)errorCode
+- (void)didFailToDisplayAd:(MAAd *)ad withError:(MAError *)error
 {
     // BMLs do not support [DISPLAY] events in Unity
     MAAdFormat *adFormat = ad.format;
@@ -603,7 +604,8 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         name = @"OnRewardedAdFailedToDisplayEvent";
     }
     
-    NSMutableDictionary *body = [@{@"errorCode" : @(errorCode)} mutableCopy];
+    NSMutableDictionary *body = [@{@"code" : @(error.code),
+                                   @"message" : error.message} mutableCopy];
     [body addEntriesFromDictionary: [self adInfoForAd: ad]];
     
     [self sendReactNativeEventWithName: name body: body];

@@ -1,5 +1,8 @@
 ## Versions
 
+## x.x.x
+    * Add API for passing in `errorInfo` for ad load failure callbacks with parameters "code", "message", and "adLoadFailureInfo".
+    * Add API for passing in `errorInfo` for ad display failure callbacks with parameters "code" and "message".
 ## 2.0.6
     * Add support for latest SDKs v10.3.0 with new callbacks.
 ## 2.0.5

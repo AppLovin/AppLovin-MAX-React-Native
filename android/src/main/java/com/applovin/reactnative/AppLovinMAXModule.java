@@ -530,7 +530,7 @@ public class AppLovinMAXModule
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
         if ( interstitial == null )
         {
-            sendReactNativeEventForAdLoadFailed( "OnInterstitialLoadFailedEvent", adUnitId, MaxErrorCodes.UNSPECIFIED_ERROR );
+            sendReactNativeEventForAdLoadFailed( "OnInterstitialLoadFailedEvent", adUnitId, null );
             return;
         }
 
@@ -566,7 +566,7 @@ public class AppLovinMAXModule
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
         if ( rewardedAd == null )
         {
-            sendReactNativeEventForAdLoadFailed( "OnRewardedAdLoadFailedEvent", adUnitId, MaxErrorCodes.UNSPECIFIED_ERROR );
+            sendReactNativeEventForAdLoadFailed( "OnRewardedAdLoadFailedEvent", adUnitId, null );
             return;
         }
 
@@ -665,15 +665,25 @@ public class AppLovinMAXModule
             return;
         }
 
-        sendReactNativeEventForAdLoadFailed( name, adUnitId, error.getCode() );
+        sendReactNativeEventForAdLoadFailed( name, adUnitId, error );
     }
 
-    private void sendReactNativeEventForAdLoadFailed(final String name, final String adUnitId, final int errorCode)
+    private void sendReactNativeEventForAdLoadFailed(final String name, final String adUnitId, final @Nullable MaxError error)
     {
         WritableMap params = Arguments.createMap();
         params.putString( "adUnitId", adUnitId );
-        params.putString( "errorCode", Integer.toString( errorCode ) );
-        // TODO: Add "code", "message", and "adLoadFailureInfo"
+
+        if ( error != null )
+        {
+            params.putInt( "code", error.getCode() );
+            params.putString( "message", error.getMessage() );
+            params.putString( "adLoadFailureInfo", error.getAdLoadFailureInfo() );
+        }
+        else
+        {
+            params.putInt( "code", MaxErrorCode.UNSPECIFIED );
+        }
+
         sendReactNativeEvent( name, params );
     }
 
@@ -745,8 +755,8 @@ public class AppLovinMAXModule
         }
 
         WritableMap params = getAdInfo( ad );
-        // TODO: Add "code", "message", and "adLoadFailureInfo"
-        params.putInt( "errorCode", error.getCode() );
+        params.putInt( "code", error.getCode() );
+        params.putString( "message", error.getMessage() );
 
         sendReactNativeEvent( name, params );
     }
