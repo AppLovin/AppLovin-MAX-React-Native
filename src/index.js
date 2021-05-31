@@ -129,10 +129,12 @@ export default {
   /* BANNERS */
   /*---------*/
   /* createBanner(adUnitId, bannerPosition) */
+  /* createBannerWithOffsets(adUnitId, bannerPosition, xOffset, yOffset) */
   /* setBannerBackgroundColor(adUnitId, hexColorCode) */
   /* setBannerPlacement(adUnitId, placement) */
   /* setBannerWidth(adUnitId, width) */
   /* updateBannerPosition(adUnitId, bannerPosition) */
+  /* updateBannerOffsets(adUnitId, xOffset, yOffset) */
   /* setBannerExtraParameter(adUnitId, key, value) */
   /* showBanner(adUnitId) */
   /* hideBanner(adUnitId) */
@@ -149,7 +151,7 @@ export default {
   /* showMRec(adUnitId) */
   /* hideMRec(adUnitId) */
   /* destroyMRec
-  
+
   /*---------------*/
   /* INTERSTITIALS */
   /*---------------*/

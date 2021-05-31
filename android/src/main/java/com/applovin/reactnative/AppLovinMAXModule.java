@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -22,7 +23,7 @@ import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxAdListener;
 import com.applovin.mediation.MaxAdViewAdListener;
 import com.applovin.mediation.MaxError;
-import com.applovin.mediation.MaxErrorCodes;
+import com.applovin.mediation.MaxErrorCode;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.MaxRewardedAdListener;
 import com.applovin.mediation.ads.MaxAdView;
@@ -64,6 +65,8 @@ public class AppLovinMAXModule
     private static final String SDK_TAG = "AppLovinSdk";
     private static final String TAG     = "AppLovinMAXModule";
 
+    private static final Point DEFAULT_AD_VIEW_OFFSET = new Point( 0, 0 );
+
     public static  AppLovinMAXModule instance;
     private static Activity          sCurrentActivity;
 
@@ -87,6 +90,7 @@ public class AppLovinMAXModule
     private final Map<String, MaxAdView>   mAdViews                    = new HashMap<>( 2 );
     private final Map<String, MaxAdFormat> mAdViewAdFormats            = new HashMap<>( 2 );
     private final Map<String, String>      mAdViewPositions            = new HashMap<>( 2 );
+    private final Map<String, Point>       mAdViewOffsets              = new HashMap<>( 2 );
     private final Map<String, Integer>     mAdViewWidths               = new HashMap<>( 2 );
     private final Map<String, MaxAdFormat> mVerticalAdViewFormats      = new HashMap<>( 2 );
     private final List<String>             mAdUnitIdsToShowAfterCreate = new ArrayList<>( 2 );
@@ -429,11 +433,16 @@ public class AppLovinMAXModule
 
     // BANNERS
 
-    // TODO: Bridge banners as a native React Native view
     @ReactMethod()
     public void createBanner(final String adUnitId, final String bannerPosition)
     {
-        createAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), bannerPosition );
+        createAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), bannerPosition, DEFAULT_AD_VIEW_OFFSET );
+    }
+
+    @ReactMethod() // NOTE: No function overloading in JS so we need new method signature
+    public void createBannerWithOffsets(final String adUnitId, final String bannerPosition, final float x, final float y)
+    {
+        createAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), bannerPosition, getOffsetPixels( x, y, getCurrentActivity() ) );
     }
 
     @ReactMethod()
@@ -457,7 +466,13 @@ public class AppLovinMAXModule
     @ReactMethod()
     public void updateBannerPosition(final String adUnitId, final String bannerPosition)
     {
-        updateAdViewPosition( adUnitId, bannerPosition, getDeviceSpecificBannerAdViewAdFormat() );
+        updateAdViewPosition( adUnitId, bannerPosition, DEFAULT_AD_VIEW_OFFSET, getDeviceSpecificBannerAdViewAdFormat() );
+    }
+
+    @ReactMethod()
+    public void updateBannerOffsets(final String adUnitId, final float x, final float y)
+    {
+        updateAdViewPosition( adUnitId, mAdViewPositions.get( adUnitId ), getOffsetPixels( x, y, getCurrentActivity() ), getDeviceSpecificBannerAdViewAdFormat() );
     }
 
     @ReactMethod()
@@ -489,7 +504,7 @@ public class AppLovinMAXModule
     @ReactMethod()
     public void createMRec(final String adUnitId, final String mrecPosition)
     {
-        createAdView( adUnitId, MaxAdFormat.MREC, mrecPosition );
+        createAdView( adUnitId, MaxAdFormat.MREC, mrecPosition, DEFAULT_AD_VIEW_OFFSET );
     }
 
     @ReactMethod()
@@ -501,7 +516,7 @@ public class AppLovinMAXModule
     @ReactMethod()
     public void updateMRecPosition(final String adUnitId, final String mrecPosition)
     {
-        updateAdViewPosition( adUnitId, mrecPosition, MaxAdFormat.MREC );
+        updateAdViewPosition( adUnitId, mrecPosition, DEFAULT_AD_VIEW_OFFSET, MaxAdFormat.MREC );
     }
 
     @ReactMethod()
@@ -846,7 +861,7 @@ public class AppLovinMAXModule
 
     // INTERNAL METHODS
 
-    private void createAdView(final String adUnitId, final MaxAdFormat adFormat, final String adViewPosition)
+    private void createAdView(final String adUnitId, final MaxAdFormat adFormat, final String adViewPosition, final Point adViewOffsetPixels)
     {
         // Run on main thread to ensure there are no concurrency issues with other ad view methods
         getReactApplicationContext().runOnUiQueueThread( new Runnable()
@@ -854,10 +869,10 @@ public class AppLovinMAXModule
             @Override
             public void run()
             {
-                d( "Creating " + adFormat.getLabel() + " with ad unit id \"" + adUnitId + "\" and position: \"" + adViewPosition + "\"" );
+                d( "Creating " + adFormat.getLabel() + " with ad unit id \"" + adUnitId + "\", position: \"" + adViewPosition + "\", and offset: " + adViewOffsetPixels );
 
                 // Retrieve ad view from the map
-                final MaxAdView adView = retrieveAdView( adUnitId, adFormat, adViewPosition );
+                final MaxAdView adView = retrieveAdView( adUnitId, adFormat, adViewPosition, adViewOffsetPixels );
                 if ( adView == null )
                 {
                     e( adFormat.getLabel() + " does not exist" );
@@ -933,7 +948,7 @@ public class AppLovinMAXModule
         } );
     }
 
-    private void updateAdViewPosition(final String adUnitId, final String adViewPosition, final MaxAdFormat adFormat)
+    private void updateAdViewPosition(final String adUnitId, final String adViewPosition, final Point offsetPixels, final MaxAdFormat adFormat)
     {
         getReactApplicationContext().runOnUiQueueThread( new Runnable()
         {
@@ -950,11 +965,8 @@ public class AppLovinMAXModule
                     return;
                 }
 
-                // Check if the previous position is same as the new position. If so, no need to update the position again.
-                final String previousPosition = mAdViewPositions.get( adUnitId );
-                if ( adViewPosition == null || adViewPosition.equals( previousPosition ) ) return;
-
                 mAdViewPositions.put( adUnitId, adViewPosition );
+                mAdViewOffsets.put( adUnitId, offsetPixels );
                 positionAdView( adUnitId, adFormat );
             }
         } );
@@ -1036,6 +1048,7 @@ public class AppLovinMAXModule
                 mAdViews.remove( adUnitId );
                 mAdViewAdFormats.remove( adUnitId );
                 mAdViewPositions.remove( adUnitId );
+                mAdViewOffsets.remove( adUnitId );
                 mAdViewWidths.remove( adUnitId );
                 mVerticalAdViewFormats.remove( adUnitId );
             }
@@ -1170,19 +1183,20 @@ public class AppLovinMAXModule
 
     private MaxAdView retrieveAdView(String adUnitId, MaxAdFormat adFormat)
     {
-        return retrieveAdView( adUnitId, adFormat, null );
+        return retrieveAdView( adUnitId, adFormat, null, DEFAULT_AD_VIEW_OFFSET );
     }
 
-    public MaxAdView retrieveAdView(String adUnitId, MaxAdFormat adFormat, String adViewPosition)
+    public MaxAdView retrieveAdView(String adUnitId, MaxAdFormat adFormat, String adViewPosition, Point adViewOffsetPixels)
     {
         MaxAdView result = mAdViews.get( adUnitId );
-        if ( result == null && adViewPosition != null )
+        if ( result == null && adViewPosition != null && adViewOffsetPixels != null )
         {
             result = new MaxAdView( adUnitId, adFormat, sdk, maybeGetCurrentActivity() );
             result.setListener( this );
 
             mAdViews.put( adUnitId, result );
             mAdViewPositions.put( adUnitId, adViewPosition );
+            mAdViewOffsets.put( adUnitId, adViewOffsetPixels );
         }
 
         return result;
@@ -1203,6 +1217,7 @@ public class AppLovinMAXModule
         }
 
         final String adViewPosition = mAdViewPositions.get( adUnitId );
+        final Point adViewOffset = mAdViewOffsets.get( adUnitId );
         final boolean isWidthDpOverridden = mAdViewWidths.containsKey( adUnitId );
 
         final RelativeLayout relativeLayout = (RelativeLayout) adView.getParent();
@@ -1247,6 +1262,7 @@ public class AppLovinMAXModule
         adView.setRotation( 0 );
         adView.setTranslationX( 0 );
         params.setMargins( 0, 0, 0, 0 );
+
         mVerticalAdViewFormats.remove( adUnitId );
 
         if ( "centered".equalsIgnoreCase( adViewPosition ) )
@@ -1364,6 +1380,7 @@ public class AppLovinMAXModule
         }
 
         relativeLayout.setGravity( gravity );
+        relativeLayout.setPadding( adViewOffset.x, adViewOffset.y, adViewOffset.x, adViewOffset.y );
     }
 
     // Utility Methods
@@ -1420,6 +1437,11 @@ public class AppLovinMAXModule
         adInfo.putDouble( "revenue", ad.getRevenue() );
 
         return adInfo;
+    }
+
+    private static Point getOffsetPixels(final float xDp, final float yDp, final Context context)
+    {
+        return new Point( AppLovinSdkUtils.dpToPx( context, (int) xDp ), AppLovinSdkUtils.dpToPx( context, (int) yDp ) );
     }
 
     // React Native Bridge

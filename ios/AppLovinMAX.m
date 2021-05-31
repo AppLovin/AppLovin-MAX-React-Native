@@ -51,6 +51,7 @@
 @property (nonatomic, strong) NSMutableDictionary<NSString *, MAAdView *> *adViews;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, MAAdFormat *> *adViewAdFormats;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSString *> *adViewPositions;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, NSValue *> *adViewOffsets;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *adViewWidths;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSArray<NSLayoutConstraint *> *> *adViewConstraints;
 @property (nonatomic, strong) NSMutableArray<NSString *> *adUnitIdentifiersToShowAfterCreate;
@@ -100,6 +101,7 @@ RCT_EXPORT_MODULE()
         self.adViews = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.adViewAdFormats = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.adViewPositions = [NSMutableDictionary dictionaryWithCapacity: 2];
+        self.adViewOffsets = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.adViewWidths = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.adViewConstraints = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.adUnitIdentifiersToShowAfterCreate = [NSMutableArray arrayWithCapacity: 2];
@@ -341,7 +343,13 @@ RCT_EXPORT_METHOD(trackEvent:(NSString *)event :(NSDictionary<NSString *, id> *)
 
 RCT_EXPORT_METHOD(createBanner:(NSString *)adUnitIdentifier :(NSString *)bannerPosition)
 {
-    [self createAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT atPosition: bannerPosition];
+    [self createAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT atPosition: bannerPosition withOffset: CGPointZero];
+}
+
+// NOTE: No function overloading in JS so we need new method signature
+RCT_EXPORT_METHOD(createBannerWithOffsets:(NSString *)adUnitIdentifier :(NSString *)bannerPosition :(CGFloat)xOffset :(CGFloat)yOffset)
+{
+    [self createAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT atPosition: bannerPosition withOffset: CGPointMake(xOffset, yOffset)];
 }
 
 RCT_EXPORT_METHOD(setBannerBackgroundColor:(NSString *)adUnitIdentifier :(NSString *)hexColorCode)
@@ -354,9 +362,14 @@ RCT_EXPORT_METHOD(setBannerPlacement:(nullable NSString *)placement :(NSString *
     [self setAdViewPlacement: placement forAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
 }
 
-RCT_EXPORT_METHOD(updateBannerPosition:(NSString *)bannerPosition :(NSString *)adUnitIdentifier)
+RCT_EXPORT_METHOD(updateBannerPosition:(NSString *)adUnitIdentifier :(NSString *)bannerPosition)
 {
-    [self updateAdViewPosition: bannerPosition forAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
+    [self updateAdViewPosition: bannerPosition withOffset: CGPointZero forAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
+}
+
+RCT_EXPORT_METHOD(updateBannerOffsets:(NSString *)adUnitIdentifier :(CGFloat)xOffset :(CGFloat)yOffset)
+{
+    [self updateAdViewPosition: self.adViewPositions[adUnitIdentifier] withOffset: CGPointMake(xOffset, yOffset) forAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
 }
 
 RCT_EXPORT_METHOD(setBannerWidth:(NSString *)adUnitIdentifier :(CGFloat)width)
@@ -388,7 +401,7 @@ RCT_EXPORT_METHOD(destroyBanner:(NSString *)adUnitIdentifier)
 
 RCT_EXPORT_METHOD(createMRec:(NSString *)adUnitIdentifier :(NSString *)mrecPosition)
 {
-    [self createAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec atPosition: mrecPosition];
+    [self createAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec atPosition: mrecPosition withOffset: CGPointZero];
 }
 
 RCT_EXPORT_METHOD(setMRecPlacement:(nullable NSString *)placement :(NSString *)adUnitIdentifier)
@@ -398,7 +411,7 @@ RCT_EXPORT_METHOD(setMRecPlacement:(nullable NSString *)placement :(NSString *)a
 
 RCT_EXPORT_METHOD(updateMRecPosition:(NSString *)mrecPosition :(NSString *)adUnitIdentifier)
 {
-    [self updateAdViewPosition: mrecPosition forAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
+    [self updateAdViewPosition: mrecPosition withOffset: CGPointZero forAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
 }
 
 RCT_EXPORT_METHOD(showMRec:(NSString *)adUnitIdentifier)
@@ -688,14 +701,14 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 
 #pragma mark - Internal Methods
 
-- (void)createAdViewWithAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat atPosition:(NSString *)adViewPosition
+- (void)createAdViewWithAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat atPosition:(NSString *)adViewPosition withOffset:(CGPoint)offset
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         
-        [self log: @"Creating %@ with ad unit identifier \"%@\" and position: \"%@\"", adFormat, adUnitIdentifier, adViewPosition];
+        [self log: @"Creating %@ with ad unit identifier \"%@\", position: \"%@\", and offset: %@", adFormat, adUnitIdentifier, adViewPosition, NSStringFromCGPoint(offset)];
         
         // Retrieve ad view from the map
-        MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: adViewPosition];
+        MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: adViewPosition withOffset: offset];
         adView.hidden = YES;
         self.safeAreaBackground.hidden = YES;
         
@@ -764,15 +777,11 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     });
 }
 
-- (void)updateAdViewPosition:(NSString *)adViewPosition forAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat
+- (void)updateAdViewPosition:(NSString *)adViewPosition withOffset:(CGPoint)offset forAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        
-        // Check if the previous position is same as the new position. If so, no need to update the position again.
-        NSString *previousPosition = self.adViewPositions[adUnitIdentifier];
-        if ( !adViewPosition || [adViewPosition isEqualToString: previousPosition] ) return;
-        
         self.adViewPositions[adUnitIdentifier] = adViewPosition;
+        self.adViewOffsets[adUnitIdentifier] = [NSValue valueWithCGPoint: offset];
         [self positionAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
     });
 }
@@ -857,6 +866,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         
         [self.adViews removeObjectForKey: adUnitIdentifier];
         [self.adViewPositions removeObjectForKey: adUnitIdentifier];
+        [self.adViewOffsets removeObjectForKey: adUnitIdentifier];
         [self.adViewWidths removeObjectForKey: adUnitIdentifier];
         [self.adViewAdFormats removeObjectForKey: adUnitIdentifier];
     });
@@ -907,15 +917,15 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 
 - (MAAdView *)retrieveAdViewForAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat
 {
-    return [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: nil];
+    return [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: nil withOffset: CGPointZero];
 }
 
-- (MAAdView *)retrieveAdViewForAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat atPosition:(NSString *)adViewPosition
+- (MAAdView *)retrieveAdViewForAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat atPosition:(NSString *)adViewPosition withOffset:(CGPoint)offset
 {
-    return [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: adViewPosition attach: YES];
+    return [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: adViewPosition withOffset: offset attach: YES];
 }
 
-- (MAAdView *)retrieveAdViewForAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat atPosition:(NSString *)adViewPosition attach:(BOOL)attach
+- (MAAdView *)retrieveAdViewForAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat atPosition:(NSString *)adViewPosition withOffset:(CGPoint)offset attach:(BOOL)attach
 {
     MAAdView *result = self.adViews[adUnitIdentifier];
     if ( !result && adViewPosition )
@@ -931,6 +941,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         if ( attach )
         {
             self.adViewPositions[adUnitIdentifier] = adViewPosition;
+            self.adViewOffsets[adUnitIdentifier] = [NSValue valueWithCGPoint: offset];
             [ROOT_VIEW_CONTROLLER.view addSubview: result];
         }
     }
@@ -948,7 +959,24 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
     NSString *adViewPosition = self.adViewPositions[adUnitIdentifier];
     BOOL isWidthPtsOverridden = self.adViewWidths[adUnitIdentifier] != nil;
-
+    
+    NSValue *adViewPositionValue = self.adViewOffsets[adUnitIdentifier];
+    CGPoint adViewOffset = [adViewPositionValue CGPointValue];
+    CGFloat xOffset = adViewOffset.x;
+    CGFloat yOffset = adViewOffset.y;
+    
+    // Y offset needs to be inverted (eg 50 -> -50) to pad from right
+    if ( [adViewPosition containsString: @"right" ] )
+    {
+        xOffset = -xOffset;
+    }
+    
+    // Y offset needs to be inverted (eg 50 -> -50) to pad from bottom
+    if ( [adViewPosition containsString: @"bottom" ] )
+    {
+        yOffset = -yOffset;
+    }
+    
     UIView *superview = adView.superview;
     if ( !superview ) return;
     
@@ -1017,13 +1045,13 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
             
             if ( [adViewPosition isEqual: @"top_center"] )
             {
-                [constraints addObjectsFromArray: @[[adView.topAnchor constraintEqualToAnchor: layoutGuide.topAnchor],
+                [constraints addObjectsFromArray: @[[adView.topAnchor constraintEqualToAnchor: layoutGuide.topAnchor constant: yOffset],
                                                     [self.safeAreaBackground.topAnchor constraintEqualToAnchor: superview.topAnchor],
                                                     [self.safeAreaBackground.bottomAnchor constraintEqualToAnchor: adView.topAnchor]]];
             }
             else // bottom_center
             {
-                [constraints addObjectsFromArray: @[[adView.bottomAnchor constraintEqualToAnchor: layoutGuide.bottomAnchor],
+                [constraints addObjectsFromArray: @[[adView.bottomAnchor constraintEqualToAnchor: layoutGuide.bottomAnchor constant: yOffset],
                                                     [self.safeAreaBackground.topAnchor constraintEqualToAnchor: adView.bottomAnchor],
                                                     [self.safeAreaBackground.bottomAnchor constraintEqualToAnchor: superview.bottomAnchor]]];
             }
@@ -1039,11 +1067,11 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
             
             if ( [adViewPosition isEqual: @"top_center"] )
             {
-                [constraints addObject: [adView.topAnchor constraintEqualToAnchor: layoutGuide.topAnchor]];
+                [constraints addObject: [adView.topAnchor constraintEqualToAnchor: layoutGuide.topAnchor constant: yOffset]];
             }
             else // BottomCenter
             {
-                [constraints addObject: [adView.bottomAnchor constraintEqualToAnchor: layoutGuide.bottomAnchor]];
+                [constraints addObject: [adView.bottomAnchor constraintEqualToAnchor: layoutGuide.bottomAnchor constant: yOffset]];
             }
         }
     }
@@ -1057,13 +1085,13 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         
         if ( [adViewPosition isEqual: @"top_left"] )
         {
-            [constraints addObjectsFromArray: @[[adView.topAnchor constraintEqualToAnchor: layoutGuide.topAnchor],
-                                                [adView.leftAnchor constraintEqualToAnchor: superview.leftAnchor]]];
+            [constraints addObjectsFromArray: @[[adView.topAnchor constraintEqualToAnchor: layoutGuide.topAnchor constant: yOffset],
+                                                [adView.leftAnchor constraintEqualToAnchor: superview.leftAnchor constant: xOffset]]];
         }
         else if ( [adViewPosition isEqual: @"top_right"] )
         {
-            [constraints addObjectsFromArray: @[[adView.topAnchor constraintEqualToAnchor: layoutGuide.topAnchor],
-                                                [adView.rightAnchor constraintEqualToAnchor: superview.rightAnchor]]];
+            [constraints addObjectsFromArray: @[[adView.topAnchor constraintEqualToAnchor: layoutGuide.topAnchor constant: yOffset],
+                                                [adView.rightAnchor constraintEqualToAnchor: superview.rightAnchor constant: xOffset]]];
         }
         else if ( [adViewPosition isEqual: @"centered"] )
         {
@@ -1072,13 +1100,13 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         }
         else if ( [adViewPosition isEqual: @"bottom_left"] )
         {
-            [constraints addObjectsFromArray: @[[adView.bottomAnchor constraintEqualToAnchor: layoutGuide.bottomAnchor],
-                                                [adView.leftAnchor constraintEqualToAnchor: superview.leftAnchor]]];
+            [constraints addObjectsFromArray: @[[adView.bottomAnchor constraintEqualToAnchor: layoutGuide.bottomAnchor constant: yOffset],
+                                                [adView.leftAnchor constraintEqualToAnchor: superview.leftAnchor constant: xOffset]]];
         }
         else if ( [adViewPosition isEqual: @"bottom_right"] )
         {
-            [constraints addObjectsFromArray: @[[adView.bottomAnchor constraintEqualToAnchor: layoutGuide.bottomAnchor],
-                                                [adView.rightAnchor constraintEqualToAnchor: superview.rightAnchor]]];
+            [constraints addObjectsFromArray: @[[adView.bottomAnchor constraintEqualToAnchor: layoutGuide.bottomAnchor constant: yOffset],
+                                                [adView.rightAnchor constraintEqualToAnchor: superview.rightAnchor constant: xOffset]]];
         }
     }
     

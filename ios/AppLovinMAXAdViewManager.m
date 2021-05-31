@@ -80,6 +80,7 @@ RCT_CUSTOM_VIEW_PROPERTY(adFormat, NSString, MAAdView)
             self.adView = [AppLovinMAX.shared retrieveAdViewForAdUnitIdentifier: adUnitIdentifier
                                                                        adFormat: adFormat
                                                                      atPosition: @""
+                                                                     withOffset: CGPointZero
                                                                          attach: NO];
             [self.adView loadAd];
             

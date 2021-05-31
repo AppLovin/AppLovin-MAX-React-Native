@@ -3,6 +3,7 @@
 ## x.x.x
     * Add API for passing in `errorInfo` for ad load failure callbacks with parameters "code", "message", and "adLoadFailureInfo".
     * Add API for passing in `errorInfo` for ad display failure callbacks with parameters "code" and "message".
+    * Add API for creating and updating banner X and Y offsets. For example, to offset banner 50px from a bottom center position: `AppLovinMAX.createBannerWithOffsets(adUnitId, AppLovinMAX.AdViewPosition.BOTTOM_CENTER, 0, 50);`.
 ## 2.0.6
     * Add support for latest SDKs v10.3.0 with new callbacks.
 ## 2.0.5

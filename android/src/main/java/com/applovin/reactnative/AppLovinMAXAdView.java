@@ -2,6 +2,7 @@ package com.applovin.reactnative;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Point;
 import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -86,7 +87,7 @@ class AppLovinMAXAdView
                 // If ad unit id and format has been set - create and attach AdView
                 if ( !TextUtils.isEmpty( adUnitId ) && adFormat != null )
                 {
-                    adView = AppLovinMAXModule.getInstance().retrieveAdView( adUnitId, adFormat, "" );
+                    adView = AppLovinMAXModule.getInstance().retrieveAdView( adUnitId, adFormat, "", new Point( 0, 0 ) );
                     adView.loadAd();
 
                     currentWidthPx = getWidth();

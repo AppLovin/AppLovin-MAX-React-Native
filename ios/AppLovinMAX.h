@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (MAAdView *)retrieveAdViewForAdUnitIdentifier:(NSString *)adUnitIdentifier
                                        adFormat:(MAAdFormat *)adFormat
                                      atPosition:(NSString *)adViewPosition
+                                     withOffset:(CGPoint)offset
                                          attach:(BOOL)attach;
 
 @end
