@@ -78,7 +78,7 @@ const App = () => {
       setInterstitialRetryAttempt(interstitialRetryAttempt + 1);
 
       var retryDelay = Math.pow(2, Math.min(6, interstitialRetryAttempt));
-      logStatus('Interstitial ad failed to load with code ' + errorInfo["code"] + ' - retrying in ' + retryDelay + 's');
+      logStatus('Interstitial ad failed to load with code ' + errorInfo.code + ' - retrying in ' + retryDelay + 's');
 
       setTimeout(function () {
         AppLovinMAX.loadInterstitial(INTERSTITIAL_AD_UNIT_ID);
@@ -117,7 +117,7 @@ const App = () => {
       setRewardedAdRetryAttempt(rewardedAdRetryAttempt + 1);
 
       var retryDelay = Math.pow(2, Math.min(6, rewardedAdRetryAttempt));
-      logStatus('Rewarded ad failed to load with code ' + errorInfo["code"] + ' - retrying in ' + retryDelay + 's');
+      logStatus('Rewarded ad failed to load with code ' + errorInfo.code + ' - retrying in ' + retryDelay + 's');
 
       setTimeout(function () {
         AppLovinMAX.loadRewardedAd(REWARDED_AD_UNIT_ID);
@@ -146,7 +146,7 @@ const App = () => {
       logStatus('Banner ad loaded from ' + adInfo.networkName);
     });
     AppLovinMAX.addEventListener('OnBannerAdLoadFailedEvent', (errorInfo) => {
-      logStatus('Banner ad failed to load with error code ' + errorInfo["code"] + ' and message: ' + errorInfo["message"]);
+      logStatus('Banner ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
     });
     AppLovinMAX.addEventListener('OnBannerAdClickedEvent', (adInfo) => {
       logStatus('Banner ad clicked');
@@ -163,7 +163,7 @@ const App = () => {
       logStatus('MREC ad loaded from ' + adInfo.networkName);
     });
     AppLovinMAX.addEventListener('OnMRecAdLoadFailedEvent', (errorInfo) => {
-      logStatus('MREC ad failed to load with error code ' + errorInfo["code"] + ' and message: ' + errorInfo["message"]);
+      logStatus('MREC ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
     });
     AppLovinMAX.addEventListener('OnMRecAdClickedEvent', (adInfo) => {
       logStatus('MREC ad clicked');
@@ -258,9 +258,9 @@ const App = () => {
                 //
                 // Programmatic banner creation - banners are automatically sized to 320x50 on phones and 728x90 on tablets
                 //
-                AppLovinMAX.createBanner(
+                AppLovinMAX.createBannerWithOffsets(
                   BANNER_AD_UNIT_ID,
-                  AppLovinMAX.AdViewPosition.BOTTOM_CENTER
+                  AppLovinMAX.AdViewPosition.BOTTOM_CENTER, 0, 50
                 );
 
                 // Set background color for banners to be fully functional
