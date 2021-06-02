@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 2.1.1
     * Fix iOS projects not building.
 ## 2.1.0
     * Add API for passing in `errorInfo` for ad load failure callbacks with parameters "code", "message", and "adLoadFailureInfo".
