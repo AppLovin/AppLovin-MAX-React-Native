@@ -1,5 +1,7 @@
 ## Versions
 
+## 2.1.2
+    * Fix banners and MRECs native UI components not clicking if not styled by parent dom.
 ## 2.1.1
     * Fix iOS projects not building.
 ## 2.1.0
