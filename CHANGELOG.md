@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 2.1.3
     * Add support for latest SDKs v10.3.1 with new callbacks.
 ## 2.1.2
     * Fix banners and MRECs native UI components not clicking if not styled by parent dom.
