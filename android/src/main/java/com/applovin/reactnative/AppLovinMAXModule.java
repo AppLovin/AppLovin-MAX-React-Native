@@ -853,12 +853,6 @@ public class AppLovinMAXModule
         sendReactNativeEvent( "OnRewardedAdReceivedRewardEvent", params );
     }
 
-    @Override
-    public void onAdRevenuePaid(final MaxAd ad)
-    {
-        // TODO: Implement
-    }
-
     // INTERNAL METHODS
 
     private void createAdView(final String adUnitId, final MaxAdFormat adFormat, final String adViewPosition, final Point adViewOffsetPixels)
