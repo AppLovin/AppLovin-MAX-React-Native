@@ -478,7 +478,7 @@ public class AppLovinMAXModule
     @ReactMethod()
     public void setBannerExtraParameter(final String adUnitId, final String key, final String value)
     {
-        setAdViewExtraParameters( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), value, key );
+        setAdViewExtraParameters( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), key, value );
     }
 
     @ReactMethod()
@@ -1070,7 +1070,7 @@ public class AppLovinMAXModule
         } );
     }
 
-    private void setAdViewExtraParameters(final String adUnitId, final MaxAdFormat adFormat, final String value, final String key)
+    private void setAdViewExtraParameters(final String adUnitId, final MaxAdFormat adFormat, final String key, final String value)
     {
         getReactApplicationContext().runOnUiQueueThread( new Runnable()
         {
