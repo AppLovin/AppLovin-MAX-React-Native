@@ -96,28 +96,6 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
     }];
 }
 
-//  RCT_CUSTOM_VIEW_PROPERTY(adUnitId, NSString, MAAdView)
-//  {
-//      self.adUnitIdentifier = [RCTConvert NSString: json];
-//      [self attachAdViewIfNeededForAdUnitIdentifier: self.adUnitIdentifier adFormat: self.adFormat containerView: view];
-//  }
-
-//RCT_CUSTOM_VIEW_PROPERTY(adFormat, NSString, MAAdView)
-//{
-//    NSString *adFormatStr = [RCTConvert NSString: json];
-//
-//    if ( [@"banner" isEqualToString: adFormatStr] )
-//    {
-//        self.adFormat = DEVICE_SPECIFIC_ADVIEW_AD_FORMAT;
-//    }
-//    else if ( [@"mrec" isEqualToString: adFormatStr] )
-//    {
-//        self.adFormat = MAAdFormat.mrec;
-//    }
-//
-//    [self attachAdViewIfNeededForAdUnitIdentifier: self.adUnitIdentifier adFormat: self.adFormat containerView: view];
-//}
-
 - (void)attachAdViewIfNeededForAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat containerView:(UIView *)containerView
 {
     // Run after delay to ensure SDK is attached to main module first
@@ -126,7 +104,7 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
         // If ad unit id and format has been set - create and attach AdView
         if ( [adUnitIdentifier al_isValidString] && adFormat )
         {
-            MAAdView *adView = (MAAdView *) [self getMAAdViewFromContainer: containerView];
+            MAAdView *adView = [self getMAAdViewFromContainer: containerView];
             // Check if there's a previously-attached AdView
             if ( adView )
             {
@@ -156,7 +134,7 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
 
 - (nullable MAAdView *)getMAAdViewFromContainer:(UIView *)view
 {
-    return view.subviews.count > 0 ? ((MAAdView *) view.subviews[0]) : nil;
+    return view.subviews.count > 0 ? ((MAAdView *) view.subviews.lastObject) : nil;
 }
 
 @end
