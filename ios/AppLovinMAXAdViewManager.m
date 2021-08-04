@@ -9,6 +9,7 @@
 #import "AppLovinMAXAdViewManager.h"
 #import <AppLovinSDK/AppLovinSDK.h>
 #import "AppLovinMAX.h"
+#import <React/RCTUIManager.h>
 
 // Internal
 @interface NSString (ALUtils)
@@ -17,18 +18,29 @@
 
 @interface AppLovinMAXAdViewManager()
 
-// View properties
-// @property (nonatomic, strong) UIView *containerView;
-// @property (nonatomic, strong) MAAdView *adView;
-
 // Properties that need to be set before creating MAAdView
 @property (nonatomic, copy) NSString *adUnitIdentifier;
 @property (nonatomic, weak) MAAdFormat *adFormat;
+
+// Properties that need to be set before creating MAAdView. Key is id of the React view.
+@property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSString *> *adUnitRegistry;
+@property (nonatomic, strong) NSMutableDictionary<NSNumber *, MAAdFormat *> *adFormatRegistry;
 
 @end
 
 @implementation AppLovinMAXAdViewManager
 RCT_EXPORT_MODULE(AppLovinMAXAdView)
+
+- (instancetype)init
+{
+    self = [super init];
+    if ( self )
+    {
+        self.adUnitRegistry = [NSMutableDictionary dictionary];
+        self.adFormatRegistry = [NSMutableDictionary dictionary];
+    }
+    return self;
+}
 
 - (UIView *)view
 {
@@ -36,34 +48,75 @@ RCT_EXPORT_MODULE(AppLovinMAXAdView)
     return [[UIView alloc] init];
 }
 
-// RCT_EXPORT_METHOD(setAdUnitId:(NSNumber *)viewTag toValue:(NSString *)value)
-// {
-//     [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-//         UIView *view = viewRegistry[viewTag];
-//     }];
-// }
-
-RCT_CUSTOM_VIEW_PROPERTY(adUnitId, NSString, MAAdView)
+RCT_EXPORT_METHOD(setAdUnitId:(nonnull NSNumber *)viewTag toAdUnitId:(NSString *)value)
 {
-    self.adUnitIdentifier = [RCTConvert NSString: json];
-    [self attachAdViewIfNeededForAdUnitIdentifier: self.adUnitIdentifier adFormat: self.adFormat containerView: view];
+    RCTLogInfo(@"setAdUnitId");
+    [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        UIView *view = viewRegistry[viewTag];
+
+        if ( !view )
+        {
+            RCTLogError(@"Cannot find UIView with tag %@", viewTag);
+            return;
+        }
+
+        self.adUnitRegistry[viewTag] = value;
+        MAAdFormat *adFormat = self.adFormatRegistry[viewTag];
+
+        [self attachAdViewIfNeededForAdUnitIdentifier: value adFormat: adFormat containerView: view];
+    }];
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(adFormat, NSString, MAAdView)
+RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *)value)
 {
-    NSString *adFormatStr = [RCTConvert NSString: json];
-    
-    if ( [@"banner" isEqualToString: adFormatStr] )
-    {
-        self.adFormat = DEVICE_SPECIFIC_ADVIEW_AD_FORMAT;
-    }
-    else if ( [@"mrec" isEqualToString: adFormatStr] )
-    {
-        self.adFormat = MAAdFormat.mrec;
-    }
-    
-    [self attachAdViewIfNeededForAdUnitIdentifier: self.adUnitIdentifier adFormat: self.adFormat containerView: view];
+    RCTLogInfo(@"setAdFormat");
+    [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        UIView *view = viewRegistry[viewTag];
+
+        if ( !view )
+        {
+            RCTLogError(@"Cannot find UIView with tag %@", viewTag);
+            return;
+        }
+        
+        MAAdFormat *adFormat;
+        if ( [@"banner" isEqualToString: value] )
+        {
+            adFormat = DEVICE_SPECIFIC_ADVIEW_AD_FORMAT;
+        }
+        else if ( [@"mrec" isEqualToString: value] )
+        {
+            adFormat = MAAdFormat.mrec;
+        }
+
+        self.adFormatRegistry[viewTag] = adFormat;
+        NSString *adUnitId = self.adUnitRegistry[viewTag];
+
+        [self attachAdViewIfNeededForAdUnitIdentifier: adUnitId adFormat: adFormat containerView: view];
+    }];
 }
+
+//  RCT_CUSTOM_VIEW_PROPERTY(adUnitId, NSString, MAAdView)
+//  {
+//      self.adUnitIdentifier = [RCTConvert NSString: json];
+//      [self attachAdViewIfNeededForAdUnitIdentifier: self.adUnitIdentifier adFormat: self.adFormat containerView: view];
+//  }
+
+//RCT_CUSTOM_VIEW_PROPERTY(adFormat, NSString, MAAdView)
+//{
+//    NSString *adFormatStr = [RCTConvert NSString: json];
+//
+//    if ( [@"banner" isEqualToString: adFormatStr] )
+//    {
+//        self.adFormat = DEVICE_SPECIFIC_ADVIEW_AD_FORMAT;
+//    }
+//    else if ( [@"mrec" isEqualToString: adFormatStr] )
+//    {
+//        self.adFormat = MAAdFormat.mrec;
+//    }
+//
+//    [self attachAdViewIfNeededForAdUnitIdentifier: self.adUnitIdentifier adFormat: self.adFormat containerView: view];
+//}
 
 - (void)attachAdViewIfNeededForAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat containerView:(UIView *)containerView
 {
@@ -73,7 +126,7 @@ RCT_CUSTOM_VIEW_PROPERTY(adFormat, NSString, MAAdView)
         // If ad unit id and format has been set - create and attach AdView
         if ( [adUnitIdentifier al_isValidString] && adFormat )
         {
-            UIView *adView = containerView.subviews[0];
+            MAAdView *adView = (MAAdView *) [self getMAAdViewFromContainer: containerView];
             // Check if there's a previously-attached AdView
             if ( adView )
             {
@@ -95,10 +148,15 @@ RCT_CUSTOM_VIEW_PROPERTY(adFormat, NSString, MAAdView)
             CGSize adViewSize = [AppLovinMAX adViewSizeForAdFormat: adFormat];
             [NSLayoutConstraint activateConstraints: @[[adView.widthAnchor constraintEqualToConstant: adViewSize.width],
                                                        [adView.heightAnchor constraintEqualToConstant: adViewSize.height],
-                                                       [adView.centerXAnchor constraintEqualToAnchor: self.containerView.centerXAnchor],
-                                                       [adView.centerYAnchor constraintEqualToAnchor: self.containerView.centerYAnchor]]];
+                                                       [adView.centerXAnchor constraintEqualToAnchor: containerView.centerXAnchor],
+                                                       [adView.centerYAnchor constraintEqualToAnchor: containerView.centerYAnchor]]];
         }
     });
+}
+
+- (nullable MAAdView *)getMAAdViewFromContainer:(UIView *)view
+{
+    return view.subviews.count > 0 ? ((MAAdView *) view.subviews[0]) : nil;
 }
 
 @end
