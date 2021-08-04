@@ -18,12 +18,9 @@
 
 @interface AppLovinMAXAdViewManager()
 
-// Properties that need to be set before creating MAAdView
-@property (nonatomic, copy) NSString *adUnitIdentifier;
-@property (nonatomic, weak) MAAdFormat *adFormat;
-
-// Properties that need to be set before creating MAAdView. Key is id of the React view.
-@property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSString *> *adUnitRegistry;
+// Dictionaries from id of the React view to the corresponding ad unit id and ad format.
+// Both must be set before the MAAdView is created.
+@property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSString *> *adUnitIdRegistry;
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, MAAdFormat *> *adFormatRegistry;
 
 @end
@@ -36,7 +33,7 @@ RCT_EXPORT_MODULE(AppLovinMAXAdView)
     self = [super init];
     if ( self )
     {
-        self.adUnitRegistry = [NSMutableDictionary dictionary];
+        self.adUnitIdRegistry = [NSMutableDictionary dictionary];
         self.adFormatRegistry = [NSMutableDictionary dictionary];
     }
     return self;
@@ -50,49 +47,46 @@ RCT_EXPORT_MODULE(AppLovinMAXAdView)
 
 RCT_EXPORT_METHOD(setAdUnitId:(nonnull NSNumber *)viewTag toAdUnitId:(NSString *)value)
 {
-    RCTLogInfo(@"setAdUnitId");
     [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
         UIView *view = viewRegistry[viewTag];
-
         if ( !view )
         {
             RCTLogError(@"Cannot find UIView with tag %@", viewTag);
             return;
         }
 
-        self.adUnitRegistry[viewTag] = value;
-        MAAdFormat *adFormat = self.adFormatRegistry[viewTag];
-
-        [self attachAdViewIfNeededForAdUnitIdentifier: value adFormat: adFormat containerView: view];
+        // Store in case ad format has not been assigned.
+        self.adUnitIdRegistry[viewTag] = value;
+        
+        [self attachAdViewIfNeededForAdUnitIdentifier: self.adUnitIdRegistry[viewTag]
+                                             adFormat: self.adFormatRegistry[viewTag]
+                                        containerView: view];
     }];
 }
 
 RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *)value)
 {
-    RCTLogInfo(@"setAdFormat");
     [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
         UIView *view = viewRegistry[viewTag];
-
         if ( !view )
         {
             RCTLogError(@"Cannot find UIView with tag %@", viewTag);
             return;
         }
         
-        MAAdFormat *adFormat;
+        // Store in case ad unit has not been assigned.
         if ( [@"banner" isEqualToString: value] )
         {
-            adFormat = DEVICE_SPECIFIC_ADVIEW_AD_FORMAT;
+            self.adFormatRegistry[viewTag] = DEVICE_SPECIFIC_ADVIEW_AD_FORMAT;
         }
         else if ( [@"mrec" isEqualToString: value] )
         {
-            adFormat = MAAdFormat.mrec;
+            self.adFormatRegistry[viewTag] = MAAdFormat.mrec;
         }
 
-        self.adFormatRegistry[viewTag] = adFormat;
-        NSString *adUnitId = self.adUnitRegistry[viewTag];
-
-        [self attachAdViewIfNeededForAdUnitIdentifier: adUnitId adFormat: adFormat containerView: view];
+        [self attachAdViewIfNeededForAdUnitIdentifier: self.adUnitIdRegistry[viewTag]
+                                             adFormat: self.adFormatRegistry[viewTag]
+                                        containerView: view];
     }];
 }
 
@@ -131,6 +125,8 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
         }
     });
 }
+
+// MARK: - Helper Functions
 
 - (nullable MAAdView *)getMAAdViewFromContainer:(UIView *)view
 {
