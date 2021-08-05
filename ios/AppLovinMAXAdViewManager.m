@@ -48,6 +48,7 @@ RCT_EXPORT_MODULE(AppLovinMAXAdView)
 RCT_EXPORT_METHOD(setAdUnitId:(nonnull NSNumber *)viewTag toAdUnitId:(NSString *)value)
 {
     [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        
         UIView *view = viewRegistry[viewTag];
         if ( !view )
         {
@@ -67,6 +68,7 @@ RCT_EXPORT_METHOD(setAdUnitId:(nonnull NSNumber *)viewTag toAdUnitId:(NSString *
 RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *)value)
 {
     [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        
         UIView *view = viewRegistry[viewTag];
         if ( !view )
         {
@@ -74,7 +76,7 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
             return;
         }
         
-        // Store in case ad unit has not been assigned.
+        // Store in case ad unit id has not been assigned.
         if ( [@"banner" isEqualToString: value] )
         {
             self.adFormatRegistry[viewTag] = DEVICE_SPECIFIC_ADVIEW_AD_FORMAT;
