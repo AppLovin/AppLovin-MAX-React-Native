@@ -100,7 +100,7 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
         // If ad unit id and format has been set - create and attach AdView
         if ( [adUnitIdentifier al_isValidString] && adFormat )
         {
-            MAAdView *adView = [self getMAAdViewFromContainer: containerView];
+            MAAdView *adView = [self getMAAdViewFromContainerView: containerView];
             // Check if there's a previously-attached AdView
             if ( adView )
             {
@@ -111,10 +111,10 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
             }
             
             adView = [AppLovinMAX.shared retrieveAdViewForAdUnitIdentifier: adUnitIdentifier
-                                                                       adFormat: adFormat
-                                                                     atPosition: @""
-                                                                     withOffset: CGPointZero
-                                                                         attach: NO];
+                                                                  adFormat: adFormat
+                                                                atPosition: @""
+                                                                withOffset: CGPointZero
+                                                                    attach: NO];
             [adView loadAd];
             
             [containerView addSubview: adView];
@@ -130,7 +130,7 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
 
 // MARK: - Helper Functions
 
-- (nullable MAAdView *)getMAAdViewFromContainer:(UIView *)view
+- (nullable MAAdView *)getMAAdViewFromContainerView:(UIView *)view
 {
     return view.subviews.count > 0 ? ((MAAdView *) view.subviews.lastObject) : nil;
 }

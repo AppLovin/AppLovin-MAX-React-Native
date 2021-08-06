@@ -2,19 +2,16 @@ package com.applovin.reactnative;
 
 import android.util.Log;
 
-import java.util.Map;
-import java.util.HashMap;
-
 import com.applovin.mediation.MaxAdFormat;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.annotations.ReactProp;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,8 +25,10 @@ class AppLovinMAXAdViewManager
     // Parent fields
     private ReactApplicationContext reactApplicationContext;
 
-    private Map<AppLovinMAXAdView, String> adUnitIdRegistry = new HashMap<>();
-    private Map<AppLovinMAXAdView, MaxAdFormat> adFormatRegistry = new HashMap<>();
+    // Maps from the view to the corresponding ad unit id and ad format.
+    // Both must be set before the MaxAdView is created.
+    private final Map<AppLovinMAXAdView, String>      adUnitIdRegistry = new HashMap<>();
+    private final Map<AppLovinMAXAdView, MaxAdFormat> adFormatRegistry = new HashMap<>();
 
     public AppLovinMAXAdViewManager(final ReactApplicationContext reactApplicationContext)
     {
@@ -49,44 +48,41 @@ class AppLovinMAXAdViewManager
         return new AppLovinMAXAdView( reactContext );
     }
 
-     @Override
-     public void receiveCommand(@NonNull AppLovinMAXAdView view, String commandId, @Nullable ReadableArray args)
-     {
-         Log.d("HARRY", commandId);
-         if ( "setAdUnitId".equals(commandId) && args != null)
-         {
-            setAdUnitId(view, args.getString( 0 ));
-         }
-         else if ( "setAdFormat".equals(commandId) && args != null)
-         {
-             setAdFormat(view, args.getString( 0 ));
-         }
-     }
+    @Override
+    public void receiveCommand(@NonNull AppLovinMAXAdView view, String commandId, @Nullable ReadableArray args)
+    {
+        if ( "setAdUnitId".equals( commandId ) && args != null )
+        {
+            setAdUnitId( view, args.getString( 0 ) );
+        }
+        else if ( "setAdFormat".equals( commandId ) && args != null )
+        {
+            setAdFormat( view, args.getString( 0 ) );
+        }
+        else
+        {
+            AppLovinMAXModule.e( "Unable to parse command: " + commandId + " for AdView: + " + view + " with args: " + args );
+        }
+    }
 
     public void setAdUnitId(final AppLovinMAXAdView view, final String adUnitId)
     {
-        adUnitIdRegistry.put(view, adUnitId);
+        adUnitIdRegistry.put( view, adUnitId );
 
-        Log.d("HARRY", adUnitIdRegistry.get(view));
-        Log.d( "HARRY", String.valueOf( adFormatRegistry.get( view) ) );
-
-        view.maybeAttachAdView( adUnitIdRegistry.get(view), adFormatRegistry.get(view) );
+        view.maybeAttachAdView( adUnitIdRegistry.get( view ), adFormatRegistry.get( view ) );
     }
 
-     public void setAdFormat(final AppLovinMAXAdView view, @Nullable final String adFormatStr)
-     {
-         if ( "banner".equals( adFormatStr ) )
-         {
-             adFormatRegistry.put(view, AppLovinMAXModule.getDeviceSpecificBannerAdViewAdFormat( reactApplicationContext ));
-         }
-         else if ( "mrec".equals( adFormatStr ) )
-         {
-             adFormatRegistry.put(view, MaxAdFormat.MREC);
-         }
+    public void setAdFormat(final AppLovinMAXAdView view, final String adFormatStr)
+    {
+        if ( "banner".equals( adFormatStr ) )
+        {
+            adFormatRegistry.put( view, AppLovinMAXModule.getDeviceSpecificBannerAdViewAdFormat( reactApplicationContext ) );
+        }
+        else if ( "mrec".equals( adFormatStr ) )
+        {
+            adFormatRegistry.put( view, MaxAdFormat.MREC );
+        }
 
-         Log.d("HARRY", adUnitIdRegistry.get(view));
-         Log.d( "HARRY", String.valueOf( adFormatRegistry.get( view) ) );
-
-         view.maybeAttachAdView( adUnitIdRegistry.get(view), adFormatRegistry.get(view) );
-     }
+        view.maybeAttachAdView( adUnitIdRegistry.get( view ), adFormatRegistry.get( view ) );
+    }
 }

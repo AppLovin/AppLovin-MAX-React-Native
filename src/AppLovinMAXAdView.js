@@ -11,6 +11,7 @@ class AdView extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
+    // Only call setters for actual changes.
     if (prevProps.adUnitId != this.props.adUnitId) {
       this.setAdUnitId(this.props.adUnitId);
     }
@@ -40,31 +41,19 @@ class AdView extends React.Component {
   }
 
   setAdUnitId(adUnitId) {
-    if (Platform.OS === 'android') {
-      UIManager.dispatchViewManagerCommand(
-        findNodeHandle(this),
-        "setAdUnitId", [adUnitId]
-      );
-    } else {
-      UIManager.dispatchViewManagerCommand(
-        findNodeHandle(this),
-        UIManager.getViewManagerConfig("AppLovinMAXAdView").Commands.setAdUnitId, [adUnitId]
-      );
-    }
+    UIManager.dispatchViewManagerCommand(
+      findNodeHandle(this),
+      Platform.OS === 'android' ? "setAdUnitId" : UIManager.getViewManagerConfig("AppLovinMAXAdView").Commands.setAdUnitId,
+      [adUnitId]
+    );
   }
 
   setAdFormat(adFormat) {
-    if (Platform.OS === 'android') {
-      UIManager.dispatchViewManagerCommand(
-        findNodeHandle(this),
-        "setAdFormat", [adFormat]
-      );
-    } else {
-      UIManager.dispatchViewManagerCommand(
-        findNodeHandle(this),
-        UIManager.getViewManagerConfig("AppLovinMAXAdView").Commands.setAdFormat, [adFormat]
-      );
-    }
+    UIManager.dispatchViewManagerCommand(
+      findNodeHandle(this),
+      Platform.OS === 'android' ? "setAdFormat" : UIManager.getViewManagerConfig("AppLovinMAXAdView").Commands.setAdFormat,
+      [adFormat]
+    );
   }
 }
 
