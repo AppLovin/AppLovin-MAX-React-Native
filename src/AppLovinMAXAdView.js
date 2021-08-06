@@ -12,11 +12,11 @@ class AdView extends React.Component {
 
   componentDidUpdate(prevProps) {
     // Only call setters for actual changes.
-    if (prevProps.adUnitId != this.props.adUnitId) {
+    if (prevProps.adUnitId !== this.props.adUnitId) {
       this.setAdUnitId(this.props.adUnitId);
     }
 
-    if (prevProps.adFormat != this.props.adFormat) {
+    if (prevProps.adFormat !== this.props.adFormat) {
       this.setAdFormat(this.props.adFormat);
     }
   }

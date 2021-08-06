@@ -56,7 +56,6 @@ RCT_EXPORT_METHOD(setAdUnitId:(nonnull NSNumber *)viewTag toAdUnitId:(NSString *
             return;
         }
 
-        // Store in case ad format has not been assigned.
         self.adUnitIdRegistry[viewTag] = value;
         
         [self attachAdViewIfNeededForAdUnitIdentifier: self.adUnitIdRegistry[viewTag]
@@ -76,7 +75,6 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
             return;
         }
         
-        // Store in case ad unit id has not been assigned.
         if ( [@"banner" isEqualToString: value] )
         {
             self.adFormatRegistry[viewTag] = DEVICE_SPECIFIC_ADVIEW_AD_FORMAT;
