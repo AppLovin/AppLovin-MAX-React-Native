@@ -45,7 +45,7 @@ RCT_EXPORT_MODULE(AppLovinMAXAdView)
     return [[UIView alloc] init];
 }
 
-RCT_EXPORT_METHOD(setAdUnitId:(nonnull NSNumber *)viewTag toAdUnitId:(NSString *)value)
+RCT_EXPORT_METHOD(setAdUnitId:(nonnull NSNumber *)viewTag toAdUnitId:(NSString *)adUnitId)
 {
     [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
         
@@ -56,7 +56,7 @@ RCT_EXPORT_METHOD(setAdUnitId:(nonnull NSNumber *)viewTag toAdUnitId:(NSString *
             return;
         }
 
-        self.adUnitIdRegistry[viewTag] = value;
+        self.adUnitIdRegistry[viewTag] = adUnitId;
         
         [self attachAdViewIfNeededForAdUnitIdentifier: self.adUnitIdRegistry[viewTag]
                                              adFormat: self.adFormatRegistry[viewTag]
@@ -64,7 +64,7 @@ RCT_EXPORT_METHOD(setAdUnitId:(nonnull NSNumber *)viewTag toAdUnitId:(NSString *
     }];
 }
 
-RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *)value)
+RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *)adFormatString)
 {
     [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
         
@@ -75,11 +75,11 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
             return;
         }
         
-        if ( [@"banner" isEqualToString: value] )
+        if ( [@"banner" isEqualToString: adFormatString] )
         {
             self.adFormatRegistry[viewTag] = DEVICE_SPECIFIC_ADVIEW_AD_FORMAT;
         }
-        else if ( [@"mrec" isEqualToString: value] )
+        else if ( [@"mrec" isEqualToString: adFormatString] )
         {
             self.adFormatRegistry[viewTag] = MAAdFormat.mrec;
         }

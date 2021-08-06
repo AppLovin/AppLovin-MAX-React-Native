@@ -48,11 +48,11 @@ class AdView extends React.Component {
     );
   }
 
-  setAdFormat(adFormat) {
+  setAdFormat(adFormatStr) {
     UIManager.dispatchViewManagerCommand(
       findNodeHandle(this),
       Platform.OS === 'android' ? "setAdFormat" : UIManager.getViewManagerConfig("AppLovinMAXAdView").Commands.setAdFormat,
-      [adFormat]
+      [adFormatStr]
     );
   }
 }
