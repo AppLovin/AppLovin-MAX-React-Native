@@ -40,17 +40,31 @@ class AdView extends React.Component {
   }
 
   setAdUnitId(adUnitId) {
-    UIManager.dispatchViewManagerCommand(
-      findNodeHandle(this),
-      UIManager.getViewManagerConfig("AppLovinMAXAdView").Commands.setAdUnitId, [adUnitId]
-    );
+    if (Platform.OS === 'android') {
+      UIManager.dispatchViewManagerCommand(
+        findNodeHandle(this),
+        "setAdUnitId", [adUnitId]
+      );
+    } else {
+      UIManager.dispatchViewManagerCommand(
+        findNodeHandle(this),
+        UIManager.getViewManagerConfig("AppLovinMAXAdView").Commands.setAdUnitId, [adUnitId]
+      );
+    }
   }
 
   setAdFormat(adFormat) {
-    UIManager.dispatchViewManagerCommand(
-      findNodeHandle(this),
-      UIManager.getViewManagerConfig("AppLovinMAXAdView").Commands.setAdFormat, [adFormat]
-    );
+    if (Platform.OS === 'android') {
+      UIManager.dispatchViewManagerCommand(
+        findNodeHandle(this),
+        "setAdFormat", [adFormat]
+      );
+    } else {
+      UIManager.dispatchViewManagerCommand(
+        findNodeHandle(this),
+        UIManager.getViewManagerConfig("AppLovinMAXAdView").Commands.setAdFormat, [adFormat]
+      );
+    }
   }
 }
 
