@@ -1,7 +1,5 @@
 package com.applovin.reactnative;
 
-import android.util.Log;
-
 import com.applovin.mediation.MaxAdFormat;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -23,7 +21,7 @@ class AppLovinMAXAdViewManager
         extends SimpleViewManager<AppLovinMAXAdView>
 {
     // Parent fields
-    private ReactApplicationContext reactApplicationContext;
+    private final ReactApplicationContext reactApplicationContext;
 
     // Maps from the view to the corresponding ad unit id and ad format.
     // Both must be set before the MaxAdView is created.
@@ -84,5 +82,14 @@ class AppLovinMAXAdViewManager
         }
 
         view.maybeAttachAdView( adUnitIdRegistry.get( view ), adFormatRegistry.get( view ) );
+    }
+
+    @Override
+    public void onDropViewInstance(@NotNull AppLovinMAXAdView view)
+    {
+        // NOTE: Android destroys the native MaxAdView and calls this method while iOS caches it when you remove it from screen
+        adUnitIdRegistry.remove( view );
+
+        super.onDropViewInstance( view );
     }
 }

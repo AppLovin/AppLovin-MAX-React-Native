@@ -50,6 +50,7 @@ RCT_EXPORT_METHOD(setAdUnitId:(nonnull NSNumber *)viewTag toAdUnitId:(NSString *
 {
     [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
         
+        // NOTE: iOS caches the native view via `viewTag` when you remove it from screen (unlike Android)
         UIView *view = viewRegistry[viewTag];
         if ( !view )
         {
@@ -70,6 +71,7 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
 {
     [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
         
+        // NOTE: iOS caches the native view via `viewTag` when you remove it from screen (unlike Android)
         UIView *view = viewRegistry[viewTag];
         if ( !view )
         {
