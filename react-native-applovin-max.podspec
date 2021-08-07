@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.authors      = package["author"]
 
   s.platforms    = { :ios => "10.0" }
-  s.source       = { :git => "https://github.com/AppLovin/AppLovin-MAX-React-Nativfe.git", :tag => "release_2_1_3" }
+  s.source       = { :git => "https://github.com/AppLovin/AppLovin-MAX-React-Nativfe.git", :tag => "release_2_2_0" }
   
   s.source_files  = "ios/AppLovinMAX*.{h,m}"
 
