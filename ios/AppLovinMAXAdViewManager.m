@@ -45,6 +45,7 @@ RCT_EXPORT_MODULE(AppLovinMAXAdView)
     return [[UIView alloc] init];
 }
 
+// NOTE: `nonnull` must be annotated here for this RN export to work at runtime
 RCT_EXPORT_METHOD(setAdUnitId:(nonnull NSNumber *)viewTag toAdUnitId:(NSString *)adUnitId)
 {
     [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
@@ -64,6 +65,7 @@ RCT_EXPORT_METHOD(setAdUnitId:(nonnull NSNumber *)viewTag toAdUnitId:(NSString *
     }];
 }
 
+// NOTE: `nonnull` must be annotated here for this RN export to work at runtime
 RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *)adFormatString)
 {
     [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {

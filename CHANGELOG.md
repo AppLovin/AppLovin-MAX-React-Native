@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+    * Allow for multiple native `AppLovinMAX.AdView`s at once on a screen (e.g. a banner and a mrec).
 ## 2.1.3
     * Add support for latest SDKs v10.3.1 with new callbacks.
 ## 2.1.2
