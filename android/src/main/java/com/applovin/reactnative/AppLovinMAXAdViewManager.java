@@ -1,13 +1,19 @@
 package com.applovin.reactnative;
 
+import android.util.Log;
+
 import com.applovin.mediation.MaxAdFormat;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.annotations.ReactProp;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -19,12 +25,10 @@ class AppLovinMAXAdViewManager
     // Parent fields
     private ReactApplicationContext reactApplicationContext;
 
-    // View fields
-    private AppLovinMAXAdView adView;
-
-    // Fields that need to be set before creating MaxAdView
-    private String      adUnitId;
-    private MaxAdFormat adFormat;
+    // Maps from the view to the corresponding ad unit id and ad format.
+    // Both must be set before the MaxAdView is created.
+    private final Map<AppLovinMAXAdView, String>      adUnitIdRegistry = new HashMap<>();
+    private final Map<AppLovinMAXAdView, MaxAdFormat> adFormatRegistry = new HashMap<>();
 
     public AppLovinMAXAdViewManager(final ReactApplicationContext reactApplicationContext)
     {
@@ -41,29 +45,44 @@ class AppLovinMAXAdViewManager
     protected @NotNull AppLovinMAXAdView createViewInstance(@NotNull final ThemedReactContext reactContext)
     {
         // NOTE: Do not set frame or backgroundColor as RN will overwrite the values set by your custom class in order to match your JavaScript component's layout props - hence wrapper
-        adView = new AppLovinMAXAdView( reactContext );
-        return adView;
+        return new AppLovinMAXAdView( reactContext );
     }
 
-    @ReactProp(name = "adUnitId")
-    public void setAdUnitId(final AppLovinMAXAdView view, @Nullable final String adUnitId)
+    @Override
+    public void receiveCommand(@NonNull AppLovinMAXAdView view, String commandId, @Nullable ReadableArray args)
     {
-        this.adUnitId = adUnitId;
-        adView.maybeAttachAdView( adUnitId, adFormat );
+        if ( "setAdUnitId".equals( commandId ) && args != null )
+        {
+            setAdUnitId( view, args.getString( 0 ) );
+        }
+        else if ( "setAdFormat".equals( commandId ) && args != null )
+        {
+            setAdFormat( view, args.getString( 0 ) );
+        }
+        else
+        {
+            AppLovinMAXModule.e( "Unable to parse command: " + commandId + " for AdView: + " + view + " with args: " + args );
+        }
     }
 
-    @ReactProp(name = "adFormat")
-    public void setAdFormat(final AppLovinMAXAdView view, @Nullable final String adFormatStr)
+    public void setAdUnitId(final AppLovinMAXAdView view, final String adUnitId)
+    {
+        adUnitIdRegistry.put( view, adUnitId );
+
+        view.maybeAttachAdView( adUnitIdRegistry.get( view ), adFormatRegistry.get( view ) );
+    }
+
+    public void setAdFormat(final AppLovinMAXAdView view, final String adFormatStr)
     {
         if ( "banner".equals( adFormatStr ) )
         {
-            adFormat = AppLovinMAXModule.getDeviceSpecificBannerAdViewAdFormat( reactApplicationContext );
+            adFormatRegistry.put( view, AppLovinMAXModule.getDeviceSpecificBannerAdViewAdFormat( reactApplicationContext ) );
         }
         else if ( "mrec".equals( adFormatStr ) )
         {
-            adFormat = MaxAdFormat.MREC;
+            adFormatRegistry.put( view, MaxAdFormat.MREC );
         }
 
-        adView.maybeAttachAdView( adUnitId, adFormat );
+        view.maybeAttachAdView( adUnitIdRegistry.get( view ), adFormatRegistry.get( view ) );
     }
 }

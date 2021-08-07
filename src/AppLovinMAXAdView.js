@@ -1,23 +1,59 @@
-import { requireNativeComponent } from "react-native";
+import { requireNativeComponent, UIManager, findNodeHandle } from "react-native";
 import PropTypes from "prop-types";
 import React from "react";
 import AppLovinMAX from "./index.js";
 
 class AdView extends React.Component {
+
+  componentDidMount() {
+    this.setAdUnitId(this.props.adUnitId);
+    this.setAdFormat(this.props.adFormat);
+  }
+
+  componentDidUpdate(prevProps) {
+    // Only call setters for actual changes.
+    if (prevProps.adUnitId !== this.props.adUnitId) {
+      this.setAdUnitId(this.props.adUnitId);
+    }
+
+    if (prevProps.adFormat !== this.props.adFormat) {
+      this.setAdFormat(this.props.adFormat);
+    }
+  }
+
   render() {
     let { style, ...otherProps } = this.props;
+
     return <AppLovinMAXAdView
-            // This merges the pub-specified style with ours, but overwrites width/height.
-            style={Object.assign({}, style, this.sizeForAdFormat(otherProps.adFormat))}
-            {...otherProps} />;
+      // This merges the pub-specified style with ours, but overwrites width/height.
+    style = { Object.assign({}, style, this.sizeForAdFormat(otherProps.adFormat)) } {...otherProps }
+    />;
   }
-  
+
+  // Helper Functions
+
   sizeForAdFormat(adFormat) {
-      if (adFormat == AppLovinMAX.AdFormat.BANNER) {
-          return AppLovinMAX.isTablet() ? {width: 728, height: 90} : {width: 320, height: 50}
-      } else {
-          return {width: 300, height: 250}
-      }
+    if (adFormat == AppLovinMAX.AdFormat.BANNER) {
+      return AppLovinMAX.isTablet() ? { width: 728, height: 90 } : { width: 320, height: 50 }
+    } else {
+      return { width: 300, height: 250 }
+    }
+  }
+
+  setAdUnitId(adUnitId) {
+    UIManager.dispatchViewManagerCommand(
+      findNodeHandle(this),
+      Platform.OS === 'android' ? "setAdUnitId" : UIManager.getViewManagerConfig("AppLovinMAXAdView").Commands.setAdUnitId,
+      [adUnitId]
+    );
+  }
+
+  setAdFormat(adFormatStr) {
+    UIManager.dispatchViewManagerCommand(
+      findNodeHandle(this),
+      Platform.OS === 'android' ? "setAdFormat" : UIManager.getViewManagerConfig("AppLovinMAXAdView").Commands.setAdFormat,
+      [adFormatStr]
+    );
   }
 }
 
