@@ -63,14 +63,17 @@ class AdView extends React.Component {
   
   setAdPlacement(adPlacement) {
       var adUnitId = this.props.adUnitId;
-      console.log("Harry" + adUnitId);
-      // If the ad unit id is unset, we can't set the placement.
-      if (adUnitId === null) return;
+      var adFormat = this.props.adFormat;
+      console.log("Harry " + adUnitId + " " + adFormat);
+      // If the ad unit id or ad format are unset, we can't set the placement.
+      if (adUnitId === null || adFormat === null) return;
       
-      if (this.props.adFormat === AppLovinMAX.AdFormat.BANNER) {
-        AppLovinMAX.setBannerPlacement(adPlacement, adUnitId);
-      } else {
-        AppLovinMAX.setMRecPlacement(adPlacement, adUnitId)
+      if (adFormat === AppLovinMAX.AdFormat.BANNER) {
+        // AppLovinMAX.setBannerPlacement(adPlacement, adUnitId);
+        AppLovinMAX.setBannerPlacement(adUnitId, adPlacement);
+    } else if (adFormat === AppLovinMAX.AdFormat.MREC) {
+        // AppLovinMAX.setMRecPlacement(adPlacement, adUnitId);
+        AppLovinMAX.setMRecPlacement(adUnitId, adPlacement);
       }
   }
 }

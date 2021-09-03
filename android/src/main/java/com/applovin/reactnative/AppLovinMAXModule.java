@@ -909,7 +909,7 @@ public class AppLovinMAXModule
             {
                 d( "Setting placement \"" + placement + "\" for " + adFormat.getLabel() + " with ad unit id \"" + adUnitId + "\"" );
 
-                final MaxAdView adView = retrieveAdView( adUnitId, adFormat );
+                final MaxAdView adView = retrieveAdView( adUnitId, adFormat, "", DEFAULT_AD_VIEW_OFFSET );
                 if ( adView == null )
                 {
                     e( adFormat.getLabel() + " does not exist" );
