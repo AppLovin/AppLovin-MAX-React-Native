@@ -88,7 +88,7 @@ AdView.propTypes = {
   adFormat: PropTypes.string.isRequired,
   
   /**
-   * A string value representing the placement name associated with the ad unit id.
+   * A string value representing the placement name that you assign when you integrate each ad format, for granular reporting in ad events.
    */
   adPlacement: PropTypes.string,
 };
