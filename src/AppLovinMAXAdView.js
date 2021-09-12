@@ -8,7 +8,7 @@ class AdView extends React.Component {
   componentDidMount() {
     this.setAdUnitId(this.props.adUnitId);
     this.setAdFormat(this.props.adFormat);
-    this.setAdPlacement(this.props.adPlacement);
+    this.setPlacement(this.props.placement);
   }
 
   componentDidUpdate(prevProps) {
@@ -20,9 +20,10 @@ class AdView extends React.Component {
     if (prevProps.adFormat !== this.props.adFormat) {
       this.setAdFormat(this.props.adFormat);
     }
-    
-    if (prevProps.adPlacement !== this.props.adPlacement) {
-      this.setAdPlacement(this.props.adPlacement);
+
+    if (prevProps.placement !== this.props.placement) {
+      this.setPlacement(this.props.placement);
+    }
     }
   }
 
@@ -60,18 +61,20 @@ class AdView extends React.Component {
       [adFormatStr]
     );
   }
-  
-  setAdPlacement(adPlacement) {
+
+  setPlacement(placement) {
     var adUnitId = this.props.adUnitId;
     var adFormat = this.props.adFormat;
-    
+
     // If the ad unit id or ad format are unset, we can't set the placement.
-    if (adUnitId === null || adFormat === null) return;
-    
+    if (adUnitId == null || adFormat == null) return;
+
     if (adFormat === AppLovinMAX.AdFormat.BANNER) {
-      AppLovinMAX.setBannerPlacement(adUnitId, adPlacement);
+      AppLovinMAX.setBannerPlacement(adUnitId, placement);
     } else if (adFormat === AppLovinMAX.AdFormat.MREC) {
-      AppLovinMAX.setMRecPlacement(adUnitId, adPlacement);
+      AppLovinMAX.setMRecPlacement(adUnitId, placement);
+    }
+  }
     }
   }
 }
@@ -86,11 +89,11 @@ AdView.propTypes = {
    * A string value representing the ad format to load ads for. Should be either `AppLovinMAX.AdFormat.BANNER` or `AppLovinMAX.AdFormat.MREC`.
    */
   adFormat: PropTypes.string.isRequired,
-  
+
   /**
    * A string value representing the placement name that you assign when you integrate each ad format, for granular reporting in ad events.
    */
-  adPlacement: PropTypes.string,
+  placement: PropTypes.string,
 };
 
 // requireNativeComponent automatically resolves 'AppLovinMAXAdView' to 'AppLovinMAXAdViewManager'
