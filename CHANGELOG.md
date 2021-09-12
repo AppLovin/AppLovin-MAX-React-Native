@@ -1,5 +1,8 @@
 ## Versions
 
+## x.x.x
+    * Add support for native ad placements. Docs can be found [here](https://dash.applovin.com/documentation/mediation/react-native/getting-started/advanced-settings#banners-/-mrecs-(native-ui-component-method)).
+    * Fix thread warning with native component AdViews.
 ## 2.2.0
     * Allow for multiple native `AppLovinMAX.AdView`s at once on a screen (e.g. a banner and a mrec).
 ## 2.1.3
