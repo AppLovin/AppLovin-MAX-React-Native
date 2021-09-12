@@ -287,7 +287,9 @@ const App = () => {
           (() => {
             if (isNativeUIBannerShowing) {
               return (
-                <AppLovinMAX.AdView adUnitId={BANNER_AD_UNIT_ID} adFormat={AppLovinMAX.AdFormat.BANNER} style={styles.banner}/>
+                <AppLovinMAX.AdView adUnitId={BANNER_AD_UNIT_ID}
+                                    adFormat={AppLovinMAX.AdFormat.BANNER}
+                                    style={styles.banner}/>
               );
             }
           })()
@@ -353,7 +355,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
     position: 'absolute',
     width: '100%',
-    height: AppLovinMAX.isTablet() ? 90 : 50,
+    height: AppLovinMAX.getAdaptiveBannerHeightForWidth(-1),
     bottom: Platform.select({
       ios: 36, // For bottom safe area
       android: 0,

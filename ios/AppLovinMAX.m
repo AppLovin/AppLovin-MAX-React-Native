@@ -55,6 +55,7 @@
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *adViewWidths;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSArray<NSLayoutConstraint *> *> *adViewConstraints;
 @property (nonatomic, strong) NSMutableArray<NSString *> *adUnitIdentifiersToShowAfterCreate;
+@property (nonatomic, strong) NSMutableSet<NSString *> *disabledAdaptiveBannerAdUnitIdentifiers;
 @property (nonatomic, strong) UIView *safeAreaBackground;
 @property (nonatomic, strong, nullable) UIColor *publisherBannerBackgroundColor;
 
@@ -105,6 +106,7 @@ RCT_EXPORT_MODULE()
         self.adViewWidths = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.adViewConstraints = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.adUnitIdentifiersToShowAfterCreate = [NSMutableArray arrayWithCapacity: 2];
+        self.disabledAdaptiveBannerAdUnitIdentifiers = [NSMutableSet setWithCapacity: 2];
         
         self.safeAreaBackground = [[UIView alloc] init];
         self.safeAreaBackground.hidden = YES;
@@ -395,6 +397,11 @@ RCT_EXPORT_METHOD(hideBanner:(NSString *)adUnitIdentifier)
 RCT_EXPORT_METHOD(destroyBanner:(NSString *)adUnitIdentifier)
 {
     [self destroyAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getAdaptiveBannerHeightForWidth:(CGFloat)width)
+{
+    return @([DEVICE_SPECIFIC_ADVIEW_AD_FORMAT adaptiveSizeForWidth: width].height);
 }
 
 #pragma mark - MRECs
@@ -813,6 +820,20 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
             self.adViewAdFormats[adUnitIdentifier] = adFormat;
             [self positionAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
         }
+        else if ( [@"adaptive_banner" isEqualToString: key] )
+        {
+            BOOL shouldUseAdaptiveBanner = [NSNumber al_numberWithString: value].boolValue;
+            if ( shouldUseAdaptiveBanner )
+            {
+                [self.disabledAdaptiveBannerAdUnitIdentifiers removeObject: adUnitIdentifier];
+            }
+            else
+            {
+                [self.disabledAdaptiveBannerAdUnitIdentifiers addObject: adUnitIdentifier];
+            }
+            
+            [self positionAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
+        }
     });
 }
 
@@ -958,6 +979,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 {
     MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
     NSString *adViewPosition = self.adViewPositions[adUnitIdentifier];
+    BOOL isAdaptiveBannerDisabled = [self.disabledAdaptiveBannerAdUnitIdentifiers containsObject: adUnitIdentifier];
     BOOL isWidthPtsOverridden = self.adViewWidths[adUnitIdentifier] != nil;
     
     NSValue *adViewPositionValue = self.adViewOffsets[adUnitIdentifier];
@@ -1016,7 +1038,20 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         adViewWidth = adFormat.size.width;
     }
 
-    CGFloat adViewHeight = adFormat.size.height;
+    //
+    // Determine ad height
+    //
+    CGFloat adViewHeight;
+    
+    if ( (adFormat == MAAdFormat.banner || adFormat == MAAdFormat.leader) && !isAdaptiveBannerDisabled )
+    {
+        adViewHeight = [adFormat adaptiveSizeForWidth: adViewWidth].height;
+    }
+    else
+    {
+        adViewHeight = adFormat.size.height;
+    }
+    
     CGSize adViewSize = CGSizeMake(adViewWidth, adViewHeight);
     
     // All positions have constant height
@@ -1035,6 +1070,21 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     // If top of bottom center, stretch width of screen
     if ( [adViewPosition isEqual: @"top_center"] || [adViewPosition isEqual: @"bottom_center"] )
     {
+        // Non AdMob banners will still be of 50/90 points tall. Set the auto sizing mask such that the inner ad view is pinned to the bottom or top according to the ad view position.
+        if ( !isAdaptiveBannerDisabled )
+        {
+            adView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+            
+            if ( [@"top_center" isEqual: adViewPosition] )
+            {
+                adView.autoresizingMask |= UIViewAutoresizingFlexibleBottomMargin;
+            }
+            else // bottom_center
+            {
+                adView.autoresizingMask |= UIViewAutoresizingFlexibleTopMargin;
+            }
+        }
+        
         // If publisher actually provided a banner background color, span the banner across the realm
         if ( self.publisherBannerBackgroundColor && adFormat != MAAdFormat.mrec )
         {
@@ -1113,27 +1163,6 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     self.adViewConstraints[adUnitIdentifier] = constraints;
     
     [NSLayoutConstraint activateConstraints: constraints];
-}
-
-+ (CGSize)adViewSizeForAdFormat:(MAAdFormat *)adFormat
-{
-    if ( MAAdFormat.leader == adFormat )
-    {
-        return CGSizeMake(728.0f, 90.0f);
-    }
-    else if ( MAAdFormat.banner == adFormat )
-    {
-        return CGSizeMake(320.0f, 50.0f);
-    }
-    else if ( MAAdFormat.mrec == adFormat )
-    {
-        return CGSizeMake(300.0f, 250.0f);
-    }
-    else
-    {
-        [NSException raise: NSInvalidArgumentException format: @"Invalid ad format"];
-        return CGSizeZero;
-    }
 }
 
 - (NSDictionary<NSString *, id> *)adInfoForAd:(MAAd *)ad

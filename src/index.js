@@ -139,6 +139,7 @@ export default {
   /* showBanner(adUnitId) */
   /* hideBanner(adUnitId) */
   /* destroyBanner(adUnitId) */
+  /* getAdaptiveBannerHeightForWidth(width) */
 
   /*-------*/
   /* MRECS */

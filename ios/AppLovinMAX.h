@@ -27,11 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly, class) AppLovinMAX *shared;
 
 /**
- * Utility method for getting the width and height for a given ad format.
- */
-+ (CGSize)adViewSizeForAdFormat:(MAAdFormat *)adFormat;
-
-/**
  * Dedicated method for retrieving a MAAdView.
  */
 - (MAAdView *)retrieveAdViewForAdUnitIdentifier:(NSString *)adUnitIdentifier

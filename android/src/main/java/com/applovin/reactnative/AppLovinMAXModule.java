@@ -46,8 +46,10 @@ import com.facebook.react.bridge.WritableMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.Nullable;
@@ -87,13 +89,14 @@ public class AppLovinMAXModule
     private final Map<String, MaxRewardedAd>     mRewardedAds   = new HashMap<>( 2 );
 
     // Banner Fields
-    private final Map<String, MaxAdView>   mAdViews                    = new HashMap<>( 2 );
-    private final Map<String, MaxAdFormat> mAdViewAdFormats            = new HashMap<>( 2 );
-    private final Map<String, String>      mAdViewPositions            = new HashMap<>( 2 );
-    private final Map<String, Point>       mAdViewOffsets              = new HashMap<>( 2 );
-    private final Map<String, Integer>     mAdViewWidths               = new HashMap<>( 2 );
-    private final Map<String, MaxAdFormat> mVerticalAdViewFormats      = new HashMap<>( 2 );
-    private final List<String>             mAdUnitIdsToShowAfterCreate = new ArrayList<>( 2 );
+    private final Map<String, MaxAdView>   mAdViews                         = new HashMap<>( 2 );
+    private final Map<String, MaxAdFormat> mAdViewAdFormats                 = new HashMap<>( 2 );
+    private final Map<String, String>      mAdViewPositions                 = new HashMap<>( 2 );
+    private final Map<String, Point>       mAdViewOffsets                   = new HashMap<>( 2 );
+    private final Map<String, Integer>     mAdViewWidths                    = new HashMap<>( 2 );
+    private final Map<String, MaxAdFormat> mVerticalAdViewFormats           = new HashMap<>( 2 );
+    private final List<String>             mAdUnitIdsToShowAfterCreate      = new ArrayList<>( 2 );
+    private final Set<String>              mDisabledAdaptiveBannerAdUnitIds = new HashSet<>( 2 );
 
     public static AppLovinMAXModule getInstance()
     {
@@ -497,6 +500,12 @@ public class AppLovinMAXModule
     public void destroyBanner(final String adUnitId)
     {
         destroyAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public float getAdaptiveBannerHeightForWidth(final float width)
+    {
+        return getDeviceSpecificBannerAdViewAdFormat().getAdaptiveSize( (int) width, getCurrentActivity() ).getHeight();
     }
 
     // MRECS
@@ -1107,6 +1116,20 @@ public class AppLovinMAXModule
                     mAdViewAdFormats.put( adUnitId, forcedAdFormat );
                     positionAdView( adUnitId, forcedAdFormat );
                 }
+                else if ( "adaptive_banner".equalsIgnoreCase( key ) )
+                {
+                    boolean useAdaptiveBannerAdSize = Boolean.parseBoolean( value );
+                    if ( useAdaptiveBannerAdSize )
+                    {
+                        mDisabledAdaptiveBannerAdUnitIds.remove( adUnitId );
+                    }
+                    else
+                    {
+                        mDisabledAdaptiveBannerAdUnitIds.add( adUnitId );
+                    }
+
+                    positionAdView( adUnitId, adFormat );
+                }
             }
         } );
     }
@@ -1212,6 +1235,7 @@ public class AppLovinMAXModule
 
         final String adViewPosition = mAdViewPositions.get( adUnitId );
         final Point adViewOffset = mAdViewOffsets.get( adUnitId );
+        final boolean isAdaptiveBannerDisabled = mDisabledAdaptiveBannerAdUnitIds.contains( adUnitId );
         final boolean isWidthDpOverridden = mAdViewWidths.containsKey( adUnitId );
 
         final RelativeLayout relativeLayout = (RelativeLayout) adView.getParent();
@@ -1240,7 +1264,19 @@ public class AppLovinMAXModule
             adViewWidthDp = adFormat.getSize().getWidth();
         }
 
-        final int adViewHeightDp = adFormat.getSize().getHeight();
+        //
+        // Determine ad height
+        //
+        final int adViewHeightDp;
+
+        if ( ( adFormat == MaxAdFormat.BANNER || adFormat == MaxAdFormat.LEADER ) && !isAdaptiveBannerDisabled )
+        {
+            adViewHeightDp = adFormat.getAdaptiveSize( adViewWidthDp, getCurrentActivity() ).getHeight();
+        }
+        else
+        {
+            adViewHeightDp = adFormat.getSize().getHeight();
+        }
 
         final int widthPx = AppLovinSdkUtils.dpToPx( getCurrentActivity(), adViewWidthDp );
         final int heightPx = AppLovinSdkUtils.dpToPx( getCurrentActivity(), adViewHeightDp );

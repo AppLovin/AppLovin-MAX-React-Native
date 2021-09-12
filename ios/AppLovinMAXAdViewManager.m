@@ -127,7 +127,7 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
             
             [containerView addSubview: adView];
             
-            CGSize adViewSize = [AppLovinMAX adViewSizeForAdFormat: adFormat];
+            CGSize adViewSize = [adFormat adaptiveSizeForWidth: CGRectGetWidth(containerView.frame)];
             [NSLayoutConstraint activateConstraints: @[[adView.widthAnchor constraintEqualToConstant: adViewSize.width],
                                                        [adView.heightAnchor constraintEqualToConstant: adViewSize.height],
                                                        [adView.centerXAnchor constraintEqualToAnchor: containerView.centerXAnchor],
