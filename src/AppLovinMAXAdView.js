@@ -5,10 +5,15 @@ import AppLovinMAX from "./index.js";
 
 class AdView extends React.Component {
 
+  static defaultProps = {
+    adaptiveBannerEnabled: true
+  }
+
   componentDidMount() {
     this.setAdUnitId(this.props.adUnitId);
     this.setAdFormat(this.props.adFormat);
     this.setPlacement(this.props.placement);
+    this.setAdaptiveBannerEnabled(this.props.adaptiveBannerEnabled);
   }
 
   componentDidUpdate(prevProps) {
@@ -24,6 +29,9 @@ class AdView extends React.Component {
     if (prevProps.placement !== this.props.placement) {
       this.setPlacement(this.props.placement);
     }
+
+    if (prevProps.adaptiveBannerEnabled !== this.props.adaptiveBannerEnabled) {
+      this.setAdaptiveBannerEnabled(this.props.adaptiveBannerEnabled);
     }
   }
 
@@ -39,8 +47,18 @@ class AdView extends React.Component {
   // Helper Functions
 
   sizeForAdFormat(adFormat) {
-    if (adFormat == AppLovinMAX.AdFormat.BANNER) {
-      return AppLovinMAX.isTablet() ? { width: 728, height: 90 } : { width: 320, height: 50 }
+    if (adFormat === AppLovinMAX.AdFormat.BANNER) {
+
+      var width = AppLovinMAX.isTablet() ? 728 : 320;
+      var height;
+
+      if (this.props.adaptiveBannerEnabled) {
+        height = AppLovinMAX.getAdaptiveBannerHeightForWidth(-1);
+      } else {
+        height = AppLovinMAX.isTablet() ? 90 : 50;
+      }
+
+      return { width: width, height: height }
     } else {
       return { width: 300, height: 250 }
     }
@@ -75,6 +93,18 @@ class AdView extends React.Component {
       AppLovinMAX.setMRecPlacement(adUnitId, placement);
     }
   }
+
+  setAdaptiveBannerEnabled(enabled) {
+    var adUnitId = this.props.adUnitId;
+    var adFormat = this.props.adFormat;
+
+    // If the ad unit id or ad format are unset, we can't set the value
+    if (adUnitId == null || adFormat == null) return;
+
+    if (adFormat === AppLovinMAX.AdFormat.BANNER) {
+      if (enabled === true || enabled === false) {
+        AppLovinMAX.setBannerExtraParameter(adUnitId, "adaptive_banner", enabled ? "true" : "false");
+      }
     }
   }
 }
@@ -94,6 +124,11 @@ AdView.propTypes = {
    * A string value representing the placement name that you assign when you integrate each ad format, for granular reporting in ad events.
    */
   placement: PropTypes.string,
+
+  /**
+   * A boolean value representing whether or not to enable adaptive banners. Note that adaptive banners are enabled by default as of v2.3.0.
+   */
+  adaptiveBannerEnabled: PropTypes.bool,
 };
 
 // requireNativeComponent automatically resolves 'AppLovinMAXAdView' to 'AppLovinMAXAdViewManager'
