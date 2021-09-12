@@ -28,6 +28,12 @@
 @implementation AppLovinMAXAdViewManager
 RCT_EXPORT_MODULE(AppLovinMAXAdView)
 
+// Overridding `init` requires main queue
++ (BOOL)requiresMainQueueSetup
+{
+    return YES;
+}
+
 - (instancetype)init
 {
     self = [super init];
