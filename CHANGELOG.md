@@ -1,5 +1,7 @@
 ## Versions
 
+## 2.3.1
+    * Fix NPE in `positionAdView()`.
 ## 2.3.0
     * Enable adaptive banners by default.
     * Add support for native ad placements. Docs can be found [here](https://dash.applovin.com/documentation/mediation/react-native/getting-started/advanced-settings#banners-/-mrecs-(native-ui-component-method)).
