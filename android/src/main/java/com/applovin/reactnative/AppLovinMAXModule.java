@@ -1233,14 +1233,20 @@ public class AppLovinMAXModule
             return;
         }
 
+        final RelativeLayout relativeLayout = (RelativeLayout) adView.getParent();
+        if ( relativeLayout == null )
+        {
+            e( adFormat.getLabel() + "'s parent does not exist" );
+            return;
+        }
+
+        final Rect windowRect = new Rect();
+        relativeLayout.getWindowVisibleDisplayFrame( windowRect );
+
         final String adViewPosition = mAdViewPositions.get( adUnitId );
         final Point adViewOffset = mAdViewOffsets.get( adUnitId );
         final boolean isAdaptiveBannerDisabled = mDisabledAdaptiveBannerAdUnitIds.contains( adUnitId );
         final boolean isWidthDpOverridden = mAdViewWidths.containsKey( adUnitId );
-
-        final RelativeLayout relativeLayout = (RelativeLayout) adView.getParent();
-        final Rect windowRect = new Rect();
-        relativeLayout.getWindowVisibleDisplayFrame( windowRect );
 
         //
         // Determine ad width
