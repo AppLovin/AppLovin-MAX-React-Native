@@ -1,5 +1,7 @@
 ## Versions
 
+## 2.3.2
+    * Fix `ClassCastException` related to Android native AdViews.
 ## 2.3.1
     * Fix NPE in `positionAdView()`.
 ## 2.3.0
