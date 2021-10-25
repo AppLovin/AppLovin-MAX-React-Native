@@ -1233,13 +1233,10 @@ public class AppLovinMAXModule
             return;
         }
 
-        final RelativeLayout relativeLayout = (RelativeLayout) adView.getParent();
-        if ( relativeLayout == null )
-        {
-            e( adFormat.getLabel() + "'s parent does not exist" );
-            return;
-        }
+        final ViewParent parent = adView.getParent();
+        if ( !( parent instanceof RelativeLayout ) ) return;
 
+        final RelativeLayout relativeLayout = (RelativeLayout) parent;
         final Rect windowRect = new Rect();
         relativeLayout.getWindowVisibleDisplayFrame( windowRect );
 
