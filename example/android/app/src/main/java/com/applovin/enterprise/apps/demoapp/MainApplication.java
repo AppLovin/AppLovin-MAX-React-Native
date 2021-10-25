@@ -22,7 +22,7 @@ public class MainApplication
                 @Override
                 public boolean getUseDeveloperSupport()
                 {
-                    return BuildConfig.DEBUG;
+                    return true;
                 }
 
                 @Override

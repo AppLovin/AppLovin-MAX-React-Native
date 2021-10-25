@@ -127,7 +127,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.applovin.enterprise.apps.demoapp"
+        applicationId "com.revolverolver.fliptrickster"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1000000

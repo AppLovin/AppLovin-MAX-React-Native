@@ -15,26 +15,26 @@ var adLoadState = {
 const App = () => {
 
   // Create constants
-  const SDK_KEY = 'YOUR_SDK_KEY_HERE';
+  const SDK_KEY = 'hBDh6tzZrp-fWye63N4nhbgw8umnTzD99QsGIpq8bpo7lRDppHZVuEQ17Bpa80lIRaTlONt-Af6v5JiubGOUVp';
 
   const INTERSTITIAL_AD_UNIT_ID = Platform.select({
-    ios: 'ENTER_IOS_INTERSTITIAL_AD_UNIT_ID_HERE',
-    android: 'ENTER_ANDROID_INTERSTITIAL_AD_UNIT_ID_HERE',
+    ios: '65d8d0195e50bda6',
+    android: '6bf752cf76bc7f3b',
   });
 
   const REWARDED_AD_UNIT_ID = Platform.select({
-    ios: 'ENTER_IOS_REWARDED_AD_UNIT_ID_HERE',
-    android: 'ENTER_ANDROID_REWARDED_AD_UNIT_ID_HERE',
+    ios: '82076aefed4737ed',
+    android: 'a880dbdb58c811d5',
   });
 
   const BANNER_AD_UNIT_ID = Platform.select({
-    ios: 'ENTER_IOS_BANNER_AD_UNIT_ID_HERE',
-    android: 'ENTER_ANDROID_BANNER_AD_UNIT_ID_HERE',
+    ios: '35858295296a8c80',
+    android: 'cb5529a55a443f83',
   });
 
   const MREC_AD_UNIT_ID = Platform.select({
-    ios: 'ENTER_IOS_MREC_AD_UNIT_ID_HERE',
-    android: 'ENTER_ANDROID_MREC_AD_UNIT_ID_HERE',
+    ios: 'f865a23962fa00e5',
+    android: 'e12ca346bdbddaef',
   });
 
   // Create states
@@ -289,6 +289,7 @@ const App = () => {
               return (
                 <AppLovinMAX.AdView adUnitId={BANNER_AD_UNIT_ID}
                                     adFormat={AppLovinMAX.AdFormat.BANNER}
+                                    adaptiveBannerEnabled={false}
                                     style={styles.banner}/>
               );
             }
@@ -305,7 +306,10 @@ const App = () => {
           (() => {
             if (isNativeUIMRecShowing) {
               return (
-                <AppLovinMAX.AdView adUnitId={MREC_AD_UNIT_ID} adFormat={AppLovinMAX.AdFormat.MREC} style={styles.mrec}/>
+                <AppLovinMAX.AdView adUnitId={MREC_AD_UNIT_ID}
+                                    adFormat={AppLovinMAX.AdFormat.MREC}
+                                    adaptiveBannerEnabled={false}
+                                    style={styles.mrec}/>
               );
             }
           })()
@@ -340,6 +344,7 @@ const App = () => {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: 'green',
     paddingTop: 80,
     flex: 1, // Enables flexbox column layout
   },
@@ -355,7 +360,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
     position: 'absolute',
     width: '100%',
-    height: AppLovinMAX.getAdaptiveBannerHeightForWidth(-1),
+    height: 200,//AppLovinMAX.getAdaptiveBannerHeightForWidth(-1),
     bottom: Platform.select({
       ios: 36, // For bottom safe area
       android: 0,
