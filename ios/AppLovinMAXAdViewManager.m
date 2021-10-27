@@ -63,7 +63,7 @@ RCT_EXPORT_METHOD(setAdUnitId:(nonnull NSNumber *)viewTag toAdUnitId:(NSString *
             RCTLogError(@"Cannot find UIView with tag %@", viewTag);
             return;
         }
-
+        
         self.adUnitIdRegistry[viewTag] = adUnitId;
         
         [self attachAdViewIfNeededForAdUnitIdentifier: self.adUnitIdRegistry[viewTag]
@@ -93,7 +93,7 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
         {
             self.adFormatRegistry[viewTag] = MAAdFormat.mrec;
         }
-
+        
         [self attachAdViewIfNeededForAdUnitIdentifier: self.adUnitIdRegistry[viewTag]
                                              adFormat: self.adFormatRegistry[viewTag]
                                         containerView: view];
@@ -109,6 +109,7 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
         if ( [adUnitIdentifier al_isValidString] && adFormat )
         {
             MAAdView *adView = [self getMAAdViewFromContainerView: containerView];
+            
             // Check if there's a previously-attached AdView
             if ( adView )
             {
@@ -118,11 +119,8 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
                 adView = nil;
             }
             
-            adView = [AppLovinMAX.shared retrieveAdViewForAdUnitIdentifier: adUnitIdentifier
-                                                                  adFormat: adFormat
-                                                                atPosition: @""
-                                                                withOffset: CGPointZero
-                                                                    attach: NO];
+            adView = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitIdentifier adFormat: adFormat sdk: AppLovinMAX.shared.sdk];
+            adView.frame = (CGRect) { CGPointZero, adFormat.size };
             [adView loadAd];
             
             [containerView addSubview: adView];
