@@ -108,7 +108,7 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
         // If ad unit id and format has been set - create and attach AdView
         if ( [adUnitIdentifier al_isValidString] && adFormat )
         {
-            MAAdView *adView = [self getMAAdViewFromContainerView: containerView];
+            MAAdView *adView = [self adViewFromContainerView: containerView];
             
             // Check if there's a previously-attached AdView
             if ( adView )
@@ -121,6 +121,10 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
             
             adView = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitIdentifier adFormat: adFormat sdk: AppLovinMAX.shared.sdk];
             adView.frame = (CGRect) { CGPointZero, adFormat.size };
+            adView.userInteractionEnabled = NO;
+            adView.translatesAutoresizingMaskIntoConstraints = NO;
+            adView.delegate = AppLovinMAX.shared; // Go through core class for callback forwarding to React Native layer
+            
             [adView loadAd];
             
             [containerView addSubview: adView];
@@ -136,7 +140,7 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
 
 // MARK: - Helper Functions
 
-- (nullable MAAdView *)getMAAdViewFromContainerView:(UIView *)view
+- (nullable MAAdView *)adViewFromContainerView:(UIView *)view
 {
     return view.subviews.count > 0 ? ((MAAdView *) view.subviews.lastObject) : nil;
 }
