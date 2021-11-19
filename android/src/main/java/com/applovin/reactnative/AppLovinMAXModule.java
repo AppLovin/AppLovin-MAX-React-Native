@@ -921,6 +921,8 @@ public class AppLovinMAXModule
             @Override
             public void run()
             {
+                if ( mAdViews.get( adUnitId ) == null ) return;
+
                 d( "Setting placement \"" + placement + "\" for " + adFormat.getLabel() + " with ad unit id \"" + adUnitId + "\"" );
 
                 final MaxAdView adView = retrieveAdView( adUnitId, adFormat, "", DEFAULT_AD_VIEW_OFFSET );

@@ -85,6 +85,8 @@ class AppLovinMAXAdView
                 if ( !TextUtils.isEmpty( adUnitId ) && adFormat != null )
                 {
                     adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
+                    adView.setListener( AppLovinMAXModule.getInstance() );
+
                     adView.loadAd();
 
                     currentWidthPx = getWidth();
