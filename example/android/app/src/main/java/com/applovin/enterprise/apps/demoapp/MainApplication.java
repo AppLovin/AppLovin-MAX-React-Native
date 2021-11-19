@@ -22,7 +22,7 @@ public class MainApplication
                 @Override
                 public boolean getUseDeveloperSupport()
                 {
-                    return BuildConfig.DEBUG;
+                    return true;
                 }
 
                 @Override
@@ -31,8 +31,7 @@ public class MainApplication
                     @SuppressWarnings("UnnecessaryLocalVariable")
                     List<ReactPackage> packages = new PackageList( this ).getPackages();
                     // Packages that cannot be autolinked yet can be added manually here, for AppLovinMAXExample:
-                    // packages.add(new MyReactNativePackage());
-                    packages.add( new AppLovinMAXPackage() );
+//                    packages.add( new AppLovinMAXPackage() );
 
                     return packages;
                 }

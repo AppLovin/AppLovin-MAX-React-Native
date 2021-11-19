@@ -1,4 +1,4 @@
-package com.applovin.enterprise.apps.demoapp;
+package com.revolverolver.fliptrickster;
 
 import com.facebook.react.ReactActivity;
 

@@ -15,26 +15,26 @@ var adLoadState = {
 const App = () => {
 
   // Create constants
-  const SDK_KEY = 'YOUR_SDK_KEY_HERE';
+  const SDK_KEY = 'hBDh6tzZrp-fWye63N4nhbgw8umnTzD99QsGIpq8bpo7lRDppHZVuEQ17Bpa80lIRaTlONt-Af6v5JiubGOUVp';
 
   const INTERSTITIAL_AD_UNIT_ID = Platform.select({
-    ios: 'ENTER_IOS_INTERSTITIAL_AD_UNIT_ID_HERE',
-    android: 'ENTER_ANDROID_INTERSTITIAL_AD_UNIT_ID_HERE',
+    ios: '65d8d0195e50bda6',
+    android: '6bf752cf76bc7f3b',
   });
 
   const REWARDED_AD_UNIT_ID = Platform.select({
-    ios: 'ENTER_IOS_REWARDED_AD_UNIT_ID_HERE',
-    android: 'ENTER_ANDROID_REWARDED_AD_UNIT_ID_HERE',
+    ios: '82076aefed4737ed',
+    android: 'a880dbdb58c811d5',
   });
 
   const BANNER_AD_UNIT_ID = Platform.select({
-    ios: 'ENTER_IOS_BANNER_AD_UNIT_ID_HERE',
-    android: 'ENTER_ANDROID_BANNER_AD_UNIT_ID_HERE',
+    ios: '35858295296a8c80',
+    android: 'cb5529a55a443f83',
   });
 
   const MREC_AD_UNIT_ID = Platform.select({
-    ios: 'ENTER_IOS_MREC_AD_UNIT_ID_HERE',
-    android: 'ENTER_ANDROID_MREC_AD_UNIT_ID_HERE',
+    ios: 'f865a23962fa00e5',
+    android: 'e12ca346bdbddaef',
   });
 
   // Create states
@@ -43,11 +43,6 @@ const App = () => {
   const [interstitialRetryAttempt, setInterstitialRetryAttempt] = useState(0);
   const [rewardedAdLoadState, setRewardedAdLoadState] = useState(adLoadState.notLoaded);
   const [rewardedAdRetryAttempt, setRewardedAdRetryAttempt] = useState(0);
-  const [isProgrammaticBannerCreated, setIsProgrammaticBannerCreated] = useState(false);
-  const [isProgrammaticBannerShowing, setIsProgrammaticBannerShowing] = useState(false);
-  const [isNativeUIBannerShowing, setIsNativeUIBannerShowing] = useState(false);
-  const [isProgrammaticMRecCreated, setIsProgrammaticMRecCreated] = useState(false);
-  const [isProgrammaticMRecShowing, setIsProgrammaticMRecShowing] = useState(false);
   const [isNativeUIMRecShowing, setIsNativeUIMRecShowing] = useState(false);
   const [statusText, setStatusText] = useState('Initializing SDK...');
 
@@ -141,23 +136,6 @@ const App = () => {
       logStatus('Rewarded ad granted reward');
     });
 
-    // Banner Ad Listeners
-    AppLovinMAX.addEventListener('OnBannerAdLoadedEvent', (adInfo) => {
-      logStatus('Banner ad loaded from ' + adInfo.networkName);
-    });
-    AppLovinMAX.addEventListener('OnBannerAdLoadFailedEvent', (errorInfo) => {
-      logStatus('Banner ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
-    });
-    AppLovinMAX.addEventListener('OnBannerAdClickedEvent', (adInfo) => {
-      logStatus('Banner ad clicked');
-    });
-    AppLovinMAX.addEventListener('OnBannerAdExpandedEvent', (adInfo) => {
-      logStatus('Banner ad expanded')
-    });
-    AppLovinMAX.addEventListener('OnBannerAdCollapsedEvent', (adInfo) => {
-      logStatus('Banner ad collapsed')
-    });
-
     // MREC Ad Listeners
     AppLovinMAX.addEventListener('OnMRecAdLoadedEvent', (adInfo) => {
       logStatus('MREC ad loaded from ' + adInfo.networkName);
@@ -246,57 +224,8 @@ const App = () => {
           }}
         />
         <AppButton
-          title={isProgrammaticBannerShowing ? 'Hide Programmatic Banner' : 'Show Programmatic Banner'}
-          enabled={isInitialized && !isNativeUIBannerShowing}
-          onPress={() => {
-            if (isProgrammaticBannerShowing) {
-              AppLovinMAX.hideBanner(BANNER_AD_UNIT_ID);
-            } else {
-
-              if (!isProgrammaticBannerCreated) {
-
-                //
-                // Programmatic banner creation - banners are automatically sized to 320x50 on phones and 728x90 on tablets
-                //
-                AppLovinMAX.createBannerWithOffsets(
-                  BANNER_AD_UNIT_ID,
-                  AppLovinMAX.AdViewPosition.BOTTOM_CENTER, 0, 50
-                );
-
-                // Set background color for banners to be fully functional
-                // In this case we are setting it to black - PLEASE USE HEX STRINGS ONLY
-                AppLovinMAX.setBannerBackgroundColor(BANNER_AD_UNIT_ID, '#000000');
-
-                setIsProgrammaticBannerCreated(true);
-              }
-
-              AppLovinMAX.showBanner(BANNER_AD_UNIT_ID);
-            }
-
-            setIsProgrammaticBannerShowing(!isProgrammaticBannerShowing);
-          }}
-        />
-        <AppButton
-          title={isNativeUIBannerShowing ? 'Hide Native UI Banner' : 'Show Native UI Banner'}
-          enabled={isInitialized && !isProgrammaticBannerShowing}
-          onPress={() => {
-            setIsNativeUIBannerShowing(!isNativeUIBannerShowing);
-          }}
-        />
-        {
-          (() => {
-            if (isNativeUIBannerShowing) {
-              return (
-                <AppLovinMAX.AdView adUnitId={BANNER_AD_UNIT_ID}
-                                    adFormat={AppLovinMAX.AdFormat.BANNER}
-                                    style={styles.banner}/>
-              );
-            }
-          })()
-        }
-        <AppButton
           title={isNativeUIMRecShowing ? 'Hide Native UI MREC' : 'Show Native UI MREC'}
-          enabled={isInitialized && !isProgrammaticMRecShowing}
+          enabled={isInitialized}
           onPress={() => {
             setIsNativeUIMRecShowing(!isNativeUIMRecShowing);
           }}
@@ -305,34 +234,18 @@ const App = () => {
           (() => {
             if (isNativeUIMRecShowing) {
               return (
-                <AppLovinMAX.AdView adUnitId={MREC_AD_UNIT_ID} adFormat={AppLovinMAX.AdFormat.MREC} style={styles.mrec}/>
+                  <>
+                <AppLovinMAX.AdView adUnitId={MREC_AD_UNIT_ID}
+                                    adFormat={AppLovinMAX.AdFormat.MREC}
+                                    style={styles.mrec1}/>
+                <AppLovinMAX.AdView adUnitId={MREC_AD_UNIT_ID}
+                                    adFormat={AppLovinMAX.AdFormat.MREC}
+                                    style={styles.mrec2}/>
+                  </>
               );
             }
           })()
         }
-        <AppButton
-          title={isProgrammaticMRecShowing ? 'Hide Programmatic MREC' : 'Show Programmatic MREC'}
-          enabled={isInitialized && !isNativeUIMRecShowing}
-          onPress={() => {
-            if (isProgrammaticMRecShowing) {
-              AppLovinMAX.hideMRec(MREC_AD_UNIT_ID);
-            } else {
-
-              if (!isProgrammaticMRecCreated) {
-                AppLovinMAX.createMRec(
-                  MREC_AD_UNIT_ID,
-                  AppLovinMAX.AdViewPosition.TOP_CENTER
-                );
-
-                setIsProgrammaticMRecCreated(true);
-              }
-
-              AppLovinMAX.showMRec(MREC_AD_UNIT_ID);
-            }
-
-            setIsProgrammaticMRecShowing(!isProgrammaticMRecShowing);
-          }}
-        />
       </View>
     </NavigationContainer>
   );
@@ -350,23 +263,23 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: 'center',
   },
-  banner: {
-    // Set background color for banners to be fully functional
+  mrec1: {
     backgroundColor: '#000000',
     position: 'absolute',
-    width: '100%',
-    height: AppLovinMAX.getAdaptiveBannerHeightForWidth(-1),
-    bottom: Platform.select({
-      ios: 36, // For bottom safe area
-      android: 0,
-    })
-  },
-  mrec: {
-    position: 'absolute',
-    width: '100%',
+    width: 300,
     height: 250,
     bottom: Platform.select({
-      ios: 36, // For bottom safe area
+      ios: 280, // For bottom safe area
+      android: 280,
+    })
+  },
+  mrec2: {
+    backgroundColor: '#000000',
+    position: 'absolute',
+    width: 300,
+    height: 250,
+    bottom: Platform.select({
+      ios: 80, // For bottom safe area
       android: 0,
     })
   }
