@@ -9,6 +9,8 @@ import com.applovin.mediation.ads.MaxAdView;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.views.view.ReactViewGroup;
 
+import androidx.annotation.Nullable;
+
 /**
  * Created by Thomas So on September 27 2020
  */
@@ -66,7 +68,13 @@ class AppLovinMAXAdView
         }
     }
 
-    public void maybeAttachAdView(final String adUnitId, final MaxAdFormat adFormat)
+    @Nullable
+    protected MaxAdView getAdView()
+    {
+        return adView;
+    }
+
+    public void maybeAttachAdView(final String placement, final String adaptiveBannerEnabledStr, final String adUnitId, final MaxAdFormat adFormat)
     {
         final Activity currentActivity = reactContext.getCurrentActivity();
         if ( currentActivity == null )
@@ -86,6 +94,16 @@ class AppLovinMAXAdView
                 {
                     adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
                     adView.setListener( AppLovinMAXModule.getInstance() );
+
+                    if ( placement != null )
+                    {
+                        adView.setPlacement( placement );
+                    }
+
+                    if ( adaptiveBannerEnabledStr != null )
+                    {
+                        adView.setExtraParameter( "adaptive_banner", adaptiveBannerEnabledStr );
+                    }
 
                     adView.loadAd();
 

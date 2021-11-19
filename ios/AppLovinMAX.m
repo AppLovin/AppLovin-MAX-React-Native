@@ -764,9 +764,6 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         
-        // Ignore if Native UI component attempting to set empty/default placement on mount
-        if ( !self.adViews[adUnitIdentifier] ) return;
-        
         [self log: @"Setting placement \"%@\" for \"%@\" with ad unit identifier \"%@\"", placement, adFormat, adUnitIdentifier];
         
         MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: @"" withOffset: CGPointZero];
@@ -808,7 +805,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
         [adView setExtraParameterForKey: key value: value];
         
-        if (  [@"force_banner" isEqualToString: key] && MAAdFormat.mrec != adFormat )
+        if ( [@"force_banner" isEqualToString: key] && MAAdFormat.mrec != adFormat )
         {
             // Handle local changes as needed
             MAAdFormat *adFormat;

@@ -23,6 +23,10 @@
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSString *> *adUnitIdRegistry;
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, MAAdFormat *> *adFormatRegistry;
 
+// Storage for placement and extra parameters if set before the MAAdView is created
+@property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSString *> *placementRegistry;
+@property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSString *> *adaptiveBannerEnabledRegistry;
+
 @end
 
 @implementation AppLovinMAXAdViewManager
@@ -41,6 +45,8 @@ RCT_EXPORT_MODULE(AppLovinMAXAdView)
     {
         self.adUnitIdRegistry = [NSMutableDictionary dictionary];
         self.adFormatRegistry = [NSMutableDictionary dictionary];
+        self.placementRegistry = [NSMutableDictionary dictionary];
+        self.adaptiveBannerEnabledRegistry = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -49,6 +55,56 @@ RCT_EXPORT_MODULE(AppLovinMAXAdView)
 {
     // NOTE: Do not set frame or backgroundColor as RN will overwrite the values set by your custom class in order to match your JavaScript component's layout props - hence wrapper
     return [[UIView alloc] init];
+}
+
+// NOTE: `nonnull` must be annotated here for this RN export to work at runtime
+RCT_EXPORT_METHOD(setPlacement:(nonnull NSNumber *)viewTag toPlacement:(NSString *)placement)
+{
+    [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        
+        // NOTE: iOS caches the native view via `viewTag` when you remove it from screen (unlike Android)
+        UIView *view = viewRegistry[viewTag];
+        if ( !view )
+        {
+            RCTLogError(@"Cannot find UIView with tag %@", viewTag);
+            return;
+        }
+        
+        MAAdView *adView = [self adViewFromContainerView: view];
+        if ( adView )
+        {
+            adView.placement = placement;
+        }
+        else
+        {
+            self.placementRegistry[viewTag] = placement;
+        }
+    }];
+}
+
+// NOTE: `nonnull` must be annotated here for this RN export to work at runtime
+RCT_EXPORT_METHOD(setAdaptiveBannerEnabled:(nonnull NSNumber *)viewTag toEnabled:(NSString *)enabledStr)
+{
+    [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        
+        // NOTE: iOS caches the native view via `viewTag` when you remove it from screen (unlike Android)
+        UIView *view = viewRegistry[viewTag];
+        if ( !view )
+        {
+            RCTLogError(@"Cannot find UIView with tag %@", viewTag);
+            return;
+        }
+        
+        MAAdView *adView = [self adViewFromContainerView: view];
+        if ( adView )
+        {
+            [adView setExtraParameterForKey: @"adaptive_banner" value: enabledStr];
+        }
+        else
+        {
+            self.adaptiveBannerEnabledRegistry[viewTag] = enabledStr;
+        }
+    }];
 }
 
 // NOTE: `nonnull` must be annotated here for this RN export to work at runtime
@@ -66,14 +122,15 @@ RCT_EXPORT_METHOD(setAdUnitId:(nonnull NSNumber *)viewTag toAdUnitId:(NSString *
         
         self.adUnitIdRegistry[viewTag] = adUnitId;
         
-        [self attachAdViewIfNeededForAdUnitIdentifier: self.adUnitIdRegistry[viewTag]
-                                             adFormat: self.adFormatRegistry[viewTag]
-                                        containerView: view];
+        [self attachAdViewIfNeededForViewTag: viewTag
+                            adUnitIdentifier: self.adUnitIdRegistry[viewTag]
+                                    adFormat: self.adFormatRegistry[viewTag]
+                               containerView: view];
     }];
 }
 
 // NOTE: `nonnull` must be annotated here for this RN export to work at runtime
-RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *)adFormatString)
+RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *)adFormatStr)
 {
     [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
         
@@ -85,22 +142,23 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
             return;
         }
         
-        if ( [@"banner" isEqualToString: adFormatString] )
+        if ( [@"banner" isEqualToString: adFormatStr] )
         {
             self.adFormatRegistry[viewTag] = DEVICE_SPECIFIC_ADVIEW_AD_FORMAT;
         }
-        else if ( [@"mrec" isEqualToString: adFormatString] )
+        else if ( [@"mrec" isEqualToString: adFormatStr] )
         {
             self.adFormatRegistry[viewTag] = MAAdFormat.mrec;
         }
         
-        [self attachAdViewIfNeededForAdUnitIdentifier: self.adUnitIdRegistry[viewTag]
-                                             adFormat: self.adFormatRegistry[viewTag]
-                                        containerView: view];
+        [self attachAdViewIfNeededForViewTag: viewTag
+                            adUnitIdentifier: self.adUnitIdRegistry[viewTag]
+                                    adFormat: self.adFormatRegistry[viewTag]
+                               containerView: view];
     }];
 }
 
-- (void)attachAdViewIfNeededForAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat containerView:(UIView *)containerView
+- (void)attachAdViewIfNeededForViewTag:(NSNumber *)viewTag adUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat containerView:(UIView *)containerView
 {
     // Run after delay to ensure SDK is attached to main module first
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -122,6 +180,20 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
             adView = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitIdentifier adFormat: adFormat sdk: AppLovinMAX.shared.sdk];
             adView.frame = (CGRect) { CGPointZero, adFormat.size };
             adView.delegate = AppLovinMAX.shared; // Go through core class for callback forwarding to React Native layer
+            
+            NSString *placement = self.placementRegistry[viewTag];
+            if ( placement )
+            {
+                [self.placementRegistry removeObjectForKey: viewTag];
+                adView.placement = placement;
+            }
+            
+            NSString *adaptiveBannerEnabledStr = self.adaptiveBannerEnabledRegistry[viewTag];
+            if ( [adaptiveBannerEnabledStr al_isValidString] )
+            {
+                [self.adaptiveBannerEnabledRegistry removeObjectForKey: viewTag];
+                [adView setExtraParameterForKey: @"adaptive_banner" value: adaptiveBannerEnabledStr];
+            }
             
             [adView loadAd];
             

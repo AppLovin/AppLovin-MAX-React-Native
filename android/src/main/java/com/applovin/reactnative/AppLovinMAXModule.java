@@ -921,9 +921,6 @@ public class AppLovinMAXModule
             @Override
             public void run()
             {
-                // Ignore if Native UI component attempting to set empty/default placement on mount
-                if ( mAdViews.get( adUnitId ) == null ) return;
-
                 d( "Setting placement \"" + placement + "\" for " + adFormat.getLabel() + " with ad unit id \"" + adUnitId + "\"" );
 
                 final MaxAdView adView = retrieveAdView( adUnitId, adFormat, "", DEFAULT_AD_VIEW_OFFSET );
