@@ -764,6 +764,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         
+        // Ignore if Native UI component attempting to set empty/default placement on mount
         if ( !self.adViews[adUnitIdentifier] ) return;
         
         [self log: @"Setting placement \"%@\" for \"%@\" with ad unit identifier \"%@\"", placement, adFormat, adUnitIdentifier];
