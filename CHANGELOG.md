@@ -1,5 +1,7 @@
 ## Versions
 
+## 2.4.0
+   * Allow loading of multiple native UI AdView with same Ad Unit IDs.
 ## 2.3.2
     * Fix `ClassCastException` related to Android native AdViews.
 ## 2.3.1
