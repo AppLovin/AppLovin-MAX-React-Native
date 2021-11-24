@@ -103,6 +103,11 @@ public class AppLovinMAXModule
         return instance;
     }
 
+    public AppLovinSdk getSdk()
+    {
+        return sdk;
+    }
+
     public AppLovinMAXModule(final ReactApplicationContext reactContext)
     {
         super( reactContext );
@@ -1203,7 +1208,7 @@ public class AppLovinMAXModule
         return retrieveAdView( adUnitId, adFormat, null, DEFAULT_AD_VIEW_OFFSET );
     }
 
-    public MaxAdView retrieveAdView(String adUnitId, MaxAdFormat adFormat, String adViewPosition, Point adViewOffsetPixels)
+    private MaxAdView retrieveAdView(String adUnitId, MaxAdFormat adFormat, String adViewPosition, Point adViewOffsetPixels)
     {
         MaxAdView result = mAdViews.get( adUnitId );
         if ( result == null && adViewPosition != null && adViewOffsetPixels != null )

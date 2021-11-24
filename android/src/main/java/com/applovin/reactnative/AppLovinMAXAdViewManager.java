@@ -1,6 +1,7 @@
 package com.applovin.reactnative;
 
 import com.applovin.mediation.MaxAdFormat;
+import com.applovin.mediation.ads.MaxAdView;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.SimpleViewManager;
@@ -28,6 +29,10 @@ class AppLovinMAXAdViewManager
     private final Map<AppLovinMAXAdView, String>      adUnitIdRegistry = new HashMap<>();
     private final Map<AppLovinMAXAdView, MaxAdFormat> adFormatRegistry = new HashMap<>();
 
+    // Storage for placement and extra parameters if set before the MAAdView is created
+    private final Map<AppLovinMAXAdView, String> placementRegistry             = new HashMap<>();
+    private final Map<AppLovinMAXAdView, String> adaptiveBannerEnabledRegistry = new HashMap<>();
+
     public AppLovinMAXAdViewManager(final ReactApplicationContext reactApplicationContext)
     {
         this.reactApplicationContext = reactApplicationContext;
@@ -49,13 +54,26 @@ class AppLovinMAXAdViewManager
     @Override
     public void receiveCommand(@NonNull AppLovinMAXAdView view, String commandId, @Nullable ReadableArray args)
     {
-        if ( "setAdUnitId".equals( commandId ) && args != null )
+        if ( args == null ) return;
+
+        String arg = args.getString( 0 );
+        if ( arg == null ) return;
+
+        if ( "setPlacement".equals( commandId ) )
         {
-            setAdUnitId( view, args.getString( 0 ) );
+            setPlacement( view, arg );
         }
-        else if ( "setAdFormat".equals( commandId ) && args != null )
+        else if ( "setAdaptiveBannerEnabled".equals( commandId ) )
         {
-            setAdFormat( view, args.getString( 0 ) );
+            setAdaptiveBannerEnabled( view, arg );
+        }
+        else if ( "setAdUnitId".equals( commandId ) )
+        {
+            setAdUnitId( view, arg );
+        }
+        else if ( "setAdFormat".equals( commandId ) )
+        {
+            setAdFormat( view, arg );
         }
         else
         {
@@ -63,11 +81,44 @@ class AppLovinMAXAdViewManager
         }
     }
 
+    public void setPlacement(final AppLovinMAXAdView view, final String placement)
+    {
+        // Post to main thread to avoid race condition with actual creation of MaxAdView in maybeAttachAdView()
+        view.post( () -> {
+
+            MaxAdView adView = view.getAdView();
+            if ( adView != null )
+            {
+                adView.setPlacement( placement );
+            }
+            else
+            {
+                placementRegistry.put( view, placement );
+            }
+        } );
+    }
+
+    public void setAdaptiveBannerEnabled(final AppLovinMAXAdView view, final String enabledStr)
+    {
+        // Post to main thread to avoid race condition with actual creation of MaxAdView in maybeAttachAdView()
+        view.post( () -> {
+
+            MaxAdView adView = view.getAdView();
+            if ( adView != null )
+            {
+                adView.setExtraParameter( "adaptive_banner", enabledStr );
+            }
+            else
+            {
+                adaptiveBannerEnabledRegistry.put( view, enabledStr );
+            }
+        } );
+    }
+
     public void setAdUnitId(final AppLovinMAXAdView view, final String adUnitId)
     {
         adUnitIdRegistry.put( view, adUnitId );
-
-        view.maybeAttachAdView( adUnitIdRegistry.get( view ), adFormatRegistry.get( view ) );
+        maybeAttachAdView( view );
     }
 
     public void setAdFormat(final AppLovinMAXAdView view, final String adFormatStr)
@@ -81,7 +132,18 @@ class AppLovinMAXAdViewManager
             adFormatRegistry.put( view, MaxAdFormat.MREC );
         }
 
-        view.maybeAttachAdView( adUnitIdRegistry.get( view ), adFormatRegistry.get( view ) );
+        maybeAttachAdView( view );
+    }
+
+    private void maybeAttachAdView(final AppLovinMAXAdView view)
+    {
+        String placement = placementRegistry.remove( view );
+        String adaptiveBannerEnabledStr = adaptiveBannerEnabledRegistry.remove( view );
+
+        view.maybeAttachAdView( placement,
+                                adaptiveBannerEnabledStr,
+                                adUnitIdRegistry.get( view ),
+                                adFormatRegistry.get( view ) );
     }
 
     @Override

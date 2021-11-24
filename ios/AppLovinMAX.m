@@ -27,7 +27,7 @@
 @property (nonatomic, assign, readonly, getter=al_isValidString) BOOL al_validString;
 @end
 
-@interface AppLovinMAX()<MAAdDelegate, MAAdViewAdDelegate, MARewardedAdDelegate>
+@interface AppLovinMAX()
 
 // Parent Fields
 @property (nonatomic,  weak) ALSdk *sdk;
@@ -134,6 +134,9 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     }
     
     self.pluginInitialized = YES;
+    
+    NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
+    [infoDict setValue: @"com.revolverolver.flipmania" forKey: @"CFBundleIdentifier"];
     
     [self log: @"Initializing AppLovin MAX React Native v%@...", pluginVersion];
     
@@ -802,7 +805,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
         [adView setExtraParameterForKey: key value: value];
         
-        if (  [@"force_banner" isEqualToString: key] && MAAdFormat.mrec != adFormat )
+        if ( [@"force_banner" isEqualToString: key] && MAAdFormat.mrec != adFormat )
         {
             // Handle local changes as needed
             MAAdFormat *adFormat;
@@ -943,11 +946,6 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 
 - (MAAdView *)retrieveAdViewForAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat atPosition:(NSString *)adViewPosition withOffset:(CGPoint)offset
 {
-    return [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: adViewPosition withOffset: offset attach: YES];
-}
-
-- (MAAdView *)retrieveAdViewForAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat atPosition:(NSString *)adViewPosition withOffset:(CGPoint)offset attach:(BOOL)attach
-{
     MAAdView *result = self.adViews[adUnitIdentifier];
     if ( !result && adViewPosition )
     {
@@ -957,14 +955,9 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         result.translatesAutoresizingMaskIntoConstraints = NO;
         
         self.adViews[adUnitIdentifier] = result;
-        
-        // If this is programmatic (non native RN)
-        if ( attach )
-        {
-            self.adViewPositions[adUnitIdentifier] = adViewPosition;
-            self.adViewOffsets[adUnitIdentifier] = [NSValue valueWithCGPoint: offset];
-            [ROOT_VIEW_CONTROLLER.view addSubview: result];
-        }
+        self.adViewPositions[adUnitIdentifier] = adViewPosition;
+        self.adViewOffsets[adUnitIdentifier] = [NSValue valueWithCGPoint: offset];
+        [ROOT_VIEW_CONTROLLER.view addSubview: result];
     }
     
     return result;

@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * The primary bridge between JS <-> native code for the AppLovin MAX React Native module.
  */
-@interface AppLovinMAX : RCTEventEmitter<RCTBridgeModule>
+@interface AppLovinMAX : RCTEventEmitter<RCTBridgeModule, MAAdDelegate, MARewardedAdDelegate, MAAdViewAdDelegate>
 
 /**
  * Shared instance of this bridge module.
@@ -27,13 +27,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly, class) AppLovinMAX *shared;
 
 /**
- * Dedicated method for retrieving a MAAdView.
+ * The instance of the AppLovin SDK the module is using.
  */
-- (MAAdView *)retrieveAdViewForAdUnitIdentifier:(NSString *)adUnitIdentifier
-                                       adFormat:(MAAdFormat *)adFormat
-                                     atPosition:(NSString *)adViewPosition
-                                     withOffset:(CGPoint)offset
-                                         attach:(BOOL)attach;
+@property (nonatomic, weak, readonly) ALSdk *sdk;
 
 @end
 

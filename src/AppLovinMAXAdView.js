@@ -87,11 +87,11 @@ class AdView extends React.Component {
     // If the ad unit id or ad format are unset, we can't set the placement.
     if (adUnitId == null || adFormat == null) return;
 
-    if (adFormat === AppLovinMAX.AdFormat.BANNER) {
-      AppLovinMAX.setBannerPlacement(adUnitId, placement);
-    } else if (adFormat === AppLovinMAX.AdFormat.MREC) {
-      AppLovinMAX.setMRecPlacement(adUnitId, placement);
-    }
+    UIManager.dispatchViewManagerCommand(
+        findNodeHandle(this),
+        Platform.OS === 'android' ? "setPlacement" : UIManager.getViewManagerConfig("AppLovinMAXAdView").Commands.setPlacement,
+        [placement]
+    );
   }
 
   setAdaptiveBannerEnabled(enabled) {
@@ -103,7 +103,11 @@ class AdView extends React.Component {
 
     if (adFormat === AppLovinMAX.AdFormat.BANNER) {
       if (enabled === true || enabled === false) {
-        AppLovinMAX.setBannerExtraParameter(adUnitId, "adaptive_banner", enabled ? "true" : "false");
+        UIManager.dispatchViewManagerCommand(
+            findNodeHandle(this),
+            Platform.OS === 'android' ? "setAdaptiveBannerEnabled" : UIManager.getViewManagerConfig("AppLovinMAXAdView").Commands.setAdaptiveBannerEnabled,
+            [enabled ? "true" : "false"]
+        );
       }
     }
   }

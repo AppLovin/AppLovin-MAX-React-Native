@@ -2,15 +2,14 @@ package com.applovin.reactnative;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Point;
 import android.text.TextUtils;
-import android.view.ViewGroup;
-import android.view.ViewParent;
 
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.ads.MaxAdView;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.views.view.ReactViewGroup;
+
+import androidx.annotation.Nullable;
 
 /**
  * Created by Thomas So on September 27 2020
@@ -69,9 +68,15 @@ class AppLovinMAXAdView
         }
     }
 
-    public void maybeAttachAdView(final String adUnitId, final MaxAdFormat adFormat)
+    @Nullable
+    protected MaxAdView getAdView()
     {
-        Activity currentActivity = reactContext.getCurrentActivity();
+        return adView;
+    }
+
+    public void maybeAttachAdView(final String placement, final String adaptiveBannerEnabledStr, final String adUnitId, final MaxAdFormat adFormat)
+    {
+        final Activity currentActivity = reactContext.getCurrentActivity();
         if ( currentActivity == null )
         {
             AppLovinMAXModule.e( "Unable to attach AdView - no current Activity found" );
@@ -87,18 +92,23 @@ class AppLovinMAXAdView
                 // If ad unit id and format has been set - create and attach AdView
                 if ( !TextUtils.isEmpty( adUnitId ) && adFormat != null )
                 {
-                    adView = AppLovinMAXModule.getInstance().retrieveAdView( adUnitId, adFormat, "", new Point( 0, 0 ) );
+                    adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
+                    adView.setListener( AppLovinMAXModule.getInstance() );
+
+                    if ( placement != null )
+                    {
+                        adView.setPlacement( placement );
+                    }
+
+                    if ( adaptiveBannerEnabledStr != null )
+                    {
+                        adView.setExtraParameter( "adaptive_banner", adaptiveBannerEnabledStr );
+                    }
+
                     adView.loadAd();
 
                     currentWidthPx = getWidth();
                     currentHeightPx = getHeight();
-
-                    // Handle fast refresh cases of re-adding adView
-                    ViewParent parent = adView.getParent();
-                    if ( parent instanceof ViewGroup )
-                    {
-                        ( (ViewGroup) parent ).removeView( adView );
-                    }
 
                     addView( adView );
                 }
