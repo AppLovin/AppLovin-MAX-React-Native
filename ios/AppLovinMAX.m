@@ -135,9 +135,6 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     
     self.pluginInitialized = YES;
     
-    NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
-    [infoDict setValue: @"com.revolverolver.flipmania" forKey: @"CFBundleIdentifier"];
-    
     [self log: @"Initializing AppLovin MAX React Native v%@...", pluginVersion];
     
     // If SDK key passed in is empty, check Info.plist
