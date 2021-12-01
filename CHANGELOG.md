@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 2.4.2
     * Fix placements not being passed correctly. 
 ## 2.4.1
     * Remove test code on iOS using hard-coded credentials.
