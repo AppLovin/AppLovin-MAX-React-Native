@@ -76,14 +76,6 @@ export default {
   initialize(sdkKey, callback) {
     AppLovinMAX.initialize(VERSION, sdkKey, callback); // Inject VERSION into native code
   },
-  // Support for showing ad without placement
-  showInterstitial(adUnitId) {
-    AppLovinMAX.showInterstitial(adUnitId, "");
-  },
-  // Support for showing ad without placement
-  showRewardedAd(adUnitId) {
-    AppLovinMAX.showRewardedAd(adUnitId, "");
-  },
 
   /*----------------------*/
   /** AUTO-DECLARED APIs **/

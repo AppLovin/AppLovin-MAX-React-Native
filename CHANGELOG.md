@@ -1,9 +1,11 @@
 ## Versions
 
+## x.x.x
+    * Fix placements not being passed correctly. 
 ## 2.4.1
-   * Remove test code on iOS using hard-coded credentials.
+    * Remove test code on iOS using hard-coded credentials.
 ## 2.4.0
-   * Allow loading of multiple native UI AdView with same Ad Unit IDs.
+    * Allow loading of multiple native UI AdView with same Ad Unit IDs.
 ## 2.3.2
     * Fix `ClassCastException` related to Android native AdViews.
 ## 2.3.1
