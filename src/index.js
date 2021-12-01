@@ -3,7 +3,7 @@ import AdView from "./AppLovinMAXAdView";
 
 const { AppLovinMAX } = NativeModules;
 
-const VERSION = "2.4.1";
+const VERSION = "2.4.2";
 
 /**
  * This enum represents whether or not the consent dialog should be shown for this user.
@@ -75,14 +75,6 @@ export default {
   // Use callback to avoid need for attaching listeners at top level on each re-render
   initialize(sdkKey, callback) {
     AppLovinMAX.initialize(VERSION, sdkKey, callback); // Inject VERSION into native code
-  },
-  // Support for showing ad without placement
-  showInterstitial(adUnitId) {
-    AppLovinMAX.showInterstitial(adUnitId, "");
-  },
-  // Support for showing ad without placement
-  showRewardedAd(adUnitId) {
-    AppLovinMAX.showRewardedAd(adUnitId, "");
   },
 
   /*----------------------*/
