@@ -453,7 +453,12 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isInterstitialReady:(NSString *)adUnitIde
     return @([interstitial isReady]);
 }
 
-RCT_EXPORT_METHOD(showInterstitial:(NSString *)adUnitIdentifier :(NSString *)placement)
+RCT_EXPORT_METHOD(showInterstitial:(NSString *)adUnitIdentifier)
+{
+    [self showInterstitialWithPlacement: adUnitIdentifier : nil];
+}
+
+RCT_EXPORT_METHOD(showInterstitialWithPlacement:(NSString *)adUnitIdentifier :(NSString *)placement)
 {
     MAInterstitialAd *interstitial = [self retrieveInterstitialForAdUnitIdentifier: adUnitIdentifier];
     [interstitial showAdForPlacement: placement];
@@ -479,7 +484,12 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isRewardedAdReady:(NSString *)adUnitIdent
     return @([rewardedAd isReady]);
 }
 
-RCT_EXPORT_METHOD(showRewardedAd:(NSString *)adUnitIdentifier :(NSString *)placement)
+RCT_EXPORT_METHOD(showRewardedAd:(NSString *)adUnitIdentifier)
+{
+    [self showRewardedAdWithPlacement: adUnitIdentifier : nil];
+}
+
+RCT_EXPORT_METHOD(showRewardedAdWithPlacement:(NSString *)adUnitIdentifier :(NSString *)placement)
 {
     MARewardedAd *rewardedAd = [self retrieveRewardedAdForAdUnitIdentifier: adUnitIdentifier];
     [rewardedAd showAdForPlacement: placement];

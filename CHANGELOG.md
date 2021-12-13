@@ -1,5 +1,7 @@
 ## Versions
 
+## 2.5.0
+    * Update APIs for showing interstitials and rewarded ads. To show _without_ a placement, use `AppLovinMAX.showInterstitial(<Ad Unit ID>)` and `AppLovinMAX.showRewardedAd(<Ad Unit ID>)`. To show _with_ a placement, use `AppLovinMAX.showInterstitialWithPlacement(<Ad Unit ID>, <Placement>)` and `AppLovinMAX.showRewardedAdWithPlacement(<Ad Unit ID>, <Placement>)`.  
 ## 2.4.2
     * Fix placements not being passed correctly. 
 ## 2.4.1
