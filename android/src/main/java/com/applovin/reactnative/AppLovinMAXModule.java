@@ -45,6 +45,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -97,6 +98,9 @@ public class AppLovinMAXModule
     private final Map<String, MaxAdFormat> mVerticalAdViewFormats           = new HashMap<>( 2 );
     private final List<String>             mAdUnitIdsToShowAfterCreate      = new ArrayList<>( 2 );
     private final Set<String>              mDisabledAdaptiveBannerAdUnitIds = new HashSet<>( 2 );
+
+    // TODO: Remove when v11.0.0 SDKs are released
+    public final static Map<String, MaxAdView> sAdViewsToRemove = Collections.synchronizedMap( new HashMap<>() );
 
     public static AppLovinMAXModule getInstance()
     {
@@ -657,6 +661,12 @@ public class AppLovinMAXModule
             // We will resume auto-refresh in {@link #showBanner(String)}.
             MaxAdView adView = retrieveAdView( ad.getAdUnitId(), adFormat );
             if ( adView != null && adView.getVisibility() != View.VISIBLE )
+            {
+                adView.stopAutoRefresh();
+            }
+
+            adView = sAdViewsToRemove.remove( ad.getAdUnitId() );
+            if ( adView != null )
             {
                 adView.stopAutoRefresh();
             }
@@ -1503,8 +1513,8 @@ public class AppLovinMAXModule
                 .emit( name, params );
     }
 
-    @Override
-    @Nullable public Map<String, Object> getConstants()
+    @Override @Nullable
+    public Map<String, Object> getConstants()
     {
         return super.getConstants();
     }

@@ -152,6 +152,13 @@ class AppLovinMAXAdViewManager
         // NOTE: Android destroys the native MaxAdView and calls this method while iOS caches it when you remove it from screen
         adUnitIdRegistry.remove( view );
 
+        // HACK ALERT: Since current SDK does not respect auto-refresh APIs until _after_ `onAdLoaded()`, explicitly expose view validity to the main module
+        MaxAdView adView = view.getAdView();
+        if ( adView != null )
+        {
+            AppLovinMAXModule.sAdViewsToRemove.put( adView.getAdUnitId(), adView );
+        }
+
         super.onDropViewInstance( view );
     }
 }
