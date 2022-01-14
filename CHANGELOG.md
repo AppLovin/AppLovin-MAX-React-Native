@@ -1,5 +1,7 @@
 ## Versions
 
+## 2.5.2
+    * Lock to Android SDK 10.3.5 and iOS SDK 10.3.7.
 ## 2.5.1
     * Stop auto-refresh for native AdViews that have been removed from screen on Android. 
 ## 2.5.0
