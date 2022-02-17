@@ -42,6 +42,7 @@
 @property (nonatomic, strong, nullable) NSNumber *creativeDebuggerEnabledToSet;
 @property (nonatomic, strong, nullable) NSNumber *consentFlowEnabledToSet;
 @property (nonatomic, strong, nullable) NSURL *privacyPolicyURLToSet;
+@property (nonatomic, strong, nullable) NSURL *termsOfServiceURLToSet;
 
 // Fullscreen Ad Fields
 @property (nonatomic, strong) NSMutableDictionary<NSString *, MAInterstitialAd *> *interstitials;
@@ -154,9 +155,11 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     ALSdkSettings *settings = [[ALSdkSettings alloc] init];
     settings.consentFlowSettings.enabled = self.consentFlowEnabledToSet.boolValue;
     settings.consentFlowSettings.privacyPolicyURL = self.privacyPolicyURLToSet;
+    settings.consentFlowSettings.termsOfServiceURL = self.termsOfServiceURLToSet;
     
     self.consentFlowEnabledToSet = nil;
     self.privacyPolicyURLToSet = nil;
+    self.termsOfServiceURLToSet = nil;
     
     // Initialize SDK
     self.sdk = [ALSdk sharedWithKey: sdkKey settings: settings];
@@ -332,6 +335,11 @@ RCT_EXPORT_METHOD(setConsentFlowEnabled:(BOOL)enabled)
 RCT_EXPORT_METHOD(setPrivacyPolicyUrl:(NSString *)urlString)
 {
     self.privacyPolicyURLToSet = [NSURL URLWithString: urlString];
+}
+
+RCT_EXPORT_METHOD(setTermsOfServiceUrl:(NSString *)urlString)
+{
+    self.termsOfServiceURLToSet = [NSURL URLWithString: urlString];
 }
 
 #pragma mark - Event Tracking
