@@ -424,6 +424,9 @@ public class AppLovinMAXModule
     @ReactMethod()
     public void setPrivacyPolicyUrl(final String urlString) {}
 
+    @ReactMethod()
+    public void setTermsOfServiceUrl(final String urlString) {}
+
     // EVENT TRACKING
 
     @ReactMethod()

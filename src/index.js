@@ -111,6 +111,7 @@ export default {
   /* setCreativeDebuggerEnabled(enabled) */
   /* setConsentFlowEnabled(enabled) */
   /* setPrivacyPolicyUrl(urlString) */
+  /* setTermsOfServiceUrl(urlString) */
 
   /*----------------*/
   /* EVENT TRACKING */
