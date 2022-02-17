@@ -1,5 +1,7 @@
 ## Versions
 
+## 2.5.3
+    * Add API to set Terms of Service URL for iOS' MAX consent flow.
 ## 2.5.2
     * Lock to Android SDK 10.3.5 and iOS SDK 10.3.7.
 ## 2.5.1
