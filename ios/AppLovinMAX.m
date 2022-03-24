@@ -1094,7 +1094,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         }
         
         // If publisher actually provided a banner background color, span the banner across the realm
-        if ( self.publisherBannerBackgroundColor && adFormat != MAAdFormat.mrec )
+        if ( self.publisherBannerBackgroundColor && adFormat != MAAdFormat.mrec && CGPointEqualToPoint(adViewOffset, CGPointZero) )
         {
             [constraints addObjectsFromArray: @[[adView.widthAnchor constraintEqualToConstant: adViewWidth],
                                                 [adView.centerXAnchor constraintEqualToAnchor: layoutGuide.centerXAnchor],
@@ -1103,13 +1103,13 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
             
             if ( [adViewPosition isEqual: @"top_center"] )
             {
-                [constraints addObjectsFromArray: @[[adView.topAnchor constraintEqualToAnchor: layoutGuide.topAnchor constant: yOffset],
+                [constraints addObjectsFromArray: @[[adView.topAnchor constraintEqualToAnchor: layoutGuide.topAnchor],
                                                     [self.safeAreaBackground.topAnchor constraintEqualToAnchor: superview.topAnchor],
                                                     [self.safeAreaBackground.bottomAnchor constraintEqualToAnchor: adView.topAnchor]]];
             }
             else // bottom_center
             {
-                [constraints addObjectsFromArray: @[[adView.bottomAnchor constraintEqualToAnchor: layoutGuide.bottomAnchor constant: yOffset],
+                [constraints addObjectsFromArray: @[[adView.bottomAnchor constraintEqualToAnchor: layoutGuide.bottomAnchor],
                                                     [self.safeAreaBackground.topAnchor constraintEqualToAnchor: adView.bottomAnchor],
                                                     [self.safeAreaBackground.bottomAnchor constraintEqualToAnchor: superview.bottomAnchor]]];
             }
