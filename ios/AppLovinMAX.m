@@ -1094,7 +1094,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         }
         
         // If publisher actually provided a banner background color, span the banner across the realm
-        if ( self.publisherBannerBackgroundColor && adFormat != MAAdFormat.mrec )
+        if ( self.publisherBannerBackgroundColor && adFormat != MAAdFormat.mrec && CGPointEqualToPoint(adViewOffset, CGPointZero) )
         {
             [constraints addObjectsFromArray: @[[adView.widthAnchor constraintEqualToConstant: adViewWidth],
                                                 [adView.centerXAnchor constraintEqualToAnchor: layoutGuide.centerXAnchor],
