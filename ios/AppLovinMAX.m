@@ -1103,13 +1103,13 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
             
             if ( [adViewPosition isEqual: @"top_center"] )
             {
-                [constraints addObjectsFromArray: @[[adView.topAnchor constraintEqualToAnchor: layoutGuide.topAnchor constant: yOffset],
+                [constraints addObjectsFromArray: @[[adView.topAnchor constraintEqualToAnchor: layoutGuide.topAnchor],
                                                     [self.safeAreaBackground.topAnchor constraintEqualToAnchor: superview.topAnchor],
                                                     [self.safeAreaBackground.bottomAnchor constraintEqualToAnchor: adView.topAnchor]]];
             }
             else // bottom_center
             {
-                [constraints addObjectsFromArray: @[[adView.bottomAnchor constraintEqualToAnchor: layoutGuide.bottomAnchor constant: yOffset],
+                [constraints addObjectsFromArray: @[[adView.bottomAnchor constraintEqualToAnchor: layoutGuide.bottomAnchor],
                                                     [self.safeAreaBackground.topAnchor constraintEqualToAnchor: adView.bottomAnchor],
                                                     [self.safeAreaBackground.bottomAnchor constraintEqualToAnchor: superview.bottomAnchor]]];
             }
