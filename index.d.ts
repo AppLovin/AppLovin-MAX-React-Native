@@ -48,7 +48,7 @@ declare module 'react-native-applovin-max' {
     placement: AdViewPosition
     style?: StyleProp<ViewStyle>
   }
-  type Configuration = {
+  export type Configuration = {
     consentDialogState: 0 | 1 | 2
     countryCode: string
   }
