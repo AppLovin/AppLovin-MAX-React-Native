@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+    * Lock to Android SDK 11.3.2 and iOS SDK 11.3.2.
 ## 3.0.1
     * Lock to Android SDK 11.3.1 and iOS SDK 11.3.1.
     * Fix safe area blocked if y offset used. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/59)
