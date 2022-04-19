@@ -51,6 +51,11 @@ const App = () => {
   const [isNativeUIMRecShowing, setIsNativeUIMRecShowing] = useState(false);
   const [statusText, setStatusText] = useState('Initializing SDK...');
 
+  // Consent Flow, should be enabled for iOS 14.5+
+  // AppLovinMAX.setPrivacyPolicyUrl('ENTER YOUR PRIVACY POLICY URL');
+  // AppLovinMAX.setTermsOfServiceUrl('ENTER YOUR TERMS OF SERVICE URL');
+  // AppLovinMAX.setConsentFlowEnabled(true);
+
   AppLovinMAX.setTestDeviceAdvertisingIds([]);
   AppLovinMAX.initialize(SDK_KEY, () => {
     setIsInitialized(true);

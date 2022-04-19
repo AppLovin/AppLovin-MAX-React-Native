@@ -35,6 +35,7 @@ import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkSettings;
 import com.applovin.sdk.AppLovinSdkUtils;
+import com.applovin.sdk.AppLovinUserService;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -77,6 +78,7 @@ public class AppLovinMAXModule
     private AppLovinSdk              sdk;
     private boolean                  isPluginInitialized;
     private boolean                  isSdkInitialized;
+    private boolean                  isConsentFlowEnabled;
     private AppLovinSdkConfiguration sdkConfiguration;
 
     // Store these values if pub attempts to set it before initializing
@@ -240,6 +242,12 @@ public class AppLovinMAXModule
         {
             sdk.getSettings().setCreativeDebuggerEnabled( creativeDebuggerEnabledToSet );
             creativeDebuggerEnabledToSet = null;
+        }
+
+        // Show consent dialog, while initializing sdk
+        if ( isConsentFlowEnabled && !hasUserConsent() )
+        {
+            showConsentDialog();
         }
 
         sdk.initializeSdk( new AppLovinSdk.SdkInitializationListener()
@@ -419,7 +427,29 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
-    public void setConsentFlowEnabled(final boolean enabled) {}
+    public void setConsentFlowEnabled(final boolean enabled)
+    {
+        isConsentFlowEnabled = enabled;
+    }
+
+    private void showConsentDialog()
+    {
+        Activity currentActivity = maybeGetCurrentActivity();
+        if ( currentActivity == null ) return;
+
+        AppLovinUserService aus = ( getSdk() != null ) ? getSdk().getUserService() : null;
+        if ( aus == null ) return;
+
+        aus.showConsentDialog( currentActivity,
+                               new AppLovinUserService.OnConsentDialogDismissListener()
+                               {
+                                   @Override
+                                   public void onDismiss()
+                                   {
+                                       d( "showConsentDialog dismissed" );
+                                   }
+                               } );
+    }
 
     @ReactMethod()
     public void setPrivacyPolicyUrl(final String urlString) {}
@@ -1516,7 +1546,8 @@ public class AppLovinMAXModule
                 .emit( name, params );
     }
 
-    @Override @Nullable
+    @Override
+    @Nullable
     public Map<String, Object> getConstants()
     {
         return super.getConstants();
