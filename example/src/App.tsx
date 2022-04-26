@@ -51,6 +51,14 @@ const App = () => {
   const [isNativeUIMRecShowing, setIsNativeUIMRecShowing] = useState(false);
   const [statusText, setStatusText] = useState('Initializing SDK...');
 
+  // Enable the consent flow programmatically, also add
+  // NSUserTrackingUsageDescription to Info.plist
+  AppLovinMAX.setConsentFlowEnabled(true);
+  // url of private policy - mandatory
+  AppLovinMAX.setPrivacyPolicyUrl('https://your_company_name.com/privacy/');
+  // optional url of terms of service
+  AppLovinMAX.setTermsOfServiceUrl('https://your_company_name.com/terms/');
+
   AppLovinMAX.setTestDeviceAdvertisingIds([]);
   AppLovinMAX.initialize(SDK_KEY, () => {
     setIsInitialized(true);
