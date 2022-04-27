@@ -94,6 +94,7 @@ export default {
   /* getConsentDialogState() */
   /* setHasUserConsent(hasUserConsent) */
   /* hasUserConsent() */
+  /* showConsentDialog(callback) */
   /* setIsAgeRestrictedUser(isAgeRestrictedUser) */
   /* isAgeRestrictedUser() */
   /* setDoNotSell(doNotSell) */

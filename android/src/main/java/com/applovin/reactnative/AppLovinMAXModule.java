@@ -35,6 +35,7 @@ import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkSettings;
 import com.applovin.sdk.AppLovinSdkUtils;
+import com.applovin.sdk.AppLovinUserService;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -312,6 +313,24 @@ public class AppLovinMAXModule
     public boolean hasUserConsent()
     {
         return AppLovinPrivacySettings.hasUserConsent( maybeGetCurrentActivity() );
+    }
+
+    @ReactMethod()
+    public void showConsentDialog(final Callback callback)
+    {
+        Activity currentActivity = maybeGetCurrentActivity();
+        if ( currentActivity == null ) return;
+
+        if ( sdk == null ) return;
+
+        sdk.getUserService().showConsentDialog( currentActivity, new AppLovinUserService.OnConsentDialogDismissListener()
+        {
+            @Override
+            public void onDismiss()
+            {
+                callback.invoke();
+            }
+        } );
     }
 
     @ReactMethod()

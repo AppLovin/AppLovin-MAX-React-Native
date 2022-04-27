@@ -241,6 +241,13 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(hasUserConsent)
     return @([ALPrivacySettings hasUserConsent]);
 }
 
+RCT_EXPORT_METHOD(showConsentDialog:(RCTResponseSenderBlock)callback)
+{
+    [self log: @"Failed to show consent dialog - Unavailable on iOS, please use the consent flow: https://dash.applovin.com/documentation/mediation/react-native/getting-started/consent-flow"];
+
+    callback(nil);
+}
+
 RCT_EXPORT_METHOD(setIsAgeRestrictedUser:(BOOL)isAgeRestrictedUser)
 {
     [ALPrivacySettings setIsAgeRestrictedUser: isAgeRestrictedUser];
