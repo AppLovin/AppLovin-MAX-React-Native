@@ -1,5 +1,8 @@
 ## Versions
 
+## x.x.x
+    * Update the example app to demonstrate iOS' Max Consent Flow.
+    * Add API for Android to provide a built-in consent flow that sets the user consent flag.
 ## 3.0.2
     * Lock to Android SDK 11.3.2 and iOS SDK 11.3.2.
 ## 3.0.1
