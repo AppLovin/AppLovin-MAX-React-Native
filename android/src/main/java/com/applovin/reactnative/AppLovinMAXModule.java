@@ -295,6 +295,25 @@ public class AppLovinMAXModule
         sdk.showMediationDebugger();
     }
 
+    @ReactMethod()
+    public void showConsentDialog(final Callback callback)
+    {
+        if ( sdk == null )
+        {
+            e( "Failed to show consent dialog - please ensure the AppLovin MAX React Native Plugin has been initialized by calling 'AppLovinMAX.initialize();'!" );
+            return;
+        }
+
+        sdk.getUserService().showConsentDialog( maybeGetCurrentActivity(), new AppLovinUserService.OnConsentDialogDismissListener()
+        {
+            @Override
+            public void onDismiss()
+            {
+                callback.invoke();
+            }
+        } );
+    }
+
     @ReactMethod(isBlockingSynchronousMethod = true)
     public int getConsentDialogState()
     {
@@ -313,24 +332,6 @@ public class AppLovinMAXModule
     public boolean hasUserConsent()
     {
         return AppLovinPrivacySettings.hasUserConsent( maybeGetCurrentActivity() );
-    }
-
-    @ReactMethod()
-    public void showConsentDialog(final Callback callback)
-    {
-        Activity currentActivity = maybeGetCurrentActivity();
-        if ( currentActivity == null ) return;
-
-        if ( sdk == null ) return;
-
-        sdk.getUserService().showConsentDialog( currentActivity, new AppLovinUserService.OnConsentDialogDismissListener()
-        {
-            @Override
-            public void onDismiss()
-            {
-                callback.invoke();
-            }
-        } );
     }
 
     @ReactMethod()

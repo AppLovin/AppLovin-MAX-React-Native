@@ -60,19 +60,24 @@ const App = () => {
   }
 
   AppLovinMAX.setTestDeviceAdvertisingIds([]);
-  AppLovinMAX.initialize(SDK_KEY, () => {
+  AppLovinMAX.initialize(SDK_KEY, (configuration) => {
     setIsInitialized(true);
 
     logStatus('SDK Initialized');
 
     if (Platform.OS === 'android') {
-      // Show a built-in consent dialog that sets the user consent flag for you on Android.
-      // You should check that you actually need to show this consent dialog
-      // by checking the parameter of 'configuration.consentDialogState'
-      // in the completion block of 'AppLovinMAX.initialize'.
-      AppLovinMAX.showConsentDialog(() => {
-        logStatus('Consent dialog closed');
-      });
+      if (configuration.consentDialogState == AppLovinMAX.ConsentDialogState.APPLIES) {
+        // Show user consent dialog
+        AppLovinMAX.showConsentDialog(() => {
+          logStatus('Consent dialog closed');
+        });
+      } else if (configuration.consentDialogState == AppLovinMAX.ConsentDialogState.DOES_NOT_APPLY) {
+        // No need to show consent dialog, proceed with initialization
+      } else {
+        // Consent dialog state is unknown. Proceed with initialization, but check if the consent
+        // dialog should be shown on the next application initialization
+        // No need to show consent dialog, proceed with initialization
+      }
     }
 
     // Attach ad listeners for interstitial ads, rewarded ads, and banner ads
