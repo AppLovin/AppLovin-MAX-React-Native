@@ -51,7 +51,7 @@ const App = () => {
   const [isNativeUIMRecShowing, setIsNativeUIMRecShowing] = useState(false);
   const [statusText, setStatusText] = useState('Initializing SDK...');
 
-  // MAX Conset Flow for iOS 14.5+
+  // MAX Consent Flow for iOS 14.5+
   if (Platform.OS === 'ios' && parseFloat(Platform.Version) >= 14.5) {
     // Enable the iOS consent flow programmatically - NSUserTrackingUsageDescription must be added to the Info.plist
     AppLovinMAX.setConsentFlowEnabled(true);
@@ -60,10 +60,25 @@ const App = () => {
   }
 
   AppLovinMAX.setTestDeviceAdvertisingIds([]);
-  AppLovinMAX.initialize(SDK_KEY, () => {
+  AppLovinMAX.initialize(SDK_KEY, (configuration) => {
     setIsInitialized(true);
 
     logStatus('SDK Initialized');
+
+    if (Platform.OS === 'android') {
+      if (configuration.consentDialogState == AppLovinMAX.ConsentDialogState.APPLIES) {
+        // Show user consent dialog
+        AppLovinMAX.showConsentDialog(() => {
+          logStatus('Consent dialog closed');
+        });
+      } else if (configuration.consentDialogState == AppLovinMAX.ConsentDialogState.DOES_NOT_APPLY) {
+        // No need to show consent dialog, proceed with initialization
+      } else {
+        // Consent dialog state is unknown. Proceed with initialization, but check if the consent
+        // dialog should be shown on the next application initialization
+        // No need to show consent dialog, proceed with initialization
+      }
+    }
 
     // Attach ad listeners for interstitial ads, rewarded ads, and banner ads
     attachAdListeners();

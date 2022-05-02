@@ -91,6 +91,7 @@ export default {
   /*--------------*/
   /* PRIVACY APIs */
   /*--------------*/
+  /* showConsentDialog(callback) */
   /* getConsentDialogState() */
   /* setHasUserConsent(hasUserConsent) */
   /* hasUserConsent() */

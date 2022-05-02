@@ -35,6 +35,7 @@ import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkSettings;
 import com.applovin.sdk.AppLovinSdkUtils;
+import com.applovin.sdk.AppLovinUserService;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -292,6 +293,25 @@ public class AppLovinMAXModule
         }
 
         sdk.showMediationDebugger();
+    }
+
+    @ReactMethod()
+    public void showConsentDialog(final Callback callback)
+    {
+        if ( sdk == null )
+        {
+            e( "Failed to show consent dialog - please ensure the AppLovin MAX React Native Plugin has been initialized by calling 'AppLovinMAX.initialize();'!" );
+            return;
+        }
+
+        sdk.getUserService().showConsentDialog( maybeGetCurrentActivity(), new AppLovinUserService.OnConsentDialogDismissListener()
+        {
+            @Override
+            public void onDismiss()
+            {
+                callback.invoke();
+            }
+        } );
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
