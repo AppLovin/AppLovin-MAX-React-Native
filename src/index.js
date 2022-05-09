@@ -89,6 +89,18 @@ export default {
   /* showMediationDebugger() */
 
   /*--------------*/
+  /* DATA PASSING */
+  /*--------------*/
+  /* setTargetingDataYearOfBirth(yearOfBirth) */
+  /* setTargetingDataGender(gender) */
+  /* setTargetingDataMaximumAdContentRating(maximumAdContentRating) */
+  /* setTargetingDataEmail(email) */
+  /* setTargetingDataPhoneNumber(phoneNumber) */
+  /* setTargetingDataKeywords(keywords) */
+  /* setTargetingDataInterests(interests) */
+  /* clearAllTargetingData() */
+
+  /*--------------*/
   /* PRIVACY APIs */
   /*--------------*/
   /* showConsentDialog(callback) */
