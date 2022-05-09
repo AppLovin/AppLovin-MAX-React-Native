@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+    * Add support for data passing.
     * Add API for Android to provide a built-in consent flow that sets the user consent flag.
 ## 3.0.2
     * Lock to Android SDK 11.3.2 and iOS SDK 11.3.2.
