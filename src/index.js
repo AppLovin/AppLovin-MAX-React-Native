@@ -117,6 +117,7 @@ export default {
   /* setConsentFlowEnabled(enabled) */
   /* setPrivacyPolicyUrl(urlString) */
   /* setTermsOfServiceUrl(urlString) */
+  /* setLocationCollectionEnabled(locationCollectionEnabled) */
 
   /*----------------*/
   /* EVENT TRACKING */

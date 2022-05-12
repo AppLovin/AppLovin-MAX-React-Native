@@ -328,6 +328,17 @@ RCT_EXPORT_METHOD(clearAllTargetingData)
     [self.sdk.targetingData clearAll];
 }
 
+RCT_EXPORT_METHOD(setLocationCollectionEnabled:(BOOL)locationCollectionEnabled)
+{
+    if ( !_sdk )
+    {
+        [self logUninitializedAccessError: @"setLocationCollectionEnabled"];
+        return;
+    }
+    
+    self.sdk.settings.locationCollectionEnabled = locationCollectionEnabled;
+}
+
 #pragma mark - General Public API
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isTablet)

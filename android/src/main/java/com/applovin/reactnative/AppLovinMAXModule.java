@@ -426,6 +426,18 @@ public class AppLovinMAXModule
         sdk.getTargetingData().clearAll();
     }
 
+    @ReactMethod()
+    public void setLocationCollectionEnabled(final boolean locationCollectionEnabled)
+    {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setLocationCollectionEnabled" );
+            return;
+        }
+
+        sdk.getSettings().setLocationCollectionEnabled( locationCollectionEnabled );
+    }
+
     // General Public API
 
     @ReactMethod(isBlockingSynchronousMethod = true)
