@@ -29,6 +29,8 @@ import com.applovin.mediation.MaxRewardedAdListener;
 import com.applovin.mediation.ads.MaxAdView;
 import com.applovin.mediation.ads.MaxInterstitialAd;
 import com.applovin.mediation.ads.MaxRewardedAd;
+import com.applovin.sdk.AppLovinAdContentRating;
+import com.applovin.sdk.AppLovinGender;
 import com.applovin.sdk.AppLovinMediationProvider;
 import com.applovin.sdk.AppLovinPrivacySettings;
 import com.applovin.sdk.AppLovinSdk;
@@ -274,6 +276,168 @@ public class AppLovinMAXModule
         } );
     }
 
+    // Data Passing
+
+    @ReactMethod()
+    public void setTargetingDataYearOfBirth(final int yearOfBirth)
+    {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setTargetingDataYearOfBirth" );
+            return;
+        }
+
+        sdk.getTargetingData().setYearOfBirth( yearOfBirth <= 0 ? null : yearOfBirth );
+    }
+
+    @ReactMethod()
+    public void setTargetingDataGender(final String gender)
+    {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setTargetingDataGender" );
+            return;
+        }
+
+        AppLovinGender alGender = AppLovinGender.UNKNOWN;
+
+        if ( "F".equals( gender ) )
+        {
+            alGender = AppLovinGender.FEMALE;
+        }
+        else if ( "M".equals( gender ) )
+        {
+            alGender = AppLovinGender.MALE;
+        }
+        else if ( "O".equals( gender ) )
+        {
+            alGender = AppLovinGender.OTHER;
+        }
+
+        sdk.getTargetingData().setGender( alGender );
+    }
+
+    @ReactMethod()
+    public void setTargetingDataMaximumAdContentRating(final int maximumAdContentRating)
+    {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setTargetingDataMaximumAdContentRating" );
+            return;
+        }
+
+        AppLovinAdContentRating rating = AppLovinAdContentRating.NONE;
+
+        if ( maximumAdContentRating == 1 )
+        {
+            rating = AppLovinAdContentRating.ALL_AUDIENCES;
+        }
+        else if ( maximumAdContentRating == 2 )
+        {
+            rating = AppLovinAdContentRating.EVERYONE_OVER_TWELVE;
+        }
+        else if ( maximumAdContentRating == 3 )
+        {
+            rating = AppLovinAdContentRating.MATURE_AUDIENCES;
+        }
+
+        sdk.getTargetingData().setMaximumAdContentRating( rating );
+    }
+
+    @ReactMethod()
+    public void setTargetingDataEmail(final String email)
+    {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setTargetingDataEmail" );
+            return;
+        }
+
+        sdk.getTargetingData().setEmail( email );
+    }
+
+    @ReactMethod()
+    public void setTargetingDataPhoneNumber(final String phoneNumber)
+    {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setTargetingDataPhoneNumber" );
+            return;
+        }
+
+        sdk.getTargetingData().setPhoneNumber( phoneNumber );
+    }
+
+    @ReactMethod()
+    public void setTargetingDataKeywords(final ReadableArray rawKeywords)
+    {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setTargetingDataKeywords" );
+            return;
+        }
+
+        List<String> keywords = null;
+
+        if ( rawKeywords != null )
+        {
+            keywords = new ArrayList<>( rawKeywords.size() );
+            for ( Object rawKeyword : rawKeywords.toArrayList() )
+            {
+                keywords.add( (String) rawKeyword );
+            }
+        }
+
+        sdk.getTargetingData().setKeywords( keywords );
+    }
+
+    @ReactMethod()
+    public void setTargetingDataInterests(final ReadableArray rawInterests)
+    {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setTargetingDataInterests" );
+            return;
+        }
+
+        List<String> interests = null;
+
+        if ( rawInterests != null )
+        {
+            interests = new ArrayList<>( rawInterests.size() );
+            for ( Object rawInterest : rawInterests.toArrayList() )
+            {
+                interests.add( (String) rawInterest );
+            }
+        }
+
+        sdk.getTargetingData().setInterests( interests );
+    }
+
+    @ReactMethod()
+    public void clearAllTargetingData()
+    {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "clearAllTargetingData" );
+            return;
+        }
+
+        sdk.getTargetingData().clearAll();
+    }
+
+    @ReactMethod()
+    public void setLocationCollectionEnabled(final boolean locationCollectionEnabled)
+    {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setLocationCollectionEnabled" );
+            return;
+        }
+
+        sdk.getSettings().setLocationCollectionEnabled( locationCollectionEnabled );
+    }
+
     // General Public API
 
     @ReactMethod(isBlockingSynchronousMethod = true)
@@ -288,7 +452,7 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            Log.e( "[" + TAG + "]", "Failed to show mediation debugger - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!" );
+            logUninitializedAccessError( "showMediationDebugger" );
             return;
         }
 
@@ -300,7 +464,7 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            e( "Failed to show consent dialog - please ensure the AppLovin MAX React Native Plugin has been initialized by calling 'AppLovinMAX.initialize();'!" );
+            logUninitializedAccessError( "showConsentDialog" );
             return;
         }
 
@@ -1192,6 +1356,11 @@ public class AppLovinMAXModule
     private void logStackTrace(Exception e)
     {
         e( Log.getStackTraceString( e ) );
+    }
+
+    private static void logUninitializedAccessError(final String callingMethod)
+    {
+        e( "ERROR: Failed to execute " + callingMethod + "() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!" );
     }
 
     public static void d(final String message)

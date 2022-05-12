@@ -1,5 +1,6 @@
 import { NativeModules, NativeEventEmitter } from "react-native";
 import AdView from "./AppLovinMAXAdView";
+import { TargetingData, AdContentRating, UserGender } from "./TargetingData";
 
 const { AppLovinMAX } = NativeModules;
 
@@ -67,6 +68,9 @@ const removeEventListener = (event) => {
 export default {
   ...AppLovinMAX,
   AdView,
+  TargetingData,
+  AdContentRating,
+  UserGender,
   ConsentDialogState,
   AdViewPosition,
   AdFormat,
@@ -113,6 +117,7 @@ export default {
   /* setConsentFlowEnabled(enabled) */
   /* setPrivacyPolicyUrl(urlString) */
   /* setTermsOfServiceUrl(urlString) */
+  /* setLocationCollectionEnabled(locationCollectionEnabled) */
 
   /*----------------*/
   /* EVENT TRACKING */
