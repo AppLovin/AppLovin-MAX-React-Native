@@ -219,7 +219,7 @@ RCT_EXPORT_METHOD(setTargetingDataYearOfBirth:(nonnull NSNumber *)yearOfBirth)
     self.sdk.targetingData.yearOfBirth = yearOfBirth.intValue <= 0 ? nil : yearOfBirth;
 }
 
-RCT_EXPORT_METHOD(setTargetingDataGender:(NSString *)gender)
+RCT_EXPORT_METHOD(setTargetingDataGender:(nullable NSString *)gender)
 {
     if ( !_sdk )
     {
@@ -273,7 +273,7 @@ RCT_EXPORT_METHOD(setTargetingDataMaximumAdContentRating:(nonnull NSNumber *)max
     self.sdk.targetingData.maximumAdContentRating = rating;
 }
 
-RCT_EXPORT_METHOD(setTargetingDataEmail:(NSString *)email)
+RCT_EXPORT_METHOD(setTargetingDataEmail:(nullable NSString *)email)
 {
     if ( !_sdk )
     {
@@ -284,7 +284,7 @@ RCT_EXPORT_METHOD(setTargetingDataEmail:(NSString *)email)
     self.sdk.targetingData.email = email;
 }
 
-RCT_EXPORT_METHOD(setTargetingDataPhoneNumber:(NSString *)phoneNumber)
+RCT_EXPORT_METHOD(setTargetingDataPhoneNumber:(nullable NSString *)phoneNumber)
 {
     if ( !_sdk )
     {
@@ -295,7 +295,7 @@ RCT_EXPORT_METHOD(setTargetingDataPhoneNumber:(NSString *)phoneNumber)
     self.sdk.targetingData.phoneNumber = phoneNumber;
 }
 
-RCT_EXPORT_METHOD(setTargetingDataKeywords:(NSArray<NSString *> *)keywords)
+RCT_EXPORT_METHOD(setTargetingDataKeywords:(nullable NSArray<NSString *> *)keywords)
 {
     if ( !_sdk )
     {
@@ -306,7 +306,7 @@ RCT_EXPORT_METHOD(setTargetingDataKeywords:(NSArray<NSString *> *)keywords)
     self.sdk.targetingData.keywords = keywords;
 }
 
-RCT_EXPORT_METHOD(setTargetingDataInterests:(NSArray<NSString *> *)interests)
+RCT_EXPORT_METHOD(setTargetingDataInterests:(nullable NSArray<NSString *> *)interests)
 {
     if ( !_sdk )
     {
@@ -325,7 +325,7 @@ RCT_EXPORT_METHOD(clearAllTargetingData)
         return;
     }
     
-    self.sdk.targetingData.clearAll;
+    [self.sdk.targetingData clearAll];
 }
 
 #pragma mark - General Public API
@@ -339,7 +339,7 @@ RCT_EXPORT_METHOD(showMediationDebugger)
 {
     if ( !_sdk )
     {
-        [self log: @"Failed to show mediation debugger - please ensure the AppLovin MAX Unity Plugin has been initialized by calling 'AppLovinMAX.initialize(...);'!"];
+        [self logUninitializedAccessError: @"showMediationDebugger"];
         return;
     }
     

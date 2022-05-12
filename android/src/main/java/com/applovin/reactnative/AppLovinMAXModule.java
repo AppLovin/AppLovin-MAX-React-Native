@@ -440,7 +440,7 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            Log.e( "[" + TAG + "]", "Failed to show mediation debugger - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!" );
+            logUninitializedAccessError( "showMediationDebugger" );
             return;
         }
 
@@ -452,7 +452,7 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            e( "Failed to show consent dialog - please ensure the AppLovin MAX React Native Plugin has been initialized by calling 'AppLovinMAX.initialize();'!" );
+            logUninitializedAccessError( "showConsentDialog" );
             return;
         }
 
