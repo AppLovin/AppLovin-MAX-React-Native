@@ -255,7 +255,7 @@ RCT_EXPORT_METHOD(setTargetingDataMaximumAdContentRating:(nonnull NSNumber *)max
     
     ALAdContentRating rating = ALAdContentRatingNone;
 
-    int intVal = [ maximumAdContentRating intValue ];
+    int intVal = maximumAdContentRating.intValue;
 
     if ( intVal == 1 )
     {
