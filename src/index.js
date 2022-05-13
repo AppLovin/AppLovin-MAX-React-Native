@@ -1,6 +1,6 @@
 import { NativeModules, NativeEventEmitter } from "react-native";
 import AdView from "./AppLovinMAXAdView";
-import { TargetingData, AdContentRating, UserGender } from "./TargetingData";
+import { TargetingData as targetingData, AdContentRating, UserGender } from "./TargetingData";
 
 const { AppLovinMAX } = NativeModules;
 
@@ -68,7 +68,7 @@ const removeEventListener = (event) => {
 export default {
   ...AppLovinMAX,
   AdView,
-  TargetingData,
+  targetingData,
   AdContentRating,
   UserGender,
   ConsentDialogState,
