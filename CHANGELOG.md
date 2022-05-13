@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 3.1.0
     * Add support for data passing.
     * Add API for Android to provide a built-in consent flow that sets the user consent flag.
 ## 3.0.2

@@ -4,7 +4,7 @@ import { TargetingData as targetingData, AdContentRating, UserGender } from "./T
 
 const { AppLovinMAX } = NativeModules;
 
-const VERSION = "3.0.2";
+const VERSION = "3.1.0";
 
 /**
  * This enum represents whether or not the consent dialog should be shown for this user.
