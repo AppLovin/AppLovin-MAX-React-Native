@@ -206,139 +206,6 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     }];
 }
 
-#pragma mark - Data Passing
-
-RCT_EXPORT_METHOD(setTargetingDataYearOfBirth:(nonnull NSNumber *)yearOfBirth)
-{
-    if ( !_sdk )
-    {
-        [self logUninitializedAccessError: @"setTargetingDataYearOfBirth"];
-        return;
-    }
-    
-    self.sdk.targetingData.yearOfBirth = yearOfBirth.intValue <= 0 ? nil : yearOfBirth;
-}
-
-RCT_EXPORT_METHOD(setTargetingDataGender:(nullable NSString *)gender)
-{
-    if ( !_sdk )
-    {
-        [self logUninitializedAccessError: @"setTargetingDataGender"];
-        return;
-    }
-    
-    ALGender alGender = ALGenderUnknown;
-
-    if ( [@"F" isEqualToString: gender] )
-    {
-        alGender =  ALGenderFemale;
-    }
-    else if ( [@"M" isEqualToString: gender] )
-    {
-        alGender =  ALGenderMale;
-    }
-    else if ( [@"O" isEqualToString: gender] )
-    {
-        alGender =  ALGenderOther;
-    }
-
-    self.sdk.targetingData.gender = alGender;
-}
-
-RCT_EXPORT_METHOD(setTargetingDataMaximumAdContentRating:(nonnull NSNumber *)maximumAdContentRating)
-{
-    if ( !_sdk )
-    {
-        [self logUninitializedAccessError: @"setTargetingDataMaximumAdContentRating"];
-        return;
-    }
-    
-    ALAdContentRating rating = ALAdContentRatingNone;
-
-    int intVal = maximumAdContentRating.intValue;
-
-    if ( intVal == 1 )
-    {
-        rating = ALAdContentRatingAllAudiences;
-    }
-    else if ( intVal == 2 )
-    {
-        rating = ALAdContentRatingEveryoneOverTwelve;
-    }
-    else if ( intVal == 3 )
-    {
-        rating = ALAdContentRatingMatureAudiences;
-    }
-
-    self.sdk.targetingData.maximumAdContentRating = rating;
-}
-
-RCT_EXPORT_METHOD(setTargetingDataEmail:(nullable NSString *)email)
-{
-    if ( !_sdk )
-    {
-        [self logUninitializedAccessError: @"setTargetingDataEmail"];
-        return;
-    }
-    
-    self.sdk.targetingData.email = email;
-}
-
-RCT_EXPORT_METHOD(setTargetingDataPhoneNumber:(nullable NSString *)phoneNumber)
-{
-    if ( !_sdk )
-    {
-        [self logUninitializedAccessError: @"setTargetingDataPhoneNumber"];
-        return;
-    }
-    
-    self.sdk.targetingData.phoneNumber = phoneNumber;
-}
-
-RCT_EXPORT_METHOD(setTargetingDataKeywords:(nullable NSArray<NSString *> *)keywords)
-{
-    if ( !_sdk )
-    {
-        [self logUninitializedAccessError: @"setTargetingDataKeywords"];
-        return;
-    }
-    
-    self.sdk.targetingData.keywords = keywords;
-}
-
-RCT_EXPORT_METHOD(setTargetingDataInterests:(nullable NSArray<NSString *> *)interests)
-{
-    if ( !_sdk )
-    {
-        [self logUninitializedAccessError: @"setTargetingDataInterests"];
-        return;
-    }
-    
-    self.sdk.targetingData.interests = interests;
-}
-
-RCT_EXPORT_METHOD(clearAllTargetingData)
-{
-    if ( !_sdk )
-    {
-        [self logUninitializedAccessError: @"clearAllTargetingData"];
-        return;
-    }
-    
-    [self.sdk.targetingData clearAll];
-}
-
-RCT_EXPORT_METHOD(setLocationCollectionEnabled:(BOOL)locationCollectionEnabled)
-{
-    if ( !_sdk )
-    {
-        [self logUninitializedAccessError: @"setLocationCollectionEnabled"];
-        return;
-    }
-    
-    self.sdk.settings.locationCollectionEnabled = locationCollectionEnabled;
-}
-
 #pragma mark - General Public API
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isTablet)
@@ -480,6 +347,139 @@ RCT_EXPORT_METHOD(setPrivacyPolicyUrl:(NSString *)urlString)
 RCT_EXPORT_METHOD(setTermsOfServiceUrl:(NSString *)urlString)
 {
     self.termsOfServiceURLToSet = [NSURL URLWithString: urlString];
+}
+
+#pragma mark - Data Passing
+
+RCT_EXPORT_METHOD(setTargetingDataYearOfBirth:(nonnull NSNumber *)yearOfBirth)
+{
+    if ( !_sdk )
+    {
+        [self logUninitializedAccessError: @"setTargetingDataYearOfBirth"];
+        return;
+    }
+    
+    self.sdk.targetingData.yearOfBirth = yearOfBirth.intValue <= 0 ? nil : yearOfBirth;
+}
+
+RCT_EXPORT_METHOD(setTargetingDataGender:(nullable NSString *)gender)
+{
+    if ( !_sdk )
+    {
+        [self logUninitializedAccessError: @"setTargetingDataGender"];
+        return;
+    }
+    
+    ALGender alGender = ALGenderUnknown;
+
+    if ( [@"F" isEqualToString: gender] )
+    {
+        alGender =  ALGenderFemale;
+    }
+    else if ( [@"M" isEqualToString: gender] )
+    {
+        alGender =  ALGenderMale;
+    }
+    else if ( [@"O" isEqualToString: gender] )
+    {
+        alGender =  ALGenderOther;
+    }
+
+    self.sdk.targetingData.gender = alGender;
+}
+
+RCT_EXPORT_METHOD(setTargetingDataMaximumAdContentRating:(nonnull NSNumber *)maximumAdContentRating)
+{
+    if ( !_sdk )
+    {
+        [self logUninitializedAccessError: @"setTargetingDataMaximumAdContentRating"];
+        return;
+    }
+    
+    ALAdContentRating rating = ALAdContentRatingNone;
+
+    int intVal = maximumAdContentRating.intValue;
+
+    if ( intVal == 1 )
+    {
+        rating = ALAdContentRatingAllAudiences;
+    }
+    else if ( intVal == 2 )
+    {
+        rating = ALAdContentRatingEveryoneOverTwelve;
+    }
+    else if ( intVal == 3 )
+    {
+        rating = ALAdContentRatingMatureAudiences;
+    }
+
+    self.sdk.targetingData.maximumAdContentRating = rating;
+}
+
+RCT_EXPORT_METHOD(setTargetingDataEmail:(nullable NSString *)email)
+{
+    if ( !_sdk )
+    {
+        [self logUninitializedAccessError: @"setTargetingDataEmail"];
+        return;
+    }
+    
+    self.sdk.targetingData.email = email;
+}
+
+RCT_EXPORT_METHOD(setTargetingDataPhoneNumber:(nullable NSString *)phoneNumber)
+{
+    if ( !_sdk )
+    {
+        [self logUninitializedAccessError: @"setTargetingDataPhoneNumber"];
+        return;
+    }
+    
+    self.sdk.targetingData.phoneNumber = phoneNumber;
+}
+
+RCT_EXPORT_METHOD(setTargetingDataKeywords:(nullable NSArray<NSString *> *)keywords)
+{
+    if ( !_sdk )
+    {
+        [self logUninitializedAccessError: @"setTargetingDataKeywords"];
+        return;
+    }
+    
+    self.sdk.targetingData.keywords = keywords;
+}
+
+RCT_EXPORT_METHOD(setTargetingDataInterests:(nullable NSArray<NSString *> *)interests)
+{
+    if ( !_sdk )
+    {
+        [self logUninitializedAccessError: @"setTargetingDataInterests"];
+        return;
+    }
+    
+    self.sdk.targetingData.interests = interests;
+}
+
+RCT_EXPORT_METHOD(clearAllTargetingData)
+{
+    if ( !_sdk )
+    {
+        [self logUninitializedAccessError: @"clearAllTargetingData"];
+        return;
+    }
+    
+    [self.sdk.targetingData clearAll];
+}
+
+RCT_EXPORT_METHOD(setLocationCollectionEnabled:(BOOL)locationCollectionEnabled)
+{
+    if ( !_sdk )
+    {
+        [self logUninitializedAccessError: @"setLocationCollectionEnabled"];
+        return;
+    }
+    
+    self.sdk.settings.locationCollectionEnabled = locationCollectionEnabled;
 }
 
 #pragma mark - Event Tracking
@@ -1051,26 +1051,6 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     });
 }
 
-- (void)logInvalidAdFormat:(MAAdFormat *)adFormat
-{
-    [self log: @"invalid ad format: %@, from %@", adFormat, [NSThread callStackSymbols]];
-}
-
-- (void)logUninitializedAccessError:(NSString *)callingMethod
-{
-    [self log: @"ERROR: Failed to execute %@() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!", callingMethod];
-}
-
-- (void)log:(NSString *)format, ...
-{
-    va_list valist;
-    va_start(valist, format);
-    NSString *message = [[NSString alloc] initWithFormat: format arguments: valist];
-    va_end(valist);
-    
-    NSLog(@"[%@] [%@] %@", SDK_TAG, TAG, message);
-}
-
 - (MAInterstitialAd *)retrieveInterstitialForAdUnitIdentifier:(NSString *)adUnitIdentifier
 {
     MAInterstitialAd *result = self.interstitials[adUnitIdentifier];
@@ -1325,6 +1305,26 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
              @"networkName" : ad.networkName,
              @"placement" : ad.placement ?: @"",
              @"revenue" : @(ad.revenue)};
+}
+
+- (void)logInvalidAdFormat:(MAAdFormat *)adFormat
+{
+    [self log: @"invalid ad format: %@, from %@", adFormat, [NSThread callStackSymbols]];
+}
+
+- (void)logUninitializedAccessError:(NSString *)callingMethod
+{
+    [self log: @"ERROR: Failed to execute %@() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!", callingMethod];
+}
+
+- (void)log:(NSString *)format, ...
+{
+    va_list valist;
+    va_start(valist, format);
+    NSString *message = [[NSString alloc] initWithFormat: format arguments: valist];
+    va_end(valist);
+    
+    NSLog(@"[%@] [%@] %@", SDK_TAG, TAG, message);
 }
 
 #pragma mark - React Native Event Bridge
