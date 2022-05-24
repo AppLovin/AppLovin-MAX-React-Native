@@ -1,6 +1,7 @@
 import { NativeModules, NativeEventEmitter } from "react-native";
 import AdView from "./AppLovinMAXAdView";
 import { TargetingData as targetingData, AdContentRating, UserGender } from "./TargetingData";
+import { UserSegment as userSegment } from "./UserSegment";
 
 const { AppLovinMAX } = NativeModules;
 
@@ -65,6 +66,30 @@ const removeEventListener = (event) => {
   }
 };
 
+const showInterstitial = (adUnitIdentifier, placement, customData) => {
+  if (placement !== undefined && customData !== undefined) {
+	AppLovinMAX.showInterstitial(adUnitIdentifier, placement, customData);
+  } else if (placement !== undefined) {
+	AppLovinMAX.showInterstitial(adUnitIdentifier, placement, null);
+  } else if (customData !== undefined) {
+	AppLovinMAX.showInterstitial(adUnitIdentifier, null, customData);
+  } else {
+	AppLovinMAX.showInterstitial(adUnitIdentifier, null, null);
+  }
+};
+
+const showRewardedAd = (adUnitIdentifier, placement, customData) => {
+  if (placement !== undefined && customData !== undefined) {
+	AppLovinMAX.showRewardedAd(adUnitIdentifier, placement, customData);
+  } else if (placement !== undefined) {
+	AppLovinMAX.showRewardedAd(adUnitIdentifier, placement, null);
+  } else if (customData !== undefined) {
+	AppLovinMAX.showRewardedAd(adUnitIdentifier, null, customData);
+  } else {
+	AppLovinMAX.showRewardedAd(adUnitIdentifier, null, null);
+  }
+};
+
 export default {
   ...AppLovinMAX,
   AdView,
@@ -80,6 +105,9 @@ export default {
   initialize(sdkKey, callback) {
     AppLovinMAX.initialize(VERSION, sdkKey, callback); // Inject VERSION into native code
   },
+  userSegment,
+  showInterstitial,
+  showRewardedAd,
 
   /*----------------------*/
   /** AUTO-DECLARED APIs **/

@@ -21,9 +21,13 @@ import android.widget.RelativeLayout;
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxAdViewAdListener;
+import com.applovin.mediation.MaxAdWaterfallInfo;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.MaxErrorCode;
+import com.applovin.mediation.MaxMediatedNetworkInfo;
+import com.applovin.mediation.MaxNetworkResponseInfo;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.MaxRewardedAdListener;
 import com.applovin.mediation.ads.MaxAdView;
@@ -45,7 +49,9 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeArray;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,7 +72,7 @@ import static com.facebook.react.modules.core.DeviceEventManagerModule.RCTDevice
  */
 public class AppLovinMAXModule
         extends ReactContextBaseJavaModule
-        implements MaxAdListener, MaxAdViewAdListener, MaxRewardedAdListener
+        implements MaxAdListener, MaxAdViewAdListener, MaxRewardedAdListener, MaxAdRevenueListener
 {
     private static final String SDK_TAG = "AppLovinSdk";
     private static final String TAG     = "AppLovinMAXModule";
@@ -611,6 +617,18 @@ public class AppLovinMAXModule
     @ReactMethod()
     public void setTermsOfServiceUrl(final String urlString) {}
 
+    @ReactMethod()
+    public void setUserSegmentField(final String name)
+    {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setUserSegmentField" );
+            return;
+        }
+
+        sdk.getUserSegment().setName( name );
+    }
+
     // EVENT TRACKING
 
     @ReactMethod()
@@ -654,6 +672,12 @@ public class AppLovinMAXModule
     public void setBannerPlacement(final String adUnitId, final String placement)
     {
         setAdViewPlacement( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), placement );
+    }
+
+    @ReactMethod()
+    public void setBannerCustomData(final String adUnitId, final String customData)
+    {
+        setAdViewCustomData( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), customData );
     }
 
     @ReactMethod()
@@ -719,6 +743,12 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
+    public void setMRecCustomData(final String adUnitId, final String customData)
+    {
+        setAdViewCustomData( adUnitId, MaxAdFormat.MREC, customData );
+    }
+
+    @ReactMethod()
     public void updateMRecPosition(final String adUnitId, final String mrecPosition)
     {
         updateAdViewPosition( adUnitId, mrecPosition, DEFAULT_AD_VIEW_OFFSET, MaxAdFormat.MREC );
@@ -765,9 +795,10 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
-    public void showInterstitial(final String adUnitId)
+    public void showInterstitial(final String adUnitId, final String placement, final String customData)
     {
-        showInterstitialWithPlacement( adUnitId, null );
+        MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
+        interstitial.showAd( placement, customData );
     }
 
     @ReactMethod()
@@ -807,9 +838,10 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
-    public void showRewardedAd(final String adUnitId)
+    public void showRewardedAd(final String adUnitId, final String placement, final String customData)
     {
-        showRewardedAdWithPlacement( adUnitId, null );
+        MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
+        rewardedAd.showAd( placement, customData );
     }
 
     @ReactMethod()
@@ -872,7 +904,14 @@ public class AppLovinMAXModule
             return;
         }
 
-        sendReactNativeEvent( name, getAdInfo( ad ) );
+        WritableMap body = getAdInfo( ad );
+
+        if ( ad.getWaterfall() != null )
+        {
+            body.putMap( "waterfall", getWaterfallInfo( ad.getWaterfall() ) );
+        }
+
+        sendReactNativeEvent( name, body );
     }
 
     @Override
@@ -916,6 +955,11 @@ public class AppLovinMAXModule
             params.putInt( "code", error.getCode() );
             params.putString( "message", error.getMessage() );
             params.putString( "adLoadFailureInfo", error.getAdLoadFailureInfo() );
+
+            if ( error.getWaterfall() != null )
+            {
+                params.putMap( "waterfall", getWaterfallInfo( error.getWaterfall() ) );
+            }
         }
         else
         {
@@ -1046,6 +1090,41 @@ public class AppLovinMAXModule
     }
 
     @Override
+    public void onAdRevenuePaid(final MaxAd ad)
+    {
+        final MaxAdFormat adFormat = ad.getFormat();
+        final String name;
+        if ( MaxAdFormat.BANNER == adFormat || MaxAdFormat.LEADER == adFormat )
+        {
+            name = "OnBannerAdRevenuePaid";
+        }
+        else if ( MaxAdFormat.MREC == adFormat )
+        {
+            name = "OnMRecAdRevenuePaid";
+        }
+        else if ( MaxAdFormat.INTERSTITIAL == adFormat )
+        {
+            name = "OnInterstitialAdRevenuePaid";
+        }
+        else if ( MaxAdFormat.REWARDED == adFormat )
+        {
+            name = "OnRewardedAdRevenuePaid";
+        }
+        else
+        {
+            logInvalidAdFormat( adFormat );
+            return;
+        }
+
+        WritableMap adInfo = getAdInfo( ad );
+        adInfo.putString( "networkPlacement", !TextUtils.isEmpty( ad.getNetworkPlacement() ) ? ad.getNetworkPlacement() : "" );
+        adInfo.putString( "revenuePrecision", !TextUtils.isEmpty( ad.getRevenuePrecision() ) ? ad.getRevenuePrecision() : "" );
+        adInfo.putString( "countryCode", !TextUtils.isEmpty( sdkConfiguration.getCountryCode() ) ? sdkConfiguration.getCountryCode() : "" );
+
+        sendReactNativeEvent( name, adInfo );
+    }
+
+    @Override
     public void onRewardedVideoCompleted(final MaxAd ad)
     {
         // This event is not forwarded
@@ -1140,6 +1219,27 @@ public class AppLovinMAXModule
                 }
 
                 adView.setPlacement( placement );
+            }
+        } );
+    }
+
+    private void setAdViewCustomData(final String adUnitId, final MaxAdFormat adFormat, final String customData)
+    {
+        getReactApplicationContext().runOnUiQueueThread( new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                d( "Setting customData \"" + customData + "\" for " + adFormat.getLabel() + " with ad unit id \"" + adUnitId + "\"" );
+
+                final MaxAdView adView = retrieveAdView( adUnitId, adFormat, "", DEFAULT_AD_VIEW_OFFSET );
+                if ( adView == null )
+                {
+                    e( adFormat.getLabel() + " does not exist" );
+                    return;
+                }
+
+                adView.setCustomData( customData );
             }
         } );
     }
@@ -1260,6 +1360,7 @@ public class AppLovinMAXModule
                 }
 
                 adView.setListener( null );
+                adView.setRevenueListener( null );
                 adView.destroy();
 
                 mAdViews.remove( adUnitId );
@@ -1392,6 +1493,7 @@ public class AppLovinMAXModule
         {
             result = new MaxInterstitialAd( adUnitId, sdk, currentActivity );
             result.setListener( this );
+            result.setRevenueListener( this );
 
             mInterstitials.put( adUnitId, result );
         }
@@ -1410,6 +1512,7 @@ public class AppLovinMAXModule
         {
             result = MaxRewardedAd.getInstance( adUnitId, sdk, currentActivity );
             result.setListener( this );
+            result.setRevenueListener( this );
 
             mRewardedAds.put( adUnitId, result );
         }
@@ -1429,6 +1532,7 @@ public class AppLovinMAXModule
         {
             result = new MaxAdView( adUnitId, adFormat, sdk, maybeGetCurrentActivity() );
             result.setListener( this );
+            result.setRevenueListener( this );
 
             mAdViews.put( adUnitId, result );
             mAdViewPositions.put( adUnitId, adViewPosition );
@@ -1689,6 +1793,71 @@ public class AppLovinMAXModule
         adInfo.putDouble( "revenue", ad.getRevenue() );
 
         return adInfo;
+    }
+
+    private WritableMap getWaterfallInfo(final MaxAdWaterfallInfo waterfallInfo)
+    {
+        WritableMap waterfall = Arguments.createMap();
+        waterfall.putString( "name", !TextUtils.isEmpty( waterfallInfo.getName() ) ? waterfallInfo.getName() : "" );
+        waterfall.putString( "testName", !TextUtils.isEmpty( waterfallInfo.getTestName() ) ? waterfallInfo.getTestName() : "" );
+        // use putDouble since there is no putLong available
+        waterfall.putDouble( "latencyMillis", waterfallInfo.getLatencyMillis() );
+
+        List<MaxNetworkResponseInfo> responseInfoList = waterfallInfo.getNetworkResponses();
+        if ( responseInfoList != null && !responseInfoList.isEmpty() )
+        {
+            WritableArray responses = Arguments.createArray();
+            for ( MaxNetworkResponseInfo response : responseInfoList )
+            {
+                WritableMap responseInfo = Arguments.createMap();
+
+                MaxMediatedNetworkInfo mediatedNetworkInfo = response.getMediatedNetwork();
+                if ( mediatedNetworkInfo != null )
+                {
+                    WritableMap mediatedNetwork = Arguments.createMap();
+                    mediatedNetwork.putString( "name", !TextUtils.isEmpty( mediatedNetworkInfo.getName() ) ? mediatedNetworkInfo.getName() : "" );
+                    mediatedNetwork.putString( "adapterClassName", !TextUtils.isEmpty( mediatedNetworkInfo.getAdapterClassName() ) ? mediatedNetworkInfo.getAdapterClassName() : "" );
+                    mediatedNetwork.putString( "adapterVersion", !TextUtils.isEmpty( mediatedNetworkInfo.getAdapterVersion() ) ? mediatedNetworkInfo.getAdapterVersion() : "" );
+                    mediatedNetwork.putString( "sdkVersion", !TextUtils.isEmpty( mediatedNetworkInfo.getSdkVersion() ) ? mediatedNetworkInfo.getSdkVersion() : "" );
+                    responseInfo.putMap( "mediatedNetwork", mediatedNetwork );
+                }
+
+                responseInfo.putInt( "adLoadState", response.getAdLoadState().ordinal() );
+
+                responseInfo.putDouble( "latencyMillis", response.getLatencyMillis() );
+
+                Bundle credentialBundle = response.getCredentials();
+                if ( credentialBundle != null )
+                {
+                    WritableMap credentials = Arguments.createMap();
+                    for ( String key : credentialBundle.keySet() )
+                    {
+                        Object object = credentialBundle.get( key );
+                        credentials.putString( key, object.toString() );
+                    }
+                    responseInfo.putMap( "credentials", credentials );
+                }
+
+                MaxError maxError = response.getError();
+                if ( maxError != null )
+                {
+                    WritableMap error = Arguments.createMap();
+                    error.putInt( "code", maxError.getCode() );
+                    error.putString( "message", !TextUtils.isEmpty( maxError.getMessage() ) ? maxError.getMessage() : "" );
+                    MaxAdWaterfallInfo errorWaterfall = maxError.getWaterfall();
+                    if ( errorWaterfall != null )
+                    {
+                        error.putMap( "waterfall", getWaterfallInfo( errorWaterfall ) );
+                    }
+                    responseInfo.putMap( "error", error );
+                }
+
+                responses.pushMap( responseInfo );
+            }
+
+            waterfall.putArray( "networkResponses", responses );
+        }
+        return waterfall;
     }
 
     private static Point getOffsetPixels(final float xDp, final float yDp, final Context context)

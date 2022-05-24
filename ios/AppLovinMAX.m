@@ -482,6 +482,17 @@ RCT_EXPORT_METHOD(setTermsOfServiceUrl:(NSString *)urlString)
     self.termsOfServiceURLToSet = [NSURL URLWithString: urlString];
 }
 
+RCT_EXPORT_METHOD(setUserSegmentField:(nullable NSString *)name)
+{
+    if ( !_sdk )
+    {
+        [self logUninitializedAccessError: @"setUserSegmentField"];
+        return;
+    }
+    
+    self.sdk.userSegment.name = name;
+}
+
 #pragma mark - Event Tracking
 
 RCT_EXPORT_METHOD(trackEvent:(NSString *)event :(NSDictionary<NSString *, id> *)parameters)
@@ -510,6 +521,11 @@ RCT_EXPORT_METHOD(setBannerBackgroundColor:(NSString *)adUnitIdentifier :(NSStri
 RCT_EXPORT_METHOD(setBannerPlacement:(NSString *)adUnitIdentifier :(nullable NSString *)placement)
 {
     [self setAdViewPlacement: placement forAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
+}
+
+RCT_EXPORT_METHOD(setBannerCustomData:(NSString *)adUnitIdentifier :(nullable NSString *)customData)
+{
+    [self setAdViewCustomData: customData forAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
 }
 
 RCT_EXPORT_METHOD(updateBannerPosition:(NSString *)adUnitIdentifier :(NSString *)bannerPosition)
@@ -564,6 +580,11 @@ RCT_EXPORT_METHOD(setMRecPlacement:(NSString *)adUnitIdentifier :(nullable NSStr
     [self setAdViewPlacement: placement forAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
 }
 
+RCT_EXPORT_METHOD(setMRecCustomData:(NSString *)adUnitIdentifier :(nullable NSString *)customData)
+{
+    [self setAdViewCustomData: customData forAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
+}
+
 RCT_EXPORT_METHOD(updateMRecPosition:(NSString *)mrecPosition :(NSString *)adUnitIdentifier)
 {
     [self updateAdViewPosition: mrecPosition withOffset: CGPointZero forAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
@@ -598,9 +619,10 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isInterstitialReady:(NSString *)adUnitIde
     return @([interstitial isReady]);
 }
 
-RCT_EXPORT_METHOD(showInterstitial:(NSString *)adUnitIdentifier)
+RCT_EXPORT_METHOD(showInterstitial:(NSString *)adUnitIdentifier :(nullable NSString *)placement :(nullable NSString *)customData)
 {
-    [self showInterstitialWithPlacement: adUnitIdentifier : nil];
+    MAInterstitialAd *interstitial = [self retrieveInterstitialForAdUnitIdentifier: adUnitIdentifier];
+    [interstitial showAdForPlacement: placement customData: customData];
 }
 
 RCT_EXPORT_METHOD(showInterstitialWithPlacement:(NSString *)adUnitIdentifier :(NSString *)placement)
@@ -629,9 +651,10 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isRewardedAdReady:(NSString *)adUnitIdent
     return @([rewardedAd isReady]);
 }
 
-RCT_EXPORT_METHOD(showRewardedAd:(NSString *)adUnitIdentifier)
+RCT_EXPORT_METHOD(showRewardedAd:(NSString *)adUnitIdentifier :(nullable NSString *)placement :(nullable NSString *)customData)
 {
-    [self showRewardedAdWithPlacement: adUnitIdentifier : nil];
+    MARewardedAd *rewardedAd = [self retrieveRewardedAdForAdUnitIdentifier: adUnitIdentifier];
+    [rewardedAd showAdForPlacement: placement customData: customData];
 }
 
 RCT_EXPORT_METHOD(showRewardedAdWithPlacement:(NSString *)adUnitIdentifier :(NSString *)placement)
@@ -682,7 +705,16 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         return;
     }
     
-    [self sendReactNativeEventWithName: name body: [self adInfoForAd: ad]];
+    NSDictionary *body = [self adInfoForAd: ad];
+    
+    NSMutableDictionary *bodyWithWaterfall = nil;
+    if (ad.waterfall)
+    {
+        bodyWithWaterfall = body.mutableCopy;
+        bodyWithWaterfall[@"waterfall"] = [self getWaterallInfo:ad.waterfall];
+    }
+    
+    [self sendReactNativeEventWithName: name body: bodyWithWaterfall ? bodyWithWaterfall : body];
 }
 
 - (void)didFailToLoadAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(MAError *)error
@@ -712,10 +744,19 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         return;
     }
     
-    [self sendReactNativeEventWithName: name body: @{@"adUnitId" : adUnitIdentifier,
-                                                     @"code" : @(error.code),
-                                                     @"message" : error.message,
-                                                     @"adLoadFailureInfo" : error.adLoadFailureInfo ?: @""}];
+    NSDictionary *body = @{@"adUnitId" : adUnitIdentifier,
+                           @"code" : @(error.code),
+                           @"message" : error.message,
+                           @"adLoadFailureInfo" : error.adLoadFailureInfo ?: @""};
+
+    NSMutableDictionary *bodyWithWaterfall = nil;
+    if (error.waterfall)
+    {
+        bodyWithWaterfall = body.mutableCopy;
+        bodyWithWaterfall[@"waterfall"] = [self getWaterallInfo: error.waterfall];
+    }
+
+    [self sendReactNativeEventWithName: name body: bodyWithWaterfall ? bodyWithWaterfall : body];
 }
 
 - (void)didClickAd:(MAAd *)ad
@@ -834,6 +875,40 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
                                   body: [self adInfoForAd: ad]];
 }
 
+- (void)didPayRevenueForAd:(MAAd *)ad
+{
+    NSString *name;
+    MAAdFormat *adFormat = ad.format;
+    if ( MAAdFormat.banner == adFormat || MAAdFormat.leader == adFormat )
+    {
+        name = @"OnBannerAdRevenuePaid";
+    }
+    else if ( MAAdFormat.mrec == adFormat )
+    {
+        name = @"OnMRecAdRevenuePaid";
+    }
+    else if ( MAAdFormat.interstitial == adFormat )
+    {
+        name = @"OnInterstitialAdRevenuePaid";
+    }
+    else if ( MAAdFormat.rewarded == adFormat )
+    {
+        name = @"OnRewardedAdRevenuePaid";
+    }
+    else
+    {
+        [self logInvalidAdFormat: adFormat];
+        return;
+    }
+    
+    NSMutableDictionary *body = [self adInfoForAd: ad].mutableCopy;
+    body[@"networkPlacement"] = ad.networkPlacement ?: @"";
+    body[@"revenuePrecision"] = ad.revenuePrecision ?: @"";
+    body[@"countryCode"] = self.sdk.configuration.countryCode ?: @"";
+
+    [self sendReactNativeEventWithName: name body: body];
+}
+
 - (void)didCompleteRewardedVideoForAd:(MAAd *)ad
 {
     // This event is not forwarded
@@ -923,6 +998,17 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         
         MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: @"" withOffset: CGPointZero];
         adView.placement = placement;
+    });
+}
+
+- (void)setAdViewCustomData:(nullable NSString *)customData forAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        [self log: @"Setting customData \"%@\" for \"%@\" with ad unit identifier \"%@\"", customData, adFormat, adUnitIdentifier];
+        
+        MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: @"" withOffset: CGPointZero];
+        adView.customData = customData;
     });
 }
 
@@ -1040,6 +1126,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         
         MAAdView *view = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
         view.delegate = nil;
+        view.revenueDelegate = nil;
         
         [view removeFromSuperview];
         
@@ -1078,6 +1165,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     {
         result = [[MAInterstitialAd alloc] initWithAdUnitIdentifier: adUnitIdentifier sdk: self.sdk];
         result.delegate = self;
+        result.revenueDelegate = self;
         
         self.interstitials[adUnitIdentifier] = result;
     }
@@ -1092,6 +1180,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     {
         result = [MARewardedAd sharedWithAdUnitIdentifier: adUnitIdentifier sdk: self.sdk];
         result.delegate = self;
+        result.revenueDelegate = self;
         
         self.rewardedAds[adUnitIdentifier] = result;
     }
@@ -1111,6 +1200,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     {
         result = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitIdentifier adFormat: adFormat sdk: self.sdk];
         result.delegate = self;
+        result.revenueDelegate = self;
         result.userInteractionEnabled = NO;
         result.translatesAutoresizingMaskIntoConstraints = NO;
         
@@ -1327,6 +1417,74 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
              @"revenue" : @(ad.revenue)};
 }
 
+- (NSDictionary<NSString *, id> *)getWaterallInfo:(nonnull MAAdWaterfallInfo *)waterfallInfo
+{
+    NSMutableDictionary *waterfall = [[NSMutableDictionary alloc] init];
+    waterfall[@"name"] = waterfallInfo.name ?: @"";
+    waterfall[@"testName"] = waterfallInfo.testName ?: @"";
+    
+    // latency is defined as NSTimeInterval, a typealias for double, but
+    // since latencyMillis in Android is defined as long(64 bit integer), 
+    // latency here is converted to the lower side of the precisions
+    // -1 indicates that latency is not available
+    NSNumber* latencyMillis = [NSNumber numberWithDouble: (waterfallInfo.latency * 1000)];
+    waterfall[@"latencyMillis"] = (latencyMillis.longLongValue == -1000) ? @(-1) : @(latencyMillis.longLongValue);
+
+    if (waterfallInfo.networkResponses && waterfallInfo.networkResponses.count > 0)
+    {
+        NSMutableArray *responses = [[NSMutableArray alloc] init];
+
+        for (MANetworkResponseInfo *response in waterfallInfo.networkResponses)
+        {
+            NSMutableDictionary *responseInfo = [[NSMutableDictionary alloc] init];
+
+            if (response.mediatedNetwork)
+            {
+                NSMutableDictionary *mediateNetwork = [[NSMutableDictionary alloc] init];
+                mediateNetwork[@"name"] = response.mediatedNetwork.name ?: @"";
+                mediateNetwork[@"adapterClassName"] = response.mediatedNetwork.adapterClassName ?: @"";
+                mediateNetwork[@"adapterVersion"] = response.mediatedNetwork.adapterVersion ?: @"";
+                mediateNetwork[@"sdkVersion"] = response.mediatedNetwork.sdkVersion ?: @"";
+                responseInfo[@"mediatedNetwork"] = mediateNetwork;
+            }
+
+            NSNumber* latencyMillis = [NSNumber numberWithDouble: (response.latency * 1000)];
+            responseInfo[@"latencyMillis"] = (latencyMillis.longLongValue == -1000) ? @(-1) : @(latencyMillis.longLongValue);
+
+            responseInfo[@"adLoadState"] = @((int) response.adLoadState);
+
+            if (response.credentials)
+            {
+                NSMutableDictionary *credentials = [[NSMutableDictionary<NSString *, NSString *> alloc] init];
+                for (NSString *key in response.credentials)
+                {
+                    id object = response.credentials[key];
+                    credentials[key] = object;
+                }
+                responseInfo[@"credentials"] = credentials;
+            }
+
+            if (response.error)
+            {
+                NSMutableDictionary *error = [[NSMutableDictionary alloc] init];
+                error[@"code"] = @(response.error.code);
+                error[@"message"] = response.error.message ?: @"";
+                if (response.error.waterfall)
+                {
+                    error[@"waterfall"] = [self getWaterallInfo:response.error.waterfall];
+                }
+                responseInfo[@"error"] = error;
+            }
+
+            [responses addObject:responseInfo];
+        }
+
+        waterfall[@"networkResponses"] = responses;
+    }
+
+    return waterfall;
+}
+
 #pragma mark - React Native Event Bridge
 
 - (void)sendReactNativeEventWithName:(NSString *)name body:(NSDictionary<NSString *, id> *)body
@@ -1342,12 +1500,14 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
              @"OnMRecAdClickedEvent",
              @"OnMRecAdCollapsedEvent",
              @"OnMRecAdExpandedEvent",
+             @"OnMRecAdRevenuePaid",
              
              @"OnBannerAdLoadedEvent",
              @"OnBannerAdLoadFailedEvent",
              @"OnBannerAdClickedEvent",
              @"OnBannerAdCollapsedEvent",
              @"OnBannerAdExpandedEvent",
+             @"OnBannerAdRevenuePaid",
              
              @"OnInterstitialLoadedEvent",
              @"OnInterstitialLoadFailedEvent",
@@ -1355,6 +1515,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
              @"OnInterstitialDisplayedEvent",
              @"OnInterstitialAdFailedToDisplayEvent",
              @"OnInterstitialHiddenEvent",
+             @"OnInterstitialAdRevenuePaid",
              
              @"OnRewardedAdLoadedEvent",
              @"OnRewardedAdLoadFailedEvent",
@@ -1362,7 +1523,8 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
              @"OnRewardedAdDisplayedEvent",
              @"OnRewardedAdFailedToDisplayEvent",
              @"OnRewardedAdHiddenEvent",
-             @"OnRewardedAdReceivedRewardEvent"];
+             @"OnRewardedAdReceivedRewardEvent",
+             @"OnRewardedAdRevenuePaid"];
 }
 
 - (void)startObserving
