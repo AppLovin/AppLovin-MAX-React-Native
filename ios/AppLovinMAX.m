@@ -902,9 +902,9 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     }
     
     NSMutableDictionary *body = [self adInfoForAd: ad].mutableCopy;
-    body[@"networkPlacement"] = ad.networkPlacement ?: @"";
-    body[@"revenuePrecision"] = ad.revenuePrecision ?: @"";
-    body[@"countryCode"] = self.sdk.configuration.countryCode ?: @"";
+    body[@"networkPlacement"] = ad.networkPlacement;
+    body[@"revenuePrecision"] = ad.revenuePrecision;
+    body[@"countryCode"] = self.sdk.configuration.countryCode;
 
     [self sendReactNativeEventWithName: name body: body];
 }
@@ -1400,8 +1400,8 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 - (NSDictionary<NSString *, id> *)getWaterallInfo:(nonnull MAAdWaterfallInfo *)waterfallInfo
 {
     NSMutableDictionary *waterfall = [[NSMutableDictionary alloc] init];
-    waterfall[@"name"] = waterfallInfo.name ?: @"";
-    waterfall[@"testName"] = waterfallInfo.testName ?: @"";
+    waterfall[@"name"] = waterfallInfo.name;
+    waterfall[@"testName"] = waterfallInfo.testName;
     
     // latency is defined as NSTimeInterval, a typealias for double, but
     // since latencyMillis in Android is defined as long(64 bit integer), 
@@ -1410,7 +1410,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     NSNumber* latencyMillis = [NSNumber numberWithDouble: (waterfallInfo.latency * 1000)];
     waterfall[@"latencyMillis"] = (latencyMillis.longLongValue == -1000) ? @(-1) : @(latencyMillis.longLongValue);
 
-    if (waterfallInfo.networkResponses && waterfallInfo.networkResponses.count > 0)
+    if (waterfallInfo.networkResponses.count > 0)
     {
         NSMutableArray *responses = [[NSMutableArray alloc] init];
 
@@ -1418,22 +1418,19 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         {
             NSMutableDictionary *responseInfo = [[NSMutableDictionary alloc] init];
 
-            if (response.mediatedNetwork)
-            {
-                NSMutableDictionary *mediateNetwork = [[NSMutableDictionary alloc] init];
-                mediateNetwork[@"name"] = response.mediatedNetwork.name ?: @"";
-                mediateNetwork[@"adapterClassName"] = response.mediatedNetwork.adapterClassName ?: @"";
-                mediateNetwork[@"adapterVersion"] = response.mediatedNetwork.adapterVersion ?: @"";
-                mediateNetwork[@"sdkVersion"] = response.mediatedNetwork.sdkVersion ?: @"";
-                responseInfo[@"mediatedNetwork"] = mediateNetwork;
-            }
+            NSMutableDictionary *mediateNetwork = [[NSMutableDictionary alloc] init];
+            mediateNetwork[@"name"] = response.mediatedNetwork.name;
+            mediateNetwork[@"adapterClassName"] = response.mediatedNetwork.adapterClassName;
+            mediateNetwork[@"adapterVersion"] = response.mediatedNetwork.adapterVersion;
+            mediateNetwork[@"sdkVersion"] = response.mediatedNetwork.sdkVersion;
+            responseInfo[@"mediatedNetwork"] = mediateNetwork;
 
             NSNumber* latencyMillis = [NSNumber numberWithDouble: (response.latency * 1000)];
             responseInfo[@"latencyMillis"] = (latencyMillis.longLongValue == -1000) ? @(-1) : @(latencyMillis.longLongValue);
 
             responseInfo[@"adLoadState"] = @((int) response.adLoadState);
 
-            if (response.credentials)
+            if (response.credentials.count > 0)
             {
                 NSMutableDictionary *credentials = [[NSMutableDictionary<NSString *, NSString *> alloc] init];
                 for (NSString *key in response.credentials)
@@ -1448,7 +1445,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
             {
                 NSMutableDictionary *error = [[NSMutableDictionary alloc] init];
                 error[@"code"] = @(response.error.code);
-                error[@"message"] = response.error.message ?: @"";
+                error[@"message"] = response.error.message;
                 if (response.error.waterfall)
                 {
                     error[@"waterfall"] = [self getWaterallInfo:response.error.waterfall];

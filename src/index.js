@@ -66,33 +66,44 @@ const removeEventListener = (event) => {
   }
 };
 
-const showInterstitial = (adUnitIdentifier, placement, customData) => {
-  if (placement !== undefined && customData !== undefined) {
-	AppLovinMAX.showInterstitial(adUnitIdentifier, placement, customData);
-  } else if (placement !== undefined) {
-	AppLovinMAX.showInterstitial(adUnitIdentifier, placement, null);
-  } else if (customData !== undefined) {
-	AppLovinMAX.showInterstitial(adUnitIdentifier, null, customData);
-  } else {
-	AppLovinMAX.showInterstitial(adUnitIdentifier, null, null);
+const showInterstitial = (adUnitId, ...args) => {
+  switch (args.length) {
+  case 0:
+    AppLovinMAX.showInterstitial(adUnitId, null, null);
+    break;
+  case 1:
+    AppLovinMAX.showInterstitial(adUnitId, args[0], null);
+    break;
+  case 2:
+    AppLovinMAX.showInterstitial(adUnitId, args[0], args[1]);
+    break;
+  default:
+    // do nothing - unexpected number of arguments
+    break;
   }
 };
 
-const showRewardedAd = (adUnitIdentifier, placement, customData) => {
-  if (placement !== undefined && customData !== undefined) {
-	AppLovinMAX.showRewardedAd(adUnitIdentifier, placement, customData);
-  } else if (placement !== undefined) {
-	AppLovinMAX.showRewardedAd(adUnitIdentifier, placement, null);
-  } else if (customData !== undefined) {
-	AppLovinMAX.showRewardedAd(adUnitIdentifier, null, customData);
-  } else {
-	AppLovinMAX.showRewardedAd(adUnitIdentifier, null, null);
+const showRewardedAd = (adUnitId, ...args) => {
+  switch (args.length) {
+  case 0:
+    AppLovinMAX.showRewardedAd(adUnitId, null, null);
+    break;
+  case 1:
+    AppLovinMAX.showRewardedAd(adUnitId, args[0], null);
+    break;
+  case 2:
+    AppLovinMAX.showRewardedAd(adUnitId, args[0], args[1]);
+    break;
+  default:
+    // do nothing - unexpected number of arguments
+    break;
   }
 };
 
 export default {
   ...AppLovinMAX,
   AdView,
+  userSegment,
   targetingData,
   AdContentRating,
   UserGender,
@@ -105,7 +116,6 @@ export default {
   initialize(sdkKey, callback) {
     AppLovinMAX.initialize(VERSION, sdkKey, callback); // Inject VERSION into native code
   },
-  userSegment,
   showInterstitial,
   showRewardedAd,
 

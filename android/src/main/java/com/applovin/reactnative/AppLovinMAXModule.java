@@ -1117,9 +1117,9 @@ public class AppLovinMAXModule
         }
 
         WritableMap adInfo = getAdInfo( ad );
-        adInfo.putString( "networkPlacement", !TextUtils.isEmpty( ad.getNetworkPlacement() ) ? ad.getNetworkPlacement() : "" );
-        adInfo.putString( "revenuePrecision", !TextUtils.isEmpty( ad.getRevenuePrecision() ) ? ad.getRevenuePrecision() : "" );
-        adInfo.putString( "countryCode", !TextUtils.isEmpty( sdkConfiguration.getCountryCode() ) ? sdkConfiguration.getCountryCode() : "" );
+        adInfo.putString( "networkPlacement", ad.getNetworkPlacement() );
+        adInfo.putString( "revenuePrecision", ad.getRevenuePrecision() );
+        adInfo.putString( "countryCode", sdkConfiguration.getCountryCode() );
 
         sendReactNativeEvent( name, adInfo );
     }
@@ -1798,13 +1798,13 @@ public class AppLovinMAXModule
     private WritableMap getWaterfallInfo(final MaxAdWaterfallInfo waterfallInfo)
     {
         WritableMap waterfall = Arguments.createMap();
-        waterfall.putString( "name", !TextUtils.isEmpty( waterfallInfo.getName() ) ? waterfallInfo.getName() : "" );
-        waterfall.putString( "testName", !TextUtils.isEmpty( waterfallInfo.getTestName() ) ? waterfallInfo.getTestName() : "" );
+        waterfall.putString( "name", waterfallInfo.getName() );
+        waterfall.putString( "testName", waterfallInfo.getTestName() );
         // use putDouble since there is no putLong available
         waterfall.putDouble( "latencyMillis", waterfallInfo.getLatencyMillis() );
 
         List<MaxNetworkResponseInfo> responseInfoList = waterfallInfo.getNetworkResponses();
-        if ( responseInfoList != null && !responseInfoList.isEmpty() )
+        if ( !responseInfoList.isEmpty() )
         {
             WritableArray responses = Arguments.createArray();
             for ( MaxNetworkResponseInfo response : responseInfoList )
@@ -1815,10 +1815,10 @@ public class AppLovinMAXModule
                 if ( mediatedNetworkInfo != null )
                 {
                     WritableMap mediatedNetwork = Arguments.createMap();
-                    mediatedNetwork.putString( "name", !TextUtils.isEmpty( mediatedNetworkInfo.getName() ) ? mediatedNetworkInfo.getName() : "" );
-                    mediatedNetwork.putString( "adapterClassName", !TextUtils.isEmpty( mediatedNetworkInfo.getAdapterClassName() ) ? mediatedNetworkInfo.getAdapterClassName() : "" );
-                    mediatedNetwork.putString( "adapterVersion", !TextUtils.isEmpty( mediatedNetworkInfo.getAdapterVersion() ) ? mediatedNetworkInfo.getAdapterVersion() : "" );
-                    mediatedNetwork.putString( "sdkVersion", !TextUtils.isEmpty( mediatedNetworkInfo.getSdkVersion() ) ? mediatedNetworkInfo.getSdkVersion() : "" );
+                    mediatedNetwork.putString( "name", mediatedNetworkInfo.getName() );
+                    mediatedNetwork.putString( "adapterClassName", mediatedNetworkInfo.getAdapterClassName() );
+                    mediatedNetwork.putString( "adapterVersion", mediatedNetworkInfo.getAdapterVersion() );
+                    mediatedNetwork.putString( "sdkVersion", mediatedNetworkInfo.getSdkVersion() );
                     responseInfo.putMap( "mediatedNetwork", mediatedNetwork );
                 }
 
@@ -1827,7 +1827,7 @@ public class AppLovinMAXModule
                 responseInfo.putDouble( "latencyMillis", response.getLatencyMillis() );
 
                 Bundle credentialBundle = response.getCredentials();
-                if ( credentialBundle != null )
+                if ( !credentialBundle.isEmpty() )
                 {
                     WritableMap credentials = Arguments.createMap();
                     for ( String key : credentialBundle.keySet() )
@@ -1843,7 +1843,7 @@ public class AppLovinMAXModule
                 {
                     WritableMap error = Arguments.createMap();
                     error.putInt( "code", maxError.getCode() );
-                    error.putString( "message", !TextUtils.isEmpty( maxError.getMessage() ) ? maxError.getMessage() : "" );
+                    error.putString( "message", maxError.getMessage() );
                     MaxAdWaterfallInfo errorWaterfall = maxError.getWaterfall();
                     if ( errorWaterfall != null )
                     {
@@ -1857,6 +1857,7 @@ public class AppLovinMAXModule
 
             waterfall.putArray( "networkResponses", responses );
         }
+
         return waterfall;
     }
 
