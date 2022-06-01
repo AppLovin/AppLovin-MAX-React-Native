@@ -15,6 +15,7 @@ import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -82,6 +83,9 @@ public class AppLovinMAXModule
     private boolean                  isSdkInitialized;
     private AppLovinSdkConfiguration sdkConfiguration;
 
+    private WindowManager            windowManager;
+    private int                      lastRotation;
+
     // Store these values if pub attempts to set it before initializing
     private String       userIdToSet;
     private List<String> testDeviceAdvertisingIdsToSet;
@@ -98,7 +102,6 @@ public class AppLovinMAXModule
     private final Map<String, String>      mAdViewPositions                 = new HashMap<>( 2 );
     private final Map<String, Point>       mAdViewOffsets                   = new HashMap<>( 2 );
     private final Map<String, Integer>     mAdViewWidths                    = new HashMap<>( 2 );
-    private final Map<String, MaxAdFormat> mVerticalAdViewFormats           = new HashMap<>( 2 );
     private final List<String>             mAdUnitIdsToShowAfterCreate      = new ArrayList<>( 2 );
     private final Set<String>              mDisabledAdaptiveBannerAdUnitIds = new HashSet<>( 2 );
 
@@ -255,15 +258,24 @@ public class AppLovinMAXModule
                 sdkConfiguration = configuration;
                 isSdkInitialized = true;
 
-                // Enable orientation change listener, so that the position can be updated for vertical banners.
+                windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+ 
+                lastRotation = windowManager.getDefaultDisplay().getRotation();
+
+                // Enable orientation change listener, so that the ad view positions can be updated when the device is rotated.
                 new OrientationEventListener( context )
                 {
                     @Override
                     public void onOrientationChanged(final int orientation)
                     {
-                        for ( final Map.Entry<String, MaxAdFormat> adUnitFormats : mVerticalAdViewFormats.entrySet() )
+                        int newRotation = windowManager.getDefaultDisplay().getRotation();
+                        if ( newRotation != lastRotation )
                         {
-                            positionAdView( adUnitFormats.getKey(), adUnitFormats.getValue() );
+                            lastRotation = newRotation;
+                            for ( final Map.Entry<String, MaxAdFormat> adUnitFormats : mAdViewAdFormats.entrySet() )
+                            {
+                                positionAdView( adUnitFormats.getKey(), adUnitFormats.getValue() );
+                            }
                         }
                     }
                 }.enable();
@@ -1267,7 +1279,6 @@ public class AppLovinMAXModule
                 mAdViewPositions.remove( adUnitId );
                 mAdViewOffsets.remove( adUnitId );
                 mAdViewWidths.remove( adUnitId );
-                mVerticalAdViewFormats.remove( adUnitId );
             }
         } );
     }
@@ -1482,8 +1493,6 @@ public class AppLovinMAXModule
         adView.setTranslationX( 0 );
         params.setMargins( 0, 0, 0, 0 );
 
-        mVerticalAdViewFormats.remove( adUnitId );
-
         if ( "centered".equalsIgnoreCase( adViewPosition ) )
         {
             gravity = Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL;
@@ -1574,9 +1583,6 @@ public class AppLovinMAXModule
 
                         // We have the view's center in the correct position. Now rotate it to snap into place.
                         adView.setRotation( 270 );
-
-                        // Store the ad view with format, so that it can be updated when the orientation changes.
-                        mVerticalAdViewFormats.put( adUnitId, adFormat );
                     }
 
                     // Hack alert: For the rotation and translation to be applied correctly, need to set the background color (Unity only, similar to what we do in Cross Promo).
