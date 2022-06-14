@@ -23,8 +23,11 @@ import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxAdListener;
 import com.applovin.mediation.MaxAdViewAdListener;
+import com.applovin.mediation.MaxAdWaterfallInfo;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.MaxErrorCode;
+import com.applovin.mediation.MaxMediatedNetworkInfo;
+import com.applovin.mediation.MaxNetworkResponseInfo;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.MaxRewardedAdListener;
 import com.applovin.mediation.ads.MaxAdView;
@@ -46,6 +49,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
 import java.util.ArrayList;
@@ -928,6 +932,7 @@ public class AppLovinMAXModule
             params.putInt( "code", error.getCode() );
             params.putString( "message", error.getMessage() );
             params.putString( "adLoadFailureInfo", error.getAdLoadFailureInfo() );
+            params.putMap( "waterfall", createAdWaterfallInfo( error.getWaterfall() ) );
         }
         else
         {
@@ -1628,6 +1633,13 @@ public class AppLovinMAXModule
         }
     }
 
+    private static Point getOffsetPixels(final float xDp, final float yDp, final Context context)
+    {
+        return new Point( AppLovinSdkUtils.dpToPx( context, (int) xDp ), AppLovinSdkUtils.dpToPx( context, (int) yDp ) );
+    }
+
+    // AD INFO
+
     private WritableMap getAdInfo(final MaxAd ad)
     {
         WritableMap adInfo = Arguments.createMap();
@@ -1636,14 +1648,71 @@ public class AppLovinMAXModule
         adInfo.putString( "networkName", ad.getNetworkName() );
         adInfo.putString( "placement", !TextUtils.isEmpty( ad.getPlacement() ) ? ad.getPlacement() : "" );
         adInfo.putDouble( "revenue", ad.getRevenue() );
+        adInfo.putMap( "waterfall", createAdWaterfallInfo( ad.getWaterfall() ) );
 
         return adInfo;
     }
 
-    private static Point getOffsetPixels(final float xDp, final float yDp, final Context context)
+    // AD WATERFALL INFO
+
+    private WritableMap createAdWaterfallInfo(final MaxAdWaterfallInfo waterfallInfo)
     {
-        return new Point( AppLovinSdkUtils.dpToPx( context, (int) xDp ), AppLovinSdkUtils.dpToPx( context, (int) yDp ) );
+        WritableMap waterfallInfoObject = Arguments.createMap();
+
+        waterfallInfoObject.putString( "name", waterfallInfo.getName() );
+        waterfallInfoObject.putString( "testName", waterfallInfo.getTestName() );
+        waterfallInfoObject.putDouble( "latencyMillis", waterfallInfo.getLatencyMillis() );
+
+        WritableArray networkResponsesArray = Arguments.createArray();
+        for ( MaxNetworkResponseInfo response : waterfallInfo.getNetworkResponses() )
+        {
+            networkResponsesArray.pushMap( createNetworkResponseInfo( response ) );
+        }
+        waterfallInfoObject.putArray( "networkResponses", networkResponsesArray );
+
+        return waterfallInfoObject;
     }
+
+    private WritableMap createNetworkResponseInfo(final MaxNetworkResponseInfo response)
+    {
+        WritableMap networkResponseObject = Arguments.createMap();
+
+        networkResponseObject.putInt( "adLoadState", response.getAdLoadState().ordinal() );
+        networkResponseObject.putDouble( "latencyMillis", response.getLatencyMillis() );
+
+        MaxMediatedNetworkInfo mediatedNetworkInfo = response.getMediatedNetwork();
+        WritableMap networkInfoObject = Arguments.createMap();
+        networkInfoObject.putString( "name", mediatedNetworkInfo.getName() );
+        networkInfoObject.putString( "adapterClassName", mediatedNetworkInfo.getAdapterClassName() );
+        networkInfoObject.putString( "adapterVersion", mediatedNetworkInfo.getAdapterVersion() );
+        networkInfoObject.putString( "sdkVersion", mediatedNetworkInfo.getSdkVersion() );
+        networkResponseObject.putMap( "mediatedNetwork", networkInfoObject );
+
+        Bundle credentialBundle = response.getCredentials();
+        WritableMap credentials = Arguments.createMap();
+        for ( String key : credentialBundle.keySet() )
+        {
+            Object object = credentialBundle.get( key );
+            credentials.putString( key, object.toString() );
+        }
+        networkResponseObject.putMap( "credentials", credentials );
+
+        MaxError error = response.getError();
+        if ( error != null )
+        {
+            WritableMap errorObject = Arguments.createMap();
+            errorObject.putInt( "code", error.getCode() );
+            errorObject.putString( "message", error.getMessage() );
+            if ( error.getWaterfall() != null )
+            {
+                errorObject.putMap( "waterfall", createAdWaterfallInfo( error.getWaterfall() ) );
+            }
+            networkResponseObject.putMap( "error", errorObject );
+        }
+
+        return networkResponseObject;
+    }        
+
 
     // React Native Bridge
 

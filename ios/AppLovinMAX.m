@@ -715,7 +715,8 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     [self sendReactNativeEventWithName: name body: @{@"adUnitId" : adUnitIdentifier,
                                                      @"code" : @(error.code),
                                                      @"message" : error.message,
-                                                     @"adLoadFailureInfo" : error.adLoadFailureInfo ?: @""}];
+                                                     @"adLoadFailureInfo" : error.adLoadFailureInfo ?: @"",
+                                                     @"waterfall": [self createAdWaterfallInfo: error.waterfall]}];
 }
 
 - (void)didClickAd:(MAAd *)ad
@@ -1298,15 +1299,6 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     [NSLayoutConstraint activateConstraints: constraints];
 }
 
-- (NSDictionary<NSString *, id> *)adInfoForAd:(MAAd *)ad
-{
-    return @{@"adUnitId" : ad.adUnitIdentifier,
-             @"creativeId" : ad.creativeIdentifier ?: @"",
-             @"networkName" : ad.networkName,
-             @"placement" : ad.placement ?: @"",
-             @"revenue" : @(ad.revenue)};
-}
-
 - (void)logInvalidAdFormat:(MAAdFormat *)adFormat
 {
     [self log: @"invalid ad format: %@, from %@", adFormat, [NSThread callStackSymbols]];
@@ -1325,6 +1317,81 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     va_end(valist);
     
     NSLog(@"[%@] [%@] %@", SDK_TAG, TAG, message);
+}
+
+#pragma mark - Ad Info
+
+- (NSDictionary<NSString *, id> *)adInfoForAd:(MAAd *)ad
+{
+    return @{@"adUnitId" : ad.adUnitIdentifier,
+             @"creativeId" : ad.creativeIdentifier ?: @"",
+             @"networkName" : ad.networkName,
+             @"placement" : ad.placement ?: @"",
+             @"revenue" : @(ad.revenue),
+             @"waterfall": [self createAdWaterfallInfo: ad.waterfall]};
+}
+
+#pragma mark - Waterfall Information
+
+- (NSDictionary<NSString *, id> *)createAdWaterfallInfo:(MAAdWaterfallInfo *)waterfallInfo
+{
+    NSMutableDictionary<NSString *, NSObject *> *waterfallInfoDict = [NSMutableDictionary dictionary];
+
+    waterfallInfoDict[@"name"] = waterfallInfo.name;
+    waterfallInfoDict[@"testName"] = waterfallInfo.testName;
+
+    // Convert latency from seconds to milliseconds to match Android.
+    long long latencyMillis = waterfallInfo.latency * 1000;
+    waterfallInfoDict[@"latencyMillis"] = @(latencyMillis);
+
+    NSMutableArray<NSDictionary<NSString *, NSObject *> *> *networkResponsesArray = [NSMutableArray arrayWithCapacity: waterfallInfo.networkResponses.count];
+    for ( MANetworkResponseInfo *response in  waterfallInfo.networkResponses )
+    {
+        [networkResponsesArray addObject: [self createNetworkResponseInfo: response]];
+    }
+    waterfallInfoDict[@"networkResponses"] = networkResponsesArray;
+
+    return waterfallInfoDict;
+}
+
+- (NSDictionary<NSString *, id> *)createNetworkResponseInfo:(MANetworkResponseInfo *)response
+{
+    NSMutableDictionary<NSString *, NSObject *> *networkResponseDict = [NSMutableDictionary dictionary];
+
+    networkResponseDict[@"adLoadState"] = @(response.adLoadState);
+
+    // Convert latency from seconds to milliseconds to match Android.
+    long long latencySeconds = response.latency * 1000;
+    networkResponseDict[@"latencyMillis"] = @(latencySeconds);
+
+    NSMutableDictionary <NSString *, NSObject *> *networkInfoObject = [NSMutableDictionary dictionary];
+    networkInfoObject[@"name"] = response.mediatedNetwork.name;
+    networkInfoObject[@"adapterClassName"] = response.mediatedNetwork.adapterClassName;
+    networkInfoObject[@"adapterVersion"] = response.mediatedNetwork.adapterVersion;
+    networkInfoObject[@"sdkVersion"] = response.mediatedNetwork.sdkVersion;
+    networkResponseDict[@"mediatedNetwork"] = networkInfoObject;
+
+    NSMutableDictionary *credentials = [[NSMutableDictionary<NSString *, NSString *> alloc] init];
+    for ( NSString *key in response.credentials )
+    {
+        id object = response.credentials[key];
+        credentials[key] = object;
+    }
+    networkResponseDict[@"credentials"] = credentials;
+
+    if ( response.error )
+    {
+        NSMutableDictionary<NSString *, NSObject *> *errorObject = [NSMutableDictionary dictionary];
+        errorObject[@"code"] = @(response.error.code);
+        errorObject[@"message"] = response.error.message;
+        if ( response.error.waterfall )
+        {
+            errorObject[@"waterfall"] = [self createAdWaterfallInfo: response.error.waterfall];
+        }
+        networkResponseDict[@"error"] = errorObject;
+    }
+
+    return networkResponseDict;
 }
 
 #pragma mark - React Native Event Bridge
