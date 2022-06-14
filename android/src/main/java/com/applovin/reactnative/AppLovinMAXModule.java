@@ -452,6 +452,18 @@ public class AppLovinMAXModule
      // Data Passing
 
     @ReactMethod()
+    public void setUserSegmentField(final String name)
+    {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setUserSegmentField" );
+            return;
+        }
+
+        sdk.getUserSegment().setName( name );
+    }
+
+    @ReactMethod()
     public void setTargetingDataYearOfBirth(final int yearOfBirth)
     {
         if ( sdk == null )

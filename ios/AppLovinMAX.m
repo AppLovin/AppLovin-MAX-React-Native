@@ -351,6 +351,17 @@ RCT_EXPORT_METHOD(setTermsOfServiceUrl:(NSString *)urlString)
 
 #pragma mark - Data Passing
 
+RCT_EXPORT_METHOD(setUserSegmentField:(nullable NSString *)name)
+{
+    if ( !_sdk )
+    {
+        [self logUninitializedAccessError: @"setUserSegmentField"];
+        return;
+    }
+
+    self.sdk.userSegment.name = name;
+}
+
 RCT_EXPORT_METHOD(setTargetingDataYearOfBirth:(nonnull NSNumber *)yearOfBirth)
 {
     if ( !_sdk )
