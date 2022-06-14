@@ -34,6 +34,7 @@ const AdFormat = {
 
 const AdViewPosition = {
   TOP_CENTER: "top_center",
+  TOP_LEFT: "top_left",
   TOP_RIGHT: "top_right",
   CENTERED: "centered",
   CENTER_LEFT: "center_left",

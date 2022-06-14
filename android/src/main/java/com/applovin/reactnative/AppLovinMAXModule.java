@@ -1531,63 +1531,6 @@ public class AppLovinMAXModule
                 {
                     params.width = RelativeLayout.LayoutParams.MATCH_PARENT;
                 }
-
-                // Check if the publisher wants the ad view to be vertical and update the position accordingly ('CenterLeft' or 'CenterRight').
-                final boolean containsLeft = adViewPosition.contains( "left" );
-                final boolean containsRight = adViewPosition.contains( "right" );
-                if ( containsLeft || containsRight )
-                {
-                    // First, center the ad view in the view.
-                    gravity |= Gravity.CENTER_VERTICAL;
-
-                    // For banners, set the width to the height of the screen to span the ad across the screen after it is rotated.
-                    // Android by default clips a view bounds if it goes over the size of the screen. We can overcome it by setting negative margins to match our required size.
-                    if ( MaxAdFormat.MREC == adFormat )
-                    {
-                        gravity |= adViewPosition.contains( "left" ) ? Gravity.LEFT : Gravity.RIGHT;
-                    }
-                    else
-                    {
-                        /* Align the center of the view such that when rotated it snaps into place.
-                         *
-                         *                  +---+---+-------+
-                         *                  |   |           |
-                         *                  |   |           |
-                         *                  |   |           |
-                         *                  |   |           |
-                         *                  |   |           |
-                         *                  |   |           |
-                         *    +-------------+---+-----------+--+
-                         *    |             | + |   +       |  |
-                         *    +-------------+---+-----------+--+
-                         *                  |   |           |
-                         *                  | ^ |   ^       |
-                         *                  | +-----+       |
-                         *                  Translation     |
-                         *                  |   |           |
-                         *                  |   |           |
-                         *                  +---+-----------+
-                         */
-
-                        final int windowWidth = windowRect.width();
-                        final int windowHeight = windowRect.height();
-                        final int longSide = Math.max( windowWidth, windowHeight );
-                        final int shortSide = Math.min( windowWidth, windowHeight );
-                        final int margin = ( longSide - shortSide ) / 2;
-                        params.setMargins( -margin, 0, -margin, 0 );
-
-                        // The view is now at the center of the screen and so is it's pivot point. Move its center such that when rotated, it snaps into the vertical position we need.
-                        final int translationRaw = ( windowWidth / 2 ) - ( heightPx / 2 );
-                        final int translationX = containsLeft ? -translationRaw : translationRaw;
-                        adView.setTranslationX( translationX );
-
-                        // We have the view's center in the correct position. Now rotate it to snap into place.
-                        adView.setRotation( 270 );
-                    }
-
-                    // Hack alert: For the rotation and translation to be applied correctly, need to set the background color (Unity only, similar to what we do in Cross Promo).
-                    relativeLayout.setBackgroundColor( Color.TRANSPARENT );
-                }
             }
             else
             {
