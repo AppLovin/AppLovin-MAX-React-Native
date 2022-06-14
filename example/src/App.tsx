@@ -121,6 +121,9 @@ const App = () => {
       setInterstitialAdLoadState(adLoadState.notLoaded);
       logStatus('Interstitial ad hidden');
     });
+    AppLovinMAX.addEventListener('OnInterstitialAdRevenuePaid', (adInfo) => {
+      logStatus('Interstitial ad revenue paid: ' + adInfo.revenue);
+    });
 
     // Rewarded Ad Listeners
     AppLovinMAX.addEventListener('OnRewardedAdLoadedEvent', (adInfo) => {
@@ -163,6 +166,9 @@ const App = () => {
     AppLovinMAX.addEventListener('OnRewardedAdReceivedRewardEvent', (adInfo) => {
       logStatus('Rewarded ad granted reward');
     });
+    AppLovinMAX.addEventListener('OnRewardedAdRevenuePaid', (adInfo) => {
+      logStatus('Rewarded ad revenue paid: ' + adInfo.revenue);
+    });
 
     // Banner Ad Listeners
     AppLovinMAX.addEventListener('OnBannerAdLoadedEvent', (adInfo) => {
@@ -180,6 +186,9 @@ const App = () => {
     AppLovinMAX.addEventListener('OnBannerAdCollapsedEvent', (adInfo) => {
       logStatus('Banner ad collapsed')
     });
+    AppLovinMAX.addEventListener('OnBannerAdRevenuePaid', (adInfo) => {
+      logStatus('Banner ad revenue paid: ' + adInfo.revenue);
+    });
 
     // MREC Ad Listeners
     AppLovinMAX.addEventListener('OnMRecAdLoadedEvent', (adInfo) => {
@@ -196,6 +205,9 @@ const App = () => {
     });
     AppLovinMAX.addEventListener('OnMRecAdCollapsedEvent', (adInfo) => {
       logStatus('MREC ad collapsed')
+    });
+    AppLovinMAX.addEventListener('OnMRecAdRevenuePaid', (adInfo) => {
+      logStatus('MREC ad revenue paid: ' + adInfo.revenue);
     });
   }
 
