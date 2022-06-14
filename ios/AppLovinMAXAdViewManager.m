@@ -25,6 +25,7 @@
 
 // Storage for placement and extra parameters if set before the MAAdView is created
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSString *> *placementRegistry;
+@property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSString *> *customDataRegistry;
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSString *> *adaptiveBannerEnabledRegistry;
 
 @end
@@ -46,6 +47,7 @@ RCT_EXPORT_MODULE(AppLovinMAXAdView)
         self.adUnitIdRegistry = [NSMutableDictionary dictionary];
         self.adFormatRegistry = [NSMutableDictionary dictionary];
         self.placementRegistry = [NSMutableDictionary dictionary];
+        self.customDataRegistry = [NSMutableDictionary dictionary];
         self.adaptiveBannerEnabledRegistry = [NSMutableDictionary dictionary];
     }
     return self;
@@ -78,6 +80,31 @@ RCT_EXPORT_METHOD(setPlacement:(nonnull NSNumber *)viewTag toPlacement:(NSString
         else
         {
             self.placementRegistry[viewTag] = placement;
+        }
+    }];
+}
+
+// NOTE: `nonnull` must be annotated here for this RN export to work at runtime
+RCT_EXPORT_METHOD(setCustomData:(nonnull NSNumber *)viewTag toCustomData:(NSString *)customData)
+{
+    [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+
+        // NOTE: iOS caches the native view via `viewTag` when you remove it from screen (unlike Android)
+        UIView *view = viewRegistry[viewTag];
+        if ( !view )
+        {
+            RCTLogError(@"Cannot find UIView with tag %@", viewTag);
+            return;
+        }
+
+        MAAdView *adView = [self adViewFromContainerView: view];
+        if ( adView )
+        {
+            adView.customData = customData;
+        }
+        else
+        {
+            self.customDataRegistry[viewTag] = customData;
         }
     }];
 }
@@ -188,6 +215,13 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
                 adView.placement = placement;
             }
             
+            NSString *customData = self.customDataRegistry[viewTag];
+            if ( customData )
+            {
+                [self.customDataRegistry removeObjectForKey: viewTag];
+                adView.customData = customData;
+            }
+
             NSString *adaptiveBannerEnabledStr = self.adaptiveBannerEnabledRegistry[viewTag];
             if ( [adaptiveBannerEnabledStr al_isValidString] )
             {

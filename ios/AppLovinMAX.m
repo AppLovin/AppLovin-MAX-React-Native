@@ -512,6 +512,11 @@ RCT_EXPORT_METHOD(setBannerPlacement:(NSString *)adUnitIdentifier :(nullable NSS
     [self setAdViewPlacement: placement forAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
 }
 
+RCT_EXPORT_METHOD(setBannerCustomData:(NSString *)adUnitIdentifier :(nullable NSString *)customData)
+{
+    [self setAdViewCustomData: customData forAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
+}
+
 RCT_EXPORT_METHOD(updateBannerPosition:(NSString *)adUnitIdentifier :(NSString *)bannerPosition)
 {
     [self updateAdViewPosition: bannerPosition withOffset: CGPointZero forAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
@@ -564,6 +569,11 @@ RCT_EXPORT_METHOD(setMRecPlacement:(NSString *)adUnitIdentifier :(nullable NSStr
     [self setAdViewPlacement: placement forAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
 }
 
+RCT_EXPORT_METHOD(setMRecCustomData:(NSString *)adUnitIdentifier :(nullable NSString *)customData)
+{
+    [self setAdViewCustomData: customData forAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
+}
+
 RCT_EXPORT_METHOD(updateMRecPosition:(NSString *)mrecPosition :(NSString *)adUnitIdentifier)
 {
     [self updateAdViewPosition: mrecPosition withOffset: CGPointZero forAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
@@ -598,9 +608,10 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isInterstitialReady:(NSString *)adUnitIde
     return @([interstitial isReady]);
 }
 
-RCT_EXPORT_METHOD(showInterstitial:(NSString *)adUnitIdentifier)
+RCT_EXPORT_METHOD(showInterstitial:(NSString *)adUnitIdentifier :(nullable NSString *)placement :(nullable NSString *)customData)
 {
-    [self showInterstitialWithPlacement: adUnitIdentifier : nil];
+    MAInterstitialAd *interstitial = [self retrieveInterstitialForAdUnitIdentifier: adUnitIdentifier];
+    [interstitial showAdForPlacement: placement customData: customData];
 }
 
 RCT_EXPORT_METHOD(showInterstitialWithPlacement:(NSString *)adUnitIdentifier :(NSString *)placement)
@@ -629,9 +640,10 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isRewardedAdReady:(NSString *)adUnitIdent
     return @([rewardedAd isReady]);
 }
 
-RCT_EXPORT_METHOD(showRewardedAd:(NSString *)adUnitIdentifier)
+RCT_EXPORT_METHOD(showRewardedAd:(NSString *)adUnitIdentifier :(nullable NSString *)placement :(nullable NSString *)customData)
 {
-    [self showRewardedAdWithPlacement: adUnitIdentifier : nil];
+    MARewardedAd *rewardedAd = [self retrieveRewardedAdForAdUnitIdentifier: adUnitIdentifier];
+    [rewardedAd showAdForPlacement: placement customData: customData];
 }
 
 RCT_EXPORT_METHOD(showRewardedAdWithPlacement:(NSString *)adUnitIdentifier :(NSString *)placement)
@@ -923,6 +935,17 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         
         MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: @"" withOffset: CGPointZero];
         adView.placement = placement;
+    });
+}
+
+- (void)setAdViewCustomData:(nullable NSString *)customData forAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+
+        [self log: @"Setting customData \"%@\" for \"%@\" with ad unit identifier \"%@\"", customData, adFormat, adUnitIdentifier];
+
+        MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: @"" withOffset: CGPointZero];
+        adView.customData = customData;
     });
 }
 

@@ -13,6 +13,7 @@ class AdView extends React.Component {
     this.setAdUnitId(this.props.adUnitId);
     this.setAdFormat(this.props.adFormat);
     this.setPlacement(this.props.placement);
+    this.setCustomData(this.props.customData);
     this.setAdaptiveBannerEnabled(this.props.adaptiveBannerEnabled);
   }
 
@@ -28,6 +29,10 @@ class AdView extends React.Component {
 
     if (prevProps.placement !== this.props.placement) {
       this.setPlacement(this.props.placement);
+    }
+
+    if (prevProps.customData !== this.props.customData) {
+      this.setCustomData(this.props.customData);
     }
 
     if (prevProps.adaptiveBannerEnabled !== this.props.adaptiveBannerEnabled) {
@@ -94,6 +99,20 @@ class AdView extends React.Component {
     );
   }
 
+  setCustomData(customData) {
+    var adUnitId = this.props.adUnitId;
+    var adFormat = this.props.adFormat;
+
+    // If the ad unit id or ad format are unset, we can't set the customData.
+    if (adUnitId == null || adFormat == null) return;
+
+    UIManager.dispatchViewManagerCommand(
+        findNodeHandle(this),
+        Platform.OS === 'android' ? "setCustomData" : UIManager.getViewManagerConfig("AppLovinMAXAdView").Commands.setCustomData,
+        [customData]
+    );
+  }
+
   setAdaptiveBannerEnabled(enabled) {
     var adUnitId = this.props.adUnitId;
     var adFormat = this.props.adFormat;
@@ -128,6 +147,11 @@ AdView.propTypes = {
    * A string value representing the placement name that you assign when you integrate each ad format, for granular reporting in ad events.
    */
   placement: PropTypes.string,
+
+  /**
+   * A string value representing the customData name that you assign when you integrate each ad format, for granular reporting in ad events.
+   */
+  customData: PropTypes.string,
 
   /**
    * A boolean value representing whether or not to enable adaptive banners. Note that adaptive banners are enabled by default as of v2.3.0.

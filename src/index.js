@@ -65,6 +65,40 @@ const removeEventListener = (event) => {
   }
 };
 
+const showInterstitial = (adUnitId, ...args) => {
+  switch (args.length) {
+  case 0:
+    AppLovinMAX.showInterstitial(adUnitId, null, null);
+    break;
+  case 1:
+    AppLovinMAX.showInterstitial(adUnitId, args[0], null);
+    break;
+  case 2:
+    AppLovinMAX.showInterstitial(adUnitId, args[0], args[1]);
+    break;
+  default:
+    // do nothing - unexpected number of arguments
+    break;
+  }
+};
+
+const showRewardedAd = (adUnitId, ...args) => {
+  switch (args.length) {
+  case 0:
+    AppLovinMAX.showRewardedAd(adUnitId, null, null);
+    break;
+  case 1:
+    AppLovinMAX.showRewardedAd(adUnitId, args[0], null);
+    break;
+  case 2:
+    AppLovinMAX.showRewardedAd(adUnitId, args[0], args[1]);
+    break;
+  default:
+    // do nothing - unexpected number of arguments
+    break;
+  }
+};
+
 export default {
   ...AppLovinMAX,
   AdView,
@@ -80,6 +114,8 @@ export default {
   initialize(sdkKey, callback) {
     AppLovinMAX.initialize(VERSION, sdkKey, callback); // Inject VERSION into native code
   },
+  showInterstitial,
+  showRewardedAd,
 
   /*----------------------*/
   /** AUTO-DECLARED APIs **/
