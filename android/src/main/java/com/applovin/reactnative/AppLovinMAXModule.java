@@ -784,13 +784,6 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
-    public void showInterstitialWithPlacement(final String adUnitId, final String placement)
-    {
-        MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
-        interstitial.showAd( placement );
-    }
-
-    @ReactMethod()
     public void setInterstitialExtraParameter(final String adUnitId, final String key, final String value)
     {
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
@@ -824,13 +817,6 @@ public class AppLovinMAXModule
     {
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
         rewardedAd.showAd( placement, customData );
-    }
-
-    @ReactMethod()
-    public void showRewardedAdWithPlacement(final String adUnitId, final String placement)
-    {
-        MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
-        rewardedAd.showAd( placement );
     }
 
     @ReactMethod()

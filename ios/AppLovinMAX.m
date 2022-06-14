@@ -614,12 +614,6 @@ RCT_EXPORT_METHOD(showInterstitial:(NSString *)adUnitIdentifier :(nullable NSStr
     [interstitial showAdForPlacement: placement customData: customData];
 }
 
-RCT_EXPORT_METHOD(showInterstitialWithPlacement:(NSString *)adUnitIdentifier :(NSString *)placement)
-{
-    MAInterstitialAd *interstitial = [self retrieveInterstitialForAdUnitIdentifier: adUnitIdentifier];
-    [interstitial showAdForPlacement: placement];
-}
-
 RCT_EXPORT_METHOD(setInterstitialExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
 {
     MAInterstitialAd *interstitial = [self retrieveInterstitialForAdUnitIdentifier: adUnitIdentifier];
@@ -644,12 +638,6 @@ RCT_EXPORT_METHOD(showRewardedAd:(NSString *)adUnitIdentifier :(nullable NSStrin
 {
     MARewardedAd *rewardedAd = [self retrieveRewardedAdForAdUnitIdentifier: adUnitIdentifier];
     [rewardedAd showAdForPlacement: placement customData: customData];
-}
-
-RCT_EXPORT_METHOD(showRewardedAdWithPlacement:(NSString *)adUnitIdentifier :(NSString *)placement)
-{
-    MARewardedAd *rewardedAd = [self retrieveRewardedAdForAdUnitIdentifier: adUnitIdentifier];
-    [rewardedAd showAdForPlacement: placement];
 }
 
 RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
