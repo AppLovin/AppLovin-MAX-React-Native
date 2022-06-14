@@ -452,11 +452,11 @@ public class AppLovinMAXModule
      // Data Passing
 
     @ReactMethod()
-    public void setUserSegmentField(final String name)
+    public void setUserSegment(final String name)
     {
         if ( sdk == null )
         {
-            logUninitializedAccessError( "setUserSegmentField" );
+            logUninitializedAccessError( "setUserSegment" );
             return;
         }
 

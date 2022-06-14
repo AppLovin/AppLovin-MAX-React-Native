@@ -351,11 +351,11 @@ RCT_EXPORT_METHOD(setTermsOfServiceUrl:(NSString *)urlString)
 
 #pragma mark - Data Passing
 
-RCT_EXPORT_METHOD(setUserSegmentField:(nullable NSString *)name)
+RCT_EXPORT_METHOD(setUserSegment:(nullable NSString *)name)
 {
     if ( !_sdk )
     {
-        [self logUninitializedAccessError: @"setUserSegmentField"];
+        [self logUninitializedAccessError: @"setUserSegment"];
         return;
     }
 

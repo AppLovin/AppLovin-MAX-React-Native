@@ -124,7 +124,6 @@ export default {
   /*----------------*/
   /* DATA PASSING */
   /*----------------*/
-  /* setUserSegmentField(name) */
   /* setTargetingDataYearOfBirth(yearOfBirth) */
   /* setTargetingDataGender(gender) */
   /* setTargetingDataMaximumAdContentRating(maximumAdContentRating) */

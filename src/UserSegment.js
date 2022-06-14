@@ -3,7 +3,7 @@ import AppLovinMAX from "./index.js";
 let UserSegment = {
 
   set name(value) {
-    AppLovinMAX.setUserSegmentField(value);
+    AppLovinMAX.setUserSegment(value);
   },
 };
 
