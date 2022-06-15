@@ -87,8 +87,8 @@ public class AppLovinMAXModule
     private boolean                  isSdkInitialized;
     private AppLovinSdkConfiguration sdkConfiguration;
 
-    private WindowManager            windowManager;
-    private int                      lastRotation;
+    private WindowManager windowManager;
+    private int           lastRotation;
 
     // Store these values if pub attempts to set it before initializing
     private String       userIdToSet;
@@ -262,8 +262,8 @@ public class AppLovinMAXModule
                 sdkConfiguration = configuration;
                 isSdkInitialized = true;
 
-                windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
- 
+                windowManager = (WindowManager) context.getSystemService( Context.WINDOW_SERVICE );
+
                 lastRotation = windowManager.getDefaultDisplay().getRotation();
 
                 // Enable orientation change listener, so that the ad view positions can be updated when the device is rotated.
@@ -465,7 +465,7 @@ public class AppLovinMAXModule
     @ReactMethod()
     public void setTermsOfServiceUrl(final String urlString) {}
 
-     // Data Passing
+    // Data Passing
 
     @ReactMethod()
     public void setTargetingDataYearOfBirth(final int yearOfBirth)
@@ -1658,10 +1658,10 @@ public class AppLovinMAXModule
     private WritableMap createAdWaterfallInfo(final MaxAdWaterfallInfo waterfallInfo)
     {
         WritableMap waterfallInfoObject = Arguments.createMap();
+        if ( waterfallInfo == null ) return waterfallInfoObject;
 
         waterfallInfoObject.putString( "name", waterfallInfo.getName() );
         waterfallInfoObject.putString( "testName", waterfallInfo.getTestName() );
-        waterfallInfoObject.putDouble( "latencyMillis", waterfallInfo.getLatencyMillis() );
 
         WritableArray networkResponsesArray = Arguments.createArray();
         for ( MaxNetworkResponseInfo response : waterfallInfo.getNetworkResponses() )
@@ -1670,30 +1670,34 @@ public class AppLovinMAXModule
         }
         waterfallInfoObject.putArray( "networkResponses", networkResponsesArray );
 
+        waterfallInfoObject.putDouble( "latencyMillis", waterfallInfo.getLatencyMillis() );
+
         return waterfallInfoObject;
     }
 
     private WritableMap createNetworkResponseInfo(final MaxNetworkResponseInfo response)
     {
         WritableMap networkResponseObject = Arguments.createMap();
-
         networkResponseObject.putInt( "adLoadState", response.getAdLoadState().ordinal() );
-        networkResponseObject.putDouble( "latencyMillis", response.getLatencyMillis() );
 
         MaxMediatedNetworkInfo mediatedNetworkInfo = response.getMediatedNetwork();
-        WritableMap networkInfoObject = Arguments.createMap();
-        networkInfoObject.putString( "name", mediatedNetworkInfo.getName() );
-        networkInfoObject.putString( "adapterClassName", mediatedNetworkInfo.getAdapterClassName() );
-        networkInfoObject.putString( "adapterVersion", mediatedNetworkInfo.getAdapterVersion() );
-        networkInfoObject.putString( "sdkVersion", mediatedNetworkInfo.getSdkVersion() );
-        networkResponseObject.putMap( "mediatedNetwork", networkInfoObject );
+        if ( mediatedNetworkInfo != null )
+        {
+            WritableMap networkInfoObject = Arguments.createMap();
+            networkInfoObject.putString( "name", mediatedNetworkInfo.getName() );
+            networkInfoObject.putString( "adapterClassName", mediatedNetworkInfo.getAdapterClassName() );
+            networkInfoObject.putString( "adapterVersion", mediatedNetworkInfo.getAdapterVersion() );
+            networkInfoObject.putString( "sdkVersion", mediatedNetworkInfo.getSdkVersion() );
+
+            networkResponseObject.putMap( "mediatedNetwork", networkInfoObject );
+        }
 
         Bundle credentialBundle = response.getCredentials();
         WritableMap credentials = Arguments.createMap();
         for ( String key : credentialBundle.keySet() )
         {
-            Object object = credentialBundle.get( key );
-            credentials.putString( key, object.toString() );
+            String value = credentialBundle.getString( key, "" );
+            credentials.putString( key, value );
         }
         networkResponseObject.putMap( "credentials", credentials );
 
@@ -1701,17 +1705,17 @@ public class AppLovinMAXModule
         if ( error != null )
         {
             WritableMap errorObject = Arguments.createMap();
-            errorObject.putInt( "code", error.getCode() );
             errorObject.putString( "message", error.getMessage() );
-            if ( error.getWaterfall() != null )
-            {
-                errorObject.putMap( "waterfall", createAdWaterfallInfo( error.getWaterfall() ) );
-            }
+            errorObject.putString( "adLoadFailureInfo", error.getAdLoadFailureInfo() );
+            errorObject.putInt( "code", error.getCode() );
+
             networkResponseObject.putMap( "error", errorObject );
         }
 
+        networkResponseObject.putDouble( "latencyMillis", response.getLatencyMillis() );
+
         return networkResponseObject;
-    }        
+    }
 
 
     // React Native Bridge
@@ -1723,7 +1727,8 @@ public class AppLovinMAXModule
                 .emit( name, params );
     }
 
-    @Override @Nullable
+    @Override
+    @Nullable
     public Map<String, Object> getConstants()
     {
         return super.getConstants();

@@ -227,7 +227,7 @@ RCT_EXPORT_METHOD(showMediationDebugger)
 RCT_EXPORT_METHOD(showConsentDialog:(RCTResponseSenderBlock)callback)
 {
     [self log: @"Failed to show consent dialog - Unavailable on iOS, please use the consent flow: https://dash.applovin.com/documentation/mediation/react-native/getting-started/consent-flow"];
-
+    
     callback(nil);
 }
 
@@ -371,7 +371,7 @@ RCT_EXPORT_METHOD(setTargetingDataGender:(nullable NSString *)gender)
     }
     
     ALGender alGender = ALGenderUnknown;
-
+    
     if ( [@"F" isEqualToString: gender] )
     {
         alGender =  ALGenderFemale;
@@ -384,7 +384,7 @@ RCT_EXPORT_METHOD(setTargetingDataGender:(nullable NSString *)gender)
     {
         alGender =  ALGenderOther;
     }
-
+    
     self.sdk.targetingData.gender = alGender;
 }
 
@@ -397,9 +397,9 @@ RCT_EXPORT_METHOD(setTargetingDataMaximumAdContentRating:(nonnull NSNumber *)max
     }
     
     ALAdContentRating rating = ALAdContentRatingNone;
-
+    
     int intVal = maximumAdContentRating.intValue;
-
+    
     if ( intVal == 1 )
     {
         rating = ALAdContentRatingAllAudiences;
@@ -412,7 +412,7 @@ RCT_EXPORT_METHOD(setTargetingDataMaximumAdContentRating:(nonnull NSNumber *)max
     {
         rating = ALAdContentRatingMatureAudiences;
     }
-
+    
     self.sdk.targetingData.maximumAdContentRating = rating;
 }
 
@@ -931,13 +931,13 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self log: @"Setting width %f for \"%@\" with ad unit identifier \"%@\"", width, adFormat, adUnitIdentifier];
-
+        
         CGFloat minWidth = adFormat.size.width;
         if ( width < minWidth )
         {
             [self log: @"The provided with: %f is smaller than the minimum required width: %f for ad format: %@. Please set the width higher than the minimum required.", width, minWidth, adFormat];
         }
-
+        
         self.adViewWidths[adUnitIdentifier] = @(width);
         [self positionAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
     });
@@ -1155,7 +1155,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     // Determine ad width
     //
     CGFloat adViewWidth;
-
+    
     // Check if publisher has overridden width as points
     if ( isWidthPtsOverridden )
     {
@@ -1171,7 +1171,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     {
         adViewWidth = adFormat.size.width;
     }
-
+    
     //
     // Determine ad height
     //
@@ -1336,61 +1336,60 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 - (NSDictionary<NSString *, id> *)createAdWaterfallInfo:(MAAdWaterfallInfo *)waterfallInfo
 {
     NSMutableDictionary<NSString *, NSObject *> *waterfallInfoDict = [NSMutableDictionary dictionary];
-
+    if ( !waterfallInfo ) return waterfallInfoDict;
+    
     waterfallInfoDict[@"name"] = waterfallInfo.name;
     waterfallInfoDict[@"testName"] = waterfallInfo.testName;
-
-    // Convert latency from seconds to milliseconds to match Android.
-    long long latencyMillis = waterfallInfo.latency * 1000;
-    waterfallInfoDict[@"latencyMillis"] = @(latencyMillis);
-
+    
     NSMutableArray<NSDictionary<NSString *, NSObject *> *> *networkResponsesArray = [NSMutableArray arrayWithCapacity: waterfallInfo.networkResponses.count];
     for ( MANetworkResponseInfo *response in  waterfallInfo.networkResponses )
     {
         [networkResponsesArray addObject: [self createNetworkResponseInfo: response]];
     }
     waterfallInfoDict[@"networkResponses"] = networkResponsesArray;
-
+    
+    // Convert latency from seconds to milliseconds to match Android.
+    long long latencyMillis = waterfallInfo.latency * 1000;
+    waterfallInfoDict[@"latencyMillis"] = @(latencyMillis);
+    
     return waterfallInfoDict;
 }
 
 - (NSDictionary<NSString *, id> *)createNetworkResponseInfo:(MANetworkResponseInfo *)response
 {
     NSMutableDictionary<NSString *, NSObject *> *networkResponseDict = [NSMutableDictionary dictionary];
-
+    
     networkResponseDict[@"adLoadState"] = @(response.adLoadState);
-
+    
+    MAMediatedNetworkInfo *mediatedNetworkInfo = response.mediatedNetwork;
+    if ( mediatedNetworkInfo )
+    {
+        NSMutableDictionary <NSString *, NSObject *> *networkInfoObject = [NSMutableDictionary dictionary];
+        networkInfoObject[@"name"] = mediatedNetworkInfo.name;
+        networkInfoObject[@"adapterClassName"] = mediatedNetworkInfo.adapterClassName;
+        networkInfoObject[@"adapterVersion"] = mediatedNetworkInfo.adapterVersion;
+        networkInfoObject[@"sdkVersion"] = mediatedNetworkInfo.sdkVersion;
+        
+        networkResponseDict[@"mediatedNetwork"] = networkInfoObject;
+    }
+    
+    networkResponseDict[@"credentials"] = response.credentials;
+    
+    MAError *error = response.error;
+    if ( error )
+    {
+        NSMutableDictionary<NSString *, NSObject *> *errorObject = [NSMutableDictionary dictionary];
+        errorObject[@"message"] = error.message;
+        errorObject[@"adLoadFailure"] = error.adLoadFailureInfo;
+        errorObject[@"code"] = @(error.code);
+        
+        networkResponseDict[@"error"] = errorObject;
+    }
+    
     // Convert latency from seconds to milliseconds to match Android.
     long long latencySeconds = response.latency * 1000;
     networkResponseDict[@"latencyMillis"] = @(latencySeconds);
-
-    NSMutableDictionary <NSString *, NSObject *> *networkInfoObject = [NSMutableDictionary dictionary];
-    networkInfoObject[@"name"] = response.mediatedNetwork.name;
-    networkInfoObject[@"adapterClassName"] = response.mediatedNetwork.adapterClassName;
-    networkInfoObject[@"adapterVersion"] = response.mediatedNetwork.adapterVersion;
-    networkInfoObject[@"sdkVersion"] = response.mediatedNetwork.sdkVersion;
-    networkResponseDict[@"mediatedNetwork"] = networkInfoObject;
-
-    NSMutableDictionary *credentials = [[NSMutableDictionary<NSString *, NSString *> alloc] init];
-    for ( NSString *key in response.credentials )
-    {
-        id object = response.credentials[key];
-        credentials[key] = object;
-    }
-    networkResponseDict[@"credentials"] = credentials;
-
-    if ( response.error )
-    {
-        NSMutableDictionary<NSString *, NSObject *> *errorObject = [NSMutableDictionary dictionary];
-        errorObject[@"code"] = @(response.error.code);
-        errorObject[@"message"] = response.error.message;
-        if ( response.error.waterfall )
-        {
-            errorObject[@"waterfall"] = [self createAdWaterfallInfo: response.error.waterfall];
-        }
-        networkResponseDict[@"error"] = errorObject;
-    }
-
+    
     return networkResponseDict;
 }
 
