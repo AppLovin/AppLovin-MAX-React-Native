@@ -1717,7 +1717,6 @@ public class AppLovinMAXModule
         return networkResponseObject;
     }
 
-
     // React Native Bridge
 
     private void sendReactNativeEvent(final String name, @Nullable final WritableMap params)
