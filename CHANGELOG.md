@@ -1,7 +1,7 @@
 ## Versions
 
 ## x.x.x
-    * Add support for segment name.
+    * Add support for setting user segment via `AppLovinMAX.userSegment.name`.
 ## 3.1.0
     * Add support for data passing.
     * Add API for Android to provide a built-in consent flow that sets the user consent flag.
