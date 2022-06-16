@@ -15,6 +15,7 @@ import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -23,8 +24,11 @@ import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxAdListener;
 import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxAdViewAdListener;
+import com.applovin.mediation.MaxAdWaterfallInfo;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.MaxErrorCode;
+import com.applovin.mediation.MaxMediatedNetworkInfo;
+import com.applovin.mediation.MaxNetworkResponseInfo;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.MaxRewardedAdListener;
 import com.applovin.mediation.ads.MaxAdView;
@@ -46,6 +50,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
 import java.util.ArrayList;
@@ -83,6 +88,9 @@ public class AppLovinMAXModule
     private boolean                  isSdkInitialized;
     private AppLovinSdkConfiguration sdkConfiguration;
 
+    private WindowManager windowManager;
+    private int           lastRotation;
+
     // Store these values if pub attempts to set it before initializing
     private String       userIdToSet;
     private List<String> testDeviceAdvertisingIdsToSet;
@@ -99,7 +107,6 @@ public class AppLovinMAXModule
     private final Map<String, String>      mAdViewPositions                 = new HashMap<>( 2 );
     private final Map<String, Point>       mAdViewOffsets                   = new HashMap<>( 2 );
     private final Map<String, Integer>     mAdViewWidths                    = new HashMap<>( 2 );
-    private final Map<String, MaxAdFormat> mVerticalAdViewFormats           = new HashMap<>( 2 );
     private final List<String>             mAdUnitIdsToShowAfterCreate      = new ArrayList<>( 2 );
     private final Set<String>              mDisabledAdaptiveBannerAdUnitIds = new HashSet<>( 2 );
 
@@ -256,15 +263,24 @@ public class AppLovinMAXModule
                 sdkConfiguration = configuration;
                 isSdkInitialized = true;
 
-                // Enable orientation change listener, so that the position can be updated for vertical banners.
+                windowManager = (WindowManager) context.getSystemService( Context.WINDOW_SERVICE );
+
+                lastRotation = windowManager.getDefaultDisplay().getRotation();
+
+                // Enable orientation change listener, so that the ad view positions can be updated when the device is rotated.
                 new OrientationEventListener( context )
                 {
                     @Override
                     public void onOrientationChanged(final int orientation)
                     {
-                        for ( final Map.Entry<String, MaxAdFormat> adUnitFormats : mVerticalAdViewFormats.entrySet() )
+                        int newRotation = windowManager.getDefaultDisplay().getRotation();
+                        if ( newRotation != lastRotation )
                         {
-                            positionAdView( adUnitFormats.getKey(), adUnitFormats.getValue() );
+                            lastRotation = newRotation;
+                            for ( final Map.Entry<String, MaxAdFormat> adUnitFormats : mAdViewAdFormats.entrySet() )
+                            {
+                                positionAdView( adUnitFormats.getKey(), adUnitFormats.getValue() );
+                            }
                         }
                     }
                 }.enable();
@@ -450,7 +466,19 @@ public class AppLovinMAXModule
     @ReactMethod()
     public void setTermsOfServiceUrl(final String urlString) {}
 
-     // Data Passing
+    // Data Passing
+
+    @ReactMethod()
+    public void setUserSegment(final String name)
+    {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setUserSegment" );
+            return;
+        }
+
+        sdk.getUserSegment().setName( name );
+    }
 
     @ReactMethod()
     public void setTargetingDataYearOfBirth(final int yearOfBirth)
@@ -917,6 +945,7 @@ public class AppLovinMAXModule
             params.putInt( "code", error.getCode() );
             params.putString( "message", error.getMessage() );
             params.putString( "adLoadFailureInfo", error.getAdLoadFailureInfo() );
+            params.putMap( "waterfall", createAdWaterfallInfo( error.getWaterfall() ) );
         }
         else
         {
@@ -1304,7 +1333,6 @@ public class AppLovinMAXModule
                 mAdViewPositions.remove( adUnitId );
                 mAdViewOffsets.remove( adUnitId );
                 mAdViewWidths.remove( adUnitId );
-                mVerticalAdViewFormats.remove( adUnitId );
             }
         } );
     }
@@ -1522,8 +1550,6 @@ public class AppLovinMAXModule
         adView.setTranslationX( 0 );
         params.setMargins( 0, 0, 0, 0 );
 
-        mVerticalAdViewFormats.remove( adUnitId );
-
         if ( "centered".equalsIgnoreCase( adViewPosition ) )
         {
             gravity = Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL;
@@ -1561,66 +1587,6 @@ public class AppLovinMAXModule
                 else
                 {
                     params.width = RelativeLayout.LayoutParams.MATCH_PARENT;
-                }
-
-                // Check if the publisher wants the ad view to be vertical and update the position accordingly ('CenterLeft' or 'CenterRight').
-                final boolean containsLeft = adViewPosition.contains( "left" );
-                final boolean containsRight = adViewPosition.contains( "right" );
-                if ( containsLeft || containsRight )
-                {
-                    // First, center the ad view in the view.
-                    gravity |= Gravity.CENTER_VERTICAL;
-
-                    // For banners, set the width to the height of the screen to span the ad across the screen after it is rotated.
-                    // Android by default clips a view bounds if it goes over the size of the screen. We can overcome it by setting negative margins to match our required size.
-                    if ( MaxAdFormat.MREC == adFormat )
-                    {
-                        gravity |= adViewPosition.contains( "left" ) ? Gravity.LEFT : Gravity.RIGHT;
-                    }
-                    else
-                    {
-                        /* Align the center of the view such that when rotated it snaps into place.
-                         *
-                         *                  +---+---+-------+
-                         *                  |   |           |
-                         *                  |   |           |
-                         *                  |   |           |
-                         *                  |   |           |
-                         *                  |   |           |
-                         *                  |   |           |
-                         *    +-------------+---+-----------+--+
-                         *    |             | + |   +       |  |
-                         *    +-------------+---+-----------+--+
-                         *                  |   |           |
-                         *                  | ^ |   ^       |
-                         *                  | +-----+       |
-                         *                  Translation     |
-                         *                  |   |           |
-                         *                  |   |           |
-                         *                  +---+-----------+
-                         */
-
-                        final int windowWidth = windowRect.width();
-                        final int windowHeight = windowRect.height();
-                        final int longSide = Math.max( windowWidth, windowHeight );
-                        final int shortSide = Math.min( windowWidth, windowHeight );
-                        final int margin = ( longSide - shortSide ) / 2;
-                        params.setMargins( -margin, 0, -margin, 0 );
-
-                        // The view is now at the center of the screen and so is it's pivot point. Move its center such that when rotated, it snaps into the vertical position we need.
-                        final int translationRaw = ( windowWidth / 2 ) - ( heightPx / 2 );
-                        final int translationX = containsLeft ? -translationRaw : translationRaw;
-                        adView.setTranslationX( translationX );
-
-                        // We have the view's center in the correct position. Now rotate it to snap into place.
-                        adView.setRotation( 270 );
-
-                        // Store the ad view with format, so that it can be updated when the orientation changes.
-                        mVerticalAdViewFormats.put( adUnitId, adFormat );
-                    }
-
-                    // Hack alert: For the rotation and translation to be applied correctly, need to set the background color (Unity only, similar to what we do in Cross Promo).
-                    relativeLayout.setBackgroundColor( Color.TRANSPARENT );
                 }
             }
             else
@@ -1719,6 +1685,13 @@ public class AppLovinMAXModule
         }
     }
 
+    private static Point getOffsetPixels(final float xDp, final float yDp, final Context context)
+    {
+        return new Point( AppLovinSdkUtils.dpToPx( context, (int) xDp ), AppLovinSdkUtils.dpToPx( context, (int) yDp ) );
+    }
+
+    // AD INFO
+
     private WritableMap getAdInfo(final MaxAd ad)
     {
         WritableMap adInfo = Arguments.createMap();
@@ -1727,13 +1700,73 @@ public class AppLovinMAXModule
         adInfo.putString( "networkName", ad.getNetworkName() );
         adInfo.putString( "placement", !TextUtils.isEmpty( ad.getPlacement() ) ? ad.getPlacement() : "" );
         adInfo.putDouble( "revenue", ad.getRevenue() );
+        adInfo.putMap( "waterfall", createAdWaterfallInfo( ad.getWaterfall() ) );
 
         return adInfo;
     }
 
-    private static Point getOffsetPixels(final float xDp, final float yDp, final Context context)
+    // AD WATERFALL INFO
+
+    private WritableMap createAdWaterfallInfo(final MaxAdWaterfallInfo waterfallInfo)
     {
-        return new Point( AppLovinSdkUtils.dpToPx( context, (int) xDp ), AppLovinSdkUtils.dpToPx( context, (int) yDp ) );
+        WritableMap waterfallInfoObject = Arguments.createMap();
+        if ( waterfallInfo == null ) return waterfallInfoObject;
+
+        waterfallInfoObject.putString( "name", waterfallInfo.getName() );
+        waterfallInfoObject.putString( "testName", waterfallInfo.getTestName() );
+
+        WritableArray networkResponsesArray = Arguments.createArray();
+        for ( MaxNetworkResponseInfo response : waterfallInfo.getNetworkResponses() )
+        {
+            networkResponsesArray.pushMap( createNetworkResponseInfo( response ) );
+        }
+        waterfallInfoObject.putArray( "networkResponses", networkResponsesArray );
+
+        waterfallInfoObject.putDouble( "latencyMillis", waterfallInfo.getLatencyMillis() );
+
+        return waterfallInfoObject;
+    }
+
+    private WritableMap createNetworkResponseInfo(final MaxNetworkResponseInfo response)
+    {
+        WritableMap networkResponseObject = Arguments.createMap();
+        networkResponseObject.putInt( "adLoadState", response.getAdLoadState().ordinal() );
+
+        MaxMediatedNetworkInfo mediatedNetworkInfo = response.getMediatedNetwork();
+        if ( mediatedNetworkInfo != null )
+        {
+            WritableMap networkInfoObject = Arguments.createMap();
+            networkInfoObject.putString( "name", mediatedNetworkInfo.getName() );
+            networkInfoObject.putString( "adapterClassName", mediatedNetworkInfo.getAdapterClassName() );
+            networkInfoObject.putString( "adapterVersion", mediatedNetworkInfo.getAdapterVersion() );
+            networkInfoObject.putString( "sdkVersion", mediatedNetworkInfo.getSdkVersion() );
+
+            networkResponseObject.putMap( "mediatedNetwork", networkInfoObject );
+        }
+
+        Bundle credentialBundle = response.getCredentials();
+        WritableMap credentials = Arguments.createMap();
+        for ( String key : credentialBundle.keySet() )
+        {
+            String value = credentialBundle.getString( key, "" );
+            credentials.putString( key, value );
+        }
+        networkResponseObject.putMap( "credentials", credentials );
+
+        MaxError error = response.getError();
+        if ( error != null )
+        {
+            WritableMap errorObject = Arguments.createMap();
+            errorObject.putString( "message", error.getMessage() );
+            errorObject.putString( "adLoadFailureInfo", error.getAdLoadFailureInfo() );
+            errorObject.putInt( "code", error.getCode() );
+
+            networkResponseObject.putMap( "error", errorObject );
+        }
+
+        networkResponseObject.putDouble( "latencyMillis", response.getLatencyMillis() );
+
+        return networkResponseObject;
     }
 
     // React Native Bridge
@@ -1745,7 +1778,8 @@ public class AppLovinMAXModule
                 .emit( name, params );
     }
 
-    @Override @Nullable
+    @Override
+    @Nullable
     public Map<String, Object> getConstants()
     {
         return super.getConstants();
