@@ -94,6 +94,7 @@ class AppLovinMAXAdView
                 {
                     adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
                     adView.setListener( AppLovinMAXModule.getInstance() );
+                    adView.setRevenueListener( AppLovinMAXModule.getInstance() );
 
                     if ( placement != null )
                     {

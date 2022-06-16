@@ -207,6 +207,7 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
             adView = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitIdentifier adFormat: adFormat sdk: AppLovinMAX.shared.sdk];
             adView.frame = (CGRect) { CGPointZero, adFormat.size };
             adView.delegate = AppLovinMAX.shared; // Go through core class for callback forwarding to React Native layer
+            adView.revenueDelegate = AppLovinMAX.shared;
             
             NSString *placement = self.placementRegistry[viewTag];
             if ( placement )

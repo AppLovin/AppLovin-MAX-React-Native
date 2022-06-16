@@ -227,7 +227,7 @@ RCT_EXPORT_METHOD(showMediationDebugger)
 RCT_EXPORT_METHOD(showConsentDialog:(RCTResponseSenderBlock)callback)
 {
     [self log: @"Failed to show consent dialog - Unavailable on iOS, please use the consent flow: https://dash.applovin.com/documentation/mediation/react-native/getting-started/consent-flow"];
-
+    
     callback(nil);
 }
 
@@ -351,6 +351,17 @@ RCT_EXPORT_METHOD(setTermsOfServiceUrl:(NSString *)urlString)
 
 #pragma mark - Data Passing
 
+RCT_EXPORT_METHOD(setUserSegment:(nullable NSString *)name)
+{
+    if ( !_sdk )
+    {
+        [self logUninitializedAccessError: @"setUserSegment"];
+        return;
+    }
+
+    self.sdk.userSegment.name = name;
+}
+
 RCT_EXPORT_METHOD(setTargetingDataYearOfBirth:(nonnull NSNumber *)yearOfBirth)
 {
     if ( !_sdk )
@@ -371,7 +382,7 @@ RCT_EXPORT_METHOD(setTargetingDataGender:(nullable NSString *)gender)
     }
     
     ALGender alGender = ALGenderUnknown;
-
+    
     if ( [@"F" isEqualToString: gender] )
     {
         alGender =  ALGenderFemale;
@@ -384,7 +395,7 @@ RCT_EXPORT_METHOD(setTargetingDataGender:(nullable NSString *)gender)
     {
         alGender =  ALGenderOther;
     }
-
+    
     self.sdk.targetingData.gender = alGender;
 }
 
@@ -397,9 +408,9 @@ RCT_EXPORT_METHOD(setTargetingDataMaximumAdContentRating:(nonnull NSNumber *)max
     }
     
     ALAdContentRating rating = ALAdContentRatingNone;
-
+    
     int intVal = maximumAdContentRating.intValue;
-
+    
     if ( intVal == 1 )
     {
         rating = ALAdContentRatingAllAudiences;
@@ -412,7 +423,7 @@ RCT_EXPORT_METHOD(setTargetingDataMaximumAdContentRating:(nonnull NSNumber *)max
     {
         rating = ALAdContentRatingMatureAudiences;
     }
-
+    
     self.sdk.targetingData.maximumAdContentRating = rating;
 }
 
@@ -715,7 +726,8 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     [self sendReactNativeEventWithName: name body: @{@"adUnitId" : adUnitIdentifier,
                                                      @"code" : @(error.code),
                                                      @"message" : error.message,
-                                                     @"adLoadFailureInfo" : error.adLoadFailureInfo ?: @""}];
+                                                     @"adLoadFailureInfo" : error.adLoadFailureInfo ?: @"",
+                                                     @"waterfall": [self createAdWaterfallInfo: error.waterfall]}];
 }
 
 - (void)didClickAd:(MAAd *)ad
@@ -834,6 +846,40 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
                                   body: [self adInfoForAd: ad]];
 }
 
+- (void)didPayRevenueForAd:(MAAd *)ad
+{
+    NSString *name;
+    MAAdFormat *adFormat = ad.format;
+    if ( MAAdFormat.banner == adFormat || MAAdFormat.leader == adFormat )
+    {
+        name = @"OnBannerAdRevenuePaid";
+    }
+    else if ( MAAdFormat.mrec == adFormat )
+    {
+        name = @"OnMRecAdRevenuePaid";
+    }
+    else if ( MAAdFormat.interstitial == adFormat )
+    {
+        name = @"OnInterstitialAdRevenuePaid";
+    }
+    else if ( MAAdFormat.rewarded == adFormat )
+    {
+        name = @"OnRewardedAdRevenuePaid";
+    }
+    else
+    {
+        [self logInvalidAdFormat: adFormat];
+        return;
+    }
+
+    NSMutableDictionary *body = [self adInfoForAd: ad].mutableCopy;
+    body[@"networkPlacement"] = ad.networkPlacement;
+    body[@"revenuePrecision"] = ad.revenuePrecision;
+    body[@"countryCode"] = self.sdk.configuration.countryCode;
+
+    [self sendReactNativeEventWithName: name body: body];
+}
+
 - (void)didCompleteRewardedVideoForAd:(MAAd *)ad
 {
     // This event is not forwarded
@@ -941,13 +987,13 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self log: @"Setting width %f for \"%@\" with ad unit identifier \"%@\"", width, adFormat, adUnitIdentifier];
-
+        
         CGFloat minWidth = adFormat.size.width;
         if ( width < minWidth )
         {
             [self log: @"The provided with: %f is smaller than the minimum required width: %f for ad format: %@. Please set the width higher than the minimum required.", width, minWidth, adFormat];
         }
-
+        
         self.adViewWidths[adUnitIdentifier] = @(width);
         [self positionAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
     });
@@ -1051,6 +1097,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         
         MAAdView *view = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
         view.delegate = nil;
+        view.revenueDelegate = nil;
         
         [view removeFromSuperview];
         
@@ -1069,6 +1116,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     {
         result = [[MAInterstitialAd alloc] initWithAdUnitIdentifier: adUnitIdentifier sdk: self.sdk];
         result.delegate = self;
+        result.revenueDelegate = self;
         
         self.interstitials[adUnitIdentifier] = result;
     }
@@ -1083,6 +1131,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     {
         result = [MARewardedAd sharedWithAdUnitIdentifier: adUnitIdentifier sdk: self.sdk];
         result.delegate = self;
+        result.revenueDelegate = self;
         
         self.rewardedAds[adUnitIdentifier] = result;
     }
@@ -1102,6 +1151,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     {
         result = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitIdentifier adFormat: adFormat sdk: self.sdk];
         result.delegate = self;
+        result.revenueDelegate = self;
         result.userInteractionEnabled = NO;
         result.translatesAutoresizingMaskIntoConstraints = NO;
         
@@ -1165,7 +1215,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     // Determine ad width
     //
     CGFloat adViewWidth;
-
+    
     // Check if publisher has overridden width as points
     if ( isWidthPtsOverridden )
     {
@@ -1181,7 +1231,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     {
         adViewWidth = adFormat.size.width;
     }
-
+    
     //
     // Determine ad height
     //
@@ -1309,15 +1359,6 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     [NSLayoutConstraint activateConstraints: constraints];
 }
 
-- (NSDictionary<NSString *, id> *)adInfoForAd:(MAAd *)ad
-{
-    return @{@"adUnitId" : ad.adUnitIdentifier,
-             @"creativeId" : ad.creativeIdentifier ?: @"",
-             @"networkName" : ad.networkName,
-             @"placement" : ad.placement ?: @"",
-             @"revenue" : @(ad.revenue)};
-}
-
 - (void)logInvalidAdFormat:(MAAdFormat *)adFormat
 {
     [self log: @"invalid ad format: %@, from %@", adFormat, [NSThread callStackSymbols]];
@@ -1338,6 +1379,80 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     NSLog(@"[%@] [%@] %@", SDK_TAG, TAG, message);
 }
 
+#pragma mark - Ad Info
+
+- (NSDictionary<NSString *, id> *)adInfoForAd:(MAAd *)ad
+{
+    return @{@"adUnitId" : ad.adUnitIdentifier,
+             @"creativeId" : ad.creativeIdentifier ?: @"",
+             @"networkName" : ad.networkName,
+             @"placement" : ad.placement ?: @"",
+             @"revenue" : @(ad.revenue),
+             @"waterfall": [self createAdWaterfallInfo: ad.waterfall]};
+}
+
+#pragma mark - Waterfall Information
+
+- (NSDictionary<NSString *, id> *)createAdWaterfallInfo:(MAAdWaterfallInfo *)waterfallInfo
+{
+    NSMutableDictionary<NSString *, NSObject *> *waterfallInfoDict = [NSMutableDictionary dictionary];
+    if ( !waterfallInfo ) return waterfallInfoDict;
+    
+    waterfallInfoDict[@"name"] = waterfallInfo.name;
+    waterfallInfoDict[@"testName"] = waterfallInfo.testName;
+    
+    NSMutableArray<NSDictionary<NSString *, NSObject *> *> *networkResponsesArray = [NSMutableArray arrayWithCapacity: waterfallInfo.networkResponses.count];
+    for ( MANetworkResponseInfo *response in  waterfallInfo.networkResponses )
+    {
+        [networkResponsesArray addObject: [self createNetworkResponseInfo: response]];
+    }
+    waterfallInfoDict[@"networkResponses"] = networkResponsesArray;
+    
+    // Convert latency from seconds to milliseconds to match Android.
+    long long latencyMillis = waterfallInfo.latency * 1000;
+    waterfallInfoDict[@"latencyMillis"] = @(latencyMillis);
+    
+    return waterfallInfoDict;
+}
+
+- (NSDictionary<NSString *, id> *)createNetworkResponseInfo:(MANetworkResponseInfo *)response
+{
+    NSMutableDictionary<NSString *, NSObject *> *networkResponseDict = [NSMutableDictionary dictionary];
+    
+    networkResponseDict[@"adLoadState"] = @(response.adLoadState);
+    
+    MAMediatedNetworkInfo *mediatedNetworkInfo = response.mediatedNetwork;
+    if ( mediatedNetworkInfo )
+    {
+        NSMutableDictionary <NSString *, NSObject *> *networkInfoObject = [NSMutableDictionary dictionary];
+        networkInfoObject[@"name"] = mediatedNetworkInfo.name;
+        networkInfoObject[@"adapterClassName"] = mediatedNetworkInfo.adapterClassName;
+        networkInfoObject[@"adapterVersion"] = mediatedNetworkInfo.adapterVersion;
+        networkInfoObject[@"sdkVersion"] = mediatedNetworkInfo.sdkVersion;
+        
+        networkResponseDict[@"mediatedNetwork"] = networkInfoObject;
+    }
+    
+    networkResponseDict[@"credentials"] = response.credentials;
+    
+    MAError *error = response.error;
+    if ( error )
+    {
+        NSMutableDictionary<NSString *, NSObject *> *errorObject = [NSMutableDictionary dictionary];
+        errorObject[@"message"] = error.message;
+        errorObject[@"adLoadFailure"] = error.adLoadFailureInfo;
+        errorObject[@"code"] = @(error.code);
+        
+        networkResponseDict[@"error"] = errorObject;
+    }
+    
+    // Convert latency from seconds to milliseconds to match Android.
+    long long latencySeconds = response.latency * 1000;
+    networkResponseDict[@"latencyMillis"] = @(latencySeconds);
+    
+    return networkResponseDict;
+}
+
 #pragma mark - React Native Event Bridge
 
 - (void)sendReactNativeEventWithName:(NSString *)name body:(NSDictionary<NSString *, id> *)body
@@ -1353,12 +1468,14 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
              @"OnMRecAdClickedEvent",
              @"OnMRecAdCollapsedEvent",
              @"OnMRecAdExpandedEvent",
+             @"OnMRecAdRevenuePaid",
              
              @"OnBannerAdLoadedEvent",
              @"OnBannerAdLoadFailedEvent",
              @"OnBannerAdClickedEvent",
              @"OnBannerAdCollapsedEvent",
              @"OnBannerAdExpandedEvent",
+             @"OnBannerAdRevenuePaid",
              
              @"OnInterstitialLoadedEvent",
              @"OnInterstitialLoadFailedEvent",
@@ -1366,6 +1483,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
              @"OnInterstitialDisplayedEvent",
              @"OnInterstitialAdFailedToDisplayEvent",
              @"OnInterstitialHiddenEvent",
+             @"OnInterstitialAdRevenuePaid",
              
              @"OnRewardedAdLoadedEvent",
              @"OnRewardedAdLoadFailedEvent",
@@ -1373,7 +1491,8 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
              @"OnRewardedAdDisplayedEvent",
              @"OnRewardedAdFailedToDisplayEvent",
              @"OnRewardedAdHiddenEvent",
-             @"OnRewardedAdReceivedRewardEvent"];
+             @"OnRewardedAdReceivedRewardEvent",
+             @"OnRewardedAdRevenuePaid"];
 }
 
 - (void)startObserving
