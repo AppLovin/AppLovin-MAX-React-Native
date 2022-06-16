@@ -846,6 +846,40 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
                                   body: [self adInfoForAd: ad]];
 }
 
+- (void)didPayRevenueForAd:(MAAd *)ad
+{
+    NSString *name;
+    MAAdFormat *adFormat = ad.format;
+    if ( MAAdFormat.banner == adFormat || MAAdFormat.leader == adFormat )
+    {
+        name = @"OnBannerAdRevenuePaid";
+    }
+    else if ( MAAdFormat.mrec == adFormat )
+    {
+        name = @"OnMRecAdRevenuePaid";
+    }
+    else if ( MAAdFormat.interstitial == adFormat )
+    {
+        name = @"OnInterstitialAdRevenuePaid";
+    }
+    else if ( MAAdFormat.rewarded == adFormat )
+    {
+        name = @"OnRewardedAdRevenuePaid";
+    }
+    else
+    {
+        [self logInvalidAdFormat: adFormat];
+        return;
+    }
+
+    NSMutableDictionary *body = [self adInfoForAd: ad].mutableCopy;
+    body[@"networkPlacement"] = ad.networkPlacement;
+    body[@"revenuePrecision"] = ad.revenuePrecision;
+    body[@"countryCode"] = self.sdk.configuration.countryCode;
+
+    [self sendReactNativeEventWithName: name body: body];
+}
+
 - (void)didCompleteRewardedVideoForAd:(MAAd *)ad
 {
     // This event is not forwarded
@@ -1052,6 +1086,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         
         MAAdView *view = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
         view.delegate = nil;
+        view.revenueDelegate = nil;
         
         [view removeFromSuperview];
         
@@ -1070,6 +1105,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     {
         result = [[MAInterstitialAd alloc] initWithAdUnitIdentifier: adUnitIdentifier sdk: self.sdk];
         result.delegate = self;
+        result.revenueDelegate = self;
         
         self.interstitials[adUnitIdentifier] = result;
     }
@@ -1084,6 +1120,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     {
         result = [MARewardedAd sharedWithAdUnitIdentifier: adUnitIdentifier sdk: self.sdk];
         result.delegate = self;
+        result.revenueDelegate = self;
         
         self.rewardedAds[adUnitIdentifier] = result;
     }
@@ -1103,6 +1140,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     {
         result = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitIdentifier adFormat: adFormat sdk: self.sdk];
         result.delegate = self;
+        result.revenueDelegate = self;
         result.userInteractionEnabled = NO;
         result.translatesAutoresizingMaskIntoConstraints = NO;
         
@@ -1419,12 +1457,14 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
              @"OnMRecAdClickedEvent",
              @"OnMRecAdCollapsedEvent",
              @"OnMRecAdExpandedEvent",
+             @"OnMRecAdRevenuePaid",
              
              @"OnBannerAdLoadedEvent",
              @"OnBannerAdLoadFailedEvent",
              @"OnBannerAdClickedEvent",
              @"OnBannerAdCollapsedEvent",
              @"OnBannerAdExpandedEvent",
+             @"OnBannerAdRevenuePaid",
              
              @"OnInterstitialLoadedEvent",
              @"OnInterstitialLoadFailedEvent",
@@ -1432,6 +1472,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
              @"OnInterstitialDisplayedEvent",
              @"OnInterstitialAdFailedToDisplayEvent",
              @"OnInterstitialHiddenEvent",
+             @"OnInterstitialAdRevenuePaid",
              
              @"OnRewardedAdLoadedEvent",
              @"OnRewardedAdLoadFailedEvent",
@@ -1439,7 +1480,8 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
              @"OnRewardedAdDisplayedEvent",
              @"OnRewardedAdFailedToDisplayEvent",
              @"OnRewardedAdHiddenEvent",
-             @"OnRewardedAdReceivedRewardEvent"];
+             @"OnRewardedAdReceivedRewardEvent",
+             @"OnRewardedAdRevenuePaid"];
 }
 
 - (void)startObserving

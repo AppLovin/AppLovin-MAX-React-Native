@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * The primary bridge between JS <-> native code for the AppLovin MAX React Native module.
  */
-@interface AppLovinMAX : RCTEventEmitter<RCTBridgeModule, MAAdDelegate, MARewardedAdDelegate, MAAdViewAdDelegate>
+@interface AppLovinMAX : RCTEventEmitter<RCTBridgeModule, MAAdDelegate, MARewardedAdDelegate, MAAdViewAdDelegate, MAAdRevenueDelegate>
 
 /**
  * Shared instance of this bridge module.

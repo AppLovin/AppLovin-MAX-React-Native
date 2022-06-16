@@ -22,6 +22,7 @@ import android.widget.RelativeLayout;
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxAdViewAdListener;
 import com.applovin.mediation.MaxAdWaterfallInfo;
 import com.applovin.mediation.MaxError;
@@ -71,7 +72,7 @@ import static com.facebook.react.modules.core.DeviceEventManagerModule.RCTDevice
  */
 public class AppLovinMAXModule
         extends ReactContextBaseJavaModule
-        implements MaxAdListener, MaxAdViewAdListener, MaxRewardedAdListener
+        implements MaxAdListener, MaxAdViewAdListener, MaxRewardedAdListener, MaxAdRevenueListener
 {
     private static final String SDK_TAG = "AppLovinSdk";
     private static final String TAG     = "AppLovinMAXModule";
@@ -1074,6 +1075,41 @@ public class AppLovinMAXModule
         sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? "OnMRecAdCollapsedEvent" : "OnBannerAdCollapsedEvent", getAdInfo( ad ) );
     }
 
+ @Override
+    public void onAdRevenuePaid(final MaxAd ad)
+    {
+        final MaxAdFormat adFormat = ad.getFormat();
+        final String name;
+        if ( MaxAdFormat.BANNER == adFormat || MaxAdFormat.LEADER == adFormat )
+        {
+            name = "OnBannerAdRevenuePaid";
+        }
+        else if ( MaxAdFormat.MREC == adFormat )
+        {
+            name = "OnMRecAdRevenuePaid";
+        }
+        else if ( MaxAdFormat.INTERSTITIAL == adFormat )
+        {
+            name = "OnInterstitialAdRevenuePaid";
+        }
+        else if ( MaxAdFormat.REWARDED == adFormat )
+        {
+            name = "OnRewardedAdRevenuePaid";
+        }
+        else
+        {
+            logInvalidAdFormat( adFormat );
+            return;
+        }
+
+        WritableMap adInfo = getAdInfo( ad );
+        adInfo.putString( "networkPlacement", ad.getNetworkPlacement() );
+        adInfo.putString( "revenuePrecision", ad.getRevenuePrecision() );
+        adInfo.putString( "countryCode", sdkConfiguration.getCountryCode() );
+
+        sendReactNativeEvent( name, adInfo );
+    }
+
     @Override
     public void onRewardedVideoCompleted(final MaxAd ad)
     {
@@ -1289,6 +1325,7 @@ public class AppLovinMAXModule
                 }
 
                 adView.setListener( null );
+                adView.setRevenueListener( null );
                 adView.destroy();
 
                 mAdViews.remove( adUnitId );
@@ -1387,6 +1424,7 @@ public class AppLovinMAXModule
         {
             result = new MaxInterstitialAd( adUnitId, sdk, currentActivity );
             result.setListener( this );
+            result.setRevenueListener( this );
 
             mInterstitials.put( adUnitId, result );
         }
@@ -1405,6 +1443,7 @@ public class AppLovinMAXModule
         {
             result = MaxRewardedAd.getInstance( adUnitId, sdk, currentActivity );
             result.setListener( this );
+            result.setRevenueListener( this );
 
             mRewardedAds.put( adUnitId, result );
         }
@@ -1424,6 +1463,7 @@ public class AppLovinMAXModule
         {
             result = new MaxAdView( adUnitId, adFormat, sdk, maybeGetCurrentActivity() );
             result.setListener( this );
+            result.setRevenueListener( this );
 
             mAdViews.put( adUnitId, result );
             mAdViewPositions.put( adUnitId, adViewPosition );
