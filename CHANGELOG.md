@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+    * Lock to Android SDK 11.4.3 and iOS SDK 11.4.2.
     * Add support for custom data.
     * Add support for impression-level user revenue api.
     * Add support for waterfall.
