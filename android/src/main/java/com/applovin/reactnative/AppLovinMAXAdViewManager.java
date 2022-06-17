@@ -31,6 +31,7 @@ class AppLovinMAXAdViewManager
 
     // Storage for placement and extra parameters if set before the MAAdView is created
     private final Map<AppLovinMAXAdView, String> placementRegistry             = new HashMap<>();
+    private final Map<AppLovinMAXAdView, String> customDataRegistry            = new HashMap<>();
     private final Map<AppLovinMAXAdView, String> adaptiveBannerEnabledRegistry = new HashMap<>();
 
     public AppLovinMAXAdViewManager(final ReactApplicationContext reactApplicationContext)
@@ -67,6 +68,10 @@ class AppLovinMAXAdViewManager
         {
             setAdaptiveBannerEnabled( view, arg );
         }
+        else if ( "setCustomData".equals( commandId ) )
+        {
+            setCustomData( view, arg );
+        }
         else if ( "setAdUnitId".equals( commandId ) )
         {
             setAdUnitId( view, arg );
@@ -94,6 +99,23 @@ class AppLovinMAXAdViewManager
             else
             {
                 placementRegistry.put( view, placement );
+            }
+        } );
+    }
+
+    public void setCustomData(final AppLovinMAXAdView view, final String customData)
+    {
+        // Post to main thread to avoid race condition with actual creation of MaxAdView in maybeAttachAdView()
+        view.post( () -> {
+
+            MaxAdView adView = view.getAdView();
+            if ( adView != null )
+            {
+                adView.setCustomData( customData );
+            }
+            else
+            {
+                customDataRegistry.put( view, customData );
             }
         } );
     }
@@ -138,9 +160,11 @@ class AppLovinMAXAdViewManager
     private void maybeAttachAdView(final AppLovinMAXAdView view)
     {
         String placement = placementRegistry.remove( view );
+        String customData = customDataRegistry.remove( view );
         String adaptiveBannerEnabledStr = adaptiveBannerEnabledRegistry.remove( view );
 
         view.maybeAttachAdView( placement,
+                                customData,
                                 adaptiveBannerEnabledStr,
                                 adUnitIdRegistry.get( view ),
                                 adFormatRegistry.get( view ) );

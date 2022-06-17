@@ -74,7 +74,7 @@ class AppLovinMAXAdView
         return adView;
     }
 
-    public void maybeAttachAdView(final String placement, final String adaptiveBannerEnabledStr, final String adUnitId, final MaxAdFormat adFormat)
+    public void maybeAttachAdView(final String placement, final String customData, final String adaptiveBannerEnabledStr, final String adUnitId, final MaxAdFormat adFormat)
     {
         final Activity currentActivity = reactContext.getCurrentActivity();
         if ( currentActivity == null )
@@ -99,6 +99,11 @@ class AppLovinMAXAdView
                     if ( placement != null )
                     {
                         adView.setPlacement( placement );
+                    }
+
+                    if ( customData != null )
+                    {
+                        adView.setCustomData( customData );
                     }
 
                     if ( adaptiveBannerEnabledStr != null )

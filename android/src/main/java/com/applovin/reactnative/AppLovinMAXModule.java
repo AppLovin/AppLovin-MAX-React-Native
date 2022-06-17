@@ -686,6 +686,12 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
+    public void setBannerCustomData(final String adUnitId, final String customData)
+    {
+        setAdViewCustomData( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), customData );
+    }
+
+    @ReactMethod()
     public void setBannerWidth(final String adUnitId, final int widthDp)
     {
         setAdViewWidth( adUnitId, widthDp, getDeviceSpecificBannerAdViewAdFormat() );
@@ -748,6 +754,12 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
+    public void setMRecCustomData(final String adUnitId, final String customData)
+    {
+        setAdViewCustomData( adUnitId, MaxAdFormat.MREC, customData );
+    }
+
+    @ReactMethod()
     public void updateMRecPosition(final String adUnitId, final String mrecPosition)
     {
         updateAdViewPosition( adUnitId, mrecPosition, DEFAULT_AD_VIEW_OFFSET, MaxAdFormat.MREC );
@@ -794,16 +806,10 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
-    public void showInterstitial(final String adUnitId)
-    {
-        showInterstitialWithPlacement( adUnitId, null );
-    }
-
-    @ReactMethod()
-    public void showInterstitialWithPlacement(final String adUnitId, final String placement)
+    public void showInterstitial(final String adUnitId, final String placement, final String customData)
     {
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
-        interstitial.showAd( placement );
+        interstitial.showAd( placement, customData );
     }
 
     @ReactMethod()
@@ -836,16 +842,10 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
-    public void showRewardedAd(final String adUnitId)
-    {
-        showRewardedAdWithPlacement( adUnitId, null );
-    }
-
-    @ReactMethod()
-    public void showRewardedAdWithPlacement(final String adUnitId, final String placement)
+    public void showRewardedAd(final String adUnitId, final String placement, final String customData)
     {
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
-        rewardedAd.showAd( placement );
+        rewardedAd.showAd( placement, customData );
     }
 
     @ReactMethod()
@@ -1205,6 +1205,27 @@ public class AppLovinMAXModule
                 }
 
                 adView.setPlacement( placement );
+            }
+        } );
+    }
+
+    private void setAdViewCustomData(final String adUnitId, final MaxAdFormat adFormat, final String customData)
+    {
+        getReactApplicationContext().runOnUiQueueThread( new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                d( "Setting custom data \"" + customData + "\" for " + adFormat.getLabel() + " with ad unit id \"" + adUnitId + "\"" );
+
+                final MaxAdView adView = retrieveAdView( adUnitId, adFormat, "", DEFAULT_AD_VIEW_OFFSET );
+                if ( adView == null )
+                {
+                    e( adFormat.getLabel() + " does not exist" );
+                    return;
+                }
+
+                adView.setCustomData( customData );
             }
         } );
     }

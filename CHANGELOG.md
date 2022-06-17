@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+    * Add support for custom data.
     * Add support for impression-level user revenue api.
     * Add support for waterfall.
     * Add support for setting user segment via `AppLovinMAX.userSegment.name`.
