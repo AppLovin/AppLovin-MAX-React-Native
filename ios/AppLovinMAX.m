@@ -1388,7 +1388,8 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
              @"networkName" : ad.networkName,
              @"placement" : ad.placement ?: @"",
              @"revenue" : @(ad.revenue),
-             @"waterfall": [self createAdWaterfallInfo: ad.waterfall]};
+             @"waterfall": [self createAdWaterfallInfo: ad.waterfall],
+             @"dspName" : ad.DSPName ?: @""};
 }
 
 #pragma mark - Waterfall Information
