@@ -1722,6 +1722,7 @@ public class AppLovinMAXModule
         adInfo.putString( "placement", !TextUtils.isEmpty( ad.getPlacement() ) ? ad.getPlacement() : "" );
         adInfo.putDouble( "revenue", ad.getRevenue() );
         adInfo.putMap( "waterfall", createAdWaterfallInfo( ad.getWaterfall() ) );
+        adInfo.putString( "dspName", !TextUtils.isEmpty( ad.getDspName() ) ? ad.getDspName() : "" );
 
         return adInfo;
     }
