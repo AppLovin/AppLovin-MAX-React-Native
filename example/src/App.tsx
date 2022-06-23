@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {Platform, StyleSheet, Text, View} from 'react-native';
 import AppLovinMAX from '../../src/index';
 import AppLogo from './components/AppLogo';
@@ -50,7 +50,10 @@ const App = () => {
   const [isProgrammaticMRecShowing, setIsProgrammaticMRecShowing] = useState(false);
   const [isNativeUIMRecShowing, setIsNativeUIMRecShowing] = useState(false);
   const [statusText, setStatusText] = useState('Initializing SDK...');
+  const [isNativeAdShowing, setIsNativeAdShowing] = useState(false);
 
+  const nativeAdViewRef = useRef();
+ 
   // MAX Consent Flow for iOS 14.5+
   if (Platform.OS === 'ios' && parseFloat(Platform.Version) >= 14.5) {
     // Enable the iOS consent flow programmatically - NSUserTrackingUsageDescription must be added to the Info.plist
@@ -209,6 +212,20 @@ const App = () => {
     AppLovinMAX.addEventListener('OnMRecAdRevenuePaid', (adInfo) => {
       logStatus('MREC ad revenue paid: ' + adInfo.revenue);
     });
+
+    AppLovinMAX.addEventListener('OnNativeAdLoadedEvent', (adInfo) => {
+      logStatus('NATIVE ad loaded from: ' + adInfo.networkName);
+    });
+    AppLovinMAX.addEventListener('OnNativeAdLoadFailedEvent', (errorInfo) => {
+      logStatus('NATIVE ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+      console.log(JSON.stringify(errorInfo));
+    });
+    AppLovinMAX.addEventListener('OnNativeAdClickedEvent', (adInfo) => {
+      logStatus('NATIVE ad clicked');
+    });
+    AppLovinMAX.addEventListener('OnNativeAdRevenuePaid', (adInfo) => {
+      logStatus('NATIVE ad revenue paid: ' + adInfo.revenue);
+    });
   }
 
   function getInterstitialButtonTitle() {
@@ -360,6 +377,62 @@ const App = () => {
             setIsProgrammaticMRecShowing(!isProgrammaticMRecShowing);
           }}
         />
+        <View style={{paddingHorizontal: 35}}>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <AppButton
+              title={'PreLoad Native'}
+              enabled={isInitialized}
+              onPress={() => {
+                AppLovinMAX.preLoadNativeAd(NATIVE_AD_UNIT_ID);
+              }}
+              style={{paddingLeft:5, paddingRight:5}}
+            />
+            <AppButton
+              title={isNativeAdShowing ? 'Hide' : 'Show'}
+              enabled={isInitialized}
+              onPress={() => {
+                setIsNativeAdShowing(!isNativeAdShowing);
+              }}
+              style={{paddingLeft:5, paddingRight:5}}
+            />
+            <AppButton
+              title={'Load'}
+              enabled={isInitialized}
+              onPress={() => {
+                nativeAdViewRef.current?.loadAd();
+               }}
+              style={{paddingLeft:5, paddingRight:5}}
+            />
+          </View>
+        </View>
+        {
+          isNativeAdShowing &&
+            <AppLovinMAX.NativeAdView adUnitId={NATIVE_AD_UNIT_ID}
+                                      placement='myplacement'
+                                      customData='mycustomdata'
+                                      extraParameter={{
+                                        'key1':'value1',
+                                        'key2':'value2',
+                                      }}
+                                      ref={nativeAdViewRef}
+                                      style={styles.nativead}>
+              <View style={{flex: 1, flexDirection: 'column'}}>
+                <View style={{flexDirection: 'row'}}>
+                  <AppLovinMAX.IconView style={styles.icon}/>
+                  <View style={{flexDirection: 'column', flexGrow: 1}}>
+                    <AppLovinMAX.TitleView style={styles.title}/>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal:10}}>
+                      <AppLovinMAX.AdvertiserView style={styles.advertiser}/>
+                      <Text style={styles.admark}>AD</Text>
+                    </View>
+                  </View>
+                </View>
+                <AppLovinMAX.BodyView style={styles.body}/>
+                <AppLovinMAX.MediaView style={styles.mediaView}/>
+                <AppLovinMAX.CallToActionView style={styles.callToAction}/>
+              </View>
+            </AppLovinMAX.NativeAdView>
+        }
       </View>
     </NavigationContainer>
   );
@@ -396,7 +469,72 @@ const styles = StyleSheet.create({
       ios: 36, // For bottom safe area
       android: 0,
     })
-  }
+  },
+  nativead: {
+    position: 'absolute',
+    top: '40%',
+    width: '100%',
+    height: 250,
+    backgroundColor: '#12343b',
+  },
+  title: {
+    height: 30,
+    fontSize: 20,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    alignItems: 'center',
+    color: 'white',
+    textAlignVertical: 'center', // android only
+    backgroundColor: '#12343b',
+  },
+  icon: {
+    margin:5,
+    aspectRatio: 1,
+    height: 40,
+    backgroundColor: 'lime',
+    borderRadius: 20,
+    overflow: "hidden",
+    borderWidth: 1,
+  },
+  admark: {
+    height: 15,
+    width: 20,
+    color: 'white',
+    //backgroundColor: 'black',
+    fontSize: 12,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  advertiser: {
+    height: 15,
+    fontSize: 12,
+    textAlign: 'right',
+    fontWeight: 'bold',
+    color: 'white',
+    marginRight: 10,
+  },
+  body: {
+    height: 'auto',
+    fontSize: 14,
+    backgroundColor: '#e1b382',
+  },
+  mediaView: {
+    flexGrow: 1, 
+    height: 'auto',
+    width: '100%',
+    backgroundColor: 'tomato',
+  },
+  callToAction: {
+    width: '100%',
+    height: 30,
+    fontSize: 20,
+    color: 'white',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    backgroundColor: '#2d545e',
+    textTransform: 'uppercase',
+    textAlignVertical: 'center', // android only
+  },
 });
 
 export default App;

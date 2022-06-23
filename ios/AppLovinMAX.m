@@ -7,6 +7,7 @@
 //
 
 #import "AppLovinMAX.h"
+#import "AppLovinMaxNativeAdLoader.h"
 
 #define ROOT_VIEW_CONTROLLER (UIApplication.sharedApplication.keyWindow.rootViewController)
 
@@ -657,6 +658,13 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     [rewardedAd setExtraParameterForKey: key value: value];
 }
 
+#pragma mark - Native
+
+RCT_EXPORT_METHOD(preLoadNativeAd:(NSString *)adUnitIdentifier :(NSString *)placement :(NSString *)customData :(NSDictionary *)extraParameter)
+{
+    [[AppLovinMaxNativeAdLoader shared] preLoadAd: adUnitIdentifier :placement :customData :extraParameter];
+}
+
 #pragma mark - Ad Callbacks
 
 - (void)didLoadAd:(MAAd *)ad
@@ -686,6 +694,10 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     else if ( MAAdFormat.rewarded == adFormat )
     {
         name = @"OnRewardedAdLoadedEvent";
+    }
+    else if ( MAAdFormat.native == adFormat )
+    {
+        name = @"OnNativeAdLoadedEvent";
     }
     else
     {
@@ -719,8 +731,15 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     }
     else
     {
-        [self log: @"invalid adUnitId from %@", [NSThread callStackSymbols]];
-        return;
+        if ([adUnitIdentifier isEqualToString: [AppLovinMaxNativeAdLoader shared].errorAdUnitIdentifier] )
+        {
+            name = @"OnNativeAdLoadFailedEvent";
+        }
+        else
+        {
+            [self log: @"invalid adUnitId from %@", [NSThread callStackSymbols]];
+            return;
+        }
     }
     
     [self sendReactNativeEventWithName: name body: @{@"adUnitId" : adUnitIdentifier,
@@ -749,6 +768,10 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     else if ( MAAdFormat.rewarded == adFormat )
     {
         name = @"OnRewardedAdClickedEvent";
+    }
+    else if ( MAAdFormat.native == adFormat )
+    {
+        name = @"OnNativeAdClickedEvent";
     }
     else
     {
@@ -865,6 +888,10 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     else if ( MAAdFormat.rewarded == adFormat )
     {
         name = @"OnRewardedAdRevenuePaid";
+    }
+    else if ( MAAdFormat.native == adFormat )
+    {
+        name = @"OnNativeAdRevenuePaid";
     }
     else
     {
@@ -1493,7 +1520,12 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
              @"OnRewardedAdFailedToDisplayEvent",
              @"OnRewardedAdHiddenEvent",
              @"OnRewardedAdReceivedRewardEvent",
-             @"OnRewardedAdRevenuePaid"];
+             @"OnRewardedAdRevenuePaid",
+             
+             @"OnNativeAdLoadedEvent",
+             @"OnNativeAdLoadFailedEvent",
+             @"OnNativeAdClickedEvent",
+             @"OnNativeAdRevenuePaid"];
 }
 
 - (void)startObserving

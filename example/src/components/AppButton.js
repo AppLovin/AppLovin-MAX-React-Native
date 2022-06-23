@@ -2,8 +2,9 @@ import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 
 const AppButton = (props) => {
+  const {style, ...rest} = props;
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <TouchableOpacity
         disabled={!props.enabled}
         style={[
@@ -11,6 +12,7 @@ const AppButton = (props) => {
           props.enabled
             ? { backgroundColor: '#DDDDDD' }
             : { backgroundColor: '#EEEEEE' },
+          style,
         ]}
         onPress={props.onPress}
       >
@@ -18,6 +20,7 @@ const AppButton = (props) => {
           style={[
             styles.text,
             props.enabled ? { color: 'black' } : { color: 'gray' },
+            style,
           ]}
         >
           {props.title}
@@ -30,12 +33,12 @@ const AppButton = (props) => {
 const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
-    paddingTop: 10,
+    paddingTop: 8,
     paddingHorizontal: 40,
   },
   button: {
     borderRadius: 8,
-    height: 50,
+    height: 40,
     justifyContent: 'center', // vertical-align
     alignItems: 'center', // horizontal-align
   },

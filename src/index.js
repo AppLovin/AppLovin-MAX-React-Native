@@ -2,6 +2,8 @@ import { NativeModules, NativeEventEmitter } from "react-native";
 import AdView, { AdFormat, AdViewPosition } from "./AppLovinMAXAdView";
 import { TargetingData as targetingData, AdContentRating, UserGender } from "./TargetingData";
 import { UserSegment as userSegment } from "./UserSegment";
+import { NativeAdViewWrapper as NativeAdView } from "./NativeAdView";
+import { AdvertiserView, BodyView, CallToActionView, IconView, MediaView, OptionsView, TitleView } from "./NativeAdComponents";
 
 const { AppLovinMAX } = NativeModules;
 
@@ -82,6 +84,30 @@ const showRewardedAd = (adUnitId, ...args) => {
   }
 };
 
+const preLoadNativeAd = (adUnitId, ...args) => {
+  switch (args.length) {
+  case 0:
+    // adUnitId
+    AppLovinMAX.preLoadNativeAd(adUnitId, null, null, null);
+    break;
+  case 1:
+    // adUnitId, placement
+    AppLovinMAX.preLoadNativeAd(adUnitId, args[0], null, null);
+    break;
+  case 2:
+    // adUnitId, placement, customData
+    AppLovinMAX.preLoadNativeAd(adUnitId, args[0], args[1], null);
+    break;
+  case 3:
+    // adUnitId, placement, customData, extraParameters
+    AppLovinMAX.preLoadNativeAd(adUnitId, args[0], args[1], args[2]);
+    break;
+  default:
+    // do nothing - unexpected number of arguments
+    break;
+  }
+};
+
 export default {
   ...AppLovinMAX,
   AdView,
@@ -92,6 +118,14 @@ export default {
   ConsentDialogState,
   AdViewPosition,
   AdFormat,
+  NativeAdView,
+  AdvertiserView,
+  TitleView,
+  BodyView,
+  CallToActionView,
+  MediaView,
+  OptionsView,
+  IconView,
   addEventListener,
   removeEventListener,
   // Use callback to avoid need for attaching listeners at top level on each re-render
@@ -100,6 +134,7 @@ export default {
   },
   showInterstitial,
   showRewardedAd,
+  preLoadNativeAd,
 
   /*----------------------*/
   /** AUTO-DECLARED APIs **/

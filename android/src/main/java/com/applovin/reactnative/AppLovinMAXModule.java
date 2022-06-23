@@ -855,6 +855,13 @@ public class AppLovinMAXModule
         rewardedAd.setExtraParameter( key, value );
     }
 
+    @ReactMethod()
+    public void preLoadNativeAd(final String adUnitId, @Nullable final String placement, @Nullable final String customData, @Nullable final ReadableMap extraParameter)
+    {
+        Map extraParameterMap = ( extraParameter != null ) ? extraParameter.toHashMap() : null;
+        AppLovinMAXNativeAdLoader.getInstance().preLoadAd( getReactApplicationContext(), adUnitId, placement, customData, extraParameterMap );
+    }
+
     // AD CALLBACKS
 
     @Override
@@ -895,6 +902,10 @@ public class AppLovinMAXModule
         {
             name = "OnRewardedAdLoadedEvent";
         }
+        else if ( MaxAdFormat.NATIVE == adFormat )
+        {
+            name = "OnNativeAdLoadedEvent";
+        }
         else
         {
             logInvalidAdFormat( adFormat );
@@ -928,8 +939,15 @@ public class AppLovinMAXModule
         }
         else
         {
-            logStackTrace( new IllegalStateException( "invalid adUnitId: " + adUnitId ) );
-            return;
+            if ( AppLovinMAXNativeAdLoader.getInstance().errorAdUnitId.equals( adUnitId ) )
+            {
+                name = "OnNativeAdLoadFailedEvent";
+            }
+            else
+            {
+                logStackTrace( new IllegalStateException( "invalid adUnitId: " + adUnitId ) );
+                return;
+            }
         }
 
         sendReactNativeEventForAdLoadFailed( name, adUnitId, error );
@@ -975,6 +993,10 @@ public class AppLovinMAXModule
         else if ( MaxAdFormat.REWARDED == adFormat )
         {
             name = "OnRewardedAdClickedEvent";
+        }
+        else if ( MaxAdFormat.NATIVE == adFormat )
+        {
+            name = "OnNativeAdClickedEvent";
         }
         else
         {
@@ -1095,6 +1117,10 @@ public class AppLovinMAXModule
         else if ( MaxAdFormat.REWARDED == adFormat )
         {
             name = "OnRewardedAdRevenuePaid";
+        }
+        else if ( MaxAdFormat.NATIVE == adFormat )
+        {
+            name = "OnNativeAdRevenuePaid";
         }
         else
         {

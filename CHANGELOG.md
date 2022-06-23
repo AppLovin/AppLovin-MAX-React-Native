@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+    * Add support for native ads via `<AppLovinMAX.NativeAdView adUnitId={...}/>`.
     * Add autorefresh support for banner and MREC native UI components: `<AppLovinMAX.AdView autoRefresh={true/false} .../>`
     * Fix `java.lang.ClassCastException` in Android when ad is loaded due to processing `ad.waterfall` object.
 ## 3.2.2
