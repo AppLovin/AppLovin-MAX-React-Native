@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 3.2.1
     * Add support for getting DSP name if the ad is served by AppLovin Exchange via `ad.dspName`.
 ## 3.2.0
     * Lock to Android SDK 11.4.3 and iOS SDK 11.4.2.
