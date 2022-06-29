@@ -319,15 +319,10 @@ const App = () => {
           }}
         />
         {
-          (() => {
-            if (isNativeUIBannerShowing) {
-              return (
-                <AppLovinMAX.AdView adUnitId={BANNER_AD_UNIT_ID}
-                                    adFormat={AppLovinMAX.AdFormat.BANNER}
-                                    style={styles.banner}/>
-              );
-            }
-          })()
+          isNativeUIBannerShowing &&
+            <AppLovinMAX.AdView adUnitId={BANNER_AD_UNIT_ID}
+                                adFormat={AppLovinMAX.AdFormat.BANNER}
+                                style={styles.banner}/>
         }
         <AppButton
           title={isNativeUIMRecShowing ? 'Hide Native UI MREC' : 'Show Native UI MREC'}
@@ -337,13 +332,10 @@ const App = () => {
           }}
         />
         {
-          (() => {
-            if (isNativeUIMRecShowing) {
-              return (
-                <AppLovinMAX.AdView adUnitId={MREC_AD_UNIT_ID} adFormat={AppLovinMAX.AdFormat.MREC} style={styles.mrec}/>
-              );
-            }
-          })()
+          isNativeUIMRecShowing &&
+            <AppLovinMAX.AdView adUnitId={MREC_AD_UNIT_ID}
+                                adFormat={AppLovinMAX.AdFormat.MREC}
+                                style={styles.mrec}/>
         }
         <AppButton
           title={isProgrammaticMRecShowing ? 'Hide Programmatic MREC' : 'Show Programmatic MREC'}
