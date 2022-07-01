@@ -33,6 +33,7 @@ class AdView extends React.Component {
     this.setPlacement(this.props.placement);
     this.setCustomData(this.props.customData);
     this.setAdaptiveBannerEnabled(this.props.adaptiveBannerEnabled);
+    this.setAutoRefresh(this.props.autoRefresh);
   }
 
   componentDidUpdate(prevProps) {
@@ -55,6 +56,10 @@ class AdView extends React.Component {
 
     if (prevProps.adaptiveBannerEnabled !== this.props.adaptiveBannerEnabled) {
       this.setAdaptiveBannerEnabled(this.props.adaptiveBannerEnabled);
+    }
+
+    if (prevProps.autoRefresh !== this.props.autoRefresh) {
+      this.setAutoRefresh(this.props.autoRefresh);
     }
   }
 
@@ -148,6 +153,22 @@ class AdView extends React.Component {
       }
     }
   }
+
+  setAutoRefresh(enabled) {
+    var adUnitId = this.props.adUnitId;
+    var adFormat = this.props.adFormat;
+
+    // If the ad unit id or ad format are unset, we can't set the autorefresh.
+    if (adUnitId == null || adFormat == null) return;
+
+    if (enabled === true || enabled === false) {
+      UIManager.dispatchViewManagerCommand(
+        findNodeHandle(this),
+        Platform.OS === 'android' ? "setAutoRefresh" : UIManager.getViewManagerConfig("AppLovinMAXAdView").Commands.setAutoRefresh,
+        [enabled]
+      );
+    }
+  }
 }
 
 AdView.propTypes = {
@@ -175,6 +196,11 @@ AdView.propTypes = {
    * A boolean value representing whether or not to enable adaptive banners. Note that adaptive banners are enabled by default as of v2.3.0.
    */
   adaptiveBannerEnabled: PropTypes.bool,
+
+  /**
+   * A boolean value representing whether or not to enable auto refresh. Note that auto refresh is enabled by default.
+   */
+  autoRefresh: PropTypes.bool,
 };
 
 // requireNativeComponent automatically resolves 'AppLovinMAXAdView' to 'AppLovinMAXAdViewManager'

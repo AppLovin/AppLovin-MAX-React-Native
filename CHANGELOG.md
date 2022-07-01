@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+    * Add autoRefresh to native AdView - <AppLovinMAX.AdView autoRefresh={true/false} .../>
     * Fix `java.lang.ClassCastException` in Android when ad is loaded due to processing `ad.waterfall` object.
 ## 3.2.2
     * Lock to Android SDK 11.4.4 and iOS SDK 11.4.3.
