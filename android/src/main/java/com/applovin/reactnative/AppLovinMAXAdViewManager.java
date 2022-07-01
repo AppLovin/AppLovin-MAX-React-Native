@@ -30,9 +30,10 @@ class AppLovinMAXAdViewManager
     private final Map<AppLovinMAXAdView, MaxAdFormat> adFormatRegistry = new HashMap<>();
 
     // Storage for placement and extra parameters if set before the MAAdView is created
-    private final Map<AppLovinMAXAdView, String> placementRegistry             = new HashMap<>();
-    private final Map<AppLovinMAXAdView, String> customDataRegistry            = new HashMap<>();
-    private final Map<AppLovinMAXAdView, String> adaptiveBannerEnabledRegistry = new HashMap<>();
+    private final Map<AppLovinMAXAdView, String>  placementRegistry             = new HashMap<>();
+    private final Map<AppLovinMAXAdView, String>  customDataRegistry            = new HashMap<>();
+    private final Map<AppLovinMAXAdView, String>  adaptiveBannerEnabledRegistry = new HashMap<>();
+    private final Map<AppLovinMAXAdView, Boolean> autoRefreshEnabledRegistry    = new HashMap<>();
 
     public AppLovinMAXAdViewManager(final ReactApplicationContext reactApplicationContext)
     {
@@ -56,6 +57,12 @@ class AppLovinMAXAdViewManager
     public void receiveCommand(@NonNull AppLovinMAXAdView view, String commandId, @Nullable ReadableArray args)
     {
         if ( args == null ) return;
+
+        if ( "setAutoRefresh".equals( commandId ) )
+        {
+            setAutoRefresh( view, args.getBoolean( 0 ) );
+            return;
+        }
 
         String arg = args.getString( 0 );
         if ( arg == null ) return;
@@ -137,6 +144,30 @@ class AppLovinMAXAdViewManager
         } );
     }
 
+    public void setAutoRefresh(final AppLovinMAXAdView view, final boolean enabled)
+    {
+        // Post to main thread to avoid race condition with actual creation of MaxAdView in maybeAttachAdView()
+        view.post( () -> {
+
+            MaxAdView adView = view.getAdView();
+            if ( adView != null )
+            {
+                if ( enabled )
+                {
+                    adView.startAutoRefresh();
+                }
+                else
+                {
+                    adView.stopAutoRefresh();
+                }
+            }
+            else
+            {
+                autoRefreshEnabledRegistry.put( view, enabled );
+            }
+        } );
+    }
+
     public void setAdUnitId(final AppLovinMAXAdView view, final String adUnitId)
     {
         adUnitIdRegistry.put( view, adUnitId );
@@ -162,10 +193,13 @@ class AppLovinMAXAdViewManager
         String placement = placementRegistry.remove( view );
         String customData = customDataRegistry.remove( view );
         String adaptiveBannerEnabledStr = adaptiveBannerEnabledRegistry.remove( view );
+        Boolean autoRefreshEnabledObj = autoRefreshEnabledRegistry.remove( view );
+        boolean autoRefreshEnabled = (autoRefreshEnabledObj == null) ? true : autoRefreshEnabledObj.booleanValue();
 
         view.maybeAttachAdView( placement,
                                 customData,
                                 adaptiveBannerEnabledStr,
+                                autoRefreshEnabled,
                                 adUnitIdRegistry.get( view ),
                                 adFormatRegistry.get( view ) );
     }

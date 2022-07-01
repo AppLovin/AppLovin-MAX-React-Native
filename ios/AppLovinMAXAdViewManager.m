@@ -27,6 +27,7 @@
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSString *> *placementRegistry;
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSString *> *customDataRegistry;
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSString *> *adaptiveBannerEnabledRegistry;
+@property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSNumber *> *autoRefreshEnabledRegistry;
 
 @end
 
@@ -49,6 +50,7 @@ RCT_EXPORT_MODULE(AppLovinMAXAdView)
         self.placementRegistry = [NSMutableDictionary dictionary];
         self.customDataRegistry = [NSMutableDictionary dictionary];
         self.adaptiveBannerEnabledRegistry = [NSMutableDictionary dictionary];
+        self.autoRefreshEnabledRegistry = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -130,6 +132,38 @@ RCT_EXPORT_METHOD(setAdaptiveBannerEnabled:(nonnull NSNumber *)viewTag toEnabled
         else
         {
             self.adaptiveBannerEnabledRegistry[viewTag] = enabledStr;
+        }
+    }];
+}
+
+// NOTE: `nonnull` must be annotated here for this RN export to work at runtime
+RCT_EXPORT_METHOD(setAutoRefresh:(nonnull NSNumber *)viewTag toEnabled:(BOOL)enabled)
+{
+    [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        
+        // NOTE: iOS caches the native view via `viewTag` when you remove it from screen (unlike Android)
+        UIView *view = viewRegistry[viewTag];
+        if ( !view )
+        {
+            RCTLogError(@"Cannot find UIView with tag %@", viewTag);
+            return;
+        }
+        
+        MAAdView *adView = [self adViewFromContainerView: view];
+        if ( adView )
+        {
+            if ( enabled )
+            {
+                [adView startAutoRefresh];
+            }
+            else
+            {
+                [adView stopAutoRefresh];
+            }
+        }
+        else
+        {
+            self.autoRefreshEnabledRegistry[viewTag] = [NSNumber numberWithBool: enabled];
         }
     }];
 }
@@ -230,6 +264,16 @@ RCT_EXPORT_METHOD(setAdFormat:(nonnull NSNumber *)viewTag toAdFormat:(NSString *
                 [adView setExtraParameterForKey: @"adaptive_banner" value: adaptiveBannerEnabledStr];
             }
             
+            NSNumber *autoRefreshEnabled = self.autoRefreshEnabledRegistry[viewTag];
+            if ( [autoRefreshEnabled boolValue] )
+            {
+                [adView startAutoRefresh];
+            }
+            else
+            {
+                [adView stopAutoRefresh];
+            }
+
             [adView loadAd];
             
             [containerView addSubview: adView];
