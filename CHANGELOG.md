@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+    * Fix an exception in Android waterfall.
 ## 3.2.2
     * Lock to Android SDK 11.4.4 and iOS SDK 11.4.3.
 ## 3.2.1

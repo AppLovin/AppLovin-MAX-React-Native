@@ -1770,8 +1770,12 @@ public class AppLovinMAXModule
         WritableMap credentials = Arguments.createMap();
         for ( String key : credentialBundle.keySet() )
         {
-            String value = credentialBundle.getString( key, "" );
-            credentials.putString( key, value );
+            Object obj = credentialBundle.get( key );
+            if ( obj != null )
+            {
+                String value = obj.toString();
+                credentials.putString( key, value );
+            }
         }
         networkResponseObject.putMap( "credentials", credentials );
 
