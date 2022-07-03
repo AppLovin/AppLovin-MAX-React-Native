@@ -1,4 +1,6 @@
-import AppLovinMAX from "./index.js";
+import { NativeModules } from "react-native";
+
+const { AppLovinMAX } = NativeModules;
 
 const AdContentRating = {
   None:               0,

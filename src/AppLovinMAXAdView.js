@@ -1,7 +1,25 @@
-import { requireNativeComponent, UIManager, findNodeHandle } from "react-native";
+import { NativeModules, requireNativeComponent, UIManager, findNodeHandle } from "react-native";
 import PropTypes from "prop-types";
 import React from "react";
-import AppLovinMAX from "./index.js";
+
+const { AppLovinMAX } = NativeModules;
+
+export const AdFormat = {
+  BANNER: "banner",
+  MREC: "mrec",
+};
+
+export const AdViewPosition = {
+  TOP_CENTER: "top_center",
+  TOP_LEFT: "top_left",
+  TOP_RIGHT: "top_right",
+  CENTERED: "centered",
+  CENTER_LEFT: "center_left",
+  CENTER_RIGHT: "center_right",
+  BOTTOM_LEFT: "bottom_left",
+  BOTTOM_CENTER: "bottom_center",
+  BOTTOM_RIGHT: "bottom_right",
+};
 
 class AdView extends React.Component {
 
@@ -52,7 +70,7 @@ class AdView extends React.Component {
   // Helper Functions
 
   sizeForAdFormat(adFormat) {
-    if (adFormat === AppLovinMAX.AdFormat.BANNER) {
+    if (adFormat === AdFormat.BANNER) {
 
       var width = AppLovinMAX.isTablet() ? 728 : 320;
       var height;
@@ -120,7 +138,7 @@ class AdView extends React.Component {
     // If the ad unit id or ad format are unset, we can't set the value
     if (adUnitId == null || adFormat == null) return;
 
-    if (adFormat === AppLovinMAX.AdFormat.BANNER) {
+    if (adFormat === AdFormat.BANNER) {
       if (enabled === true || enabled === false) {
         UIManager.dispatchViewManagerCommand(
             findNodeHandle(this),
