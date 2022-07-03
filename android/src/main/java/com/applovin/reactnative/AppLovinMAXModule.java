@@ -92,10 +92,14 @@ public class AppLovinMAXModule
     private int           lastRotation;
 
     // Store these values if pub attempts to set it before initializing
-    private String       userIdToSet;
-    private List<String> testDeviceAdvertisingIdsToSet;
-    private Boolean      verboseLoggingToSet;
-    private Boolean      creativeDebuggerEnabledToSet;
+    private       String              userIdToSet;
+    private       String              userSegmentNameToSet;
+    private       List<String>        testDeviceAdvertisingIdsToSet;
+    private       Boolean             verboseLoggingToSet;
+    private       Boolean             creativeDebuggerEnabledToSet;
+    private       Boolean             locationCollectionEnabled;
+    private final Map<String, String> extraParametersToSet     = new HashMap<>( 8 );
+    private final Object              extraParametersToSetLock = new Object();
 
     // Fullscreen Ad Fields
     private final Map<String, MaxInterstitialAd> mInterstitials = new HashMap<>( 2 );
@@ -232,6 +236,13 @@ public class AppLovinMAXModule
             userIdToSet = null;
         }
 
+        // Set user segment name if needed
+        if ( !TextUtils.isEmpty( userSegmentNameToSet ) )
+        {
+            sdk.getUserSegment().setName( userSegmentNameToSet );
+            userSegmentNameToSet = null;
+        }
+
         // Set test device ids if needed
         if ( testDeviceAdvertisingIdsToSet != null )
         {
@@ -252,6 +263,15 @@ public class AppLovinMAXModule
             sdk.getSettings().setCreativeDebuggerEnabled( creativeDebuggerEnabledToSet );
             creativeDebuggerEnabledToSet = null;
         }
+
+        // Set location collection enabled if needed
+        if ( locationCollectionEnabled != null )
+        {
+            sdk.getSettings().setLocationCollectionEnabled( locationCollectionEnabled );
+            locationCollectionEnabled = null;
+        }
+
+        setPendingExtraParametersIfNeeded( sdk.getSettings() );
 
         sdk.initializeSdk( new AppLovinSdk.SdkInitializationListener()
         {
@@ -454,6 +474,30 @@ public class AppLovinMAXModule
         else
         {
             testDeviceAdvertisingIdsToSet = advertisingIds;
+        }
+    }
+
+    @ReactMethod()
+    public void setExtraParameter(final String key, @Nullable final String value)
+    {
+        if ( TextUtils.isEmpty( key ) )
+        {
+            e( "ERROR: Failed to set extra parameter for null or empty key: " + key );
+            return;
+        }
+
+        if ( sdk != null )
+        {
+            AppLovinSdkSettings settings = sdk.getSettings();
+            settings.setExtraParameter( key, value );
+            setPendingExtraParametersIfNeeded( settings );
+        }
+        else
+        {
+            synchronized ( extraParametersToSetLock )
+            {
+                extraParametersToSet.put( key, value );
+            }
         }
     }
 
@@ -1075,7 +1119,7 @@ public class AppLovinMAXModule
         sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? "OnMRecAdCollapsedEvent" : "OnBannerAdCollapsedEvent", getAdInfo( ad ) );
     }
 
- @Override
+    @Override
     public void onAdRevenuePaid(final MaxAd ad)
     {
         final MaxAdFormat adFormat = ad.getFormat();
@@ -1627,6 +1671,23 @@ public class AppLovinMAXModule
 
         relativeLayout.setGravity( gravity );
         relativeLayout.setPadding( adViewOffset.x, adViewOffset.y, adViewOffset.x, adViewOffset.y );
+    }
+
+    private void setPendingExtraParametersIfNeeded(final AppLovinSdkSettings settings)
+    {
+        Map<String, String> extraParameters;
+        synchronized ( extraParametersToSetLock )
+        {
+            if ( extraParametersToSet.size() <= 0 ) return;
+
+            extraParameters = new HashMap<>( extraParametersToSet );
+            extraParametersToSet.clear();
+        }
+
+        for ( final String key : extraParameters.keySet() )
+        {
+            settings.setExtraParameter( key, extraParameters.get( key ) );
+        }
     }
 
     // Utility Methods

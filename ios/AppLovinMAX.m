@@ -37,9 +37,14 @@
 
 // Store these values if pub attempts to set it before initializing
 @property (nonatomic,   copy, nullable) NSString *userIdentifierToSet;
+@property (nonatomic,   copy, nullable) NSString *userSegmentNameToSet;
 @property (nonatomic, strong, nullable) NSArray<NSString *> *testDeviceIdentifiersToSet;
 @property (nonatomic, strong, nullable) NSNumber *verboseLoggingToSet;
 @property (nonatomic, strong, nullable) NSNumber *creativeDebuggerEnabledToSet;
+@property (nonatomic, strong, nullable) NSNumber *locationCollectionEnabledToSet;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, NSString *> *extraParametersToSet;
+@property (nonatomic, strong) NSObject *extraParametersToSetLock;
+
 @property (nonatomic, strong, nullable) NSNumber *consentFlowEnabledToSet;
 @property (nonatomic, strong, nullable) NSURL *privacyPolicyURLToSet;
 @property (nonatomic, strong, nullable) NSURL *termsOfServiceURLToSet;
@@ -108,7 +113,9 @@ RCT_EXPORT_MODULE()
         self.adViewConstraints = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.adUnitIdentifiersToShowAfterCreate = [NSMutableArray arrayWithCapacity: 2];
         self.disabledAdaptiveBannerAdUnitIdentifiers = [NSMutableSet setWithCapacity: 2];
-        
+        self.extraParametersToSet = [NSMutableDictionary dictionaryWithCapacity: 8];
+        self.extraParametersToSetLock = [[NSObject alloc] init];
+
         self.safeAreaBackground = [[UIView alloc] init];
         self.safeAreaBackground.hidden = YES;
         self.safeAreaBackground.backgroundColor = UIColor.clearColor;
@@ -173,6 +180,13 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         self.userIdentifierToSet = nil;
     }
     
+    // Set user segment name if needed
+    if ( self.userSegmentNameToSet )
+    {
+        self.sdk.userSegment.name = self.userSegmentNameToSet;
+        self.userSegmentNameToSet = nil;
+    }
+
     // Set test device ids if needed
     if ( self.testDeviceIdentifiersToSet )
     {
@@ -194,6 +208,15 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         self.creativeDebuggerEnabledToSet = nil;
     }
     
+    // Set location collection enabled if needed
+    if ( self.locationCollectionEnabledToSet )
+    {
+        self.sdk.settings.locationCollectionEnabled = self.locationCollectionEnabledToSet.boolValue;
+        self.locationCollectionEnabledToSet = nil;
+    }
+        
+    [self setPendingExtraParametersIfNeeded: self.sdk.settings];
+
     [self.sdk initializeSdkWithCompletionHandler:^(ALSdkConfiguration *configuration)
      {
         [self log: @"SDK initialized"];
@@ -334,6 +357,29 @@ RCT_EXPORT_METHOD(setCreativeDebuggerEnabled:(BOOL)enabled)
     }
 }
 
+RCT_EXPORT_METHOD(setExtraParameter:(NSString *)key :(nullable NSString *)value)
+{
+    if ( ![key al_isValidString] )
+    {
+        [self log: @"[%@] Failed to set extra parameter for nil or empty key: %@", TAG, key];
+        return;
+    }
+
+    if ( _sdk )
+    {
+        ALSdkSettings *settings = _sdk.settings;
+        [settings setExtraParameterForKey: key value: value];
+        [self setPendingExtraParametersIfNeeded: settings];
+    }
+    else
+    {
+        @synchronized ( _extraParametersToSetLock )
+        {
+            self.extraParametersToSet[key] = value;
+        }
+    }
+}
+
 RCT_EXPORT_METHOD(setConsentFlowEnabled:(BOOL)enabled)
 {
     self.consentFlowEnabledToSet = @(enabled);
@@ -353,13 +399,15 @@ RCT_EXPORT_METHOD(setTermsOfServiceUrl:(NSString *)urlString)
 
 RCT_EXPORT_METHOD(setUserSegment:(nullable NSString *)name)
 {
-    if ( !_sdk )
+    if ( [self isPluginInitialized] )
     {
-        [self logUninitializedAccessError: @"setUserSegment"];
-        return;
+        self.sdk.userSegment.name = name;
+        self.userSegmentNameToSet = nil;
     }
-
-    self.sdk.userSegment.name = name;
+    else
+    {
+        self.userSegmentNameToSet = name;
+    }
 }
 
 RCT_EXPORT_METHOD(setTargetingDataYearOfBirth:(nonnull NSNumber *)yearOfBirth)
@@ -482,15 +530,17 @@ RCT_EXPORT_METHOD(clearAllTargetingData)
     [self.sdk.targetingData clearAll];
 }
 
-RCT_EXPORT_METHOD(setLocationCollectionEnabled:(BOOL)locationCollectionEnabled)
+RCT_EXPORT_METHOD(setLocationCollectionEnabled:(BOOL)enabled)
 {
-    if ( !_sdk )
+    if ( [self isPluginInitialized] )
     {
-        [self logUninitializedAccessError: @"setLocationCollectionEnabled"];
-        return;
+        self.sdk.settings.locationCollectionEnabled = enabled;
+        self.locationCollectionEnabledToSet = nil;
     }
-    
-    self.sdk.settings.locationCollectionEnabled = locationCollectionEnabled;
+    else
+    {
+        self.locationCollectionEnabledToSet = @(enabled);
+    }
 }
 
 #pragma mark - Event Tracking
@@ -1357,6 +1407,23 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     self.adViewConstraints[adUnitIdentifier] = constraints;
     
     [NSLayoutConstraint activateConstraints: constraints];
+}
+
+- (void)setPendingExtraParametersIfNeeded:(ALSdkSettings *)settings
+{
+    NSDictionary *extraParameters;
+    @synchronized ( _extraParametersToSetLock )
+    {
+        if ( _extraParametersToSet.count <= 0 ) return;
+            
+        extraParameters = [NSDictionary dictionaryWithDictionary: _extraParametersToSet];
+        [_extraParametersToSet removeAllObjects];
+    }
+        
+    for ( NSString *key in extraParameters.allKeys )
+    {
+        [settings setExtraParameterForKey: key value: extraParameters[key]];
+    }
 }
 
 - (void)logInvalidAdFormat:(MAAdFormat *)adFormat
