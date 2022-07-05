@@ -1,5 +1,5 @@
 import { NativeModules, NativeEventEmitter } from "react-native";
-import AdView from "./AppLovinMAXAdView";
+import AdView, { AdFormat, AdViewPosition } from "./AppLovinMAXAdView";
 import { TargetingData as targetingData, AdContentRating, UserGender } from "./TargetingData";
 import { UserSegment as userSegment } from "./UserSegment";
 
@@ -27,25 +27,6 @@ const ConsentDialogState = {
    */
   DOES_NOT_APPLY: 2,
 };
-
-const AdFormat = {
-  BANNER: "banner",
-  MREC: "mrec",
-};
-
-const AdViewPosition = {
-  TOP_CENTER: "top_center",
-  TOP_LEFT: "top_left",
-  TOP_RIGHT: "top_right",
-  CENTERED: "centered",
-  CENTER_LEFT: "center_left",
-  CENTER_RIGHT: "center_right",
-  BOTTOM_LEFT: "bottom_left",
-  BOTTOM_CENTER: "bottom_center",
-  BOTTOM_RIGHT: "bottom_right",
-};
-
-// const AdView = AppLovinMAXAdView;
 
 const emitter = new NativeEventEmitter(AppLovinMAX);
 const subscriptions = {};
