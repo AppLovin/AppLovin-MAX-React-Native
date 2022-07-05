@@ -1771,10 +1771,9 @@ public class AppLovinMAXModule
         for ( String key : credentialBundle.keySet() )
         {
             Object obj = credentialBundle.get( key );
-            if ( obj != null )
+            if ( obj instanceof String )
             {
-                String value = obj.toString();
-                credentials.putString( key, value );
+                credentials.putString( key, (String) obj );
             }
         }
         networkResponseObject.putMap( "credentials", credentials );
