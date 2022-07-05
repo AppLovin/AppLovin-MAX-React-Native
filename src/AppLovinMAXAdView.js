@@ -1,4 +1,4 @@
-import { NativeModules, requireNativeComponent, UIManager, findNodeHandle } from "react-native";
+import { NativeModules, requireNativeComponent, UIManager, findNodeHandle, View, Text, StyleSheet } from "react-native";
 import PropTypes from "prop-types";
 import React from "react";
 
@@ -20,6 +20,34 @@ export const AdViewPosition = {
   BOTTOM_CENTER: "bottom_center",
   BOTTOM_RIGHT: "bottom_right",
 };
+
+const AdViewWrapper = (props) => {
+  const {style, ...rest} = props;
+  return (
+    AppLovinMAX.isInitialized() ?
+      <AdView {...style} {...rest}/>
+    :
+      <View style={[styles.container, style]} {...rest}>
+        {
+          console.warn('[AppLovinSdk] [AppLovinMAX] <AdView/> has been mounted before AppLovin initialization')
+        } 
+        <Text style={styles.message}>Ad placeholder by AppLovin &copy;</Text>
+      </View>
+  )
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex:1,
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    backgroundColor: 'black',
+  },
+  message: {
+    color: 'white',
+  },
+});
 
 class AdView extends React.Component {
 
@@ -180,4 +208,4 @@ AdView.propTypes = {
 // requireNativeComponent automatically resolves 'AppLovinMAXAdView' to 'AppLovinMAXAdViewManager'
 var AppLovinMAXAdView = requireNativeComponent("AppLovinMAXAdView", AdView);
 
-export default AdView;
+export default AdViewWrapper;
