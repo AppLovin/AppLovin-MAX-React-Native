@@ -163,7 +163,7 @@ RCT_EXPORT_METHOD(setAutoRefresh:(nonnull NSNumber *)viewTag toEnabled:(BOOL)ena
         }
         else
         {
-            self.autoRefreshEnabledRegistry[viewTag] = [NSNumber numberWithBool: enabled];
+            self.autoRefreshEnabledRegistry[viewTag] = @(enabled);
         }
     }];
 }
