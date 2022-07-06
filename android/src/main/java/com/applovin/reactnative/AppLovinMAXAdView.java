@@ -74,7 +74,7 @@ class AppLovinMAXAdView
         return adView;
     }
 
-    public void maybeAttachAdView(final String placement, final String customData, final String adaptiveBannerEnabledStr, final String adUnitId, final MaxAdFormat adFormat)
+    public void maybeAttachAdView(final String placement, final String customData, final String adaptiveBannerEnabledStr, final Boolean autoRefreshEnabled, final String adUnitId, final MaxAdFormat adFormat)
     {
         final Activity currentActivity = reactContext.getCurrentActivity();
         if ( currentActivity == null )
@@ -109,6 +109,21 @@ class AppLovinMAXAdView
                     if ( adaptiveBannerEnabledStr != null )
                     {
                         adView.setExtraParameter( "adaptive_banner", adaptiveBannerEnabledStr );
+                    }
+
+                    // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
+                    adView.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
+
+                    if ( autoRefreshEnabled != null )
+                    {
+                        if ( autoRefreshEnabled.booleanValue() )
+                        {
+                            adView.startAutoRefresh();
+                        }
+                        else
+                        {
+                            adView.stopAutoRefresh();
+                        }
                     }
 
                     adView.loadAd();
