@@ -198,7 +198,7 @@ AdView.propTypes = {
   adaptiveBannerEnabled: PropTypes.bool,
 
   /**
-   * A boolean value representing whether or not to enable auto refresh. Note that auto-refresh is enabled by default.
+   * A boolean value representing whether or not to enable auto-refresh. Note that auto-refresh is enabled by default.
    */
   autoRefresh: PropTypes.bool,
 };
