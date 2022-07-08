@@ -37,7 +37,6 @@
 
 // Store these values if pub attempts to set it before initializing
 @property (nonatomic,   copy, nullable) NSString *userIdentifierToSet;
-@property (nonatomic,   copy, nullable) NSString *userSegmentNameToSet;
 @property (nonatomic, strong, nullable) NSArray<NSString *> *testDeviceIdentifiersToSet;
 @property (nonatomic, strong, nullable) NSNumber *verboseLoggingToSet;
 @property (nonatomic, strong, nullable) NSNumber *creativeDebuggerEnabledToSet;
@@ -180,13 +179,6 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         self.userIdentifierToSet = nil;
     }
     
-    // Set user segment name if needed
-    if ( self.userSegmentNameToSet )
-    {
-        self.sdk.userSegment.name = self.userSegmentNameToSet;
-        self.userSegmentNameToSet = nil;
-    }
-
     // Set test device ids if needed
     if ( self.testDeviceIdentifiersToSet )
     {
@@ -396,19 +388,6 @@ RCT_EXPORT_METHOD(setTermsOfServiceUrl:(NSString *)urlString)
 }
 
 #pragma mark - Data Passing
-
-RCT_EXPORT_METHOD(setUserSegment:(nullable NSString *)name)
-{
-    if ( [self isPluginInitialized] )
-    {
-        self.sdk.userSegment.name = name;
-        self.userSegmentNameToSet = nil;
-    }
-    else
-    {
-        self.userSegmentNameToSet = name;
-    }
-}
 
 RCT_EXPORT_METHOD(setTargetingDataYearOfBirth:(nonnull NSNumber *)yearOfBirth)
 {

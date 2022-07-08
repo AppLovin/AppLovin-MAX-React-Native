@@ -93,11 +93,10 @@ public class AppLovinMAXModule
 
     // Store these values if pub attempts to set it before initializing
     private       String              userIdToSet;
-    private       String              userSegmentNameToSet;
     private       List<String>        testDeviceAdvertisingIdsToSet;
     private       Boolean             verboseLoggingToSet;
     private       Boolean             creativeDebuggerEnabledToSet;
-    private       Boolean             locationCollectionEnabled;
+    private       Boolean             locationCollectionEnabledToSet;
     private final Map<String, String> extraParametersToSet     = new HashMap<>( 8 );
     private final Object              extraParametersToSetLock = new Object();
 
@@ -236,13 +235,6 @@ public class AppLovinMAXModule
             userIdToSet = null;
         }
 
-        // Set user segment name if needed
-        if ( !TextUtils.isEmpty( userSegmentNameToSet ) )
-        {
-            sdk.getUserSegment().setName( userSegmentNameToSet );
-            userSegmentNameToSet = null;
-        }
-
         // Set test device ids if needed
         if ( testDeviceAdvertisingIdsToSet != null )
         {
@@ -265,10 +257,10 @@ public class AppLovinMAXModule
         }
 
         // Set location collection enabled if needed
-        if ( locationCollectionEnabled != null )
+        if ( locationCollectionEnabledToSet != null )
         {
-            sdk.getSettings().setLocationCollectionEnabled( locationCollectionEnabled );
-            locationCollectionEnabled = null;
+            sdk.getSettings().setLocationCollectionEnabled( locationCollectionEnabledToSet );
+            locationCollectionEnabledToSet = null;
         }
 
         setPendingExtraParametersIfNeeded( sdk.getSettings() );
@@ -428,16 +420,16 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
-    public void setVerboseLogging(final boolean verboseLoggingEnabled)
+    public void setVerboseLogging(final boolean enabled)
     {
         if ( isPluginInitialized )
         {
-            sdk.getSettings().setVerboseLogging( verboseLoggingEnabled );
+            sdk.getSettings().setVerboseLogging( enabled );
             verboseLoggingToSet = null;
         }
         else
         {
-            verboseLoggingToSet = verboseLoggingEnabled;
+            verboseLoggingToSet = enabled;
         }
     }
 
@@ -511,18 +503,6 @@ public class AppLovinMAXModule
     public void setTermsOfServiceUrl(final String urlString) {}
 
     // Data Passing
-
-    @ReactMethod()
-    public void setUserSegment(final String name)
-    {
-        if ( sdk == null )
-        {
-            logUninitializedAccessError( "setUserSegment" );
-            return;
-        }
-
-        sdk.getUserSegment().setName( name );
-    }
 
     @ReactMethod()
     public void setTargetingDataYearOfBirth(final int yearOfBirth)
@@ -673,15 +653,17 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
-    public void setLocationCollectionEnabled(final boolean locationCollectionEnabled)
+    public void setLocationCollectionEnabled(final boolean enabled)
     {
-        if ( sdk == null )
+        if ( isPluginInitialized )
         {
-            logUninitializedAccessError( "setLocationCollectionEnabled" );
-            return;
+            sdk.getSettings().setLocationCollectionEnabled( enabled );
+            locationCollectionEnabledToSet = null;
         }
-
-        sdk.getSettings().setLocationCollectionEnabled( locationCollectionEnabled );
+        else
+        {
+            locationCollectionEnabledToSet = enabled;
+        }
     }
 
     // EVENT TRACKING

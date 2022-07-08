@@ -1,7 +1,6 @@
 import { NativeModules, NativeEventEmitter } from "react-native";
 import AdView, { AdFormat, AdViewPosition } from "./AppLovinMAXAdView";
 import { TargetingData as targetingData, AdContentRating, UserGender } from "./TargetingData";
-import { UserSegment as userSegment } from "./UserSegment";
 
 const { AppLovinMAX } = NativeModules;
 
@@ -85,7 +84,6 @@ const showRewardedAd = (adUnitId, ...args) => {
 export default {
   ...AppLovinMAX,
   AdView,
-  userSegment,
   targetingData,
   AdContentRating,
   UserGender,
