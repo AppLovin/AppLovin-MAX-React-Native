@@ -31,18 +31,18 @@ const AdViewWrapper = (props) => {
         {
           console.warn('[AppLovinSdk] [AppLovinMAX] <AdView/> has been mounted before AppLovin initialization')
         } 
-        <Text style={styles.message}>Ad placeholder by AppLovin &copy;</Text>
       </View>
   )
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     flexDirection: 'column',
     justifyContent: 'flex-end',
     alignItems: 'center',
     backgroundColor: 'black',
+    borderColor: 'whitesmoke',
+    borderWidth: 1,
   },
   message: {
     color: 'white',
