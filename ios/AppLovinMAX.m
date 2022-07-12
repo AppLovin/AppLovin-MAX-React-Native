@@ -42,7 +42,6 @@
 @property (nonatomic, strong, nullable) NSNumber *creativeDebuggerEnabledToSet;
 @property (nonatomic, strong, nullable) NSNumber *locationCollectionEnabledToSet;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSString *> *extraParametersToSet;
-@property (nonatomic, strong) NSObject *extraParametersToSetLock;
 
 @property (nonatomic, strong, nullable) NSNumber *consentFlowEnabledToSet;
 @property (nonatomic, strong, nullable) NSURL *privacyPolicyURLToSet;
@@ -113,8 +112,7 @@ RCT_EXPORT_MODULE()
         self.adUnitIdentifiersToShowAfterCreate = [NSMutableArray arrayWithCapacity: 2];
         self.disabledAdaptiveBannerAdUnitIdentifiers = [NSMutableSet setWithCapacity: 2];
         self.extraParametersToSet = [NSMutableDictionary dictionaryWithCapacity: 8];
-        self.extraParametersToSetLock = [[NSObject alloc] init];
-
+        
         self.safeAreaBackground = [[UIView alloc] init];
         self.safeAreaBackground.hidden = YES;
         self.safeAreaBackground.backgroundColor = UIColor.clearColor;
@@ -365,10 +363,7 @@ RCT_EXPORT_METHOD(setExtraParameter:(NSString *)key :(nullable NSString *)value)
     }
     else
     {
-        @synchronized ( _extraParametersToSetLock )
-        {
-            self.extraParametersToSet[key] = value;
-        }
+        self.extraParametersToSet[key] = value;
     }
 }
 
@@ -1391,18 +1386,15 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 - (void)setPendingExtraParametersIfNeeded:(ALSdkSettings *)settings
 {
     NSDictionary *extraParameters;
-    @synchronized ( _extraParametersToSetLock )
+    
+    if ( _extraParametersToSet.count <= 0 ) return;
+    
+    for ( NSString *key in _extraParametersToSet.allKeys )
     {
-        if ( _extraParametersToSet.count <= 0 ) return;
-            
-        extraParameters = [NSDictionary dictionaryWithDictionary: _extraParametersToSet];
-        [_extraParametersToSet removeAllObjects];
+        [settings setExtraParameterForKey: key value: _extraParametersToSet[key]];
     }
-        
-    for ( NSString *key in extraParameters.allKeys )
-    {
-        [settings setExtraParameterForKey: key value: extraParameters[key]];
-    }
+
+    [_extraParametersToSet removeAllObjects];
 }
 
 - (void)logInvalidAdFormat:(MAAdFormat *)adFormat

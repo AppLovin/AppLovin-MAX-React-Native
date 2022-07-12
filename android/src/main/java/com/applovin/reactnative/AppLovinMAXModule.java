@@ -98,7 +98,6 @@ public class AppLovinMAXModule
     private       Boolean             creativeDebuggerEnabledToSet;
     private       Boolean             locationCollectionEnabledToSet;
     private final Map<String, String> extraParametersToSet     = new HashMap<>( 8 );
-    private final Object              extraParametersToSetLock = new Object();
 
     // Fullscreen Ad Fields
     private final Map<String, MaxInterstitialAd> mInterstitials = new HashMap<>( 2 );
@@ -486,10 +485,7 @@ public class AppLovinMAXModule
         }
         else
         {
-            synchronized ( extraParametersToSetLock )
-            {
-                extraParametersToSet.put( key, value );
-            }
+            extraParametersToSet.put( key, value );
         }
     }
 
@@ -1657,19 +1653,14 @@ public class AppLovinMAXModule
 
     private void setPendingExtraParametersIfNeeded(final AppLovinSdkSettings settings)
     {
-        Map<String, String> extraParameters;
-        synchronized ( extraParametersToSetLock )
-        {
-            if ( extraParametersToSet.size() <= 0 ) return;
+        if ( extraParametersToSet.size() <= 0 ) return;
 
-            extraParameters = new HashMap<>( extraParametersToSet );
-            extraParametersToSet.clear();
+        for ( final String key : extraParametersToSet.keySet() )
+        {
+            settings.setExtraParameter( key, extraParametersToSet.get( key ) );
         }
 
-        for ( final String key : extraParameters.keySet() )
-        {
-            settings.setExtraParameter( key, extraParameters.get( key ) );
-        }
+        extraParametersToSet.clear();
     }
 
     // Utility Methods
