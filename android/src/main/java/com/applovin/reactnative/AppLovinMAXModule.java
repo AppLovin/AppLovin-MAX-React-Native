@@ -716,6 +716,18 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
+    public void startBannerAutoRefresh(final String adUnitId)
+    {
+        startAutoRefresh( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
+    }
+
+    @ReactMethod()
+    public void stopBannerAutoRefresh(final String adUnitId)
+    {
+        stopAutoRefresh( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
+    }
+
+    @ReactMethod()
     public void showBanner(final String adUnitId)
     {
         showAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
@@ -763,6 +775,18 @@ public class AppLovinMAXModule
     public void updateMRecPosition(final String adUnitId, final String mrecPosition)
     {
         updateAdViewPosition( adUnitId, mrecPosition, DEFAULT_AD_VIEW_OFFSET, MaxAdFormat.MREC );
+    }
+
+    @ReactMethod()
+    public void startMRecAutoRefresh(final String adUnitId)
+    {
+        startAutoRefresh( adUnitId, MaxAdFormat.MREC );
+    }
+
+    @ReactMethod()
+    public void stopMRecAutoRefresh(final String adUnitId)
+    {
+        stopAutoRefresh( adUnitId, MaxAdFormat.MREC );
     }
 
     @ReactMethod()
@@ -1434,6 +1458,48 @@ public class AppLovinMAXModule
         } );
     }
 
+    private void startAutoRefresh(final String adUnitId, final MaxAdFormat adFormat)
+    {
+        getReactApplicationContext().runOnUiQueueThread( new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                d( "Starting auto refresh " + adFormat.getLabel() + " with ad unit id \"" + adUnitId );
+
+                final MaxAdView adView = retrieveAdView( adUnitId, adFormat );
+                if ( adView == null )
+                {
+                    e( adFormat.getLabel() + " does not exist" );
+                    return;
+                }
+
+                adView.startAutoRefresh();
+            }
+        } );
+    }
+
+    private void stopAutoRefresh(final String adUnitId, final MaxAdFormat adFormat)
+    {
+        getReactApplicationContext().runOnUiQueueThread( new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                d( "Stopping auto refresh " + adFormat.getLabel() + " with ad unit id \"" + adUnitId );
+
+                final MaxAdView adView = retrieveAdView( adUnitId, adFormat );
+                if ( adView == null )
+                {
+                    e( adFormat.getLabel() + " does not exist" );
+                    return;
+                }
+
+                adView.stopAutoRefresh();
+            }
+        } );
+    }
+
     @Nullable
     private MaxInterstitialAd retrieveInterstitial(String adUnitId)
     {
@@ -1485,6 +1551,9 @@ public class AppLovinMAXModule
             result = new MaxAdView( adUnitId, adFormat, sdk, maybeGetCurrentActivity() );
             result.setListener( this );
             result.setRevenueListener( this );
+
+            // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
+            result.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
 
             mAdViews.put( adUnitId, result );
             mAdViewPositions.put( adUnitId, adViewPosition );
