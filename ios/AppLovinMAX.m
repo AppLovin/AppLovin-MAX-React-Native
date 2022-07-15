@@ -548,6 +548,16 @@ RCT_EXPORT_METHOD(setBannerExtraParameter:(NSString *)adUnitIdentifier :(NSStrin
     [self setAdViewExtraParameterForAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT key: key value: value];
 }
 
+RCT_EXPORT_METHOD(startBannerAutoRefresh:(NSString *)adUnitIdentifier)
+{
+    [self startAutoRefresh: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
+}
+
+RCT_EXPORT_METHOD(stopBannerAutoRefresh:(NSString *)adUnitIdentifier)
+{
+    [self stopAutoRefresh: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
+}
+
 RCT_EXPORT_METHOD(showBanner:(NSString *)adUnitIdentifier)
 {
     [self showAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
@@ -588,6 +598,16 @@ RCT_EXPORT_METHOD(setMRecCustomData:(NSString *)adUnitIdentifier :(nullable NSSt
 RCT_EXPORT_METHOD(updateMRecPosition:(NSString *)mrecPosition :(NSString *)adUnitIdentifier)
 {
     [self updateAdViewPosition: mrecPosition withOffset: CGPointZero forAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
+}
+
+RCT_EXPORT_METHOD(startMRecAutoRefresh:(NSString *)adUnitIdentifier)
+{
+    [self startAutoRefresh: adUnitIdentifier adFormat: MAAdFormat.mrec];
+}
+
+RCT_EXPORT_METHOD(stopMRecAutoRefresh:(NSString *)adUnitIdentifier)
+{
+    [self stopAutoRefresh: adUnitIdentifier adFormat: MAAdFormat.mrec];
 }
 
 RCT_EXPORT_METHOD(showMRec:(NSString *)adUnitIdentifier)
@@ -1052,6 +1072,28 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     });
 }
 
+- (void)startAutoRefresh:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        [self log: @"Starting auto refresh \"%@\" with ad unit identifier \"%@\"", adFormat, adUnitIdentifier];
+        
+        MAAdView *view = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
+        [view startAutoRefresh];
+    });
+}
+
+- (void)stopAutoRefresh:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        [self log: @"Stopping auto refresh \"%@\" with ad unit identifier \"%@\"", adFormat, adUnitIdentifier];
+        
+        MAAdView *view = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
+        [view stopAutoRefresh];
+    });
+}
+
 - (void)showAdViewWithAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat
 {
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -1155,6 +1197,9 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         result.userInteractionEnabled = NO;
         result.translatesAutoresizingMaskIntoConstraints = NO;
         
+        // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
+        [result setExtraParameterForKey: @"allow_pause_auto_refresh_immediately" value: @"true"];
+
         self.adViews[adUnitIdentifier] = result;
         self.adViewPositions[adUnitIdentifier] = adViewPosition;
         self.adViewOffsets[adUnitIdentifier] = [NSValue valueWithCGPoint: offset];
