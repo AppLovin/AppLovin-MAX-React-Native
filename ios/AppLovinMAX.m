@@ -228,7 +228,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isTablet)
 
 RCT_EXPORT_METHOD(showMediationDebugger)
 {
-    if ( !_sdk )
+    if ( !self.sdk )
     {
         [self logUninitializedAccessError: @"showMediationDebugger"];
         return;
@@ -355,9 +355,9 @@ RCT_EXPORT_METHOD(setExtraParameter:(NSString *)key :(nullable NSString *)value)
         return;
     }
 
-    if ( _sdk )
+    if ( self.sdk )
     {
-        ALSdkSettings *settings = _sdk.settings;
+        ALSdkSettings *settings = self.sdk.settings;
         [settings setExtraParameterForKey: key value: value];
         [self setPendingExtraParametersIfNeeded: settings];
     }
@@ -386,7 +386,7 @@ RCT_EXPORT_METHOD(setTermsOfServiceUrl:(NSString *)urlString)
 
 RCT_EXPORT_METHOD(setTargetingDataYearOfBirth:(nonnull NSNumber *)yearOfBirth)
 {
-    if ( !_sdk )
+    if ( !self.sdk )
     {
         [self logUninitializedAccessError: @"setTargetingDataYearOfBirth"];
         return;
@@ -397,7 +397,7 @@ RCT_EXPORT_METHOD(setTargetingDataYearOfBirth:(nonnull NSNumber *)yearOfBirth)
 
 RCT_EXPORT_METHOD(setTargetingDataGender:(nullable NSString *)gender)
 {
-    if ( !_sdk )
+    if ( !self.sdk )
     {
         [self logUninitializedAccessError: @"setTargetingDataGender"];
         return;
@@ -423,7 +423,7 @@ RCT_EXPORT_METHOD(setTargetingDataGender:(nullable NSString *)gender)
 
 RCT_EXPORT_METHOD(setTargetingDataMaximumAdContentRating:(nonnull NSNumber *)maximumAdContentRating)
 {
-    if ( !_sdk )
+    if ( !self.sdk )
     {
         [self logUninitializedAccessError: @"setTargetingDataMaximumAdContentRating"];
         return;
@@ -451,7 +451,7 @@ RCT_EXPORT_METHOD(setTargetingDataMaximumAdContentRating:(nonnull NSNumber *)max
 
 RCT_EXPORT_METHOD(setTargetingDataEmail:(nullable NSString *)email)
 {
-    if ( !_sdk )
+    if ( !self.sdk )
     {
         [self logUninitializedAccessError: @"setTargetingDataEmail"];
         return;
@@ -462,7 +462,7 @@ RCT_EXPORT_METHOD(setTargetingDataEmail:(nullable NSString *)email)
 
 RCT_EXPORT_METHOD(setTargetingDataPhoneNumber:(nullable NSString *)phoneNumber)
 {
-    if ( !_sdk )
+    if ( !self.sdk )
     {
         [self logUninitializedAccessError: @"setTargetingDataPhoneNumber"];
         return;
@@ -473,7 +473,7 @@ RCT_EXPORT_METHOD(setTargetingDataPhoneNumber:(nullable NSString *)phoneNumber)
 
 RCT_EXPORT_METHOD(setTargetingDataKeywords:(nullable NSArray<NSString *> *)keywords)
 {
-    if ( !_sdk )
+    if ( !self.sdk )
     {
         [self logUninitializedAccessError: @"setTargetingDataKeywords"];
         return;
@@ -484,7 +484,7 @@ RCT_EXPORT_METHOD(setTargetingDataKeywords:(nullable NSArray<NSString *> *)keywo
 
 RCT_EXPORT_METHOD(setTargetingDataInterests:(nullable NSArray<NSString *> *)interests)
 {
-    if ( !_sdk )
+    if ( !self.sdk )
     {
         [self logUninitializedAccessError: @"setTargetingDataInterests"];
         return;
@@ -495,7 +495,7 @@ RCT_EXPORT_METHOD(setTargetingDataInterests:(nullable NSArray<NSString *> *)inte
 
 RCT_EXPORT_METHOD(clearAllTargetingData)
 {
-    if ( !_sdk )
+    if ( !self.sdk )
     {
         [self logUninitializedAccessError: @"clearAllTargetingData"];
         return;
