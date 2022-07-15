@@ -1385,16 +1385,14 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 
 - (void)setPendingExtraParametersIfNeeded:(ALSdkSettings *)settings
 {
-    NSDictionary *extraParameters;
+    if ( self.extraParametersToSet.count <= 0 ) return;
     
-    if ( _extraParametersToSet.count <= 0 ) return;
-    
-    for ( NSString *key in _extraParametersToSet.allKeys )
+    for ( NSString *key in self.extraParametersToSet.allKeys )
     {
-        [settings setExtraParameterForKey: key value: _extraParametersToSet[key]];
+        [settings setExtraParameterForKey: key value: self.extraParametersToSet[key]];
     }
 
-    [_extraParametersToSet removeAllObjects];
+    [self.extraParametersToSet removeAllObjects];
 }
 
 - (void)logInvalidAdFormat:(MAAdFormat *)adFormat
