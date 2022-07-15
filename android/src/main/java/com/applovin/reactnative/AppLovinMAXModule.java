@@ -1465,7 +1465,7 @@ public class AppLovinMAXModule
             @Override
             public void run()
             {
-                d( "Starting auto refresh " + adFormat.getLabel() + " with ad unit id \"" + adUnitId );
+                d( "Starting auto refresh " + adFormat.getLabel() + " with ad unit id \"" + adUnitId + "\"" );
 
                 final MaxAdView adView = retrieveAdView( adUnitId, adFormat );
                 if ( adView == null )
@@ -1486,7 +1486,7 @@ public class AppLovinMAXModule
             @Override
             public void run()
             {
-                d( "Stopping auto refresh " + adFormat.getLabel() + " with ad unit id \"" + adUnitId );
+                d( "Stopping auto refresh " + adFormat.getLabel() + " with ad unit id \"" + adUnitId + "\"" );
 
                 final MaxAdView adView = retrieveAdView( adUnitId, adFormat );
                 if ( adView == null )
