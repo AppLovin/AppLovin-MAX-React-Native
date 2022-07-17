@@ -40,6 +40,9 @@
 @property (nonatomic, strong, nullable) NSArray<NSString *> *testDeviceIdentifiersToSet;
 @property (nonatomic, strong, nullable) NSNumber *verboseLoggingToSet;
 @property (nonatomic, strong, nullable) NSNumber *creativeDebuggerEnabledToSet;
+@property (nonatomic, strong, nullable) NSNumber *locationCollectionEnabledToSet;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, NSString *> *extraParametersToSet;
+
 @property (nonatomic, strong, nullable) NSNumber *consentFlowEnabledToSet;
 @property (nonatomic, strong, nullable) NSURL *privacyPolicyURLToSet;
 @property (nonatomic, strong, nullable) NSURL *termsOfServiceURLToSet;
@@ -108,6 +111,7 @@ RCT_EXPORT_MODULE()
         self.adViewConstraints = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.adUnitIdentifiersToShowAfterCreate = [NSMutableArray arrayWithCapacity: 2];
         self.disabledAdaptiveBannerAdUnitIdentifiers = [NSMutableSet setWithCapacity: 2];
+        self.extraParametersToSet = [NSMutableDictionary dictionaryWithCapacity: 8];
         
         self.safeAreaBackground = [[UIView alloc] init];
         self.safeAreaBackground.hidden = YES;
@@ -194,6 +198,15 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         self.creativeDebuggerEnabledToSet = nil;
     }
     
+    // Set location collection enabled if needed
+    if ( self.locationCollectionEnabledToSet )
+    {
+        self.sdk.settings.locationCollectionEnabled = self.locationCollectionEnabledToSet.boolValue;
+        self.locationCollectionEnabledToSet = nil;
+    }
+        
+    [self setPendingExtraParametersIfNeeded: self.sdk.settings];
+
     [self.sdk initializeSdkWithCompletionHandler:^(ALSdkConfiguration *configuration)
      {
         [self log: @"SDK initialized"];
@@ -215,7 +228,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isTablet)
 
 RCT_EXPORT_METHOD(showMediationDebugger)
 {
-    if ( !_sdk )
+    if ( !self.sdk )
     {
         [self logUninitializedAccessError: @"showMediationDebugger"];
         return;
@@ -334,6 +347,26 @@ RCT_EXPORT_METHOD(setCreativeDebuggerEnabled:(BOOL)enabled)
     }
 }
 
+RCT_EXPORT_METHOD(setExtraParameter:(NSString *)key :(nullable NSString *)value)
+{
+    if ( ![key al_isValidString] )
+    {
+        [self log: @"[%@] Failed to set extra parameter for nil or empty key: %@", TAG, key];
+        return;
+    }
+
+    if ( self.sdk )
+    {
+        ALSdkSettings *settings = self.sdk.settings;
+        [settings setExtraParameterForKey: key value: value];
+        [self setPendingExtraParametersIfNeeded: settings];
+    }
+    else
+    {
+        self.extraParametersToSet[key] = value;
+    }
+}
+
 RCT_EXPORT_METHOD(setConsentFlowEnabled:(BOOL)enabled)
 {
     self.consentFlowEnabledToSet = @(enabled);
@@ -351,20 +384,9 @@ RCT_EXPORT_METHOD(setTermsOfServiceUrl:(NSString *)urlString)
 
 #pragma mark - Data Passing
 
-RCT_EXPORT_METHOD(setUserSegment:(nullable NSString *)name)
-{
-    if ( !_sdk )
-    {
-        [self logUninitializedAccessError: @"setUserSegment"];
-        return;
-    }
-
-    self.sdk.userSegment.name = name;
-}
-
 RCT_EXPORT_METHOD(setTargetingDataYearOfBirth:(nonnull NSNumber *)yearOfBirth)
 {
-    if ( !_sdk )
+    if ( !self.sdk )
     {
         [self logUninitializedAccessError: @"setTargetingDataYearOfBirth"];
         return;
@@ -375,7 +397,7 @@ RCT_EXPORT_METHOD(setTargetingDataYearOfBirth:(nonnull NSNumber *)yearOfBirth)
 
 RCT_EXPORT_METHOD(setTargetingDataGender:(nullable NSString *)gender)
 {
-    if ( !_sdk )
+    if ( !self.sdk )
     {
         [self logUninitializedAccessError: @"setTargetingDataGender"];
         return;
@@ -401,7 +423,7 @@ RCT_EXPORT_METHOD(setTargetingDataGender:(nullable NSString *)gender)
 
 RCT_EXPORT_METHOD(setTargetingDataMaximumAdContentRating:(nonnull NSNumber *)maximumAdContentRating)
 {
-    if ( !_sdk )
+    if ( !self.sdk )
     {
         [self logUninitializedAccessError: @"setTargetingDataMaximumAdContentRating"];
         return;
@@ -429,7 +451,7 @@ RCT_EXPORT_METHOD(setTargetingDataMaximumAdContentRating:(nonnull NSNumber *)max
 
 RCT_EXPORT_METHOD(setTargetingDataEmail:(nullable NSString *)email)
 {
-    if ( !_sdk )
+    if ( !self.sdk )
     {
         [self logUninitializedAccessError: @"setTargetingDataEmail"];
         return;
@@ -440,7 +462,7 @@ RCT_EXPORT_METHOD(setTargetingDataEmail:(nullable NSString *)email)
 
 RCT_EXPORT_METHOD(setTargetingDataPhoneNumber:(nullable NSString *)phoneNumber)
 {
-    if ( !_sdk )
+    if ( !self.sdk )
     {
         [self logUninitializedAccessError: @"setTargetingDataPhoneNumber"];
         return;
@@ -451,7 +473,7 @@ RCT_EXPORT_METHOD(setTargetingDataPhoneNumber:(nullable NSString *)phoneNumber)
 
 RCT_EXPORT_METHOD(setTargetingDataKeywords:(nullable NSArray<NSString *> *)keywords)
 {
-    if ( !_sdk )
+    if ( !self.sdk )
     {
         [self logUninitializedAccessError: @"setTargetingDataKeywords"];
         return;
@@ -462,7 +484,7 @@ RCT_EXPORT_METHOD(setTargetingDataKeywords:(nullable NSArray<NSString *> *)keywo
 
 RCT_EXPORT_METHOD(setTargetingDataInterests:(nullable NSArray<NSString *> *)interests)
 {
-    if ( !_sdk )
+    if ( !self.sdk )
     {
         [self logUninitializedAccessError: @"setTargetingDataInterests"];
         return;
@@ -473,7 +495,7 @@ RCT_EXPORT_METHOD(setTargetingDataInterests:(nullable NSArray<NSString *> *)inte
 
 RCT_EXPORT_METHOD(clearAllTargetingData)
 {
-    if ( !_sdk )
+    if ( !self.sdk )
     {
         [self logUninitializedAccessError: @"clearAllTargetingData"];
         return;
@@ -482,15 +504,17 @@ RCT_EXPORT_METHOD(clearAllTargetingData)
     [self.sdk.targetingData clearAll];
 }
 
-RCT_EXPORT_METHOD(setLocationCollectionEnabled:(BOOL)locationCollectionEnabled)
+RCT_EXPORT_METHOD(setLocationCollectionEnabled:(BOOL)enabled)
 {
-    if ( !_sdk )
+    if ( [self isPluginInitialized] )
     {
-        [self logUninitializedAccessError: @"setLocationCollectionEnabled"];
-        return;
+        self.sdk.settings.locationCollectionEnabled = enabled;
+        self.locationCollectionEnabledToSet = nil;
     }
-    
-    self.sdk.settings.locationCollectionEnabled = locationCollectionEnabled;
+    else
+    {
+        self.locationCollectionEnabledToSet = @(enabled);
+    }
 }
 
 #pragma mark - Event Tracking
@@ -1402,6 +1426,18 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     self.adViewConstraints[adUnitIdentifier] = constraints;
     
     [NSLayoutConstraint activateConstraints: constraints];
+}
+
+- (void)setPendingExtraParametersIfNeeded:(ALSdkSettings *)settings
+{
+    if ( self.extraParametersToSet.count <= 0 ) return;
+    
+    for ( NSString *key in self.extraParametersToSet.allKeys )
+    {
+        [settings setExtraParameterForKey: key value: self.extraParametersToSet[key]];
+    }
+
+    [self.extraParametersToSet removeAllObjects];
 }
 
 - (void)logInvalidAdFormat:(MAAdFormat *)adFormat
