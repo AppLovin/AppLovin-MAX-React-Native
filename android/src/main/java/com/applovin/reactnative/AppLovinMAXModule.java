@@ -940,6 +940,10 @@ public class AppLovinMAXModule
         {
             name = "OnRewardedAdLoadedEvent";
         }
+        else if ( MaxAdFormat.NATIVE == adFormat )
+        {
+            name = "OnNativeAdLoadedEvent";
+        }
         else
         {
             logInvalidAdFormat( adFormat );
@@ -973,8 +977,15 @@ public class AppLovinMAXModule
         }
         else
         {
-            logStackTrace( new IllegalStateException( "invalid adUnitId: " + adUnitId ) );
-            return;
+            if ( adUnitId.equals( AppLovinMAXNativeAdView.errorAdUnitId ) )
+            {
+                name = "OnNativeAdLoadFailedEvent";
+            }
+            else
+            {
+                logStackTrace( new IllegalStateException( "invalid adUnitId: " + adUnitId ) );
+                return;
+            }
         }
 
         sendReactNativeEventForAdLoadFailed( name, adUnitId, error );
@@ -1020,6 +1031,10 @@ public class AppLovinMAXModule
         else if ( MaxAdFormat.REWARDED == adFormat )
         {
             name = "OnRewardedAdClickedEvent";
+        }
+        else if ( MaxAdFormat.NATIVE == adFormat )
+        {
+            name = "OnNativeAdClickedEvent";
         }
         else
         {
@@ -1140,6 +1155,10 @@ public class AppLovinMAXModule
         else if ( MaxAdFormat.REWARDED == adFormat )
         {
             name = "OnRewardedAdRevenuePaid";
+        }
+        else if ( MaxAdFormat.NATIVE == adFormat )
+        {
+            name = "OnNativeAdRevenuePaid";
         }
         else
         {
