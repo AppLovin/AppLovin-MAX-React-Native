@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+    * Fix to show black views accessing banner and MREC native UI components before AppLovin gets initialized.
     * Fix `java.lang.ClassCastException` in Android when ad is loaded due to processing `ad.waterfall` object.
 ## 3.2.2
     * Lock to Android SDK 11.4.4 and iOS SDK 11.4.3.
