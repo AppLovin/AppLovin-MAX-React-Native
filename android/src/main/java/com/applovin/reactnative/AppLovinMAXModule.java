@@ -92,10 +92,12 @@ public class AppLovinMAXModule
     private int           lastRotation;
 
     // Store these values if pub attempts to set it before initializing
-    private String       userIdToSet;
-    private List<String> testDeviceAdvertisingIdsToSet;
-    private Boolean      verboseLoggingToSet;
-    private Boolean      creativeDebuggerEnabledToSet;
+    private       String              userIdToSet;
+    private       List<String>        testDeviceAdvertisingIdsToSet;
+    private       Boolean             verboseLoggingToSet;
+    private       Boolean             creativeDebuggerEnabledToSet;
+    private       Boolean             locationCollectionEnabledToSet;
+    private final Map<String, String> extraParametersToSet     = new HashMap<>( 8 );
 
     // Fullscreen Ad Fields
     private final Map<String, MaxInterstitialAd> mInterstitials = new HashMap<>( 2 );
@@ -253,6 +255,15 @@ public class AppLovinMAXModule
             creativeDebuggerEnabledToSet = null;
         }
 
+        // Set location collection enabled if needed
+        if ( locationCollectionEnabledToSet != null )
+        {
+            sdk.getSettings().setLocationCollectionEnabled( locationCollectionEnabledToSet );
+            locationCollectionEnabledToSet = null;
+        }
+
+        setPendingExtraParametersIfNeeded( sdk.getSettings() );
+
         sdk.initializeSdk( new AppLovinSdk.SdkInitializationListener()
         {
             @Override
@@ -408,16 +419,16 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
-    public void setVerboseLogging(final boolean verboseLoggingEnabled)
+    public void setVerboseLogging(final boolean enabled)
     {
         if ( isPluginInitialized )
         {
-            sdk.getSettings().setVerboseLogging( verboseLoggingEnabled );
+            sdk.getSettings().setVerboseLogging( enabled );
             verboseLoggingToSet = null;
         }
         else
         {
-            verboseLoggingToSet = verboseLoggingEnabled;
+            verboseLoggingToSet = enabled;
         }
     }
 
@@ -458,6 +469,27 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
+    public void setExtraParameter(final String key, @Nullable final String value)
+    {
+        if ( TextUtils.isEmpty( key ) )
+        {
+            e( "ERROR: Failed to set extra parameter for null or empty key: " + key );
+            return;
+        }
+
+        if ( sdk != null )
+        {
+            AppLovinSdkSettings settings = sdk.getSettings();
+            settings.setExtraParameter( key, value );
+            setPendingExtraParametersIfNeeded( settings );
+        }
+        else
+        {
+            extraParametersToSet.put( key, value );
+        }
+    }
+
+    @ReactMethod()
     public void setConsentFlowEnabled(final boolean enabled) {}
 
     @ReactMethod()
@@ -467,18 +499,6 @@ public class AppLovinMAXModule
     public void setTermsOfServiceUrl(final String urlString) {}
 
     // Data Passing
-
-    @ReactMethod()
-    public void setUserSegment(final String name)
-    {
-        if ( sdk == null )
-        {
-            logUninitializedAccessError( "setUserSegment" );
-            return;
-        }
-
-        sdk.getUserSegment().setName( name );
-    }
 
     @ReactMethod()
     public void setTargetingDataYearOfBirth(final int yearOfBirth)
@@ -629,15 +649,17 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
-    public void setLocationCollectionEnabled(final boolean locationCollectionEnabled)
+    public void setLocationCollectionEnabled(final boolean enabled)
     {
-        if ( sdk == null )
+        if ( isPluginInitialized )
         {
-            logUninitializedAccessError( "setLocationCollectionEnabled" );
-            return;
+            sdk.getSettings().setLocationCollectionEnabled( enabled );
+            locationCollectionEnabledToSet = null;
         }
-
-        sdk.getSettings().setLocationCollectionEnabled( locationCollectionEnabled );
+        else
+        {
+            locationCollectionEnabledToSet = enabled;
+        }
     }
 
     // EVENT TRACKING
@@ -716,6 +738,18 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
+    public void startBannerAutoRefresh(final String adUnitId)
+    {
+        startAutoRefresh( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
+    }
+
+    @ReactMethod()
+    public void stopBannerAutoRefresh(final String adUnitId)
+    {
+        stopAutoRefresh( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
+    }
+
+    @ReactMethod()
     public void showBanner(final String adUnitId)
     {
         showAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
@@ -763,6 +797,18 @@ public class AppLovinMAXModule
     public void updateMRecPosition(final String adUnitId, final String mrecPosition)
     {
         updateAdViewPosition( adUnitId, mrecPosition, DEFAULT_AD_VIEW_OFFSET, MaxAdFormat.MREC );
+    }
+
+    @ReactMethod()
+    public void startMRecAutoRefresh(final String adUnitId)
+    {
+        startAutoRefresh( adUnitId, MaxAdFormat.MREC );
+    }
+
+    @ReactMethod()
+    public void stopMRecAutoRefresh(final String adUnitId)
+    {
+        stopAutoRefresh( adUnitId, MaxAdFormat.MREC );
     }
 
     @ReactMethod()
@@ -1075,7 +1121,7 @@ public class AppLovinMAXModule
         sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? "OnMRecAdCollapsedEvent" : "OnBannerAdCollapsedEvent", getAdInfo( ad ) );
     }
 
- @Override
+    @Override
     public void onAdRevenuePaid(final MaxAd ad)
     {
         final MaxAdFormat adFormat = ad.getFormat();
@@ -1434,6 +1480,48 @@ public class AppLovinMAXModule
         } );
     }
 
+    private void startAutoRefresh(final String adUnitId, final MaxAdFormat adFormat)
+    {
+        getReactApplicationContext().runOnUiQueueThread( new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                d( "Starting auto refresh " + adFormat.getLabel() + " with ad unit id \"" + adUnitId + "\"" );
+
+                final MaxAdView adView = retrieveAdView( adUnitId, adFormat );
+                if ( adView == null )
+                {
+                    e( adFormat.getLabel() + " does not exist" );
+                    return;
+                }
+
+                adView.startAutoRefresh();
+            }
+        } );
+    }
+
+    private void stopAutoRefresh(final String adUnitId, final MaxAdFormat adFormat)
+    {
+        getReactApplicationContext().runOnUiQueueThread( new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                d( "Stopping auto refresh " + adFormat.getLabel() + " with ad unit id \"" + adUnitId + "\"" );
+
+                final MaxAdView adView = retrieveAdView( adUnitId, adFormat );
+                if ( adView == null )
+                {
+                    e( adFormat.getLabel() + " does not exist" );
+                    return;
+                }
+
+                adView.stopAutoRefresh();
+            }
+        } );
+    }
+
     @Nullable
     private MaxInterstitialAd retrieveInterstitial(String adUnitId)
     {
@@ -1485,6 +1573,9 @@ public class AppLovinMAXModule
             result = new MaxAdView( adUnitId, adFormat, sdk, maybeGetCurrentActivity() );
             result.setListener( this );
             result.setRevenueListener( this );
+
+            // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
+            result.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
 
             mAdViews.put( adUnitId, result );
             mAdViewPositions.put( adUnitId, adViewPosition );
@@ -1627,6 +1718,18 @@ public class AppLovinMAXModule
 
         relativeLayout.setGravity( gravity );
         relativeLayout.setPadding( adViewOffset.x, adViewOffset.y, adViewOffset.x, adViewOffset.y );
+    }
+
+    private void setPendingExtraParametersIfNeeded(final AppLovinSdkSettings settings)
+    {
+        if ( extraParametersToSet.size() <= 0 ) return;
+
+        for ( final String key : extraParametersToSet.keySet() )
+        {
+            settings.setExtraParameter( key, extraParametersToSet.get( key ) );
+        }
+
+        extraParametersToSet.clear();
     }
 
     // Utility Methods
