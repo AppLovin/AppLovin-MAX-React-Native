@@ -58,6 +58,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1905,22 +1906,20 @@ public class AppLovinMAXModule
     // Lifecycle Events
 
     @Override
-    public void onHostResume()
-    {
-    }
+    public void onHostResume() { }
 
     @Override
-    public void onHostPause()
-    {
-    }
+    public void onHostPause() { }
 
     @Override
     public void onHostDestroy()
     {
         // Converts mAdViews to a list since destroyAdView will modify mAdViews
         List<MaxAdView> adViews = new ArrayList<MaxAdView>( mAdViews.values() );
-        for ( MaxAdView adView : adViews )
+        for ( Iterator<MaxAdView> iterator = adViews.iterator(); iterator.hasNext(); )
         {
+            MaxAdView adView = iterator.next();
+            iterator.remove();
             destroyAdView( adView.getAdUnitId(), adView.getAdFormat() );
         }
 
