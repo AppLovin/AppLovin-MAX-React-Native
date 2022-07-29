@@ -45,6 +45,7 @@ import com.applovin.sdk.AppLovinSdkUtils;
 import com.applovin.sdk.AppLovinUserService;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -72,7 +73,8 @@ import static com.facebook.react.modules.core.DeviceEventManagerModule.RCTDevice
  */
 public class AppLovinMAXModule
         extends ReactContextBaseJavaModule
-        implements MaxAdListener, MaxAdViewAdListener, MaxRewardedAdListener, MaxAdRevenueListener
+        implements LifecycleEventListener,
+        MaxAdListener, MaxAdViewAdListener, MaxRewardedAdListener, MaxAdRevenueListener
 {
     private static final String SDK_TAG = "AppLovinSdk";
     private static final String TAG     = "AppLovinMAXModule";
@@ -97,7 +99,7 @@ public class AppLovinMAXModule
     private       Boolean             verboseLoggingToSet;
     private       Boolean             creativeDebuggerEnabledToSet;
     private       Boolean             locationCollectionEnabledToSet;
-    private final Map<String, String> extraParametersToSet     = new HashMap<>( 8 );
+    private final Map<String, String> extraParametersToSet = new HashMap<>( 8 );
 
     // Fullscreen Ad Fields
     private final Map<String, MaxInterstitialAd> mInterstitials = new HashMap<>( 2 );
@@ -131,6 +133,9 @@ public class AppLovinMAXModule
 
         instance = this;
         sCurrentActivity = reactContext.getCurrentActivity();
+
+        // Listening to Lifecycle Events
+        reactContext.addLifecycleEventListener( this );
     }
 
     @Override
@@ -1895,6 +1900,37 @@ public class AppLovinMAXModule
         networkResponseObject.putDouble( "latencyMillis", response.getLatencyMillis() );
 
         return networkResponseObject;
+    }
+
+    // Lifecycle Events
+
+    @Override
+    public void onHostResume() { }
+
+    @Override
+    public void onHostPause() { }
+
+    @Override
+    public void onHostDestroy()
+    {
+        // Make copy because `destroyAdView()` will remove from `mAdViews`
+        List<MaxAdView> adViews = new ArrayList<>( mAdViews.values() );
+        for ( MaxAdView adView : adViews )
+        {
+            destroyAdView( adView.getAdUnitId(), adView.getAdFormat() );
+        }
+
+        for ( MaxInterstitialAd interstitialAd : mInterstitials.values() )
+        {
+            interstitialAd.destroy();
+        }
+        mInterstitials.clear();
+
+        for ( MaxRewardedAd rewardedAd : mRewardedAds.values() )
+        {
+            rewardedAd.destroy();
+        }
+        mRewardedAds.clear();
     }
 
     // React Native Bridge
