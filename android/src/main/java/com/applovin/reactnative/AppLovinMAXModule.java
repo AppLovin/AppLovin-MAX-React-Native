@@ -1914,12 +1914,10 @@ public class AppLovinMAXModule
     @Override
     public void onHostDestroy()
     {
-        // Converts mAdViews to a list since destroyAdView will modify mAdViews
-        List<MaxAdView> adViews = new ArrayList<MaxAdView>( mAdViews.values() );
-        for ( Iterator<MaxAdView> iterator = adViews.iterator(); iterator.hasNext(); )
+        // Make copy because `destroyAdView()` will remove from `mAdViews`
+        List<MaxAdView> adViews = new ArrayList<>( mAdViews.values() );
+        for ( MaxAdView adView : adViews )
         {
-            MaxAdView adView = iterator.next();
-            iterator.remove();
             destroyAdView( adView.getAdUnitId(), adView.getAdFormat() );
         }
 
