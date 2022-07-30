@@ -5,6 +5,7 @@
     * Add API for setting SDK extra parameters via `AppLovinMAX.setExtraParameter(<key>, <value>)`.
     * Add autorefresh support for banner and MREC native UI components: `<AppLovinMAX.AdView autoRefresh={true/false} .../>`
     * Fix `java.lang.ClassCastException` in Android when ad is loaded due to processing `ad.waterfall` object.
+    * Fix not being able to show subsequent fullscreen ads if app is re-launched from app icon while in middle of an ad.
 ## 3.2.2
     * Lock to Android SDK 11.4.4 and iOS SDK 11.4.3.
 ## 3.2.1
