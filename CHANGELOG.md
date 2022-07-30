@@ -1,9 +1,9 @@
 ## Versions
 
-## x.x.x
-    * Fix crash of accessing banner and MREC native UI components before AppLovin initialization by showing black views.
-    * Add API for setting SDK extra parameters via `AppLovinMAX.setExtraParameter(<key>, <value>)`.
+## 3.3.0
     * Add autorefresh support for banner and MREC native UI components: `<AppLovinMAX.AdView autoRefresh={true/false} .../>`
+    * Add API for setting SDK extra parameters via `AppLovinMAX.setExtraParameter(<key>, <value>)`.
+    * Fix crash of accessing banner and MREC native UI components before AppLovin initialization by showing black views.
     * Fix `java.lang.ClassCastException` in Android when ad is loaded due to processing `ad.waterfall` object.
     * Fix not being able to show subsequent fullscreen ads if app is re-launched from app icon while in middle of an ad.
 ## 3.2.2
