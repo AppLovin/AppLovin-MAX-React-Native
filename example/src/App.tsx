@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Platform, StyleSheet, Text, View} from 'react-native';
 import AppLovinMAX from '../../src/index';
 import AppLogo from './components/AppLogo';
@@ -6,7 +6,7 @@ import AppButton from './components/AppButton';
 import 'react-native-gesture-handler';
 import {NavigationContainer} from "@react-navigation/native";
 
-var adLoadState = {
+const adLoadState = {
   notLoaded: 'NOT_LOADED',
   loading: 'LOADING',
   loaded: 'LOADED',
@@ -38,7 +38,6 @@ const App = () => {
   });
 
   // Create states
-  const [isInitialized, setIsInitialized] = useState(false);
   const [interstitialAdLoadState, setInterstitialAdLoadState] = useState(adLoadState.notLoaded);
   const [interstitialRetryAttempt, setInterstitialRetryAttempt] = useState(0);
   const [rewardedAdLoadState, setRewardedAdLoadState] = useState(adLoadState.notLoaded);
@@ -51,46 +50,58 @@ const App = () => {
   const [isNativeUIMRecShowing, setIsNativeUIMRecShowing] = useState(false);
   const [statusText, setStatusText] = useState('Initializing SDK...');
 
-  // MAX Consent Flow for iOS 14.5+
-  if (Platform.OS === 'ios' && parseFloat(Platform.Version) >= 14.5) {
-    // Enable the iOS consent flow programmatically - NSUserTrackingUsageDescription must be added to the Info.plist
-    AppLovinMAX.setConsentFlowEnabled(true);
-    AppLovinMAX.setPrivacyPolicyUrl('https://your_company_name.com/privacy/'); // mandatory
-    AppLovinMAX.setTermsOfServiceUrl('https://your_company_name.com/terms/'); // optional
-  }
+  // Run once after mounting
+  useEffect(() => {
+    initAppLovinMax();
+  }, []);
 
-  AppLovinMAX.setTestDeviceAdvertisingIds([]);
-  AppLovinMAX.initialize(SDK_KEY, (configuration) => {
-    setIsInitialized(true);
+  // Run when statusText has changed
+  useEffect(() => {
+    console.log(statusText);
+  }, [statusText]);
 
-    logStatus('SDK Initialized');
+  const initAppLovinMax = () => {
+    if (AppLovinMAX.isInitialized()) return;
 
-    if (Platform.OS === 'android') {
-      if (configuration.consentDialogState == AppLovinMAX.ConsentDialogState.APPLIES) {
-        // Show user consent dialog
-        AppLovinMAX.showConsentDialog(() => {
-          logStatus('Consent dialog closed');
-        });
-      } else if (configuration.consentDialogState == AppLovinMAX.ConsentDialogState.DOES_NOT_APPLY) {
-        // No need to show consent dialog, proceed with initialization
-      } else {
-        // Consent dialog state is unknown. Proceed with initialization, but check if the consent
-        // dialog should be shown on the next application initialization
-        // No need to show consent dialog, proceed with initialization
-      }
+    // MAX Consent Flow for iOS 14.5+
+    if (Platform.OS === 'ios' && parseFloat(Platform.Version) >= 14.5) {
+      // Enable the iOS consent flow programmatically - NSUserTrackingUsageDescription must be added to the Info.plist
+      AppLovinMAX.setConsentFlowEnabled(true);
+      AppLovinMAX.setPrivacyPolicyUrl('https://your_company_name.com/privacy/'); // mandatory
+      AppLovinMAX.setTermsOfServiceUrl('https://your_company_name.com/terms/'); // optional
     }
 
-    // Attach ad listeners for interstitial ads, rewarded ads, and banner ads
-    attachAdListeners();
-  });
+    AppLovinMAX.setTestDeviceAdvertisingIds([]);
+    AppLovinMAX.initialize(SDK_KEY, (configuration) => {
+      setStatusText('SDK Initialized');
 
-  function attachAdListeners() {
+      if (Platform.OS === 'android') {
+        if (configuration.consentDialogState == AppLovinMAX.ConsentDialogState.APPLIES) {
+          // Show user consent dialog
+          AppLovinMAX.showConsentDialog(() => {
+            setStatusText('Consent dialog closed');
+          });
+        } else if (configuration.consentDialogState == AppLovinMAX.ConsentDialogState.DOES_NOT_APPLY) {
+          // No need to show consent dialog, proceed with initialization
+        } else {
+          // Consent dialog state is unknown. Proceed with initialization, but check if the consent
+          // dialog should be shown on the next application initialization
+          // No need to show consent dialog, proceed with initialization
+        }
+      }
+
+      // Attach ad listeners for interstitial ads, rewarded ads, and banner ads
+      attachAdListeners();
+    });
+  }
+
+  const attachAdListeners = () => {
     // Interstitial Listeners
     AppLovinMAX.addEventListener('OnInterstitialLoadedEvent', (adInfo) => {
       setInterstitialAdLoadState(adLoadState.loaded);
 
       // Interstitial ad is ready to be shown. AppLovinMAX.isInterstitialReady(INTERSTITIAL_AD_UNIT_ID) will now return 'true'
-      logStatus('Interstitial ad loaded from ' + adInfo.networkName);
+      setStatusText('Interstitial ad loaded from ' + adInfo.networkName);
 
       // Reset retry attempt
       setInterstitialRetryAttempt(0)
@@ -100,29 +111,29 @@ const App = () => {
       // We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds)
       setInterstitialRetryAttempt(interstitialRetryAttempt + 1);
 
-      var retryDelay = Math.pow(2, Math.min(6, interstitialRetryAttempt));
-      logStatus('Interstitial ad failed to load with code ' + errorInfo.code + ' - retrying in ' + retryDelay + 's');
+      let retryDelay = Math.pow(2, Math.min(6, interstitialRetryAttempt));
+      setStatusText('Interstitial ad failed to load with code ' + errorInfo.code + ' - retrying in ' + retryDelay + 's');
 
-      setTimeout(function () {
+      setTimeout(() => {
         AppLovinMAX.loadInterstitial(INTERSTITIAL_AD_UNIT_ID);
       }, retryDelay * 1000);
     });
     AppLovinMAX.addEventListener('OnInterstitialClickedEvent', (adInfo) => {
-      logStatus('Interstitial ad clicked');
+      setStatusText('Interstitial ad clicked');
     });
     AppLovinMAX.addEventListener('OnInterstitialDisplayedEvent', (adInfo) => {
-      logStatus('Interstitial ad displayed');
+      setStatusText('Interstitial ad displayed');
     });
     AppLovinMAX.addEventListener('OnInterstitialAdFailedToDisplayEvent', (adInfo) => {
       setInterstitialAdLoadState(adLoadState.notLoaded);
-      logStatus('Interstitial ad failed to display');
+      setStatusText('Interstitial ad failed to display');
     });
     AppLovinMAX.addEventListener('OnInterstitialHiddenEvent', (adInfo) => {
       setInterstitialAdLoadState(adLoadState.notLoaded);
-      logStatus('Interstitial ad hidden');
+      setStatusText('Interstitial ad hidden');
     });
     AppLovinMAX.addEventListener('OnInterstitialAdRevenuePaid', (adInfo) => {
-      logStatus('Interstitial ad revenue paid: ' + adInfo.revenue);
+      setStatusText('Interstitial ad revenue paid: ' + adInfo.revenue);
     });
 
     // Rewarded Ad Listeners
@@ -130,7 +141,7 @@ const App = () => {
       setRewardedAdLoadState(adLoadState.loaded);
 
       // Rewarded ad is ready to be shown. AppLovinMAX.isRewardedAdReady(REWARDED_AD_UNIT_ID) will now return 'true'
-      logStatus('Rewarded ad loaded from ' + adInfo.networkName);
+      setStatusText('Rewarded ad loaded from ' + adInfo.networkName);
 
       // Reset retry attempt
       setRewardedAdRetryAttempt(0);
@@ -142,76 +153,76 @@ const App = () => {
       // We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds)
       setRewardedAdRetryAttempt(rewardedAdRetryAttempt + 1);
 
-      var retryDelay = Math.pow(2, Math.min(6, rewardedAdRetryAttempt));
-      logStatus('Rewarded ad failed to load with code ' + errorInfo.code + ' - retrying in ' + retryDelay + 's');
+      let retryDelay = Math.pow(2, Math.min(6, rewardedAdRetryAttempt));
+      setStatusText('Rewarded ad failed to load with code ' + errorInfo.code + ' - retrying in ' + retryDelay + 's');
 
-      setTimeout(function () {
+      setTimeout(() => {
         AppLovinMAX.loadRewardedAd(REWARDED_AD_UNIT_ID);
       }, retryDelay * 1000);
     });
     AppLovinMAX.addEventListener('OnRewardedAdClickedEvent', (adInfo) => {
-      logStatus('Rewarded ad clicked');
+      setStatusText('Rewarded ad clicked');
     });
     AppLovinMAX.addEventListener('OnRewardedAdDisplayedEvent', (adInfo) => {
-      logStatus('Rewarded ad displayed');
+      setStatusText('Rewarded ad displayed');
     });
     AppLovinMAX.addEventListener('OnRewardedAdFailedToDisplayEvent', (adInfo) => {
       setRewardedAdLoadState(adLoadState.notLoaded);
-      logStatus('Rewarded ad failed to display');
+      setStatusText('Rewarded ad failed to display');
     });
     AppLovinMAX.addEventListener('OnRewardedAdHiddenEvent', (adInfo) => {
       setRewardedAdLoadState(adLoadState.notLoaded);
-      logStatus('Rewarded ad hidden');
+      setStatusText('Rewarded ad hidden');
     });
     AppLovinMAX.addEventListener('OnRewardedAdReceivedRewardEvent', (adInfo) => {
-      logStatus('Rewarded ad granted reward');
+      setStatusText('Rewarded ad granted reward');
     });
     AppLovinMAX.addEventListener('OnRewardedAdRevenuePaid', (adInfo) => {
-      logStatus('Rewarded ad revenue paid: ' + adInfo.revenue);
+      setStatusText('Rewarded ad revenue paid: ' + adInfo.revenue);
     });
 
     // Banner Ad Listeners
     AppLovinMAX.addEventListener('OnBannerAdLoadedEvent', (adInfo) => {
-      logStatus('Banner ad loaded from ' + adInfo.networkName);
+      setStatusText('Banner ad loaded from ' + adInfo.networkName);
     });
     AppLovinMAX.addEventListener('OnBannerAdLoadFailedEvent', (errorInfo) => {
-      logStatus('Banner ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+      setStatusText('Banner ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
     });
     AppLovinMAX.addEventListener('OnBannerAdClickedEvent', (adInfo) => {
-      logStatus('Banner ad clicked');
+      setStatusText('Banner ad clicked');
     });
     AppLovinMAX.addEventListener('OnBannerAdExpandedEvent', (adInfo) => {
-      logStatus('Banner ad expanded')
+      setStatusText('Banner ad expanded')
     });
     AppLovinMAX.addEventListener('OnBannerAdCollapsedEvent', (adInfo) => {
-      logStatus('Banner ad collapsed')
+      setStatusText('Banner ad collapsed')
     });
     AppLovinMAX.addEventListener('OnBannerAdRevenuePaid', (adInfo) => {
-      logStatus('Banner ad revenue paid: ' + adInfo.revenue);
+      setStatusText('Banner ad revenue paid: ' + adInfo.revenue);
     });
 
     // MREC Ad Listeners
     AppLovinMAX.addEventListener('OnMRecAdLoadedEvent', (adInfo) => {
-      logStatus('MREC ad loaded from ' + adInfo.networkName);
+      setStatusText('MREC ad loaded from ' + adInfo.networkName);
     });
     AppLovinMAX.addEventListener('OnMRecAdLoadFailedEvent', (errorInfo) => {
-      logStatus('MREC ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+      setStatusText('MREC ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
     });
     AppLovinMAX.addEventListener('OnMRecAdClickedEvent', (adInfo) => {
-      logStatus('MREC ad clicked');
+      setStatusText('MREC ad clicked');
     });
     AppLovinMAX.addEventListener('OnMRecAdExpandedEvent', (adInfo) => {
-      logStatus('MREC ad expanded')
+      setStatusText('MREC ad expanded')
     });
     AppLovinMAX.addEventListener('OnMRecAdCollapsedEvent', (adInfo) => {
-      logStatus('MREC ad collapsed')
+      setStatusText('MREC ad collapsed')
     });
     AppLovinMAX.addEventListener('OnMRecAdRevenuePaid', (adInfo) => {
-      logStatus('MREC ad revenue paid: ' + adInfo.revenue);
+      setStatusText('MREC ad revenue paid: ' + adInfo.revenue);
     });
   }
 
-  function getInterstitialButtonTitle() {
+  const getInterstitialButtonTitle = () => {
     if (interstitialAdLoadState === adLoadState.notLoaded) {
       return 'Load Interstitial';
     } else if (interstitialAdLoadState === adLoadState.loading) {
@@ -221,7 +232,7 @@ const App = () => {
     }
   }
 
-  function getRewardedButtonTitle() {
+  const getRewardedButtonTitle = () => {
     if (rewardedAdLoadState === adLoadState.notLoaded) {
       return 'Load Rewarded Ad';
     } else if (rewardedAdLoadState === adLoadState.loading) {
@@ -229,11 +240,6 @@ const App = () => {
     } else {
       return 'Show Rewarded Ad'; // adLoadState.loaded
     }
-  }
-
-  function logStatus(status) {
-    console.log(status);
-    setStatusText(status);
   }
 
   return (
@@ -245,23 +251,21 @@ const App = () => {
         </Text>
         <AppButton
           title="Mediation Debugger"
-          enabled={isInitialized}
+          enabled={AppLovinMAX.isInitialized()}
           onPress={() => {
-            if (AppLovinMAX.isInitialized()) {
-              AppLovinMAX.showMediationDebugger();
-            }
+            AppLovinMAX.showMediationDebugger();
           }}
         />
         <AppButton
           title={getInterstitialButtonTitle()}
           enabled={
-            isInitialized && interstitialAdLoadState !== adLoadState.loading
+            AppLovinMAX.isInitialized() && interstitialAdLoadState !== adLoadState.loading
           }
           onPress={() => {
             if (AppLovinMAX.isInterstitialReady(INTERSTITIAL_AD_UNIT_ID)) {
               AppLovinMAX.showInterstitial(INTERSTITIAL_AD_UNIT_ID);
             } else {
-              logStatus('Loading interstitial ad...');
+              setStatusText('Loading interstitial ad...');
               setInterstitialAdLoadState(adLoadState.loading);
               AppLovinMAX.loadInterstitial(INTERSTITIAL_AD_UNIT_ID);
             }
@@ -269,12 +273,12 @@ const App = () => {
         />
         <AppButton
           title={getRewardedButtonTitle()}
-          enabled={isInitialized && rewardedAdLoadState !== adLoadState.loading}
+          enabled={AppLovinMAX.isInitialized() && rewardedAdLoadState !== adLoadState.loading}
           onPress={() => {
             if (AppLovinMAX.isRewardedAdReady(REWARDED_AD_UNIT_ID)) {
               AppLovinMAX.showRewardedAd(REWARDED_AD_UNIT_ID);
             } else {
-              logStatus('Loading rewarded ad...');
+              setStatusText('Loading rewarded ad...');
               setRewardedAdLoadState(adLoadState.loading);
               AppLovinMAX.loadRewardedAd(REWARDED_AD_UNIT_ID);
             }
@@ -282,7 +286,7 @@ const App = () => {
         />
         <AppButton
           title={isProgrammaticBannerShowing ? 'Hide Programmatic Banner' : 'Show Programmatic Banner'}
-          enabled={isInitialized && !isNativeUIBannerShowing}
+          enabled={AppLovinMAX.isInitialized() && !isNativeUIBannerShowing}
           onPress={() => {
             if (isProgrammaticBannerShowing) {
               AppLovinMAX.hideBanner(BANNER_AD_UNIT_ID);
@@ -313,7 +317,7 @@ const App = () => {
         />
         <AppButton
           title={isNativeUIBannerShowing ? 'Hide Native UI Banner' : 'Show Native UI Banner'}
-          enabled={isInitialized && !isProgrammaticBannerShowing}
+          enabled={AppLovinMAX.isInitialized() && !isProgrammaticBannerShowing}
           onPress={() => {
             setIsNativeUIBannerShowing(!isNativeUIBannerShowing);
           }}
@@ -326,7 +330,7 @@ const App = () => {
         }
         <AppButton
           title={isNativeUIMRecShowing ? 'Hide Native UI MREC' : 'Show Native UI MREC'}
-          enabled={isInitialized && !isProgrammaticMRecShowing}
+          enabled={AppLovinMAX.isInitialized() && !isProgrammaticMRecShowing}
           onPress={() => {
             setIsNativeUIMRecShowing(!isNativeUIMRecShowing);
           }}
@@ -339,7 +343,7 @@ const App = () => {
         }
         <AppButton
           title={isProgrammaticMRecShowing ? 'Hide Programmatic MREC' : 'Show Programmatic MREC'}
-          enabled={isInitialized && !isNativeUIMRecShowing}
+          enabled={AppLovinMAX.isInitialized() && !isNativeUIMRecShowing}
           onPress={() => {
             if (isProgrammaticMRecShowing) {
               AppLovinMAX.hideMRec(MREC_AD_UNIT_ID);
