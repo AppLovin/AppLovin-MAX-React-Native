@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+    * Update Android Gradle plugin to v3.5.4 to be compatible with <queries> element in manifest files.
 ## 3.3.0
     * Add autorefresh support for banner and MREC native UI components: `<AppLovinMAX.AdView autoRefresh={true/false} .../>`
     * Add API for setting SDK extra parameters via `AppLovinMAX.setExtraParameter(<key>, <value>)`.
