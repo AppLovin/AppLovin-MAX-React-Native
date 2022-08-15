@@ -5,12 +5,14 @@ import { TitleView, AdvertiserView, BodyView, CallToActionView, IconView, Option
 
 const { AppLovinMAX } = NativeModules;
 
-export const NativeAdViewWrapper = forwardRef((props, ref) => {
+// Returns NativeAdView if AppLovinMAX has been initialized, or returns an empty black view if
+// AppLovinMAX has not been initialized
+const NativeAdViewWrapper = forwardRef((props, ref) => {
   const {style, ...rest} = props;
   return (
     AppLovinMAX.isInitialized() ?
       <NativeAdViewProvider>
-        <NativeAdView {...style} {...rest} ref={ref}/>
+        <NativeAdView {...props} ref={ref}/>
       </NativeAdViewProvider>
     :
       <View style={[styles.container, style]} {...rest}>
@@ -32,15 +34,13 @@ const styles = StyleSheet.create({
   },
 });
 
-// Adds the child ad components
-NativeAdViewWrapper.TitleView = TitleView;
-NativeAdViewWrapper.AdvertiserView = AdvertiserView;
-NativeAdViewWrapper.BodyView = BodyView;
-NativeAdViewWrapper.CallToActionView = CallToActionView;
-NativeAdViewWrapper.IconView = IconView;
-NativeAdViewWrapper.OptionsView = OptionsView;
-NativeAdViewWrapper.MediaView = MediaView;
+const AppLovinMAXNativeAdView = requireNativeComponent('AppLovinMAXNativeAdView', NativeAdView);
 
+// NativeAdView renders itself multiple times:
+// 1. initial render
+// 2. update of the nativeAdView context by saveElement, which locates and renders the all child 
+//    components including the user's components without nativeAd
+// 3. update of the nativeAd context by onNativeAdLoaded, which renders the ad components with nativeAd
 const NativeAdView = forwardRef((props, ref) => {
 
   // context from NativeAdViewProvider
@@ -72,11 +72,9 @@ const NativeAdView = forwardRef((props, ref) => {
   }, [nativeAdViewRef]);
 
   // callback from the native module to set a loaded ad
-  const onNativeAdLoaded = (event) => {
-    const ad = event.nativeEvent;
-    //console.log("AppLovinMAX: NativeAd: nativeAd=" + JSON.stringify(ad));
-    setNativeAd(ad);
-  };
+  const onNativeAdLoaded = useCallback((event) => {
+    setNativeAd(event.nativeEvent);
+  }, []);
 
   return (
     <AppLovinMAXNativeAdView {...props} ref={saveElement} onNativeAdLoaded={onNativeAdLoaded}>
@@ -85,7 +83,13 @@ const NativeAdView = forwardRef((props, ref) => {
   );
 });
 
-export const AppLovinMAXNativeAdView = requireNativeComponent('AppLovinMAXNativeAdView');
+// Adds the child ad components
+NativeAdViewWrapper.TitleView = TitleView;
+NativeAdViewWrapper.AdvertiserView = AdvertiserView;
+NativeAdViewWrapper.BodyView = BodyView;
+NativeAdViewWrapper.CallToActionView = CallToActionView;
+NativeAdViewWrapper.IconView = IconView;
+NativeAdViewWrapper.OptionsView = OptionsView;
+NativeAdViewWrapper.MediaView = MediaView;
 
 export default NativeAdViewWrapper;
-

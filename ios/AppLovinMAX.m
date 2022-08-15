@@ -768,7 +768,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     }
     else
     {
-        if ( [adUnitIdentifier isEqualToString: AppLovinMAXNativeAdView.errorAdUnitIdentifier] )
+        if ( [adUnitIdentifier isEqualToString: AppLovinMAXNativeAdView.loadErrorAdUnitIdentifier] )
         {
             name = @"OnNativeAdLoadFailedEvent";
         }

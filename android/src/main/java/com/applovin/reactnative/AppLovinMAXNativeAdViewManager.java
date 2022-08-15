@@ -67,7 +67,7 @@ public class AppLovinMAXNativeAdViewManager
         switch ( commandId )
         {
             case COMMAND_LOAD_AD:
-                root.loadAd();
+                root.loadNativeAd();
                 break;
             case COMMAND_PERFORM_CALL_TO_ACTION:
                 root.performCallToAction();
@@ -119,15 +119,11 @@ public class AppLovinMAXNativeAdViewManager
         view.setIconImage( value );
     }
 
-    /// com.facebook.react.uimanager.ViewGroupManager
-
     @Override
     public void onDropViewInstance(@NonNull final AppLovinMAXNativeAdView view)
     {
+        view.destroy();
+
         super.onDropViewInstance( view );
-
-        AppLovinMAXModule.d( "NativeAdViewManager: onDropViewInstance" );
-
-        view.destroyAd( true );
     }
 }

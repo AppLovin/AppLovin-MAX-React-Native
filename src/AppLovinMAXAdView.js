@@ -80,7 +80,7 @@ const AdView = (props) => {
   return (
     <AppLovinMAXAdView
       style={[sizeForAdFormat(), style]}
-      {...otherProps }
+      {...otherProps}
     />
   );
 };

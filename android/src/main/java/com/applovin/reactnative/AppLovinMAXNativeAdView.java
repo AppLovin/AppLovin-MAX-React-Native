@@ -1,23 +1,14 @@
 package com.applovin.reactnative;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.nativeAds.MaxNativeAd;
-import com.applovin.mediation.nativeAds.MaxNativeAdListener;
-import com.applovin.mediation.nativeAds.MaxNativeAdLoader;
-import com.applovin.mediation.nativeAds.MaxNativeAdView;
-import com.applovin.mediation.nativeAds.MaxNativeAdViewBinder;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
@@ -31,51 +22,61 @@ import androidx.annotation.Nullable;
 
 public class AppLovinMAXNativeAdView
         extends ReactViewGroup
+        implements AppLovinMaxNativeAdLoader.NativeAdLoaderListener
 {
-    // Ad unit-id for the current error
-    static String errorAdUnitId;
+    // Ad Unit ID that has an error from loading a native ad
+    static String loadErrorAdUnitId;
 
-    private final ReactContext reactContext;
+    private final ReactContext              reactContext;
+    private final AppLovinMaxNativeAdLoader nativeAdLoader;
+    @Nullable
+    private       MaxAd                     nativeAd;
+    private       boolean                   isLoadingNativeAd;
 
-    private MaxNativeAdLoader nativeAdLoader;
-    private MaxNativeAdView   nativeAdView;
-    private MaxAd             nativeAd;
-    private boolean           loadingAd;
-
+    // Javascript properties
     private String              adUnitId;
+    @Nullable
     private String              placement;
+    @Nullable
     private String              customData;
+    @Nullable
     private Map<String, Object> extraParameters;
 
-    public AppLovinMAXNativeAdView(final ReactContext context)
+    public AppLovinMAXNativeAdView(final Context context)
     {
         super( context );
-        reactContext = context;
-        loadingAd = false;
+        reactContext = (ReactContext) context;
+        nativeAdLoader = new AppLovinMaxNativeAdLoader();
+        isLoadingNativeAd = false;
     }
 
-    void setAdUnitId(final String value)
+    public void destroy()
     {
-        if ( loadingAd ) return;
+        AppLovinMAXModule.e( "Destroy AppLovinMAXNativeAdView:" + this );
 
-        AppLovinMAXModule.d( "NativeAdView: setAdUnitId: " + value );
+        destroyAd();
 
-        adUnitId = value;
-        loadingAd = true;
-        loadAd();
+        nativeAdLoader.destroy();
     }
 
-    void setPlacement(@Nullable final String value)
+    public void setAdUnitId(final String value)
+    {
+        adUnitId = value;
+
+        loadInitialNativeAd();
+    }
+
+    public void setPlacement(@Nullable final String value)
     {
         placement = value;
     }
 
-    void setCustomData(@Nullable final String value)
+    public void setCustomData(@Nullable final String value)
     {
         customData = value;
     }
 
-    void setExtraParameter(@Nullable final ReadableMap readableMap)
+    public void setExtraParameter(@Nullable final ReadableMap readableMap)
     {
         if ( readableMap != null )
         {
@@ -83,260 +84,292 @@ public class AppLovinMAXNativeAdView
         }
     }
 
-    void setMediaView(final int tag)
+    public void setMediaView(final int tag)
     {
-        if ( nativeAd == null ) return;
+        if ( nativeAd == null )
+        {
+            AppLovinMAXModule.e( "Attempting to set a media view without a MaxAd ad: " + adUnitId );
+            return;
+        }
+
+        if ( nativeAd.getNativeAd() == null )
+        {
+            AppLovinMAXModule.e( "Attempting to set a media view without a MaxNativeAd native ad: " + nativeAd );
+            return;
+        }
+
+        if ( nativeAd.getNativeAd().getMediaView() == null )
+        {
+            AppLovinMAXModule.e( "mediaView is not found in MaxNativeAd: " + nativeAd.getNativeAd() );
+            return;
+        }
 
         View view = getNativeView( tag );
-
         if ( view instanceof ViewGroup )
         {
-            AppLovinMAXModule.d( "NativeAdView: setMediaView: " + adUnitId );
-
-            if ( nativeAd.getNativeAd() != null )
-            {
-                addStretchView( nativeAd.getNativeAd().getMediaView(), (ViewGroup) view );
-            }
+            addViewStretched( nativeAd.getNativeAd().getMediaView(), (ViewGroup) view );
+        }
+        else
+        {
+            AppLovinMAXModule.e( "Cannot find a media view with tag \"" + tag + "\" for " + adUnitId );
         }
     }
 
-    void setOptionsView(final int tag)
+    public void setOptionsView(final int tag)
     {
-        if ( nativeAd == null ) return;
+        if ( nativeAd == null )
+        {
+            AppLovinMAXModule.e( "Attempting to set an options view without a MaxAd ad: " + adUnitId );
+            return;
+        }
+
+        if ( nativeAd.getNativeAd() == null )
+        {
+            AppLovinMAXModule.e( "Attempting to set an options view without a MaxNativeAd native ad: " + nativeAd );
+            return;
+        }
+
+        if ( nativeAd.getNativeAd().getOptionsView() == null )
+        {
+            AppLovinMAXModule.e( "optionsView is not found in MaxNativeAd: " + nativeAd.getNativeAd() );
+            return;
+        }
 
         View view = getNativeView( tag );
-
         if ( view instanceof ViewGroup )
         {
-            AppLovinMAXModule.d( "NativeAdView: setOptionsView: " + adUnitId );
-
-            if ( nativeAd.getNativeAd() != null )
-            {
-                addStretchView( nativeAd.getNativeAd().getMediaView(), (ViewGroup) view );
-            }
+            addViewStretched( nativeAd.getNativeAd().getOptionsView(), (ViewGroup) view );
+        }
+        else
+        {
+            AppLovinMAXModule.e( "Cannot find an options view with tag \"" + tag + "\" for " + adUnitId );
         }
     }
 
-    void setIconImage(final int tag)
+    public void setIconImage(final int tag)
     {
-        if ( nativeAd == null ) return;
+        if ( nativeAd == null )
+        {
+            AppLovinMAXModule.e( "Attempting to set an icon image without a MaxAd ad: " + adUnitId );
+            return;
+        }
+
+        if ( nativeAd.getNativeAd() == null )
+        {
+            AppLovinMAXModule.e( "Attempting to set an icon image without a MaxNativeAd native ad: " + nativeAd );
+            return;
+        }
+
+        if ( nativeAd.getNativeAd().getIcon() == null )
+        {
+            AppLovinMAXModule.e( "icon is not found in MaxNativeAd: " + nativeAd.getNativeAd() );
+            return;
+        }
+
+        if ( nativeAd.getNativeAd().getIcon().getDrawable() == null )
+        {
+            AppLovinMAXModule.e( "image is not found in the MaxNativeAd icon: " + nativeAd.getNativeAd().getIcon() );
+            return;
+        }
 
         View view = getNativeView( tag );
-
         if ( view instanceof ImageView )
         {
-            AppLovinMAXModule.d( "NativeAdView: setImageView: " + adUnitId );
-
-            if ( nativeAd.getNativeAd() != null )
-            {
-                setImageView( nativeAd.getNativeAd().getIcon().getDrawable(), (ImageView) view );
-            }
+            setImageView( nativeAd.getNativeAd().getIcon().getDrawable(), (ImageView) view );
+        }
+        else
+        {
+            AppLovinMAXModule.e( "Cannot find an icon image with tag \"" + tag + "\" for " + adUnitId );
         }
     }
 
-    void loadAd()
+    // Loads an initial native ad when this view is mounted
+    private void loadInitialNativeAd()
     {
-        load( adUnitId, placement, customData, extraParameters, reactContext );
+        if ( adUnitId == null )
+        {
+            AppLovinMAXModule.e( "Attempting to load a native ad without Ad Unit ID" );
+            return;
+        }
+
+        // Run after 0.25 sec delay to allow all properties to set
+        postDelayed( this::loadNativeAd, 250 );
     }
 
-    void destroyAd(boolean destroyLoader)
+    // Loads a next native ad with the current properties when this is called by Javascript via the View Manager
+    public void loadNativeAd()
     {
-        AppLovinMAXModule.d( "NativeAdView: destroyAd " + ( destroyLoader ? "with loader" : "" ) );
-
-        if ( nativeAd != null )
+        if ( isLoadingNativeAd )
         {
-            nativeAdLoader.destroy( nativeAd );
+            AppLovinMAXModule.e( "Attempting to load a native ad before completing previous loading: " + adUnitId );
+            return;
         }
 
-        if ( destroyLoader )
-        {
-            nativeAdLoader.destroy();
-        }
+        isLoadingNativeAd = true;
 
-        if ( nativeAdView != null )
-        {
-            ViewGroup view = (ViewGroup) nativeAdView.getParent();
-            if ( view != null )
-            {
-                view.removeView( nativeAdView );
-            }
+        AppLovinMAXModule.d( "Loading a native ad for " + adUnitId );
 
-            nativeAdView.recycle();
-        }
+        nativeAdLoader.load( adUnitId, placement, customData, extraParameters, reactContext, this );
     }
 
-    void load(String adUnitId, String placement, String customData, Map<String, Object> extraParameters, Context context)
+    @Override
+    public void onNativeAdLoaded(final MaxAd ad)
     {
-        nativeAdLoader = new MaxNativeAdLoader( adUnitId, AppLovinMAXModule.getInstance().getSdk(), context );
-        nativeAdLoader.setRevenueListener( AppLovinMAXModule.getInstance() );
-        nativeAdLoader.setNativeAdListener( new NativeAdListener() );
-        nativeAdLoader.setPlacement( placement );
-        nativeAdLoader.setCustomData( customData );
-        if ( extraParameters != null )
-        {
-            for ( Map.Entry<String, Object> entry : extraParameters.entrySet() )
-            {
-                Object value = entry.getValue();
-                if ( value instanceof String )
-                {
-                    nativeAdLoader.setExtraParameter( entry.getKey(), (String) value );
-                }
-            }
-        }
-        nativeAdLoader.loadAd( createNativeAdView( context ) );
-    }
+        AppLovinMAXModule.d( "Loaded a native ad: +" + ad );
 
-    class NativeAdListener
-            extends MaxNativeAdListener
-    {
-        @Override
-        public void onNativeAdLoaded(@Nullable final MaxNativeAdView nativeAdView, final MaxAd ad)
-        {
-            AppLovinMAXModule.d( "NativeAdView: onAdLoaded: " + ad.hashCode() );
+        // Destroy the current ad
+        destroyAd();
 
-            AppLovinMAXModule.getInstance().onAdLoaded( ad );
-
-            destroyAd( false );
-
-            AppLovinMAXNativeAdView.this.nativeAdView = nativeAdView;
-
-            sendNativeAd( ad );
-
-            loadingAd = false;
-        }
-
-        @Override
-        public void onNativeAdLoadFailed(final String adUnitId, final MaxError error)
-        {
-            AppLovinMAXNativeAdView.errorAdUnitId = adUnitId;
-            AppLovinMAXModule.getInstance().onAdLoadFailed( adUnitId, error );
-            AppLovinMAXNativeAdView.errorAdUnitId = "";
-
-            loadingAd = false;
-        }
-
-        @Override
-        public void onNativeAdClicked(final MaxAd ad)
-        {
-            AppLovinMAXModule.getInstance().onAdClicked( ad );
-        }
-    }
-
-    void sendNativeAd(MaxAd ad)
-    {
-        // keep currentAd to destroy
         nativeAd = ad;
 
-        MaxNativeAd nativeAd = this.nativeAd.getNativeAd();
+        // Send this native ad to Javascript
+        sendNativeAd( ad );
 
-        if ( nativeAd == null ) return;
+        // Inform the app
+        AppLovinMAXModule.getInstance().onAdLoaded( ad );
 
-        this.addView( nativeAdView );
+        // Adding nativeAdView will trigger a revenue event
+        nativeAdLoader.addNativeAdView( this );
 
-        WritableMap event = Arguments.createMap();
-        event.putString( "title", nativeAd.getTitle() );
-        event.putString( "advertiser", nativeAd.getAdvertiser() );
-        event.putString( "body", nativeAd.getBody() );
-        event.putString( "callToAction", nativeAd.getCallToAction() );
+        isLoadingNativeAd = false;
+    }
+
+    @Override
+    public void onNativeAdLoadFailed(final String adUnitId, final MaxError error)
+    {
+        AppLovinMAXModule.d( "Failed to Load a native ad for " + adUnitId + " with error: " + error );
+
+        // Inform the app
+        loadErrorAdUnitId = adUnitId;
+        AppLovinMAXModule.getInstance().onAdLoadFailed( adUnitId, error );
+        loadErrorAdUnitId = "";
+
+        isLoadingNativeAd = false;
+    }
+
+    @Override
+    public void onNativeAdClicked(final MaxAd ad)
+    {
+        // Inform the app
+        AppLovinMAXModule.getInstance().onAdClicked( ad );
+    }
+
+    private void sendNativeAd(final MaxAd ad)
+    {
+        MaxNativeAd nativeAd = ad.getNativeAd();
+
+        if ( nativeAd == null )
+        {
+            AppLovinMAXModule.e( "MaxNativeAd not having a native ad: " + ad );
+            return;
+        }
+
+        WritableMap jsNativeAd = Arguments.createMap();
+
+        jsNativeAd.putString( "title", nativeAd.getTitle() );
+        if ( nativeAd.getAdvertiser() != null )
+        {
+            jsNativeAd.putString( "advertiser", nativeAd.getAdvertiser() );
+        }
+        if ( nativeAd.getBody() != null )
+        {
+            jsNativeAd.putString( "body", nativeAd.getBody() );
+        }
+        if ( nativeAd.getCallToAction() != null )
+        {
+            jsNativeAd.putString( "callToAction", nativeAd.getCallToAction() );
+        }
+
+        MaxNativeAd.MaxNativeAdImage icon = nativeAd.getIcon();
+        if ( icon != null )
+        {
+            if ( icon.getUri() != null )
+            {
+                jsNativeAd.putString( "icon", icon.getUri().toString() );
+            }
+            else if ( icon.getDrawable() != null )
+            {
+                jsNativeAd.putBoolean( "image", true );
+            }
+        }
 
         float aspectRatio = nativeAd.getMediaContentAspectRatio();
         if ( !Float.isNaN( aspectRatio ) )
         {
-            event.putDouble( "mediaContentAspectRatio", aspectRatio );
+            jsNativeAd.putDouble( "mediaContentAspectRatio", aspectRatio );
         }
 
-        MaxNativeAd.MaxNativeAdImage icon = nativeAd.getIcon();
-        if ( icon.getUri() != null )
-        {
-            event.putString( "icon", icon.getUri().toString() );
-        }
-        else if ( icon.getDrawable() != null )
-        {
-            event.putBoolean( "image", true );
-        }
-
-        //AppLovinMAXModule.d( "NativeAd: sending a native ad to JavaScript: " + event );
-
-        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onNativeAdLoaded", event );
+        // Sending jsNativeAd to Javascript as an event, then Javascript will render the views with jsNativeAd
+        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onNativeAdLoaded", jsNativeAd );
     }
 
-    void addStretchView(View view, ViewGroup toItem)
+    // Adds a view to a parent, and stretches it to the size of the parent
+    private void addViewStretched(final View view, final ViewGroup parent)
     {
-        if ( view == null || toItem == null ) return;
-
-        toItem.removeAllViews();
+        // Remove view from the old parent first
+        ViewGroup viewParent = (ViewGroup) view.getParent();
+        if ( viewParent != null )
+        {
+            viewParent.removeView( view );
+        }
 
         view.measure(
-                MeasureSpec.makeMeasureSpec( toItem.getWidth(), MeasureSpec.EXACTLY ),
-                MeasureSpec.makeMeasureSpec( toItem.getHeight(), MeasureSpec.EXACTLY )
+                MeasureSpec.makeMeasureSpec( parent.getWidth(), MeasureSpec.EXACTLY ),
+                MeasureSpec.makeMeasureSpec( parent.getHeight(), MeasureSpec.EXACTLY )
         );
 
-        view.layout( toItem.getLeft(), 0, toItem.getRight(), toItem.getBottom() - toItem.getTop() );
+        view.layout( parent.getLeft(), 0, parent.getRight(), parent.getBottom() - parent.getTop() );
 
-        toItem.addView( view );
+        parent.addView( view );
     }
 
-    void setImageView(Drawable drawable, ImageView imageView)
+    private void setImageView(final Drawable image, final ImageView view)
     {
-        if ( imageView == null || drawable == null ) return;
-
         // FIXME: this is deprecated
-        imageView.setImageDrawable( drawable );
+        view.setImageDrawable( image );
     }
 
-    void performCallToAction()
+    public void performCallToAction()
     {
-        if ( nativeAdView != null )
-        {
-            Button button = nativeAdView.getCallToActionButton();
-            if ( button != null )
-            {
-                button.performClick();
-            }
-        }
+        nativeAdLoader.performCallToAction();
     }
 
-    // Create MaxNativeAdView for passing to the loader.  This
-    // MaxNativeAdView won't become visible but attached to the parent
-    // view for generating a revenue event, also used to invoke an
-    // event of the CTA buttion
-    // Note: this will be called from non-UI thread but none of the
-    // views are attached to the view tree
-    @SuppressLint("ResourceType")
-    MaxNativeAdView createNativeAdView(Context context)
-    {
-        FrameLayout frameLayout = new FrameLayout( context );
-        FrameLayout.LayoutParams layoutparams = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL );
-        frameLayout.setLayoutParams( layoutparams );
-        frameLayout.setVisibility( View.GONE );
-
-        Button callActionButton = new Button( context );
-        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 )
-        {
-            callActionButton.setId( View.generateViewId() );
-        }
-        else
-        {
-            callActionButton.setId( 9007 );
-        }
-        callActionButton.setLayoutParams( new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT ) );
-
-        frameLayout.addView( callActionButton );
-
-        MaxNativeAdViewBinder binder = new MaxNativeAdViewBinder.Builder( frameLayout )
-                .setCallToActionButtonId( callActionButton.getId() )
-                .build();
-
-        return new MaxNativeAdView( binder, context );
-    }
-
-    View getNativeView(int tag)
+    // Finds a native View from the specified tag (ref)
+    private View getNativeView(final int tag)
     {
         return findViewById( tag );
+    }
+
+    private void destroyAd()
+    {
+        if ( nativeAd != null )
+        {
+            if ( nativeAd.getNativeAd() != null )
+            {
+                View view = nativeAd.getNativeAd().getMediaView();
+                if ( view != null )
+                {
+                    ViewGroup parentView = (ViewGroup) view.getParent();
+                    if ( parentView != null )
+                    {
+                        parentView.removeView( view );
+                    }
+                }
+
+                view = nativeAd.getNativeAd().getOptionsView();
+                if ( view != null )
+                {
+                    ViewGroup parentView = (ViewGroup) view.getParent();
+                    if ( parentView != null )
+                    {
+                        parentView.removeView( view );
+                    }
+                }
+            }
+
+            nativeAdLoader.destroyAd( nativeAd );
+
+            nativeAd = null;
+        }
     }
 }

@@ -41,7 +41,7 @@ RCT_EXPORT_METHOD(loadAd:(nonnull NSNumber *)viewTag)
         else
         {
             AppLovinMAXNativeAdView *nativeAdView = (AppLovinMAXNativeAdView *) view;
-            [nativeAdView loadAd];
+            [nativeAdView loadNativeAd];
         }
     }];
 }

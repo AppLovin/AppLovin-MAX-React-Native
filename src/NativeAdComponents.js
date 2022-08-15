@@ -3,32 +3,41 @@ import { findNodeHandle, UIManager, Text, Image, View, TouchableOpacity } from "
 import { NativeAdViewContext } from "./NativeAdViewProvider";
 
 export const TitleView = (props) => {
-  const { nativeAd } = useContext(NativeAdViewContext);
+  const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
 
   return (
-    <Text {...props}>
-      {nativeAd.title || null}
-    </Text>
+    nativeAdView ?
+      <Text {...props}>
+        {nativeAd.title || null}
+      </Text>
+    :
+      null
   );
 };
 
 export const AdvertiserView = (props) => {
-  const { nativeAd } = useContext(NativeAdViewContext);
+  const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
 
   return (
-    <Text {...props}>
-      {nativeAd.advertiser || null}
-    </Text>
+    nativeAdView ?
+      <Text {...props}>
+        {nativeAd.advertiser || null}
+      </Text>
+    :
+      null
   );
 };
 
 export const BodyView = (props) => {
-  const { nativeAd } = useContext(NativeAdViewContext);
+  const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
 
   return (
-    <Text {...props}>
-      {nativeAd.body || null}
-    </Text>
+    nativeAdView ?
+      <Text {...props}>
+        {nativeAd.body || null}
+      </Text>
+    :
+      null
   );
 };
 
@@ -36,6 +45,7 @@ export const CallToActionView = (props) => {
   const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
 
   const onPressButton = () => {
+    if (Object.keys(nativeAd).length === 0 || !nativeAdView) return;
     UIManager.dispatchViewManagerCommand(
       findNodeHandle(nativeAdView),
       UIManager.getViewManagerConfig("AppLovinMAXNativeAdView").Commands.performCallToAction,
@@ -44,12 +54,15 @@ export const CallToActionView = (props) => {
   };
 
   return (
-    <TouchableOpacity {...props} onPress={onPressButton}>
-      <Text {...props}>
-        {nativeAd.callToAction || null}
-      </Text>
-    </TouchableOpacity>
-  );
+    nativeAdView ?
+      <TouchableOpacity {...props} onPress={onPressButton}>
+        <Text {...props}>
+          {nativeAd.callToAction || null}
+        </Text>
+      </TouchableOpacity>
+    :
+      null
+ );
 };
 
 export const IconView = (props) => {
@@ -58,15 +71,19 @@ export const IconView = (props) => {
   const {nativeAd, nativeAdView} = useContext(NativeAdViewContext);
 
   useEffect(() => {
+    if (Object.keys(nativeAd).length === 0 || !nativeAdView) return;
     if (nativeAd.image) {
       nativeAdView.setNativeProps({
         iconView: findNodeHandle(imageRef.current),
       });
     }
-  }, [nativeAd]);
+  }, [nativeAd, nativeAdView]);
 
   return (
-    <Image {...props} ref={imageRef} source={{ uri: nativeAd.icon || null }}/>
+    nativeAdView ?
+      <Image {...props} ref={imageRef} source={{ uri: nativeAd.icon || null }}/>
+    :
+      null
   );
 };
 
@@ -76,13 +93,17 @@ export const OptionsView = (props) => {
   const {nativeAd, nativeAdView} = useContext(NativeAdViewContext);
 
   useEffect(() => {
+    if (Object.keys(nativeAd).length === 0 || !nativeAdView) return;
     nativeAdView.setNativeProps({
       optionsView: findNodeHandle(viewRef.current),
     });
-  }, [nativeAd]);
+  }, [nativeAd, nativeAdView]);
 
   return (
-    <View {...props} ref={viewRef}/>
+    nativeAdView ?
+      <View {...props} ref={viewRef}/>
+    :
+      null
   );
 };
 
@@ -92,12 +113,16 @@ export const MediaView = (props) => {
   const {nativeAd, nativeAdView} = useContext(NativeAdViewContext);
 
   useEffect(() => {
+    if (Object.keys(nativeAd).length === 0 || !nativeAdView) return;
     nativeAdView.setNativeProps({
       mediaView: findNodeHandle(viewRef.current),
     });
-  }, [nativeAd]);
+  }, [nativeAd, nativeAdView]);
 
   return (
-    <View {...props} ref={viewRef}/>
+    nativeAdView ?
+      <View {...props} ref={viewRef}/>
+    :
+      null
   );
 };

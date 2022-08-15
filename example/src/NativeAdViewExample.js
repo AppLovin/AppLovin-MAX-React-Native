@@ -2,7 +2,7 @@ import React, {forwardRef} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import AppLovinMAX from '../../src/index';
 
-export const NativeAdView = forwardRef((props, ref) => {
+export const NativeAdViewExample = forwardRef((props, ref) => {
   const { adUnitId } = props;
 
   return (
@@ -101,4 +101,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NativeAdView;
+export default NativeAdViewExample;

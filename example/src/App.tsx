@@ -1,9 +1,9 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {Platform, StyleSheet, Text, View, SafeAreaView, Dimensions} from 'react-native';
 import AppLovinMAX from '../../src/index';
 import AppLogo from './components/AppLogo';
 import AppButton from './components/AppButton';
-import NativeAdView from './NativeAdView';
+import NativeAdViewExample from './NativeAdViewExample';
 
 const adLoadState = {
   notLoaded: 'NOT_LOADED',
@@ -403,7 +403,7 @@ const App = () => {
         {
           isNativeAdShowing &&
             <View style={{ position: 'absolute', top: '30%', width: '100%' }}>
-              <NativeAdView adUnitId={NATIVE_AD_UNIT_ID} ref={nativeAdViewRef}/>
+              <NativeAdViewExample adUnitId={NATIVE_AD_UNIT_ID} ref={nativeAdViewRef}/>
             </View>
         }
       </View>

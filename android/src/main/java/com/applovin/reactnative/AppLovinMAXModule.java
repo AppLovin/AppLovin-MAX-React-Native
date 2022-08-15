@@ -977,7 +977,7 @@ public class AppLovinMAXModule
         }
         else
         {
-            if ( adUnitId.equals( AppLovinMAXNativeAdView.errorAdUnitId ) )
+            if ( adUnitId.equals( AppLovinMAXNativeAdView.loadErrorAdUnitId ) )
             {
                 name = "OnNativeAdLoadFailedEvent";
             }

@@ -2,6 +2,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * A view manager for AppLovinMAXNativeAdView
+ */
 @interface AppLovinMAXNativeAdViewManager : RCTViewManager
 
 @end
