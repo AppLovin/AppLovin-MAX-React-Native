@@ -9,6 +9,11 @@ import com.applovin.mediation.ads.MaxAdView;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.views.view.ReactViewGroup;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import androidx.annotation.Nullable;
 
 /**
@@ -17,6 +22,8 @@ import androidx.annotation.Nullable;
 class AppLovinMAXAdView
         extends ReactViewGroup
 {
+    private static final Map<String, Map<MaxAdFormat, Set<MaxAdView>>> mAdViews = new HashMap<>( 2 );
+
     private final ThemedReactContext reactContext;
 
     private @Nullable MaxAdView adView;
@@ -225,6 +232,8 @@ class AppLovinMAXAdView
 
     public void destroy()
     {
+        storeAdView( adView );
+
         if ( adView != null )
         {
             AppLovinMAXModule.d( "Unmounting MaxAdView: " + adView );
@@ -236,6 +245,56 @@ class AppLovinMAXAdView
             adView.destroy();
 
             adView = null;
+        }
+    }
+
+    private MaxAdView retrieveAdView(final String adUnitId, final MaxAdFormat adFormat, final Activity currentActivity)
+    {
+        Map<MaxAdFormat, Set<MaxAdView>> adFormatListMap = mAdViews.get( adUnitId );
+        if ( adFormatListMap != null )
+        {
+            Set<MaxAdView> adViewList = adFormatListMap.get( adFormat );
+            if ( adViewList != null && adViewList.size() > 0 )
+            {
+                MaxAdView adView = adViewList.iterator().next();
+                if ( adView != null )
+                {
+                    adViewList.remove( adView );
+                }
+                return adView;
+            }
+        }
+        return null;
+    }
+
+    private void storeAdView(final MaxAdView adView)
+    {
+        // Releases adView for reuse
+        removeView( adView );
+
+        Map<MaxAdFormat, Set<MaxAdView>> adFormatListMap = mAdViews.get( adView.getAdUnitId() );
+        if ( adFormatListMap == null )
+        {
+            adFormatListMap = new HashMap<>( 2 );
+            mAdViews.put( adView.getAdUnitId(), adFormatListMap );
+
+            Set<MaxAdView> adViewList = new HashSet<>( 2 );
+            adFormatListMap.put( adView.getAdFormat(), adViewList );
+
+            adViewList.add( adView );
+        }
+
+        Set<MaxAdView> adViewList = adFormatListMap.get( adView.getAdFormat() );
+        if ( adViewList == null )
+        {
+            adViewList = new HashSet<>( 2 );
+            adFormatListMap.put( adView.getAdFormat(), adViewList );
+
+            adViewList.add( adView );
+        }
+        else
+        {
+            adViewList.add( adView );
         }
     }
 }

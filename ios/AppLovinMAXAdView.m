@@ -13,6 +13,10 @@
 @property (nonatomic, copy, nullable) NSString *customData;
 @property (nonatomic, assign, readonly, getter=isAdaptiveBannerEnabled) BOOL adaptiveBannerEnabled;
 @property (nonatomic, assign, readonly, getter=isAutoRefresh) BOOL autoRefresh;
+=======
+#import "AppLovinMAXAdView.h"
+
+@interface AppLovinMAXAdView ()
 
 @end
 
@@ -164,12 +168,26 @@
                                                    [self.adView.centerXAnchor constraintEqualToAnchor: self.centerXAnchor],
                                                    [self.adView.centerYAnchor constraintEqualToAnchor: self.centerYAnchor]]];
     });
+=======
+@synthesize adView;
+
+static NSMutableDictionary<NSString *, NSMutableDictionary<MAAdFormat *, NSMutableSet<MAAdView *> *> *> *mAdViews;
+
+- (instancetype)init
+{
+    if( !mAdViews )
+    {
+        mAdViews = [NSMutableDictionary dictionaryWithCapacity: 2];
+    }
+    
+    return [super init];
 }
 
 - (void)didMoveToWindow
 {
     [super didMoveToWindow];
     
+    /*
     // This view is unmounted
     if ( !self.window )
     {
@@ -183,7 +201,62 @@
             [self.adView removeFromSuperview];
             
             self.adView = nil;
+    */
+
+    // Removed from its superview
+    if ( !self.window )
+    {
+        if ( adView )
+        {
+            [self storeAdView: adView];
         }
+    }
+}
+
+- (MAAdView *)retrieveAdView:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat
+{
+    NSMutableDictionary *adFormatListDic = mAdViews[adUnitIdentifier];
+    if ( adFormatListDic )
+    {
+        NSMutableSet *adViewList = adFormatListDic[adFormat];
+        if ( adViewList )
+        {
+            MAAdView *adView = [adViewList anyObject];
+            if ( adView )
+            {
+                [adViewList removeObject: adView];
+            }
+            return adView;
+        }
+    }
+    return nil;
+}
+
+- (void)storeAdView:(MAAdView *)adView
+{
+    NSMutableDictionary *adFormatListDic = mAdViews[adView.adUnitIdentifier];
+    if ( !adFormatListDic )
+    {
+        adFormatListDic = [NSMutableDictionary dictionaryWithCapacity: 2];
+        mAdViews[adView.adUnitIdentifier] = adFormatListDic;
+        
+        NSMutableSet *adViewList = [NSMutableSet setWithCapacity: 2];
+        adFormatListDic[adView.adFormat] = adViewList;
+        
+        [adViewList addObject: adView];
+    }
+    
+    NSMutableSet *adViewList = adFormatListDic[adView.adFormat];
+    if ( !adViewList )
+    {
+        NSMutableSet *adViewList = [NSMutableSet setWithCapacity: 2];
+        adFormatListDic[adView.adFormat] = adViewList;
+        
+        [adViewList addObject: adView];
+    }
+    else
+    {
+        [adViewList addObject: adView];
     }
 }
 
