@@ -32,7 +32,7 @@ const AdViewWrapper = (props) => {
           console.warn('[AppLovinSdk] [AppLovinMAX] <AdView/> has been mounted before AppLovin initialization')
         } 
       </View>
-  )
+  );
 };
 
 const styles = StyleSheet.create({
@@ -44,71 +44,21 @@ const styles = StyleSheet.create({
     borderColor: 'whitesmoke',
     borderWidth: 1,
   },
-  message: {
-    color: 'white',
-  },
 });
 
-class AdView extends React.Component {
+const AdView = (props) => {
+  const { adaptiveBannerEnabled, style, ...otherProps } = props;
 
-  static defaultProps = {
-    adaptiveBannerEnabled: true
-  }
+  // Default value for adaptiveBannerEnabled is true
+  const isAdaptiveBannerEnabled = adaptiveBannerEnabled ?? true;
 
-  componentDidMount() {
-    this.setAdUnitId(this.props.adUnitId);
-    this.setAdFormat(this.props.adFormat);
-    this.setPlacement(this.props.placement);
-    this.setCustomData(this.props.customData);
-    this.setAdaptiveBannerEnabled(this.props.adaptiveBannerEnabled);
-    this.setAutoRefresh(this.props.autoRefresh);
-  }
-
-  componentDidUpdate(prevProps) {
-    // Only call setters for actual changes.
-    if (prevProps.adUnitId !== this.props.adUnitId) {
-      this.setAdUnitId(this.props.adUnitId);
-    }
-
-    if (prevProps.adFormat !== this.props.adFormat) {
-      this.setAdFormat(this.props.adFormat);
-    }
-
-    if (prevProps.placement !== this.props.placement) {
-      this.setPlacement(this.props.placement);
-    }
-
-    if (prevProps.customData !== this.props.customData) {
-      this.setCustomData(this.props.customData);
-    }
-
-    if (prevProps.adaptiveBannerEnabled !== this.props.adaptiveBannerEnabled) {
-      this.setAdaptiveBannerEnabled(this.props.adaptiveBannerEnabled);
-    }
-
-    if (prevProps.autoRefresh !== this.props.autoRefresh) {
-      this.setAutoRefresh(this.props.autoRefresh);
-    }
-  }
-
-  render() {
-    let { style, ...otherProps } = this.props;
-
-    return <AppLovinMAXAdView
-      // This merges the pub-specified style with ours, but overwrites width/height.
-    style = { Object.assign({}, style, this.sizeForAdFormat(otherProps.adFormat)) } {...otherProps }
-    />;
-  }
-
-  // Helper Functions
-
-  sizeForAdFormat(adFormat) {
+  const sizeForAdFormat = (adFormat) => {
     if (adFormat === AdFormat.BANNER) {
 
-      var width = AppLovinMAX.isTablet() ? 728 : 320;
-      var height;
+      let width = AppLovinMAX.isTablet() ? 728 : 320;
+      let height;
 
-      if (this.props.adaptiveBannerEnabled) {
+      if (isAdaptiveBannerEnabled) {
         height = AppLovinMAX.getAdaptiveBannerHeightForWidth(-1);
       } else {
         height = AppLovinMAX.isTablet() ? 90 : 50;
@@ -118,86 +68,16 @@ class AdView extends React.Component {
     } else {
       return { width: 300, height: 250 }
     }
-  }
+  };
 
-  setAdUnitId(adUnitId) {
-    UIManager.dispatchViewManagerCommand(
-      findNodeHandle(this),
-      Platform.OS === 'android' ? "setAdUnitId" : UIManager.getViewManagerConfig("AppLovinMAXAdView").Commands.setAdUnitId,
-      [adUnitId]
-    );
-  }
-
-  setAdFormat(adFormatStr) {
-    UIManager.dispatchViewManagerCommand(
-      findNodeHandle(this),
-      Platform.OS === 'android' ? "setAdFormat" : UIManager.getViewManagerConfig("AppLovinMAXAdView").Commands.setAdFormat,
-      [adFormatStr]
-    );
-  }
-
-  setPlacement(placement) {
-    var adUnitId = this.props.adUnitId;
-    var adFormat = this.props.adFormat;
-
-    // If the ad unit id or ad format are unset, we can't set the placement.
-    if (adUnitId == null || adFormat == null) return;
-
-    UIManager.dispatchViewManagerCommand(
-        findNodeHandle(this),
-        Platform.OS === 'android' ? "setPlacement" : UIManager.getViewManagerConfig("AppLovinMAXAdView").Commands.setPlacement,
-        [placement]
-    );
-  }
-
-  setCustomData(customData) {
-    var adUnitId = this.props.adUnitId;
-    var adFormat = this.props.adFormat;
-
-    // If the ad unit id or ad format are unset, we can't set the customData.
-    if (adUnitId == null || adFormat == null) return;
-
-    UIManager.dispatchViewManagerCommand(
-        findNodeHandle(this),
-        Platform.OS === 'android' ? "setCustomData" : UIManager.getViewManagerConfig("AppLovinMAXAdView").Commands.setCustomData,
-        [customData]
-    );
-  }
-
-  setAdaptiveBannerEnabled(enabled) {
-    var adUnitId = this.props.adUnitId;
-    var adFormat = this.props.adFormat;
-
-    // If the ad unit id or ad format are unset, we can't set the value
-    if (adUnitId == null || adFormat == null) return;
-
-    if (adFormat === AdFormat.BANNER) {
-      if (enabled === true || enabled === false) {
-        UIManager.dispatchViewManagerCommand(
-            findNodeHandle(this),
-            Platform.OS === 'android' ? "setAdaptiveBannerEnabled" : UIManager.getViewManagerConfig("AppLovinMAXAdView").Commands.setAdaptiveBannerEnabled,
-            [enabled ? "true" : "false"]
-        );
-      }
-    }
-  }
-
-  setAutoRefresh(enabled) {
-    var adUnitId = this.props.adUnitId;
-    var adFormat = this.props.adFormat;
-
-    // If the ad unit id or ad format are unset, we can't set the autorefresh.
-    if (adUnitId == null || adFormat == null) return;
-
-    if (enabled === true || enabled === false) {
-      UIManager.dispatchViewManagerCommand(
-        findNodeHandle(this),
-        Platform.OS === 'android' ? "setAutoRefresh" : UIManager.getViewManagerConfig("AppLovinMAXAdView").Commands.setAutoRefresh,
-        [enabled]
-      );
-    }
-  }
-}
+  return (
+    <AppLovinMAXAdView
+      style = { [sizeForAdFormat(otherProps.adFormat), style] }
+      adaptiveBannerEnabled={isAdaptiveBannerEnabled}
+      {...otherProps }
+    />
+  );
+};
 
 AdView.propTypes = {
   /**
@@ -232,6 +112,6 @@ AdView.propTypes = {
 };
 
 // requireNativeComponent automatically resolves 'AppLovinMAXAdView' to 'AppLovinMAXAdViewManager'
-var AppLovinMAXAdView = requireNativeComponent("AppLovinMAXAdView", AdView);
+const AppLovinMAXAdView = requireNativeComponent("AppLovinMAXAdView", AdView);
 
 export default AdViewWrapper;
