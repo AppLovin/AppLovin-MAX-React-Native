@@ -7,6 +7,7 @@
 //
 
 #import "AppLovinMAX.h"
+#import "AppLovinMAXAdView.h"
 
 #define ROOT_VIEW_CONTROLLER (UIApplication.sharedApplication.keyWindow.rootViewController)
 
@@ -699,6 +700,23 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 {
     MARewardedAd *rewardedAd = [self retrieveRewardedAdForAdUnitIdentifier: adUnitIdentifier];
     [rewardedAd setExtraParameterForKey: key value: value];
+}
+
+#pragma mark - Preloading
+
+RCT_EXPORT_METHOD(preloadAdView:(nonnull NSNumber *)count :(NSString *)adUnitIdentifier :(NSString *)adFormatStr :(nullable NSString *)placement :(nullable NSString *)customData :(BOOL)adaptiveBannerEnabled :(BOOL)autoRefresh)
+{
+    MAAdFormat *adFormat;
+    if ( [@"banner" isEqualToString: adFormatStr] )
+    {
+        adFormat = DEVICE_SPECIFIC_ADVIEW_AD_FORMAT;
+    }
+    else if ( [@"mrec" isEqualToString: adFormatStr] )
+    {
+        adFormat = MAAdFormat.mrec;
+    }
+
+    [AppLovinMAXAdView preloadAdView: count adUnitId: adUnitIdentifier adFormat: adFormat placement: placement customData: customData adaptiveBannerEnabled: adaptiveBannerEnabled autoRefresh: autoRefresh];
 }
 
 #pragma mark - Ad Callbacks

@@ -73,8 +73,6 @@ class AppLovinMAXAdViewManager
     {
         view.destroy();
 
-        view.destroy();
-
         super.onDropViewInstance( view );
     }
 }

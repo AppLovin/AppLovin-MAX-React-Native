@@ -9,10 +9,9 @@ import com.applovin.mediation.ads.MaxAdView;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.views.view.ReactViewGroup;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 import androidx.annotation.Nullable;
 
@@ -22,7 +21,7 @@ import androidx.annotation.Nullable;
 class AppLovinMAXAdView
         extends ReactViewGroup
 {
-    private static final Map<String, Map<MaxAdFormat, Set<MaxAdView>>> mAdViews = new HashMap<>( 2 );
+    private static final List<CachedAdView> cachedAdViews = new LinkedList<>();
 
     private final ThemedReactContext reactContext;
 
@@ -34,6 +33,17 @@ class AppLovinMAXAdView
     private @Nullable String      customData;
     private           boolean     adaptiveBannerEnabled;
     private           boolean     autoRefresh;
+
+    static class CachedAdView
+    {
+        MaxAdView   adView;
+        String      adUnitId;
+        MaxAdFormat adFormat;
+        @Nullable String placement;
+        @Nullable String customData;
+        boolean adaptiveBannerEnabled;
+        boolean autoRefresh;
+    }
 
     public AppLovinMAXAdView(final Context context)
     {
@@ -206,7 +216,18 @@ class AppLovinMAXAdView
 
             AppLovinMAXModule.d( "Attaching MaxAdView for " + adUnitId );
 
-            adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
+            boolean isNewAdView = false;
+
+            retrieveAdView();
+
+            if ( adView == null )
+            {
+                AppLovinMAXModule.d( "Creating a new MaxAdView of " + adFormat + " for " + adUnitId );
+
+                isNewAdView = true;
+                adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
+            }
+
             adView.setListener( AppLovinMAXModule.getInstance() );
             adView.setRevenueListener( AppLovinMAXModule.getInstance() );
             adView.setPlacement( placement );
@@ -224,7 +245,10 @@ class AppLovinMAXAdView
                 adView.stopAutoRefresh();
             }
 
-            adView.loadAd();
+            if ( isNewAdView )
+            {
+                adView.loadAd();
+            }
 
             addView( adView );
         }, 250 );
@@ -232,69 +256,50 @@ class AppLovinMAXAdView
 
     public void destroy()
     {
-        storeAdView( adView );
-
         if ( adView != null )
         {
             AppLovinMAXModule.d( "Unmounting MaxAdView: " + adView );
 
-            removeView( adView );
-
             adView.setListener( null );
             adView.setRevenueListener( null );
-            adView.destroy();
+
+            adView.stopAutoRefresh();
+            removeView( adView );
+            saveAdView( adView );
 
             adView = null;
         }
     }
 
-    private MaxAdView retrieveAdView(final String adUnitId, final MaxAdFormat adFormat, final Activity currentActivity)
+    private void retrieveAdView()
     {
-        Map<MaxAdFormat, Set<MaxAdView>> adFormatListMap = mAdViews.get( adUnitId );
-        if ( adFormatListMap != null )
+        for ( int i = cachedAdViews.size() - 1; i >= 0; --i )
         {
-            Set<MaxAdView> adViewList = adFormatListMap.get( adFormat );
-            if ( adViewList != null && adViewList.size() > 0 )
+            CachedAdView cachedAdView = cachedAdViews.get( i );
+            if ( cachedAdView.adUnitId.equals( adUnitId ) &&
+                    cachedAdView.adFormat == adFormat &&
+                    Objects.equals( cachedAdView.placement, placement ) &&
+                    Objects.equals( cachedAdView.customData, customData ) &&
+                    cachedAdView.adaptiveBannerEnabled == adaptiveBannerEnabled &&
+                    cachedAdView.autoRefresh == autoRefresh )
             {
-                MaxAdView adView = adViewList.iterator().next();
-                if ( adView != null )
-                {
-                    adViewList.remove( adView );
-                }
-                return adView;
+                adView = cachedAdView.adView;
+                cachedAdViews.remove( i );
+                break;
             }
         }
-        return null;
     }
 
-    private void storeAdView(final MaxAdView adView)
+    private void saveAdView(final MaxAdView adView)
     {
-        // Releases adView for reuse
-        removeView( adView );
-
-        Map<MaxAdFormat, Set<MaxAdView>> adFormatListMap = mAdViews.get( adView.getAdUnitId() );
-        if ( adFormatListMap == null )
-        {
-            adFormatListMap = new HashMap<>( 2 );
-            mAdViews.put( adView.getAdUnitId(), adFormatListMap );
-
-            Set<MaxAdView> adViewList = new HashSet<>( 2 );
-            adFormatListMap.put( adView.getAdFormat(), adViewList );
-
-            adViewList.add( adView );
-        }
-
-        Set<MaxAdView> adViewList = adFormatListMap.get( adView.getAdFormat() );
-        if ( adViewList == null )
-        {
-            adViewList = new HashSet<>( 2 );
-            adFormatListMap.put( adView.getAdFormat(), adViewList );
-
-            adViewList.add( adView );
-        }
-        else
-        {
-            adViewList.add( adView );
-        }
+        CachedAdView cachedAdView = new CachedAdView();
+        cachedAdView.adView = adView;
+        cachedAdView.adUnitId = adUnitId;
+        cachedAdView.adFormat = adFormat;
+        cachedAdView.placement = placement;
+        cachedAdView.customData = customData;
+        cachedAdView.adaptiveBannerEnabled = adaptiveBannerEnabled;
+        cachedAdView.autoRefresh = autoRefresh;
+        cachedAdViews.add( cachedAdView );
     }
 }

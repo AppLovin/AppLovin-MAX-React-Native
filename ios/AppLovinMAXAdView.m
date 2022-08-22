@@ -13,14 +13,31 @@
 @property (nonatomic, copy, nullable) NSString *customData;
 @property (nonatomic, assign, readonly, getter=isAdaptiveBannerEnabled) BOOL adaptiveBannerEnabled;
 @property (nonatomic, assign, readonly, getter=isAutoRefresh) BOOL autoRefresh;
-=======
-#import "AppLovinMAXAdView.h"
-
-@interface AppLovinMAXAdView ()
 
 @end
 
 @implementation AppLovinMAXAdView
+
+typedef struct {
+    MAAdView *adView;
+    NSString *adUnitId;
+    MAAdFormat *adFormat;
+    NSString *placement;
+    NSString *customData;
+    BOOL adaptiveBannerEnabled;
+    BOOL autoRefresh;
+} CachedAdView;
+
+static NSMutableArray<NSMutableData *> *cachedAdViews;
+
+- (instancetype)init
+{
+    if( !cachedAdViews )
+    {
+        cachedAdViews = [NSMutableArray arrayWithCapacity: 2];
+    }
+    return [super init];
+}
 
 - (void)setAdUnitId:(NSString *)adUnitId
 {
@@ -138,17 +155,28 @@
         
         [[AppLovinMAX shared] log: @"Attaching MAAdView for %@", adUnitId];
         
-        self.adView = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitId
-                                                        adFormat: adFormat
-                                                             sdk: [AppLovinMAX shared].sdk];
+        bool isNewAdView = NO;
+        
+        self.adView = [self retrieveAdView];
+        
+        if ( !self.adView )
+        {
+            [[AppLovinMAX shared] log: @"Creating a new MAAdView of %@ for %@", adFormat, adUnitId];
+            
+            isNewAdView = YES;
+            self.adView = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitId
+                                                            adFormat: adFormat
+                                                                 sdk: [AppLovinMAX shared].sdk];
+            self.adView.delegate = [AppLovinMAX shared]; // Go through core class for callback forwarding to React Native layer
+            self.adView.revenueDelegate = [AppLovinMAX shared];
+            self.adView.placement = self.placement;
+            self.adView.customData = self.customData;
+            [self.adView setExtraParameterForKey: @"adaptive_banner" value: [self isAdaptiveBannerEnabled] ? @"true" : @"false"];
+            // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
+            [self.adView setExtraParameterForKey: @"allow_pause_auto_refresh_immediately" value: @"true"];
+        }
+        
         self.adView.frame = (CGRect) { CGPointZero, self.frame.size };
-        self.adView.delegate = [AppLovinMAX shared]; // Go through core class for callback forwarding to React Native layer
-        self.adView.revenueDelegate = [AppLovinMAX shared];
-        self.adView.placement = self.placement;
-        self.adView.customData = self.customData;
-        [self.adView setExtraParameterForKey: @"adaptive_banner" value: [self isAdaptiveBannerEnabled] ? @"true" : @"false"];
-        // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
-        [self.adView setExtraParameterForKey: @"allow_pause_auto_refresh_immediately" value: @"true"];
         
         if ( [self isAutoRefresh] )
         {
@@ -159,7 +187,10 @@
             [self.adView stopAutoRefresh];
         }
         
-        [self.adView loadAd];
+        if ( isNewAdView )
+        {
+            [self.adView loadAd];
+        }
         
         [self addSubview: self.adView];
         
@@ -168,26 +199,12 @@
                                                    [self.adView.centerXAnchor constraintEqualToAnchor: self.centerXAnchor],
                                                    [self.adView.centerYAnchor constraintEqualToAnchor: self.centerYAnchor]]];
     });
-=======
-@synthesize adView;
-
-static NSMutableDictionary<NSString *, NSMutableDictionary<MAAdFormat *, NSMutableSet<MAAdView *> *> *> *mAdViews;
-
-- (instancetype)init
-{
-    if( !mAdViews )
-    {
-        mAdViews = [NSMutableDictionary dictionaryWithCapacity: 2];
-    }
-    
-    return [super init];
 }
 
 - (void)didMoveToWindow
 {
     [super didMoveToWindow];
     
-    /*
     // This view is unmounted
     if ( !self.window )
     {
@@ -198,65 +215,142 @@ static NSMutableDictionary<NSString *, NSMutableDictionary<MAAdFormat *, NSMutab
             self.adView.delegate = nil;
             self.adView.revenueDelegate = nil;
             
+            [self.adView stopAutoRefresh];
             [self.adView removeFromSuperview];
+            [self saveAdView];
             
             self.adView = nil;
-    */
-
-    // Removed from its superview
-    if ( !self.window )
-    {
-        if ( adView )
-        {
-            [self storeAdView: adView];
         }
     }
 }
 
-- (MAAdView *)retrieveAdView:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat
+- (MAAdView *)retrieveAdView
 {
-    NSMutableDictionary *adFormatListDic = mAdViews[adUnitIdentifier];
-    if ( adFormatListDic )
-    {
-        NSMutableSet *adViewList = adFormatListDic[adFormat];
-        if ( adViewList )
-        {
-            MAAdView *adView = [adViewList anyObject];
-            if ( adView )
-            {
-                [adViewList removeObject: adView];
-            }
-            return adView;
-        }
-    }
-    return nil;
+    return [AppLovinMAXAdView retrievedAdViewImpl: self.adUnitId
+                                         adFormat: self.adFormat
+                                        placement: self.placement
+                                       customData: self.customData
+                            adaptiveBannerEnabled: self.adaptiveBannerEnabled
+                                      autoRefresh: self.autoRefresh];
 }
 
-- (void)storeAdView:(MAAdView *)adView
++ (MAAdView *)retrievedAdViewImpl:adUnitIdentifier
+                         adFormat:(MAAdFormat *)adFormat
+                        placement:(nullable NSString *)placement
+                       customData:(nullable NSString *)customData
+            adaptiveBannerEnabled:(BOOL)adaptiveBannerEnabled
+                      autoRefresh:(BOOL)autoRefresh
 {
-    NSMutableDictionary *adFormatListDic = mAdViews[adView.adUnitIdentifier];
-    if ( !adFormatListDic )
+    MAAdView *adView = nil;
+    NSMutableData *discardedData = nil;
+    
+    for ( NSMutableData *data in cachedAdViews )
     {
-        adFormatListDic = [NSMutableDictionary dictionaryWithCapacity: 2];
-        mAdViews[adView.adUnitIdentifier] = adFormatListDic;
-        
-        NSMutableSet *adViewList = [NSMutableSet setWithCapacity: 2];
-        adFormatListDic[adView.adFormat] = adViewList;
-        
-        [adViewList addObject: adView];
+        CachedAdView *cachedAdView = (CachedAdView *) data.mutableBytes;
+        if ( [cachedAdView->adUnitId isEqualToString: adUnitIdentifier] &&
+            cachedAdView->adFormat == adFormat &&
+            (cachedAdView->placement == placement ||
+             [cachedAdView->placement isEqualToString: placement]) &&
+            (cachedAdView->customData == customData ||
+             [cachedAdView->customData isEqualToString: customData]) &&
+            cachedAdView->adaptiveBannerEnabled == adaptiveBannerEnabled &&
+            cachedAdView->autoRefresh == autoRefresh)
+        {
+            adView = cachedAdView->adView;
+            discardedData = data;
+            break;
+        }
     }
     
-    NSMutableSet *adViewList = adFormatListDic[adView.adFormat];
-    if ( !adViewList )
+    if ( discardedData )
     {
-        NSMutableSet *adViewList = [NSMutableSet setWithCapacity: 2];
-        adFormatListDic[adView.adFormat] = adViewList;
-        
-        [adViewList addObject: adView];
+        [cachedAdViews removeObject: discardedData];
     }
-    else
+    
+    return adView;
+}
+
+- (void)saveAdView
+{
+    [AppLovinMAXAdView saveAdViewImpl: self.adView
+                             adUnitId: self.adUnitId
+                             adFormat: self.adFormat
+                            placement: self.placement
+                           customData: self.customData
+                adaptiveBannerEnabled: self.adaptiveBannerEnabled
+                          autoRefresh: self.autoRefresh];
+}
+
++ (void)saveAdViewImpl:(MAAdView *)adView
+              adUnitId:(NSString *)adUnitIdentifier
+              adFormat:(MAAdFormat *)adFormat
+             placement:(nullable NSString *)placement
+            customData:(nullable NSString *)customData
+ adaptiveBannerEnabled:(BOOL)adaptiveBannerEnabled
+           autoRefresh:(BOOL)autoRefresh
+{
+    NSMutableData *data = [[NSMutableData alloc] initWithLength:sizeof(CachedAdView)];
+    CachedAdView *cachedAdView = (CachedAdView *) data.mutableBytes;
+    cachedAdView->adView = adView;
+    cachedAdView->adUnitId = adUnitIdentifier;
+    cachedAdView->adFormat = adFormat;
+    cachedAdView->placement = placement;
+    cachedAdView->customData = customData;
+    cachedAdView->adaptiveBannerEnabled = adaptiveBannerEnabled;
+    cachedAdView->autoRefresh = autoRefresh;
+    [cachedAdViews addObject: data];
+}
+
++ (void)preloadAdView:(NSNumber *)count
+             adUnitId:(NSString *)adUnitIdentifier
+             adFormat:(MAAdFormat *)adFormat
+            placement:(nullable NSString *)placement
+           customData:(nullable NSString *)customData
+adaptiveBannerEnabled:(BOOL)adaptiveBannerEnabled
+          autoRefresh:(BOOL)autoRefresh
+{
+    if( !cachedAdViews )
     {
-        [adViewList addObject: adView];
+        cachedAdViews = [NSMutableArray arrayWithCapacity: 2];
+    }
+
+    int numCachedAdView = (int) cachedAdViews.count;
+    
+    for ( int i = 0; i < count.intValue; i++ )
+    {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            MAAdView *adView = nil;
+
+            if ( ( numCachedAdView - i ) > 0 ) {
+                adView = [AppLovinMAXAdView retrievedAdViewImpl: adUnitIdentifier
+                                                       adFormat: adFormat
+                                                      placement: placement
+                                                     customData: customData
+                                          adaptiveBannerEnabled: adaptiveBannerEnabled
+                                                    autoRefresh: autoRefresh];
+            }
+          
+            if ( !adView )
+            {
+                [[AppLovinMAX shared] log: @"Creating a new MAAdView of %@ for %@", adFormat, adUnitIdentifier];
+                
+                adView = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitIdentifier
+                                                           adFormat: adFormat
+                                                                sdk: [AppLovinMAX shared].sdk];
+                adView.placement = placement;
+                adView.customData = customData;
+                [adView setExtraParameterForKey: @"adaptive_banner" value: adaptiveBannerEnabled ? @"true" : @"false"];
+                [adView setExtraParameterForKey: @"allow_pause_auto_refresh_immediately" value: @"true"];
+            }
+            
+            adView.delegate = [AppLovinMAX shared];
+            adView.revenueDelegate = [AppLovinMAX shared];
+            
+            [adView loadAd];
+            
+            [AppLovinMAXAdView saveAdViewImpl: adView adUnitId: adUnitIdentifier adFormat: adFormat placement: placement customData: customData adaptiveBannerEnabled: adaptiveBannerEnabled autoRefresh: autoRefresh];
+        });
     }
 }
 
