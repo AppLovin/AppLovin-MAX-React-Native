@@ -21,6 +21,17 @@ export const AdViewPosition = {
   BOTTOM_RIGHT: "bottom_right",
 };
 
+/**
+ * Returns AdView when AppLovinMax has been initialized or returns a black empty View as 
+ * a placeholder of AdView when AppLovinMax has not been initialized.  
+ *
+ * The purpose of this AdView wrapper is for the application not to access AdView 
+ * before the completion of the AppLovinMax initialization. 
+ *
+ * Note: this does not re-render itself when the status of the AppLovinMax initialization
+ * has changed so that the black view may stay even after the completion of 
+ * the AppLovinMax initialization.
+ */
 const AdViewWrapper = (props) => {
   const {style, ...rest} = props;
   return (
@@ -47,14 +58,13 @@ const styles = StyleSheet.create({
 });
 
 const AdView = (props) => {
-  const { adaptiveBannerEnabled, style, ...otherProps } = props;
+  const {adaptiveBannerEnabled, style, ...otherProps} = props;
 
   // Default value for adaptiveBannerEnabled is true
   const isAdaptiveBannerEnabled = adaptiveBannerEnabled ?? true;
 
   const sizeForAdFormat = (adFormat) => {
     if (adFormat === AdFormat.BANNER) {
-
       let width = AppLovinMAX.isTablet() ? 728 : 320;
       let height;
 
@@ -72,7 +82,7 @@ const AdView = (props) => {
 
   return (
     <AppLovinMAXAdView
-      style = { [sizeForAdFormat(otherProps.adFormat), style] }
+      style={[sizeForAdFormat(otherProps.adFormat), style]}
       adaptiveBannerEnabled={isAdaptiveBannerEnabled}
       {...otherProps }
     />

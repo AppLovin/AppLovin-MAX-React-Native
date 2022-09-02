@@ -23,16 +23,50 @@ class AppLovinMAXAdView
 
     private String      adUnitId;
     private MaxAdFormat adFormat;
-
-    private String  placement;
-    private String  customData;
-    private Boolean adaptiveBannerEnabled;
-    private Boolean autoRefresh;
+    private String      placement;
+    private String      customData;
+    private Boolean     adaptiveBannerEnabled;
+    private Boolean     autoRefresh;
 
     public AppLovinMAXAdView(final Context context)
     {
         super( context );
         this.reactContext = (ThemedReactContext) context;
+    }
+
+    void setAdUnitId(final String value)
+    {
+        // Ad Unit ID must be set prior to creating MAAdView
+        if ( adView != null )
+        {
+            AppLovinMAXModule.e( "Attempting to set Ad Unit ID " + adUnitId + " after MAAdView is created" );
+            return;
+        }
+
+        adUnitId = value;
+
+        attachAdView();
+    }
+
+    void setAdFormat(final String value)
+    {
+        // Ad format must be set prior to creating MAAdView
+        if ( adView != null )
+        {
+            AppLovinMAXModule.e( "Attempting to set ad format " + adUnitId + " after MAAdView is created" );
+            return;
+        }
+
+        if ( "banner".equals( value ) )
+        {
+            adFormat = AppLovinMAXModule.getDeviceSpecificBannerAdViewAdFormat( reactContext );
+        }
+        else if ( "mrec".equals( value ) )
+        {
+            adFormat = MaxAdFormat.MREC;
+        }
+
+        attachAdView();
     }
 
     void setPlacement(final String value)
@@ -80,31 +114,6 @@ class AppLovinMAXAdView
                 adView.stopAutoRefresh();
             }
         }
-    }
-
-    void setAdUnitId(final String value)
-    {
-        if ( adView != null ) return;
-
-        adUnitId = value;
-
-        attachAdView();
-    }
-
-    void setAdFormat(final String value)
-    {
-        if ( adView != null ) return;
-
-        if ( "banner".equals( value ) )
-        {
-            adFormat = AppLovinMAXModule.getDeviceSpecificBannerAdViewAdFormat( reactContext );
-        }
-        else if ( "mrec".equals( value ) )
-        {
-            adFormat = MaxAdFormat.MREC;
-        }
-
-        attachAdView();
     }
 
     @Override
@@ -155,66 +164,86 @@ class AppLovinMAXAdView
             return;
         }
 
-        // Run in next run loop when view is laid out and `getWidth()` / `getHeight()` has appropriate values
-        post( new Runnable()
+        if ( TextUtils.isEmpty( adUnitId ) )
+        {
+            AppLovinMAXModule.e( "Attempting to attach MAAdView without Ad Unit ID" );
+            return;
+        }
+
+        if ( adFormat == null )
+        {
+            AppLovinMAXModule.e( "Attempting to attach MAAdView without ad format" );
+            return;
+        }
+
+        // Re-assign in case of race condition
+        final String adUnitId = this.adUnitId;
+        final MaxAdFormat adFormat = this.adFormat;
+
+        // Run after 0.25 sec delay to allow all properties to set
+        postDelayed( new Runnable()
         {
             @Override
             public void run()
             {
-                if ( adView != null ) return;
-
-                // If ad unit id and format has been set - create and attach AdView
-                if ( !TextUtils.isEmpty( adUnitId ) && adFormat != null )
+                if ( adView != null )
                 {
-                    adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
-                    adView.setListener( AppLovinMAXModule.getInstance() );
-                    adView.setRevenueListener( AppLovinMAXModule.getInstance() );
-
-                    if ( placement != null )
-                    {
-                        adView.setPlacement( placement );
-                    }
-
-                    if ( customData != null )
-                    {
-                        adView.setCustomData( customData );
-                    }
-
-                    if ( adaptiveBannerEnabled != null )
-                    {
-                        adView.setExtraParameter( "adaptive_banner", adaptiveBannerEnabled ? "true" : "false" );
-                    }
-
-                    // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
-                    adView.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
-
-                    if ( autoRefresh != null )
-                    {
-                        if ( autoRefresh.booleanValue() )
-                        {
-                            adView.startAutoRefresh();
-                        }
-                        else
-                        {
-                            adView.stopAutoRefresh();
-                        }
-                    }
-
-                    adView.loadAd();
-
-                    currentWidthPx = getWidth();
-                    currentHeightPx = getHeight();
-
-                    addView( adView );
+                    AppLovinMAXModule.e( "Attempting to re-attach with existing MAAdView: " + adView );
+                    return;
                 }
+
+                AppLovinMAXModule.d( "Attaching MAAdView..." );
+
+                adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
+                adView.setListener( AppLovinMAXModule.getInstance() );
+                adView.setRevenueListener( AppLovinMAXModule.getInstance() );
+
+                if ( placement != null )
+                {
+                    adView.setPlacement( placement );
+                }
+
+                if ( customData != null )
+                {
+                    adView.setCustomData( customData );
+                }
+
+                if ( adaptiveBannerEnabled != null )
+                {
+                    adView.setExtraParameter( "adaptive_banner", adaptiveBannerEnabled ? "true" : "false" );
+                }
+
+                // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
+                adView.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
+
+                if ( autoRefresh != null )
+                {
+                    if ( autoRefresh )
+                    {
+                        adView.startAutoRefresh();
+                    }
+                    else
+                    {
+                        adView.stopAutoRefresh();
+                    }
+                }
+
+                adView.loadAd();
+
+                currentWidthPx = getWidth();
+                currentHeightPx = getHeight();
+
+                addView( adView );
             }
-        } );
+        }, 250 );
     }
 
     void destroy()
     {
         if ( adView != null )
         {
+            AppLovinMAXModule.d( "Unmounting MAAdView: " + adView );
+
             removeView( adView );
 
             adView.setListener( null );
