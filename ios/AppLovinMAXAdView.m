@@ -2,18 +2,17 @@
 #import "AppLovinMAX.h"
 #import "AppLovinMAXAdView.h"
 
-@interface AppLovinMAXAdView ()
+@interface AppLovinMAXAdView()
 
-@property (nonatomic, strong) MAAdView *adView;
+@property (nonatomic, strong, nullable) MAAdView *adView; // nil when unmounted
 
-// Properties that are updated from the correspondig Javascript
-// properties via ViewManager
+// The following properties are updated from RN layer via the view manager
 @property (nonatomic, copy) NSString *adUnitId;
 @property (nonatomic, weak) MAAdFormat *adFormat;
 @property (nonatomic, copy) NSString *placement;
 @property (nonatomic, copy) NSString *customData;
 @property (nonatomic, assign, readonly, getter=isAdaptiveBannerEnabled) BOOL adaptiveBannerEnabled;
-@property (nonatomic, assign, readonly, getter=isAutoRefreshEnabled) BOOL autoRefresh;
+@property (nonatomic, assign, readonly, getter=isAutoRefreshEnabled) BOOL autoRefreshEnabled;
 
 @end
 
@@ -21,7 +20,12 @@
 
 - (void)setAdUnitId:(NSString *)adUnitId
 {
-    if ( self.adView ) return;
+    // Ad Unit ID must be set prior to creating MAAdView
+    if ( self.adView )
+    {
+        [[AppLovinMAX shared] log: @"Attempting to set Ad Unit ID %@ after MAAdView is created", adUnitId];
+        return;
+    }
     
     _adUnitId = adUnitId;
     
@@ -30,7 +34,12 @@
 
 - (void)setAdFormat:(NSString *)adFormat
 {
-    if ( self.adView ) return;
+    // Ad format must be set prior to creating MAAdView
+    if ( self.adView )
+    {
+        [[AppLovinMAX shared] log: @"Attempting to set ad format %@ after MAAdView is created", adFormat];
+        return;
+    }
     
     if ( [@"banner" isEqualToString: adFormat] )
     {
@@ -81,13 +90,13 @@
     }
 }
 
-- (void)setAutoRefresh:(BOOL)autoRefresh
+- (void)setAutoRefreshEnabled:(BOOL)autoRefreshEnabled
 {
-    _autoRefresh = autoRefresh;
+    _autoRefreshEnabled = autoRefreshEnabled;
     
     if ( self.adView )
     {
-        if ( autoRefresh )
+        if ( autoRefreshEnabled )
         {
             [self.adView startAutoRefresh];
         }
@@ -100,22 +109,40 @@
 
 - (void)attachAdView
 {
+    if ( ![self.adUnitId al_isValidString] )
+    {
+        [[AppLovinMAX shared] log: @"Attempting to attach MAAdView without Ad Unit ID"];
+        return;
+    }
+    
+    if ( !self.adFormat )
+    {
+        [[AppLovinMAX shared] log: @"Attempting to attach MAAdView without ad format"];
+        return;
+    }
+    
+    // Re-assign in case of race condition
+    NSString *adUnitId = self.adUnitId;
+    MAAdFormat *adFormat = self.adFormat;
+    
     // Run after 0.25 sec delay to allow all properties to set
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (NSEC_PER_SEC/4)), dispatch_get_main_queue(), ^{
-        if ( self.adView ) return;
         
-        RCTLogInfo(@"[AppLovinSdk] [AppLovinMAX] attempting to re-attach ad view %@", self.adUnitId);
+        if ( self.adView )
+        {
+            [[AppLovinMAX shared] log: @"Attempting to re-attach with existing MAAdView: %@", self.adView];
+            return;
+        }
         
-        // If ad unit id and format has been set - create and attach AdView
-        if ( !( [self.adUnitId al_isValidString] && self.adFormat )) return;
+        [[AppLovinMAX shared] log: @"Attaching MAAdView..."];
         
-        self.adView = [[MAAdView alloc] initWithAdUnitIdentifier: self.adUnitId adFormat: self.adFormat sdk: AppLovinMAX.shared.sdk];
-        self.adView.frame = (CGRect) { CGPointZero, self.adFormat.size };
+        self.adView = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitId
+                                                        adFormat: adFormat
+                                                             sdk: AppLovinMAX.shared.sdk];
+        self.adView.frame = (CGRect) { CGPointZero, adFormat.size };
         self.adView.delegate = AppLovinMAX.shared; // Go through core class for callback forwarding to React Native layer
         self.adView.revenueDelegate = AppLovinMAX.shared;
-        
         self.adView.placement = self.placement;
-        
         self.adView.customData = self.customData;
         
         if ( [self isAdaptiveBannerEnabled] )
@@ -155,12 +182,14 @@
 - (void)didMoveToWindow
 {
     [super didMoveToWindow];
-
+    
     // This view is unmounted
     if ( !self.window )
     {
         if ( self.adView )
         {
+            [[AppLovinMAX shared] log: @"Unmounting MAAdView: %@...", self.adView];
+            
             self.adView.delegate = nil;
             self.adView.revenueDelegate = nil;
             
