@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1D2890F5251ABC83004F1CC4 /* AppLovinMAXAdViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D2890F4251ABC83004F1CC4 /* AppLovinMAXAdViewManager.m */; };
+		1D3CC34128C18441003E5A07 /* AppLovinMAXAdView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3CC34028C18441003E5A07 /* AppLovinMAXAdView.m */; };
 		1DEA13CD24B9258700D42847 /* AppLovinMAX.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DEA13CC24B9258700D42847 /* AppLovinMAX.m */; };
 		DE4E5A3D46DDFAE766DFFE58 /* libPods-AppLovinMAX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF1B4EBC7187611714984C78 /* libPods-AppLovinMAX.a */; };
 /* End PBXBuildFile section */
@@ -29,6 +30,8 @@
 		134814201AA4EA6300B7C361 /* libAppLovinMAX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libAppLovinMAX.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		1D2890F3251ABC83004F1CC4 /* AppLovinMAXAdViewManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppLovinMAXAdViewManager.h; sourceTree = "<group>"; };
 		1D2890F4251ABC83004F1CC4 /* AppLovinMAXAdViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppLovinMAXAdViewManager.m; sourceTree = "<group>"; };
+		1D3CC33F28C18440003E5A07 /* AppLovinMAXAdView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppLovinMAXAdView.h; sourceTree = "<group>"; };
+		1D3CC34028C18441003E5A07 /* AppLovinMAXAdView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppLovinMAXAdView.m; sourceTree = "<group>"; };
 		1DEA13CC24B9258700D42847 /* AppLovinMAX.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppLovinMAX.m; sourceTree = "<group>"; };
 		B3E7B5881CC2AC0600A0062D /* AppLovinMAX.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppLovinMAX.h; sourceTree = "<group>"; };
 		EF1B4EBC7187611714984C78 /* libPods-AppLovinMAX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AppLovinMAX.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -68,6 +71,8 @@
 			children = (
 				B3E7B5881CC2AC0600A0062D /* AppLovinMAX.h */,
 				1DEA13CC24B9258700D42847 /* AppLovinMAX.m */,
+				1D3CC33F28C18440003E5A07 /* AppLovinMAXAdView.h */,
+				1D3CC34028C18441003E5A07 /* AppLovinMAXAdView.m */,
 				1D2890F3251ABC83004F1CC4 /* AppLovinMAXAdViewManager.h */,
 				1D2890F4251ABC83004F1CC4 /* AppLovinMAXAdViewManager.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
@@ -169,6 +174,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1D2890F5251ABC83004F1CC4 /* AppLovinMAXAdViewManager.m in Sources */,
+				1D3CC34128C18441003E5A07 /* AppLovinMAXAdView.m in Sources */,
 				1DEA13CD24B9258700D42847 /* AppLovinMAX.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
