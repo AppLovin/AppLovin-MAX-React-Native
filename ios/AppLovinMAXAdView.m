@@ -12,7 +12,7 @@
 @property (nonatomic, copy) NSString *placement;
 @property (nonatomic, copy) NSString *customData;
 @property (nonatomic, assign, readonly, getter=isAdaptiveBannerEnabled) BOOL adaptiveBannerEnabled;
-@property (nonatomic, assign, readonly, getter=isAutoRefreshEnabled) BOOL autoRefreshEnabled;
+@property (nonatomic, assign, readonly, getter=isAutoRefresh) BOOL autoRefresh;
 
 @end
 
@@ -90,13 +90,13 @@
     }
 }
 
-- (void)setAutoRefreshEnabled:(BOOL)autoRefreshEnabled
+- (void)setAutoRefresh:(BOOL)autoRefresh
 {
-    _autoRefreshEnabled = autoRefreshEnabled;
+    _autoRefresh = autoRefresh;
     
     if ( self.adView )
     {
-        if ( autoRefreshEnabled )
+        if ( autoRefresh )
         {
             [self.adView startAutoRefresh];
         }
@@ -157,7 +157,7 @@
         // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
         [self.adView setExtraParameterForKey: @"allow_pause_auto_refresh_immediately" value: @"true"];
         
-        if ( [self isAutoRefreshEnabled] )
+        if ( [self isAutoRefresh] )
         {
             [self.adView startAutoRefresh];
         }
