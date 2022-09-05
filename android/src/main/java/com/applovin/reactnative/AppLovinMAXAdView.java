@@ -36,10 +36,10 @@ class AppLovinMAXAdView
 
     void setAdUnitId(final String value)
     {
-        // Ad Unit ID must be set prior to creating MAAdView
+        // Ad Unit ID must be set prior to creating MaxAdView
         if ( adView != null )
         {
-            AppLovinMAXModule.e( "Attempting to set Ad Unit ID " + adUnitId + " after MAAdView is created" );
+            AppLovinMAXModule.e( "Attempting to set Ad Unit ID " + adUnitId + " after MaxAdView is created" );
             return;
         }
 
@@ -50,10 +50,10 @@ class AppLovinMAXAdView
 
     void setAdFormat(final String value)
     {
-        // Ad format must be set prior to creating MAAdView
+        // Ad format must be set prior to creating MaxAdView
         if ( adView != null )
         {
-            AppLovinMAXModule.e( "Attempting to set ad format " + adUnitId + " after MAAdView is created" );
+            AppLovinMAXModule.e( "Attempting to set ad format " + adUnitId + " after MaxAdView is created" );
             return;
         }
 
@@ -166,13 +166,13 @@ class AppLovinMAXAdView
 
         if ( TextUtils.isEmpty( adUnitId ) )
         {
-            AppLovinMAXModule.e( "Attempting to attach MAAdView without Ad Unit ID" );
+            AppLovinMAXModule.e( "Attempting to attach MaxAdView without Ad Unit ID" );
             return;
         }
 
         if ( adFormat == null )
         {
-            AppLovinMAXModule.e( "Attempting to attach MAAdView without ad format" );
+            AppLovinMAXModule.e( "Attempting to attach MaxAdView without ad format" );
             return;
         }
 
@@ -188,11 +188,11 @@ class AppLovinMAXAdView
             {
                 if ( adView != null )
                 {
-                    AppLovinMAXModule.e( "Attempting to re-attach with existing MAAdView: " + adView );
+                    AppLovinMAXModule.e( "Attempting to re-attach with existing MaxAdView: " + adView );
                     return;
                 }
 
-                AppLovinMAXModule.d( "Attaching MAAdView..." );
+                AppLovinMAXModule.d( "Attaching MaxAdView..." );
 
                 adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
                 adView.setListener( AppLovinMAXModule.getInstance() );
@@ -242,13 +242,15 @@ class AppLovinMAXAdView
     {
         if ( adView != null )
         {
-            AppLovinMAXModule.d( "Unmounting MAAdView: " + adView );
+            AppLovinMAXModule.d( "Unmounting MaxAdView: " + adView );
 
             removeView( adView );
 
             adView.setListener( null );
             adView.setRevenueListener( null );
             adView.destroy();
+
+            adView = null;
         }
     }
 }

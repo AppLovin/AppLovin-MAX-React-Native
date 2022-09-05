@@ -9,8 +9,8 @@
 // The following properties are updated from RN layer via the view manager
 @property (nonatomic, copy) NSString *adUnitId;
 @property (nonatomic, weak) MAAdFormat *adFormat;
-@property (nonatomic, copy) NSString *placement;
-@property (nonatomic, copy) NSString *customData;
+@property (nonatomic, copy, nullable) NSString *placement;
+@property (nonatomic, copy, nullable) NSString *customData;
 @property (nonatomic, assign, readonly, getter=isAdaptiveBannerEnabled) BOOL adaptiveBannerEnabled;
 @property (nonatomic, assign, readonly, getter=isAutoRefresh) BOOL autoRefresh;
 
@@ -127,24 +127,27 @@
     
     // Run after 0.25 sec delay to allow all properties to set
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (NSEC_PER_SEC/4)), dispatch_get_main_queue(), ^{
-        
         if ( self.adView )
         {
             [[AppLovinMAX shared] log: @"Attempting to re-attach with existing MAAdView: %@", self.adView];
             return;
         }
-        
         [[AppLovinMAX shared] log: @"Attaching MAAdView..."];
-        
         self.adView = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitId
                                                         adFormat: adFormat
                                                              sdk: AppLovinMAX.shared.sdk];
         self.adView.frame = (CGRect) { CGPointZero, adFormat.size };
         self.adView.delegate = AppLovinMAX.shared; // Go through core class for callback forwarding to React Native layer
         self.adView.revenueDelegate = AppLovinMAX.shared;
-        self.adView.placement = self.placement;
-        self.adView.customData = self.customData;
-        
+        if ( self.placement )
+        {
+            self.adView.placement = self.placement;
+        }
+        if ( self.customData )
+        {
+            self.adView.customData = self.customData;
+        }
+
         if ( [self isAdaptiveBannerEnabled] )
         {
             [self.adView setExtraParameterForKey: @"adaptive_banner" value: @"true"];
@@ -194,6 +197,8 @@
             self.adView.revenueDelegate = nil;
             
             [self.adView removeFromSuperview];
+
+            self.adView = nil;
         }
     }
 }

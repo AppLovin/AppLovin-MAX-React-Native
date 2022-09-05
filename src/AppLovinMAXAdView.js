@@ -58,17 +58,14 @@ const styles = StyleSheet.create({
 });
 
 const AdView = (props) => {
-  const {adaptiveBannerEnabled, style, ...otherProps} = props;
+  const {style, ...otherProps} = props;
 
-  // Default value for adaptiveBannerEnabled is true
-  const isAdaptiveBannerEnabled = adaptiveBannerEnabled ?? true;
-
-  const sizeForAdFormat = (adFormat) => {
-    if (adFormat === AdFormat.BANNER) {
+  const sizeForAdFormat = () => {
+    if (props.adFormat === AdFormat.BANNER) {
       let width = AppLovinMAX.isTablet() ? 728 : 320;
       let height;
 
-      if (isAdaptiveBannerEnabled) {
+      if (props.adaptiveBannerEnabled) {
         height = AppLovinMAX.getAdaptiveBannerHeightForWidth(-1);
       } else {
         height = AppLovinMAX.isTablet() ? 90 : 50;
@@ -82,8 +79,7 @@ const AdView = (props) => {
 
   return (
     <AppLovinMAXAdView
-      style={[sizeForAdFormat(otherProps.adFormat), style]}
-      adaptiveBannerEnabled={isAdaptiveBannerEnabled}
+      style={[sizeForAdFormat(), style]}
       {...otherProps }
     />
   );
@@ -120,6 +116,13 @@ AdView.propTypes = {
    */
   autoRefresh: PropTypes.bool,
 };
+
+// Defiens default values for the props.
+AdView.defaultProps = {
+  adaptiveBannerEnabled: true,
+  autoRefresh: true,
+};
+
 
 // requireNativeComponent automatically resolves 'AppLovinMAXAdView' to 'AppLovinMAXAdViewManager'
 const AppLovinMAXAdView = requireNativeComponent("AppLovinMAXAdView", AdView);
