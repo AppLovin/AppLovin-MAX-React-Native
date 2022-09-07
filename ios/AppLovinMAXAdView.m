@@ -49,6 +49,11 @@
     {
         _adFormat = MAAdFormat.mrec;
     }
+    else
+    {
+        [[AppLovinMAX shared] log: @"Attempting to set an invalid ad format of \"%@\" for %@", adFormat, self.adUnitId];
+        return;
+    }
     
     [self attachAdView];
 }  
