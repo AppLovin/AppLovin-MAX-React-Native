@@ -65,6 +65,11 @@ class AppLovinMAXAdView
         {
             adFormat = MaxAdFormat.MREC;
         }
+        else
+        {
+            AppLovinMAXModule.e( "Attempting to set an invalid ad format of \"" + value + "\" for " + adUnitId );
+            return;
+        }
 
         attachAdView();
     }
@@ -95,7 +100,7 @@ class AppLovinMAXAdView
 
         if ( adView != null )
         {
-            adView.setExtraParameter( "adaptive_banner", enabled ? "true" : "false" );
+            adView.setExtraParameter( "adaptive_banner", Boolean.toString( enabled ) );
         }
     }
 
@@ -210,7 +215,8 @@ class AppLovinMAXAdView
 
                 if ( adaptiveBannerEnabled != null )
                 {
-                    adView.setExtraParameter( "adaptive_banner", adaptiveBannerEnabled ? "true" : "false" );
+                    adView.setExtraParameter( "adaptive_banner", Boolean.toString( adaptiveBannerEnabled ) );
+
                 }
 
                 // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()

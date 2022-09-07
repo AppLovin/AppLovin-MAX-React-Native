@@ -79,14 +79,7 @@
     
     if ( self.adView )
     {
-        if ( adaptiveBannerEnabled )
-        {
-            [self.adView setExtraParameterForKey: @"adaptive_banner" value: @"true"];
-        }
-        else
-        {
-            [self.adView setExtraParameterForKey: @"adaptive_banner" value: @"false"];
-        }
+        [self.adView setExtraParameterForKey: @"adaptive_banner" value: adaptiveBannerEnabled ? @"true" : @"false"];
     }
 }
 
