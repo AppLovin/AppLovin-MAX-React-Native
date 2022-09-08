@@ -18,15 +18,13 @@ class AppLovinMAXAdView
     private final ThemedReactContext reactContext;
 
     private MaxAdView adView;
-    private int       currentWidthPx;
-    private int       currentHeightPx;
 
     private String      adUnitId;
     private MaxAdFormat adFormat;
     private String      placement;
     private String      customData;
-    private Boolean     adaptiveBannerEnabled;
-    private Boolean     autoRefresh;
+    private boolean     adaptiveBannerEnabled;
+    private boolean     autoRefresh;
 
     public AppLovinMAXAdView(final Context context)
     {
@@ -130,6 +128,9 @@ class AppLovinMAXAdView
         // This is required to ensure ad refreshes render correctly in RN Android due to known issue where `getWidth()` and `getHeight()` return 0 on attach
         if ( adView != null )
         {
+            int currentWidthPx = getWidth();
+            int currentHeightPx = getHeight();
+
             adView.measure(
                     MeasureSpec.makeMeasureSpec( currentWidthPx, MeasureSpec.EXACTLY ),
                     MeasureSpec.makeMeasureSpec( currentHeightPx, MeasureSpec.EXACTLY )
@@ -175,12 +176,6 @@ class AppLovinMAXAdView
             return;
         }
 
-        if ( adFormat == null )
-        {
-            AppLovinMAXModule.e( "Attempting to attach MaxAdView without ad format" );
-            return;
-        }
-
         // Re-assign in case of race condition
         final String adUnitId = this.adUnitId;
         final MaxAdFormat adFormat = this.adFormat;
@@ -191,6 +186,12 @@ class AppLovinMAXAdView
             @Override
             public void run()
             {
+                if ( adFormat == null )
+                {
+                    AppLovinMAXModule.e( "Attempting to attach MaxAdView without ad format" );
+                    return;
+                }
+
                 if ( adView != null )
                 {
                     AppLovinMAXModule.e( "Attempting to re-attach with existing MaxAdView: " + adView );
@@ -202,42 +203,22 @@ class AppLovinMAXAdView
                 adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
                 adView.setListener( AppLovinMAXModule.getInstance() );
                 adView.setRevenueListener( AppLovinMAXModule.getInstance() );
-
-                if ( placement != null )
-                {
-                    adView.setPlacement( placement );
-                }
-
-                if ( customData != null )
-                {
-                    adView.setCustomData( customData );
-                }
-
-                if ( adaptiveBannerEnabled != null )
-                {
-                    adView.setExtraParameter( "adaptive_banner", Boolean.toString( adaptiveBannerEnabled ) );
-
-                }
-
+                adView.setPlacement( placement );
+                adView.setCustomData( customData );
+                adView.setExtraParameter( "adaptive_banner", Boolean.toString( adaptiveBannerEnabled ) );
                 // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
                 adView.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
 
-                if ( autoRefresh != null )
+                if ( autoRefresh )
                 {
-                    if ( autoRefresh )
-                    {
-                        adView.startAutoRefresh();
-                    }
-                    else
-                    {
-                        adView.stopAutoRefresh();
-                    }
+                    adView.startAutoRefresh();
+                }
+                else
+                {
+                    adView.stopAutoRefresh();
                 }
 
                 adView.loadAd();
-
-                currentWidthPx = getWidth();
-                currentHeightPx = getHeight();
 
                 addView( adView );
             }

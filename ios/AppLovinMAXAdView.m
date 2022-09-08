@@ -113,48 +113,35 @@
         return;
     }
     
-    if ( !self.adFormat )
-    {
-        [[AppLovinMAX shared] log: @"Attempting to attach MAAdView without ad format"];
-        return;
-    }
-    
     // Re-assign in case of race condition
     NSString *adUnitId = self.adUnitId;
     MAAdFormat *adFormat = self.adFormat;
     
     // Run after 0.25 sec delay to allow all properties to set
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (NSEC_PER_SEC/4)), dispatch_get_main_queue(), ^{
+        if ( !self.adFormat )
+        {
+            [[AppLovinMAX shared] log: @"Attempting to attach MAAdView without ad format"];
+            return;
+        }
+        
         if ( self.adView )
         {
             [[AppLovinMAX shared] log: @"Attempting to re-attach with existing MAAdView: %@", self.adView];
             return;
         }
+        
         [[AppLovinMAX shared] log: @"Attaching MAAdView..."];
+        
         self.adView = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitId
                                                         adFormat: adFormat
                                                              sdk: AppLovinMAX.shared.sdk];
-        self.adView.frame = (CGRect) { CGPointZero, adFormat.size };
+        self.adView.frame = (CGRect) { CGPointZero, self.frame.size };
         self.adView.delegate = AppLovinMAX.shared; // Go through core class for callback forwarding to React Native layer
         self.adView.revenueDelegate = AppLovinMAX.shared;
-        if ( self.placement )
-        {
-            self.adView.placement = self.placement;
-        }
-        if ( self.customData )
-        {
-            self.adView.customData = self.customData;
-        }
-
-        if ( [self isAdaptiveBannerEnabled] )
-        {
-            [self.adView setExtraParameterForKey: @"adaptive_banner" value: @"true"];
-        }
-        else
-        {
-            [self.adView setExtraParameterForKey: @"adaptive_banner" value: @"false"];
-        }
-        
+        self.adView.placement = self.placement;
+        self.adView.customData = self.customData;
+        [self.adView setExtraParameterForKey: @"adaptive_banner" value: [self isAdaptiveBannerEnabled] ? @"true" : @"false"];
         // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
         [self.adView setExtraParameterForKey: @"allow_pause_auto_refresh_immediately" value: @"true"];
         
@@ -171,12 +158,10 @@
         
         [self addSubview: self.adView];
         
-        CGSize adViewSize = [self.adFormat adaptiveSizeForWidth: CGRectGetWidth(self.frame)];
-        [NSLayoutConstraint activateConstraints: @[[self.adView.widthAnchor constraintEqualToConstant: adViewSize.width],
-                                                   [self.adView.heightAnchor constraintEqualToConstant: adViewSize.height],
+        [NSLayoutConstraint activateConstraints: @[[self.adView.widthAnchor constraintEqualToAnchor: self.widthAnchor],
+                                                   [self.adView.heightAnchor constraintEqualToAnchor: self.heightAnchor],
                                                    [self.adView.centerXAnchor constraintEqualToAnchor: self.centerXAnchor],
                                                    [self.adView.centerYAnchor constraintEqualToAnchor: self.centerYAnchor]]];
-        
     });
 }
 
@@ -189,13 +174,13 @@
     {
         if ( self.adView )
         {
-            [[AppLovinMAX shared] log: @"Unmounting MAAdView: %@...", self.adView];
+            [[AppLovinMAX shared] log: @"Unmounting MAAdView: %@", self.adView];
             
             self.adView.delegate = nil;
             self.adView.revenueDelegate = nil;
             
             [self.adView removeFromSuperview];
-
+            
             self.adView = nil;
         }
     }
