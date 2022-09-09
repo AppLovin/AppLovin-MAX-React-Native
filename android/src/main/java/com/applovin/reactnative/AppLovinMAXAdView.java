@@ -170,58 +170,54 @@ class AppLovinMAXAdView
             return;
         }
 
-        if ( TextUtils.isEmpty( adUnitId ) )
-        {
-            AppLovinMAXModule.e( "Attempting to attach MaxAdView without Ad Unit ID" );
-            return;
-        }
-
         // Re-assign in case of race condition
         final String adUnitId = this.adUnitId;
         final MaxAdFormat adFormat = this.adFormat;
 
         // Run after 0.25 sec delay to allow all properties to set
-        postDelayed( new Runnable()
-        {
-            @Override
-            public void run()
+        postDelayed( () -> {
+
+            if ( TextUtils.isEmpty( adUnitId ) )
             {
-                if ( adFormat == null )
-                {
-                    AppLovinMAXModule.e( "Attempting to attach MaxAdView without ad format" );
-                    return;
-                }
-
-                if ( adView != null )
-                {
-                    AppLovinMAXModule.e( "Attempting to re-attach with existing MaxAdView: " + adView );
-                    return;
-                }
-
-                AppLovinMAXModule.d( "Attaching MaxAdView..." );
-
-                adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
-                adView.setListener( AppLovinMAXModule.getInstance() );
-                adView.setRevenueListener( AppLovinMAXModule.getInstance() );
-                adView.setPlacement( placement );
-                adView.setCustomData( customData );
-                adView.setExtraParameter( "adaptive_banner", Boolean.toString( adaptiveBannerEnabled ) );
-                // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
-                adView.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
-
-                if ( autoRefresh )
-                {
-                    adView.startAutoRefresh();
-                }
-                else
-                {
-                    adView.stopAutoRefresh();
-                }
-
-                adView.loadAd();
-
-                addView( adView );
+                AppLovinMAXModule.e( "Attempting to attach MaxAdView without Ad Unit ID" );
+                return;
             }
+
+            if ( adFormat == null )
+            {
+                AppLovinMAXModule.e( "Attempting to attach MaxAdView without ad format" );
+                return;
+            }
+
+            if ( adView != null )
+            {
+                AppLovinMAXModule.e( "Attempting to re-attach with existing MaxAdView: " + adView );
+                return;
+            }
+
+            AppLovinMAXModule.d( "Attaching MaxAdView..." );
+
+            adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
+            adView.setListener( AppLovinMAXModule.getInstance() );
+            adView.setRevenueListener( AppLovinMAXModule.getInstance() );
+            adView.setPlacement( placement );
+            adView.setCustomData( customData );
+            adView.setExtraParameter( "adaptive_banner", Boolean.toString( adaptiveBannerEnabled ) );
+            // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
+            adView.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
+
+            if ( autoRefresh )
+            {
+                adView.startAutoRefresh();
+            }
+            else
+            {
+                adView.stopAutoRefresh();
+            }
+
+            adView.loadAd();
+
+            addView( adView );
         }, 250 );
     }
 

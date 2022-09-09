@@ -1,6 +1,5 @@
 package com.applovin.reactnative;
 
-import com.applovin.mediation.ads.MaxAdView;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -14,13 +13,7 @@ import org.jetbrains.annotations.NotNull;
 class AppLovinMAXAdViewManager
         extends SimpleViewManager<AppLovinMAXAdView>
 {
-    // Parent fields
-    private final ReactApplicationContext reactApplicationContext;
-
-    public AppLovinMAXAdViewManager(final ReactApplicationContext reactApplicationContext)
-    {
-        this.reactApplicationContext = reactApplicationContext;
-    }
+    public AppLovinMAXAdViewManager(final ReactApplicationContext reactApplicationContext) { }
 
     @Override
     public @NotNull
