@@ -23,7 +23,7 @@
     // Ad Unit ID must be set prior to creating MAAdView
     if ( self.adView )
     {
-        [[AppLovinMAX shared] log: @"Attempting to set Ad Unit ID %@ after MAAdView is created", adUnitId];
+        [AppLovinMAX.shared log: @"Attempting to set Ad Unit ID %@ after MAAdView is created", adUnitId];
         return;
     }
     
@@ -37,7 +37,7 @@
     // Ad format must be set prior to creating MAAdView
     if ( self.adView )
     {
-        [[AppLovinMAX shared] log: @"Attempting to set ad format %@ after MAAdView is created", adFormat];
+        [AppLovinMAX.shared log: @"Attempting to set ad format %@ after MAAdView is created", adFormat];
         return;
     }
     
@@ -51,7 +51,7 @@
     }
     else
     {
-        [[AppLovinMAX shared] log: @"Attempting to set an invalid ad format of \"%@\" for %@", adFormat, self.adUnitId];
+        [AppLovinMAX.shared log: @"Attempting to set an invalid ad format of \"%@\" for %@", adFormat, self.adUnitId];
         return;
     }
     
@@ -116,23 +116,23 @@
         
         if ( ![adUnitId al_isValidString] )
         {
-            [[AppLovinMAX shared] log: @"Attempting to attach MAAdView without Ad Unit ID"];
+            [AppLovinMAX.shared log: @"Attempting to attach MAAdView without Ad Unit ID"];
             return;
         }
         
         if ( !adFormat )
         {
-            [[AppLovinMAX shared] log: @"Attempting to attach MAAdView without ad format"];
+            [AppLovinMAX.shared log: @"Attempting to attach MAAdView without ad format"];
             return;
         }
         
         if ( self.adView )
         {
-            [[AppLovinMAX shared] log: @"Attempting to re-attach with existing MAAdView: %@", self.adView];
+            [AppLovinMAX.shared log: @"Attempting to re-attach with existing MAAdView: %@", self.adView];
             return;
         }
         
-        [[AppLovinMAX shared] log: @"Attaching MAAdView..."];
+        [AppLovinMAX.shared log: @"Attaching MAAdView for %@", adUnitId];
         
         self.adView = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitId
                                                         adFormat: adFormat
@@ -175,7 +175,7 @@
     {
         if ( self.adView )
         {
-            [[AppLovinMAX shared] log: @"Unmounting MAAdView: %@", self.adView];
+            [AppLovinMAX.shared log: @"Unmounting MAAdView: %@", self.adView];
             
             self.adView.delegate = nil;
             self.adView.revenueDelegate = nil;

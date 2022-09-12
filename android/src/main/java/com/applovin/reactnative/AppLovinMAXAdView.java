@@ -9,6 +9,8 @@ import com.applovin.mediation.ads.MaxAdView;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.views.view.ReactViewGroup;
 
+import androidx.annotation.Nullable;
+
 /**
  * Created by Thomas So on September 27 2020
  */
@@ -17,14 +19,14 @@ class AppLovinMAXAdView
 {
     private final ThemedReactContext reactContext;
 
-    private MaxAdView adView;
+    private @Nullable MaxAdView adView;
 
-    private String      adUnitId;
-    private MaxAdFormat adFormat;
-    private String      placement;
-    private String      customData;
-    private boolean     adaptiveBannerEnabled;
-    private boolean     autoRefresh;
+    private           String      adUnitId;
+    private           MaxAdFormat adFormat;
+    private @Nullable String      placement;
+    private @Nullable String      customData;
+    private           boolean     adaptiveBannerEnabled;
+    private           boolean     autoRefresh;
 
     public AppLovinMAXAdView(final Context context)
     {
@@ -32,12 +34,12 @@ class AppLovinMAXAdView
         this.reactContext = (ThemedReactContext) context;
     }
 
-    void setAdUnitId(final String value)
+    public void setAdUnitId(final String value)
     {
         // Ad Unit ID must be set prior to creating MaxAdView
         if ( adView != null )
         {
-            AppLovinMAXModule.e( "Attempting to set Ad Unit ID " + adUnitId + " after MaxAdView is created" );
+            AppLovinMAXModule.e( "Attempting to set Ad Unit ID " + value + " after MaxAdView is created" );
             return;
         }
 
@@ -46,12 +48,12 @@ class AppLovinMAXAdView
         attachAdView();
     }
 
-    void setAdFormat(final String value)
+    public void setAdFormat(final String value)
     {
         // Ad format must be set prior to creating MaxAdView
         if ( adView != null )
         {
-            AppLovinMAXModule.e( "Attempting to set ad format " + adUnitId + " after MaxAdView is created" );
+            AppLovinMAXModule.e( "Attempting to set ad format " + value + " after MaxAdView is created" );
             return;
         }
 
@@ -72,7 +74,7 @@ class AppLovinMAXAdView
         attachAdView();
     }
 
-    void setPlacement(final String value)
+    public void setPlacement(@Nullable final String value)
     {
         placement = value;
 
@@ -82,7 +84,7 @@ class AppLovinMAXAdView
         }
     }
 
-    void setCustomData(final String value)
+    public void setCustomData(@Nullable final String value)
     {
         customData = value;
 
@@ -92,7 +94,7 @@ class AppLovinMAXAdView
         }
     }
 
-    void setAdaptiveBannerEnabled(final boolean enabled)
+    public void setAdaptiveBannerEnabled(final boolean enabled)
     {
         adaptiveBannerEnabled = enabled;
 
@@ -102,13 +104,13 @@ class AppLovinMAXAdView
         }
     }
 
-    void setAutoRefresh(final boolean enabled)
+    public void setAutoRefresh(final boolean enabled)
     {
         autoRefresh = enabled;
 
         if ( adView != null )
         {
-            if ( enabled )
+            if ( autoRefresh )
             {
                 adView.startAutoRefresh();
             }
@@ -161,7 +163,7 @@ class AppLovinMAXAdView
         }
     }
 
-    public void attachAdView()
+    private void attachAdView()
     {
         final Activity currentActivity = reactContext.getCurrentActivity();
         if ( currentActivity == null )
@@ -195,7 +197,7 @@ class AppLovinMAXAdView
                 return;
             }
 
-            AppLovinMAXModule.d( "Attaching MaxAdView..." );
+            AppLovinMAXModule.d( "Attaching MaxAdView for " + adUnitId );
 
             adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
             adView.setListener( AppLovinMAXModule.getInstance() );
@@ -221,7 +223,7 @@ class AppLovinMAXAdView
         }, 250 );
     }
 
-    void destroy()
+    public void destroy()
     {
         if ( adView != null )
         {

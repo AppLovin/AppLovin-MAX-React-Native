@@ -7,6 +7,8 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 
 import org.jetbrains.annotations.NotNull;
 
+import androidx.annotation.Nullable;
+
 /**
  * Created by Thomas So on September 26 2020
  */
@@ -31,13 +33,13 @@ class AppLovinMAXAdViewManager
     }
 
     @ReactProp(name = "placement")
-    public void setPlacement(final AppLovinMAXAdView view, final String placement)
+    public void setPlacement(final AppLovinMAXAdView view, @Nullable final String placement)
     {
         view.setPlacement( placement );
     }
 
     @ReactProp(name = "customData")
-    public void setCustomData(final AppLovinMAXAdView view, final String customData)
+    public void setCustomData(final AppLovinMAXAdView view, @Nullable final String customData)
     {
         view.setCustomData( customData );
     }
