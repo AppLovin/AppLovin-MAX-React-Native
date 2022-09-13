@@ -370,7 +370,7 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     height: Platform.select({
-      ios: Dimensions.get('window').height-44, // For top safe area
+      ios: Dimensions.get('window').height - 44, // For top safe area
       android: Dimensions.get('window').height,
     }),
   },
