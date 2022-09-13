@@ -1,10 +1,8 @@
 import React, {useState, useEffect} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {Platform, StyleSheet, Text, View, SafeAreaView, Dimensions} from 'react-native';
 import AppLovinMAX from '../../src/index';
 import AppLogo from './components/AppLogo';
 import AppButton from './components/AppButton';
-import 'react-native-gesture-handler';
-import {NavigationContainer} from "@react-navigation/native";
 
 const adLoadState = {
   notLoaded: 'NOT_LOADED',
@@ -243,7 +241,7 @@ const App = () => {
   }
 
   return (
-    <NavigationContainer>
+    <SafeAreaView>
       <View style={styles.container}>
         <AppLogo/>
         <Text style={styles.statusText}>
@@ -365,14 +363,16 @@ const App = () => {
           }}
         />
       </View>
-    </NavigationContainer>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 80,
-    flex: 1, // Enables flexbox column layout
+    height: Platform.select({
+      ios: Dimensions.get('window').height - 44, // For top safe area
+      android: Dimensions.get('window').height,
+    }),
   },
   statusText: {
     marginBottom: 10,

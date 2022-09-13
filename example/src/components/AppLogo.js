@@ -20,8 +20,6 @@ const styles = StyleSheet.create({
   },
   container: {
     height: 60,
-    paddingTop: 10,
-    paddingBottom: 50,
     alignItems: 'center', // horizontal-align
     justifyContent: 'center', // vertical-align
   },

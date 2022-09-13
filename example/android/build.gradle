@@ -3,12 +3,12 @@
 buildscript {
     ext {
         buildToolsVersion = "28.0.3"
-        minSdkVersion = 16
+        minSdkVersion = 21
         compileSdkVersion = 28
         targetSdkVersion = 28
     }
     ext.versions = [
-            'minSdk'                : 16,
+            'minSdk'                : 21,
             'compileSdk'            : 29,
             'targetSdk'             : 29,
             'playServicesIdentifier': "16.0.0",

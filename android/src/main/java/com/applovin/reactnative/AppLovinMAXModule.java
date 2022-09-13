@@ -1927,6 +1927,18 @@ public class AppLovinMAXModule
         mRewardedAds.clear();
     }
 
+    // Required methods introduced React Native 0.65
+    //
+    // Without these methods, the following warnings are generated.
+    //
+    // WARN new NativeEventEmitter() was called with a non-null argument without the required addListener method.
+    // WARN new NativeEventEmitter() was called with a non-null argument without the required removeListeners method.
+    @ReactMethod
+    public void addListener(String eventName) { }
+
+    @ReactMethod
+    public void removeListeners(Integer count) { }
+
     // React Native Bridge
 
     private void sendReactNativeEvent(final String name, @Nullable final WritableMap params)
