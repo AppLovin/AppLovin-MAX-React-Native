@@ -17,16 +17,16 @@ class AppLovinMAXAdViewManager
 {
     public AppLovinMAXAdViewManager(final ReactApplicationContext reactApplicationContext) { }
 
+    @NotNull
     @Override
-    public @NotNull
-    String getName()
+    public String getName()
     {
         return "AppLovinMAXAdView";
     }
 
+    @NotNull
     @Override
-    protected @NotNull
-    AppLovinMAXAdView createViewInstance(@NotNull final ThemedReactContext reactContext)
+    protected AppLovinMAXAdView createViewInstance(@NotNull final ThemedReactContext reactContext)
     {
         // NOTE: Do not set frame or backgroundColor as RN will overwrite the values set by your custom class in order to match your JavaScript component's layout props - hence wrapper
         return new AppLovinMAXAdView( reactContext );

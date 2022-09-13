@@ -23,13 +23,13 @@
     // Ad Unit ID must be set prior to creating MAAdView
     if ( self.adView )
     {
-        [AppLovinMAX.shared log: @"Attempting to set Ad Unit ID %@ after MAAdView is created", adUnitId];
+        [[AppLovinMAX shared] log: @"Attempting to set Ad Unit ID %@ after MAAdView is created", adUnitId];
         return;
     }
     
     _adUnitId = adUnitId;
     
-    [self attachAdView];
+    [self attachAdViewIfNeeded];
 }  
 
 - (void)setAdFormat:(NSString *)adFormat
@@ -37,7 +37,7 @@
     // Ad format must be set prior to creating MAAdView
     if ( self.adView )
     {
-        [AppLovinMAX.shared log: @"Attempting to set ad format %@ after MAAdView is created", adFormat];
+        [[AppLovinMAX shared] log: @"Attempting to set ad format %@ after MAAdView is created", adFormat];
         return;
     }
     
@@ -51,11 +51,11 @@
     }
     else
     {
-        [AppLovinMAX.shared log: @"Attempting to set an invalid ad format of \"%@\" for %@", adFormat, self.adUnitId];
+        [[AppLovinMAX shared] log: @"Attempting to set an invalid ad format of \"%@\" for %@", adFormat, self.adUnitId];
         return;
     }
     
-    [self attachAdView];
+    [self attachAdViewIfNeeded];
 }  
 
 - (void)setPlacement:(NSString *)placement
@@ -105,7 +105,7 @@
     }
 }
 
-- (void)attachAdView
+- (void)attachAdViewIfNeeded
 {
     // Re-assign in case of race condition
     NSString *adUnitId = self.adUnitId;
@@ -116,30 +116,30 @@
         
         if ( ![adUnitId al_isValidString] )
         {
-            [AppLovinMAX.shared log: @"Attempting to attach MAAdView without Ad Unit ID"];
+            [[AppLovinMAX shared] log: @"Attempting to attach MAAdView without Ad Unit ID"];
             return;
         }
         
         if ( !adFormat )
         {
-            [AppLovinMAX.shared log: @"Attempting to attach MAAdView without ad format"];
+            [[AppLovinMAX shared] log: @"Attempting to attach MAAdView without ad format"];
             return;
         }
         
         if ( self.adView )
         {
-            [AppLovinMAX.shared log: @"Attempting to re-attach with existing MAAdView: %@", self.adView];
+            [[AppLovinMAX shared] log: @"Attempting to re-attach with existing MAAdView: %@", self.adView];
             return;
         }
         
-        [AppLovinMAX.shared log: @"Attaching MAAdView for %@", adUnitId];
+        [[AppLovinMAX shared] log: @"Attaching MAAdView for %@", adUnitId];
         
         self.adView = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitId
                                                         adFormat: adFormat
-                                                             sdk: AppLovinMAX.shared.sdk];
+                                                             sdk: [AppLovinMAX shared].sdk];
         self.adView.frame = (CGRect) { CGPointZero, self.frame.size };
-        self.adView.delegate = AppLovinMAX.shared; // Go through core class for callback forwarding to React Native layer
-        self.adView.revenueDelegate = AppLovinMAX.shared;
+        self.adView.delegate = [AppLovinMAX shared]; // Go through core class for callback forwarding to React Native layer
+        self.adView.revenueDelegate = [AppLovinMAX shared];
         self.adView.placement = self.placement;
         self.adView.customData = self.customData;
         [self.adView setExtraParameterForKey: @"adaptive_banner" value: [self isAdaptiveBannerEnabled] ? @"true" : @"false"];
@@ -175,7 +175,7 @@
     {
         if ( self.adView )
         {
-            [AppLovinMAX.shared log: @"Unmounting MAAdView: %@", self.adView];
+            [[AppLovinMAX shared] log: @"Unmounting MAAdView: %@", self.adView];
             
             self.adView.delegate = nil;
             self.adView.revenueDelegate = nil;

@@ -45,7 +45,7 @@ class AppLovinMAXAdView
 
         adUnitId = value;
 
-        attachAdView();
+        maybeAttachAdView();
     }
 
     public void setAdFormat(final String value)
@@ -71,7 +71,7 @@ class AppLovinMAXAdView
             return;
         }
 
-        attachAdView();
+        maybeAttachAdView();
     }
 
     public void setPlacement(@Nullable final String value)
@@ -163,7 +163,7 @@ class AppLovinMAXAdView
         }
     }
 
-    private void attachAdView()
+    private void maybeAttachAdView()
     {
         final Activity currentActivity = reactContext.getCurrentActivity();
         if ( currentActivity == null )
