@@ -931,12 +931,6 @@ public class AppLovinMAXModule
             {
                 adView.stopAutoRefresh();
             }
-
-            adView = sAdViewsToRemove.remove( ad.getAdUnitId() );
-            if ( adView != null )
-            {
-                adView.stopAutoRefresh();
-            }
         }
         else if ( MaxAdFormat.INTERSTITIAL == adFormat )
         {

@@ -19,14 +19,106 @@ class AppLovinMAXAdView
 {
     private final ThemedReactContext reactContext;
 
-    private MaxAdView adView;
-    private int       currentWidthPx;
-    private int       currentHeightPx;
+    private @Nullable MaxAdView adView;
+
+    private           String      adUnitId;
+    private           MaxAdFormat adFormat;
+    private @Nullable String      placement;
+    private @Nullable String      customData;
+    private           boolean     adaptiveBannerEnabled;
+    private           boolean     autoRefresh;
 
     public AppLovinMAXAdView(final Context context)
     {
         super( context );
         this.reactContext = (ThemedReactContext) context;
+    }
+
+    public void setAdUnitId(final String value)
+    {
+        // Ad Unit ID must be set prior to creating MaxAdView
+        if ( adView != null )
+        {
+            AppLovinMAXModule.e( "Attempting to set Ad Unit ID " + value + " after MaxAdView is created" );
+            return;
+        }
+
+        adUnitId = value;
+
+        maybeAttachAdView();
+    }
+
+    public void setAdFormat(final String value)
+    {
+        // Ad format must be set prior to creating MaxAdView
+        if ( adView != null )
+        {
+            AppLovinMAXModule.e( "Attempting to set ad format " + value + " after MaxAdView is created" );
+            return;
+        }
+
+        if ( "banner".equals( value ) )
+        {
+            adFormat = AppLovinMAXModule.getDeviceSpecificBannerAdViewAdFormat( reactContext );
+        }
+        else if ( "mrec".equals( value ) )
+        {
+            adFormat = MaxAdFormat.MREC;
+        }
+        else
+        {
+            AppLovinMAXModule.e( "Attempting to set an invalid ad format of \"" + value + "\" for " + adUnitId );
+            return;
+        }
+
+        maybeAttachAdView();
+    }
+
+    public void setPlacement(@Nullable final String value)
+    {
+        placement = value;
+
+        if ( adView != null )
+        {
+            adView.setPlacement( placement );
+        }
+    }
+
+    public void setCustomData(@Nullable final String value)
+    {
+        customData = value;
+
+        if ( adView != null )
+        {
+            adView.setCustomData( customData );
+        }
+    }
+
+    public void setAdaptiveBannerEnabled(final boolean enabled)
+    {
+        adaptiveBannerEnabled = enabled;
+
+        if ( adView != null )
+        {
+            adView.setExtraParameter( "adaptive_banner", Boolean.toString( enabled ) );
+        }
+    }
+
+    public void setAutoRefresh(final boolean enabled)
+    {
+        autoRefresh = enabled;
+
+        if ( adView != null )
+        {
+            if ( autoRefresh )
+            {
+                adView.startAutoRefresh();
+            }
+            else
+            {
+                adView.stopAutoRefresh();
+            }
+        }
     }
 
     @Override
@@ -38,6 +130,9 @@ class AppLovinMAXAdView
         // This is required to ensure ad refreshes render correctly in RN Android due to known issue where `getWidth()` and `getHeight()` return 0 on attach
         if ( adView != null )
         {
+            int currentWidthPx = getWidth();
+            int currentHeightPx = getHeight();
+
             adView.measure(
                     MeasureSpec.makeMeasureSpec( currentWidthPx, MeasureSpec.EXACTLY ),
                     MeasureSpec.makeMeasureSpec( currentHeightPx, MeasureSpec.EXACTLY )
@@ -68,13 +163,7 @@ class AppLovinMAXAdView
         }
     }
 
-    @Nullable
-    protected MaxAdView getAdView()
-    {
-        return adView;
-    }
-
-    public void maybeAttachAdView(final String placement, final String customData, final String adaptiveBannerEnabledStr, final Boolean autoRefreshEnabled, final String adUnitId, final MaxAdFormat adFormat)
+    private void maybeAttachAdView()
     {
         final Activity currentActivity = reactContext.getCurrentActivity();
         if ( currentActivity == null )
@@ -83,57 +172,70 @@ class AppLovinMAXAdView
             return;
         }
 
-        // Run in next run loop when view is laid out and `getWidth()` / `getHeight()` has appropriate values
-        post( new Runnable()
-        {
-            @Override
-            public void run()
+        // Re-assign in case of race condition
+        final String adUnitId = this.adUnitId;
+        final MaxAdFormat adFormat = this.adFormat;
+
+        // Run after 0.25 sec delay to allow all properties to set
+        postDelayed( () -> {
+
+            if ( TextUtils.isEmpty( adUnitId ) )
             {
-                // If ad unit id and format has been set - create and attach AdView
-                if ( !TextUtils.isEmpty( adUnitId ) && adFormat != null )
-                {
-                    adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
-                    adView.setListener( AppLovinMAXModule.getInstance() );
-                    adView.setRevenueListener( AppLovinMAXModule.getInstance() );
-
-                    if ( placement != null )
-                    {
-                        adView.setPlacement( placement );
-                    }
-
-                    if ( customData != null )
-                    {
-                        adView.setCustomData( customData );
-                    }
-
-                    if ( adaptiveBannerEnabledStr != null )
-                    {
-                        adView.setExtraParameter( "adaptive_banner", adaptiveBannerEnabledStr );
-                    }
-
-                    // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
-                    adView.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
-
-                    if ( autoRefreshEnabled != null )
-                    {
-                        if ( autoRefreshEnabled.booleanValue() )
-                        {
-                            adView.startAutoRefresh();
-                        }
-                        else
-                        {
-                            adView.stopAutoRefresh();
-                        }
-                    }
-
-                    adView.loadAd();
-
-                    currentWidthPx = getWidth();
-                    currentHeightPx = getHeight();
-
-                    addView( adView );
-                }
+                AppLovinMAXModule.e( "Attempting to attach MaxAdView without Ad Unit ID" );
+                return;
             }
-        } );
+
+            if ( adFormat == null )
+            {
+                AppLovinMAXModule.e( "Attempting to attach MaxAdView without ad format" );
+                return;
+            }
+
+            if ( adView != null )
+            {
+                AppLovinMAXModule.e( "Attempting to re-attach with existing MaxAdView: " + adView );
+                return;
+            }
+
+            AppLovinMAXModule.d( "Attaching MaxAdView for " + adUnitId );
+
+            adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
+            adView.setListener( AppLovinMAXModule.getInstance() );
+            adView.setRevenueListener( AppLovinMAXModule.getInstance() );
+            adView.setPlacement( placement );
+            adView.setCustomData( customData );
+            adView.setExtraParameter( "adaptive_banner", Boolean.toString( adaptiveBannerEnabled ) );
+            // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
+            adView.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
+
+            if ( autoRefresh )
+            {
+                adView.startAutoRefresh();
+            }
+            else
+            {
+                adView.stopAutoRefresh();
+            }
+
+            adView.loadAd();
+
+            addView( adView );
+        }, 250 );
+    }
+
+    public void destroy()
+    {
+        if ( adView != null )
+        {
+            AppLovinMAXModule.d( "Unmounting MaxAdView: " + adView );
+
+            removeView( adView );
+
+            adView.setListener( null );
+            adView.setRevenueListener( null );
+            adView.destroy();
+
+            adView = null;
+        }
     }
 }
