@@ -1,12 +1,13 @@
 #import <React/RCTUIManager.h>
 #import "AppLovinMAX.h"
 #import "AppLovinMAXNativeAdLoader.h"
+#import "AppLovinMAXNativeAdView.h"
 
-@interface AppLovinMaxNativeAdLoader ()  <MANativeAdDelegate>
+@interface AppLovinMaxNativeAdLoader()  <MANativeAdDelegate>
 
 @property (nonatomic, strong, nullable) MANativeAdLoader *nativeAdLoader;
 @property (nonatomic, strong, nullable) MANativeAdView *nativeAdView;
-@property (nonatomic, weak) id<AppLovinMAXNativeAdLoaderDelegate> nativeAdLoaderDelegate;
+@property (nonatomic, weak) AppLovinMAXNativeAdView *reactView;
 
 @end
 
@@ -17,7 +18,11 @@
     [self destroyNativeAdView];
 }
 
-- (void)load:(NSString *)adUnitIdentifier placement:(nullable NSString *)placement customData:(nullable NSString *)customData extraParameters:(nullable NSDictionary *)extraParameters delegate:(id<AppLovinMAXNativeAdLoaderDelegate>)delegate
+- (void)load:(NSString *)adUnitIdentifier
+   placement:(nullable NSString *)placement
+  customData:(nullable NSString *)customData
+extraParameters:(nullable NSDictionary *)extraParameters
+   reactView:(AppLovinMAXNativeAdView *)reactView
 {
     if ( !self.nativeAdLoader )
     {
@@ -37,9 +42,9 @@
         }
     }
     
-    self.nativeAdLoaderDelegate = delegate;
+    self.reactView = reactView;
     
-    [self.nativeAdLoader loadAdIntoAdView: [self createNativeAdView]];
+    [self.nativeAdLoader loadAd];
 }
 
 - (void)didLoadNativeAd:(nullable MANativeAdView *)nativeAdView forAd:(MAAd *)ad
@@ -48,17 +53,17 @@
     
     self.nativeAdView = nativeAdView;
     
-    [self.nativeAdLoaderDelegate didLoadNativeAd: ad];
+    [self.reactView didLoadNativeAd: ad];
 }
 
 - (void)didFailToLoadNativeAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(MAError *)error
 {
-    [self.nativeAdLoaderDelegate didFailToLoadNativeAdForAdUnitIdentifier: adUnitIdentifier withError: error];
+    [self.reactView didFailToLoadNativeAd: error];
 }
 
 - (void)didClickNativeAd:(MAAd *)ad
 {
-    [self.nativeAdLoaderDelegate didClickNativeAd: ad];
+    [[AppLovinMAX shared] didClickAd: ad];
 }
 
 - (void)performCallToAction
@@ -69,14 +74,13 @@
         return;
     }
     
-    if ( self.nativeAdView.callToActionButton )
-    {
-        [self.nativeAdView.callToActionButton sendActionsForControlEvents:UIControlEventTouchUpInside];
-    }
-    else
+    if ( !self.nativeAdView.callToActionButton )
     {
         [AppLovinMAX.shared log: @"callToActionButton is not found in MANativeAdView: %@", self.nativeAdView];
+        return;
     }
+    
+    [self.nativeAdView.callToActionButton sendActionsForControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)addNativeAdview:(UIView *)view
@@ -87,45 +91,20 @@
         return;
     }
     
+    [self.nativeAdView setHidden: YES];
+    
     [view addSubview: self.nativeAdView];
 }
 
 - (void)destroyAd:(MAAd *)ad
 {
-    if ( self.nativeAdLoader )
-    {
-        [self.nativeAdLoader destroyAd: ad];
-    }
-    else
+    if ( !self.nativeAdLoader )
     {
         [AppLovinMAX.shared log: @"Attempting to destroy a MAAd ad without nativeAdLoader: %@", self];
+        return;
     }
-}
-
-// Creates a MANativeAdView native ad view that won't be visible but used to generate a button event
-// and a revenue event
-- (MANativeAdView *)createNativeAdView
-{
-    MANativeAdView *nativeAdView = [[MANativeAdView alloc] initWithFrame: CGRectMake( 0, 0, 1, 1)];
-    nativeAdView.hidden = true;
     
-    int min = 10000;
-    int max = 100000;
-    int tag = min + arc4random_uniform((uint32_t)(max - min + 1));
-    
-    UIButton *callToActionButton = [[UIButton alloc] initWithFrame: CGRectMake( 0, 0, 1, 1)];
-    callToActionButton.backgroundColor = [UIColor systemBlueColor];
-    callToActionButton.tag = tag;
-    
-    [nativeAdView addSubview: callToActionButton];
-    
-    MANativeAdViewBinder *binder = [[MANativeAdViewBinder alloc] initWithBuilderBlock:^(MANativeAdViewBinderBuilder *builder) {
-        builder.callToActionButtonTag = tag;
-    }];
-    
-    [nativeAdView bindViewsWithAdViewBinder: binder];
-    
-    return nativeAdView;
+    [self.nativeAdLoader destroyAd: ad];
 }
 
 -(void)destroyNativeAdView

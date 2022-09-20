@@ -3,27 +3,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/**
- *  Defines a listener to relay native ad events from the MAX SDK.
- */
-@protocol AppLovinMAXNativeAdLoaderDelegate <NSObject>
-
-/**
- * Invoked this method when a new native ad has been loaded.
- */
-- (void)didLoadNativeAd:(MAAd *)ad;
-
-/**
- * Invoked this method when a new native ad could not be retrieved.
- */
-- (void)didFailToLoadNativeAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(MAError *)error;
-
-/**
- * Invoked this method when a new native ad is clicked.
- */
-- (void)didClickNativeAd:(MAAd *)ad;
-
-@end
+@class AppLovinMAXNativeAdView;
 
 /**
  * Encapsulate a native ad loader.
@@ -33,7 +13,11 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Loads a native ad with the specified properties that are set by Javascript.
  */
-- (void)load:(NSString *)adUnitIdentifier placement:(nullable NSString *)placement customData:(nullable NSString *)customData extraParameters:(nullable NSDictionary *)extraParameters delegate:(id<AppLovinMAXNativeAdLoaderDelegate>)delegate;
+- (void)load:(NSString *)adUnitIdentifier
+   placement:(nullable NSString *)placement
+  customData:(nullable NSString *)customData
+extraParameters:(nullable NSDictionary *)extraParameters
+   reactView:(AppLovinMAXNativeAdView *)reactView;
 
 /**
  * Adds a current native ad view on the specified view.

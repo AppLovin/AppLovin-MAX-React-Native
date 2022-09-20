@@ -766,17 +766,14 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     {
         name = @"OnRewardedAdLoadFailedEvent";
     }
+    else if ( [adUnitIdentifier isEqualToString: AppLovinMAXNativeAdView.loadErrorAdUnitIdentifier] )
+    {
+        name = @"OnNativeAdLoadFailedEvent";
+    }
     else
     {
-        if ( [adUnitIdentifier isEqualToString: AppLovinMAXNativeAdView.loadErrorAdUnitIdentifier] )
-        {
-            name = @"OnNativeAdLoadFailedEvent";
-        }
-        else
-        {
-            [self log: @"invalid adUnitId from %@", [NSThread callStackSymbols]];
-            return;
-        }
+        [self log: @"invalid adUnitId from %@", [NSThread callStackSymbols]];
+        return;
     }
     
     [self sendReactNativeEventWithName: name body: @{@"adUnitId" : adUnitIdentifier,

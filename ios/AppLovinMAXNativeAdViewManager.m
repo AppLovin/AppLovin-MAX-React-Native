@@ -1,3 +1,4 @@
+#import "AppLovinMAX.h"
 #import "AppLovinMAXNativeAdViewManager.h"
 #import "AppLovinMAXNativeAdView.h"
 
@@ -30,19 +31,18 @@ RCT_EXPORT_METHOD(loadAd:(nonnull NSNumber *)viewTag)
         UIView *view = viewRegistry[viewTag];
         if ( !view )
         {
-            RCTLogError(@"Cannot find UIView with tag %@", viewTag);
+            [[AppLovinMAX shared] log: @"Cannot find UIView with tag %@", viewTag];
             return;
         }
         
         if ( ![view isKindOfClass:[AppLovinMAXNativeAdView class]] )
         {
-            RCTLogError(@"Cannot find AppLovinMAXNativeAdViewManager with tag %@", viewTag);
+            [[AppLovinMAX shared] log: @"Cannot find AppLovinMAXNativeAdViewManager with tag", viewTag];
+            return;
         }
-        else
-        {
-            AppLovinMAXNativeAdView *nativeAdView = (AppLovinMAXNativeAdView *) view;
-            [nativeAdView loadNativeAd];
-        }
+        
+        AppLovinMAXNativeAdView *nativeAdView = (AppLovinMAXNativeAdView *) view;
+        [nativeAdView loadNativeAd];
     }];
 }
 
@@ -52,19 +52,18 @@ RCT_EXPORT_METHOD(performCallToAction:(nonnull NSNumber *)viewTag)
         UIView *view = viewRegistry[viewTag];
         if ( !view )
         {
-            RCTLogError(@"Cannot find UIView with tag %@", viewTag);
+            [[AppLovinMAX shared] log: @"Cannot find UIView with tag %", viewTag];
             return;
         }
         
         if ( ![view isKindOfClass:[AppLovinMAXNativeAdView class]] )
         {
-            RCTLogError(@"Cannot find AppLovinMAXNativeAdViewManager with tag %@", viewTag);
+            [[AppLovinMAX shared] log: @"Cannot find AppLovinMAXNativeAdViewManager with tag %@", viewTag];
+            return;
         }
-        else
-        {
-            AppLovinMAXNativeAdView *nativeAdView = (AppLovinMAXNativeAdView *) view;
-            [nativeAdView performCallToAction];
-        }
+        
+        AppLovinMAXNativeAdView *nativeAdView = (AppLovinMAXNativeAdView *) view;
+        [nativeAdView performCallToAction];
     }];
 }
 

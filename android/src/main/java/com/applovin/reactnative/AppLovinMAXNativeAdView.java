@@ -22,7 +22,6 @@ import androidx.annotation.Nullable;
 
 public class AppLovinMAXNativeAdView
         extends ReactViewGroup
-        implements AppLovinMaxNativeAdLoader.NativeAdLoaderListener
 {
     // Ad Unit ID that has an error from loading a native ad
     static String loadErrorAdUnitId;
@@ -88,19 +87,19 @@ public class AppLovinMAXNativeAdView
     {
         if ( nativeAd == null )
         {
-            AppLovinMAXModule.e( "Attempting to set a media view without a MaxAd ad: " + adUnitId );
+            AppLovinMAXModule.e( "Attempting to set a media view without a MaxAd ad with tag \"" + tag + "\" for " + adUnitId );
             return;
         }
 
         if ( nativeAd.getNativeAd() == null )
         {
-            AppLovinMAXModule.e( "Attempting to set a media view without a MaxNativeAd native ad: " + nativeAd );
+            AppLovinMAXModule.e( "Attempting to set a media view without a MaxNativeAd native ad with tag \"" + tag + "\" for " + nativeAd );
             return;
         }
 
         if ( nativeAd.getNativeAd().getMediaView() == null )
         {
-            AppLovinMAXModule.e( "mediaView is not found in MaxNativeAd: " + nativeAd.getNativeAd() );
+            AppLovinMAXModule.e( "mediaView is not found in MaxNativeAd with tag \"" + tag + "\" for " + nativeAd.getNativeAd() );
             return;
         }
 
@@ -119,19 +118,19 @@ public class AppLovinMAXNativeAdView
     {
         if ( nativeAd == null )
         {
-            AppLovinMAXModule.e( "Attempting to set an options view without a MaxAd ad: " + adUnitId );
+            AppLovinMAXModule.e( "Attempting to set an options view without a MaxAd ad with tag \"" + tag + "\" for " + adUnitId );
             return;
         }
 
         if ( nativeAd.getNativeAd() == null )
         {
-            AppLovinMAXModule.e( "Attempting to set an options view without a MaxNativeAd native ad: " + nativeAd );
+            AppLovinMAXModule.e( "Attempting to set an options view without a MaxNativeAd native ad with tag \"" + tag + "\" for " + nativeAd );
             return;
         }
 
         if ( nativeAd.getNativeAd().getOptionsView() == null )
         {
-            AppLovinMAXModule.e( "optionsView is not found in MaxNativeAd: " + nativeAd.getNativeAd() );
+            AppLovinMAXModule.e( "optionsView is not found in MaxNativeAd with tag \"" + tag + "\" for " + nativeAd.getNativeAd() );
             return;
         }
 
@@ -150,25 +149,25 @@ public class AppLovinMAXNativeAdView
     {
         if ( nativeAd == null )
         {
-            AppLovinMAXModule.e( "Attempting to set an icon image without a MaxAd ad: " + adUnitId );
+            AppLovinMAXModule.e( "Attempting to set an icon image without a MaxAd ad with tag \"" + tag + "\" for " + adUnitId );
             return;
         }
 
         if ( nativeAd.getNativeAd() == null )
         {
-            AppLovinMAXModule.e( "Attempting to set an icon image without a MaxNativeAd native ad: " + nativeAd );
+            AppLovinMAXModule.e( "Attempting to set an icon image without a MaxNativeAd native ad with tag \"" + tag + "\" for " + nativeAd );
             return;
         }
 
         if ( nativeAd.getNativeAd().getIcon() == null )
         {
-            AppLovinMAXModule.e( "icon is not found in MaxNativeAd: " + nativeAd.getNativeAd() );
+            AppLovinMAXModule.e( "icon is not found in MaxNativeAd with tag \"" + tag + "\" for " + nativeAd.getNativeAd() );
             return;
         }
 
         if ( nativeAd.getNativeAd().getIcon().getDrawable() == null )
         {
-            AppLovinMAXModule.e( "image is not found in the MaxNativeAd icon: " + nativeAd.getNativeAd().getIcon() );
+            AppLovinMAXModule.e( "image is not found in the MaxNativeAd icon with tag \"" + tag + "\" for " + nativeAd.getNativeAd().getIcon() );
             return;
         }
 
@@ -212,7 +211,6 @@ public class AppLovinMAXNativeAdView
         nativeAdLoader.load( adUnitId, placement, customData, extraParameters, reactContext, this );
     }
 
-    @Override
     public void onNativeAdLoaded(final MaxAd ad)
     {
         AppLovinMAXModule.d( "Loaded a native ad: +" + ad );
@@ -234,8 +232,7 @@ public class AppLovinMAXNativeAdView
         isLoadingNativeAd = false;
     }
 
-    @Override
-    public void onNativeAdLoadFailed(final String adUnitId, final MaxError error)
+    public void onNativeAdLoadFailed(final MaxError error)
     {
         AppLovinMAXModule.d( "Failed to Load a native ad for " + adUnitId + " with error: " + error );
 
@@ -245,13 +242,6 @@ public class AppLovinMAXNativeAdView
         loadErrorAdUnitId = "";
 
         isLoadingNativeAd = false;
-    }
-
-    @Override
-    public void onNativeAdClicked(final MaxAd ad)
-    {
-        // Inform the app
-        AppLovinMAXModule.getInstance().onAdClicked( ad );
     }
 
     private void sendNativeAd(final MaxAd ad)

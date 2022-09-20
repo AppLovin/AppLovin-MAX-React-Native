@@ -4,7 +4,7 @@
 #import "AppLovinMAXNativeAdView.h"
 #import "AppLovinMAXNativeAdLoader.h"
 
-@interface AppLovinMAXNativeAdView () <AppLovinMAXNativeAdLoaderDelegate>
+@interface AppLovinMAXNativeAdView()
 
 @property (nonatomic, weak) RCTBridge *bridge;
 @property (nonatomic, strong) AppLovinMaxNativeAdLoader *nativeAdLoader;
@@ -68,19 +68,19 @@ static NSString *NativeAdLoaderErrorAdUnitIdentifier;
 {
     if ( !self.nativeAd )
     {
-        [[AppLovinMAX shared] log: @"Attempting to set a media view without a MAAd ad: %@", self.adUnitId];
+        [[AppLovinMAX shared] log: @"Attempting to set a media view without a MAAd ad with tag \"%@\" for %@", tag, self.adUnitId];
         return;
     }
     
     if ( !self.nativeAd.nativeAd )
     {
-        [[AppLovinMAX shared] log: @"Attempting to set a media view without a MANativeAd native ad: %@", self.nativeAd];
+        [[AppLovinMAX shared] log: @"Attempting to set a media view without a MANativeAd native ad with tag \"%@\" for %@", tag, self.nativeAd];
         return;
     }
     
     if ( !self.nativeAd.nativeAd.mediaView )
     {
-        [[AppLovinMAX shared] log: @"mediaView is not found in MANativeAd: %@", self.nativeAd.nativeAd];
+        [[AppLovinMAX shared] log: @"mediaView is not found in MANativeAd with tag \"%@\" for %@", tag, self.nativeAd.nativeAd];
         return;
     }
     
@@ -99,19 +99,19 @@ static NSString *NativeAdLoaderErrorAdUnitIdentifier;
 {
     if ( !self.nativeAd )
     {
-        [[AppLovinMAX shared] log: @"Attempting to set an options view without a MAAd ad: %@", self.adUnitId];
+        [[AppLovinMAX shared] log: @"Attempting to set an options view without a MAAd ad with tag \"%@\" for %@", tag, self.adUnitId];
         return;
     }
     
     if ( !self.nativeAd.nativeAd )
     {
-        [[AppLovinMAX shared] log: @"Attempting to set an options view without a MANativeAd native ad: %@", self.nativeAd];
+        [[AppLovinMAX shared] log: @"Attempting to set an options view without a MANativeAd native ad with tag \"%@\" for %@", tag, self.nativeAd];
         return;
     }
     
     if ( !self.nativeAd.nativeAd.optionsView )
     {
-        [[AppLovinMAX shared] log: @"optionsView is not found in MANativeAd: %@", self.nativeAd.nativeAd];
+        [[AppLovinMAX shared] log: @"optionsView is not found in MANativeAd with tag \"%@\" for %@", tag, self.nativeAd.nativeAd];
         return;
     }
     
@@ -130,25 +130,25 @@ static NSString *NativeAdLoaderErrorAdUnitIdentifier;
 {
     if ( !self.nativeAd )
     {
-        [[AppLovinMAX shared] log: @"Attempting to set an icon image without a MAAd ad: %@", self.adUnitId];
+        [[AppLovinMAX shared] log: @"Attempting to set an icon image without a MAAd ad with tag \"%@\" for %@", tag, self.adUnitId];
         return;
     }
     
     if ( !self.nativeAd.nativeAd )
     {
-        [[AppLovinMAX shared] log: @"Attempting to set an icon image without a MANativeAd native ad: %@", self.nativeAd];
+        [[AppLovinMAX shared] log: @"Attempting to set an icon image without a MANativeAd native ad with tag \"%@\" for %@", tag, self.nativeAd];
         return;
     }
     
     if ( !self.nativeAd.nativeAd.icon )
     {
-        [[AppLovinMAX shared] log: @"icon is not found in MANativeAd: %@", self.nativeAd.nativeAd];
+        [[AppLovinMAX shared] log: @"icon is not found in MANativeAd with tag \"%@\" for %@", tag, self.nativeAd.nativeAd];
         return;
     }
     
     if ( !self.nativeAd.nativeAd.icon.image )
     {
-        [[AppLovinMAX shared] log: @"image is not found in the MANativeAd icon: %@", self.nativeAd.nativeAd.icon];
+        [[AppLovinMAX shared] log: @"image is not found in the MANativeAd icon with tag \"%@\" for %@", tag, self.nativeAd.nativeAd.icon];
         return;
     }
     
@@ -191,7 +191,7 @@ static NSString *NativeAdLoaderErrorAdUnitIdentifier;
     
     [[AppLovinMAX shared] log: @"Loading a native ad for %@", self.adUnitId];
     
-    [self.nativeAdLoader load: self.adUnitId placement: self.placement customData: self.customData extraParameters: self.extraParameters delegate: self];
+    [self.nativeAdLoader load: self.adUnitId placement: self.placement customData: self.customData extraParameters: self.extraParameters reactView: self];
 }
 
 - (void)didLoadNativeAd:(MAAd *)ad
@@ -215,22 +215,16 @@ static NSString *NativeAdLoaderErrorAdUnitIdentifier;
     [self setLoadingNativeAd: NO];
 }
 
-- (void)didFailToLoadNativeAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(MAError *)error
+- (void)didFailToLoadNativeAd:(MAError *)error
 {
-    [[AppLovinMAX shared] log: @"Failed to Load a native ad for %@ with error: %@", adUnitIdentifier, error];
+    [[AppLovinMAX shared] log: @"Failed to Load a native ad for %@ with error: %@", self.adUnitId, error];
     
     // Inform the app
-    NativeAdLoaderErrorAdUnitIdentifier = adUnitIdentifier;
-    [[AppLovinMAX shared] didFailToLoadAdForAdUnitIdentifier: adUnitIdentifier withError: error];
+    NativeAdLoaderErrorAdUnitIdentifier = self.adUnitId;
+    [[AppLovinMAX shared] didFailToLoadAdForAdUnitIdentifier: self.adUnitId withError: error];
     NativeAdLoaderErrorAdUnitIdentifier = @"";
     
     [self setLoadingNativeAd: NO];
-}
-
-- (void)didClickNativeAd:(MAAd *)ad
-{
-    // Inform the app
-    [[AppLovinMAX shared] didClickAd: ad];
 }
 
 - (void)sendNativeAd:(MAAd *)ad

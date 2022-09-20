@@ -975,17 +975,14 @@ public class AppLovinMAXModule
         {
             name = "OnRewardedAdLoadFailedEvent";
         }
+        else if ( adUnitId.equals( AppLovinMAXNativeAdView.loadErrorAdUnitId ) )
+        {
+            name = "OnNativeAdLoadFailedEvent";
+        }
         else
         {
-            if ( adUnitId.equals( AppLovinMAXNativeAdView.loadErrorAdUnitId ) )
-            {
-                name = "OnNativeAdLoadFailedEvent";
-            }
-            else
-            {
-                logStackTrace( new IllegalStateException( "invalid adUnitId: " + adUnitId ) );
-                return;
-            }
+            logStackTrace( new IllegalStateException( "invalid adUnitId: " + adUnitId ) );
+            return;
         }
 
         sendReactNativeEventForAdLoadFailed( name, adUnitId, error );

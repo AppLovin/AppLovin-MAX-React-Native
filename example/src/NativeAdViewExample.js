@@ -9,10 +9,6 @@ export const NativeAdViewExample = forwardRef((props, ref) => {
     <AppLovinMAX.NativeAdView adUnitId={adUnitId}
                               placement='myplacement'
                               customData='mycustomdata'
-                              extraParameters={{
-                                'key1': 'value1',
-                                'key2': 'value2',
-                              }}
                               ref={ref}
                               style={styles.nativead}>
       <View style={{flex: 1, flexDirection: 'column'}}>

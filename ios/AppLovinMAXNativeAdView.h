@@ -23,6 +23,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)loadNativeAd;
 
 /**
+ * Invoked this method when a new native ad has been loaded.
+ */
+- (void)didLoadNativeAd:(MAAd *)ad;
+
+/**
+ * Invoked this method when a new native ad could not be retrieved.
+ */
+- (void)didFailToLoadNativeAd:(MAError *)error;
+
+/**
  * Generates a click event on the Call-To-Action button of the native ad view.
  */
 - (void)performCallToAction;
