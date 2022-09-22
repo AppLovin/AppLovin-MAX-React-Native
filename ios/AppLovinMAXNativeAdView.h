@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 
 /**
- * Loads a native ad, called by Javascript via the View Manager.
+ * Loads a native ad, called by JavaScript via the View Manager.
  */
 - (void)loadNativeAd;
 

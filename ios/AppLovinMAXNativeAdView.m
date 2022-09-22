@@ -11,13 +11,13 @@
 @property (nonatomic, strong, nullable) MAAd *nativeAd;
 @property (nonatomic, assign, getter=isLoadingNativeAd, setter=setLoadingNativeAd:) BOOL loadingNativeAd;
 
-// Javascript properties
+// JavaScript properties
 @property (nonatomic, copy) NSString *adUnitId;
 @property (nonatomic, copy, nullable) NSString *placement;
 @property (nonatomic, copy, nullable) NSString *customData;
 @property (nonatomic, copy, nullable) NSDictionary *extraParameters;
 
-// Callback to Javascript
+// Callback to JavaScript
 @property (nonatomic, copy) RCTDirectEventBlock onNativeAdLoaded;
 
 @end
@@ -175,7 +175,7 @@ static NSString *NativeAdLoaderErrorAdUnitIdentifier;
     });
 }
 
-// Loads a next native ad with the current properties when this is called by Javascript via the View Manager
+// Loads a next native ad with the current properties when this is called by JavaScript via the View Manager
 - (void)loadNativeAd
 {
     if ( [self isLoadingNativeAd] )
@@ -200,7 +200,7 @@ static NSString *NativeAdLoaderErrorAdUnitIdentifier;
     
     self.nativeAd = ad;
     
-    // Send this native ad to Javascript
+    // Send this native ad to JavaScript
     [self sendNativeAd: ad];
     
     // Inform the app
@@ -268,7 +268,7 @@ static NSString *NativeAdLoaderErrorAdUnitIdentifier;
         jsNativeAd[@"mediaContentAspectRatio"] = @(nativeAd.mediaContentAspectRatio);
     }
     
-    // Sending jsNativeAd to Javascript as an event, then Javascript will render the views with jsNativeAd
+    // Sending jsNativeAd to JavaScript as an event, then JavaScript will render the views with jsNativeAd
     self.onNativeAdLoaded(jsNativeAd);
 }
 

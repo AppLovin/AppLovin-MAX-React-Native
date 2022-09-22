@@ -32,7 +32,7 @@ public class AppLovinMAXNativeAdView
     private       MaxAd                     nativeAd;
     private       boolean                   isLoadingNativeAd;
 
-    // Javascript properties
+    // JavaScript properties
     private String              adUnitId;
     @Nullable
     private String              placement;
@@ -192,7 +192,7 @@ public class AppLovinMAXNativeAdView
         postDelayed( this::loadNativeAd, 250 );
     }
 
-    // Loads a next native ad with the current properties when this is called by Javascript via the View Manager
+    // Loads a next native ad with the current properties when this is called by JavaScript via the View Manager
     public void loadNativeAd()
     {
         if ( isLoadingNativeAd )
@@ -217,7 +217,7 @@ public class AppLovinMAXNativeAdView
 
         nativeAd = ad;
 
-        // Send this native ad to Javascript
+        // Send this native ad to JavaScript
         sendNativeAd( ad );
 
         // Inform the app
@@ -286,7 +286,7 @@ public class AppLovinMAXNativeAdView
             jsNativeAd.putDouble( "mediaContentAspectRatio", aspectRatio );
         }
 
-        // Sending jsNativeAd to Javascript as an event, then Javascript will render the views with jsNativeAd
+        // Sending jsNativeAd to JavaScript as an event, then JavaScript will render the views with jsNativeAd
         reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onNativeAdLoaded", jsNativeAd );
     }
 

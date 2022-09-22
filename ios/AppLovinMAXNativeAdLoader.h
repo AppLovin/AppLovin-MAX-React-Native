@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface AppLovinMaxNativeAdLoader : NSObject
 
 /**
- * Loads a native ad with the specified properties that are set by Javascript.
+ * Loads a native ad with the specified properties that are set by JavaScript.
  */
 - (void)load:(NSString *)adUnitIdentifier
    placement:(nullable NSString *)placement

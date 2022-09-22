@@ -37,7 +37,7 @@ RCT_EXPORT_METHOD(loadAd:(nonnull NSNumber *)viewTag)
         
         if ( ![view isKindOfClass:[AppLovinMAXNativeAdView class]] )
         {
-            [[AppLovinMAX shared] log: @"Cannot find AppLovinMAXNativeAdViewManager with tag", viewTag];
+            [[AppLovinMAX shared] log: @"Cannot find AppLovinMAXNativeAdView with tag %@", viewTag];
             return;
         }
         
@@ -58,7 +58,7 @@ RCT_EXPORT_METHOD(performCallToAction:(nonnull NSNumber *)viewTag)
         
         if ( ![view isKindOfClass:[AppLovinMAXNativeAdView class]] )
         {
-            [[AppLovinMAX shared] log: @"Cannot find AppLovinMAXNativeAdViewManager with tag %@", viewTag];
+            [[AppLovinMAX shared] log: @"Cannot find AppLovinMAXNativeAdView with tag %@", viewTag];
             return;
         }
         
