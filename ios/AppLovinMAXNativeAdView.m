@@ -85,14 +85,13 @@ static NSString *NativeAdLoaderErrorAdUnitIdentifier;
     }
     
     UIView *view = [self getNativeView: tag];
-    if ( view )
-    {
-        [self addViewStretched: self.nativeAd.nativeAd.mediaView parent: view];
-    }
-    else
+    if ( !view )
     {
         [[AppLovinMAX shared] log: @"Cannot find a media view with tag \"%@\" for %@", tag, self.adUnitId];
+        return;
     }
+    
+    [self addViewStretched: self.nativeAd.nativeAd.mediaView parent: view];
 }
 
 - (void)setOptionsView:(NSNumber *)tag
@@ -116,14 +115,13 @@ static NSString *NativeAdLoaderErrorAdUnitIdentifier;
     }
     
     UIView *view = [self getNativeView: tag];
-    if ( view )
-    {
-        [self addViewStretched: self.nativeAd.nativeAd.optionsView parent: view];
-    }
-    else
+    if ( !view )
     {
         [[AppLovinMAX shared] log: @"Cannot find an options view with tag \"%@\" for %@", tag, self.adUnitId];
+        return;
     }
+    
+    [self addViewStretched: self.nativeAd.nativeAd.optionsView parent: view];
 }
 
 - (void)setIconImage:(NSNumber *)tag
@@ -153,14 +151,13 @@ static NSString *NativeAdLoaderErrorAdUnitIdentifier;
     }
     
     UIView *view = [self getNativeView: tag];
-    if ([view isKindOfClass:[UIImageView class]])
-    {
-        [self setImageView: self.nativeAd.nativeAd.icon.image view: (UIImageView *) view];
-    }
-    else
+    if ( !view || ![view isKindOfClass:[UIImageView class]] )
     {
         [[AppLovinMAX shared] log: @"Cannot find an icon view with tag \"%@\" for %@", tag, self.adUnitId];
+        return;
     }
+    
+    [self setImageView: self.nativeAd.nativeAd.icon.image view: (UIImageView *) view];
 }
 
 // Loads an initial native ad when this view is mounted

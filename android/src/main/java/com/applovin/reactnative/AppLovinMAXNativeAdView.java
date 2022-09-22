@@ -104,14 +104,13 @@ public class AppLovinMAXNativeAdView
         }
 
         View view = getNativeView( tag );
-        if ( view instanceof ViewGroup )
-        {
-            addViewStretched( nativeAd.getNativeAd().getMediaView(), (ViewGroup) view );
-        }
-        else
+        if ( !( view instanceof ViewGroup ) )
         {
             AppLovinMAXModule.e( "Cannot find a media view with tag \"" + tag + "\" for " + adUnitId );
+            return;
         }
+
+        addViewStretched( nativeAd.getNativeAd().getMediaView(), (ViewGroup) view );
     }
 
     public void setOptionsView(final int tag)
@@ -135,14 +134,13 @@ public class AppLovinMAXNativeAdView
         }
 
         View view = getNativeView( tag );
-        if ( view instanceof ViewGroup )
-        {
-            addViewStretched( nativeAd.getNativeAd().getOptionsView(), (ViewGroup) view );
-        }
-        else
+        if ( !( view instanceof ViewGroup ) )
         {
             AppLovinMAXModule.e( "Cannot find an options view with tag \"" + tag + "\" for " + adUnitId );
+            return;
         }
+
+        addViewStretched( nativeAd.getNativeAd().getOptionsView(), (ViewGroup) view );
     }
 
     public void setIconImage(final int tag)
@@ -172,14 +170,13 @@ public class AppLovinMAXNativeAdView
         }
 
         View view = getNativeView( tag );
-        if ( view instanceof ImageView )
-        {
-            setImageView( nativeAd.getNativeAd().getIcon().getDrawable(), (ImageView) view );
-        }
-        else
+        if ( !( view instanceof ImageView ) )
         {
             AppLovinMAXModule.e( "Cannot find an icon image with tag \"" + tag + "\" for " + adUnitId );
+            return;
         }
+
+        setImageView( nativeAd.getNativeAd().getIcon().getDrawable(), (ImageView) view );
     }
 
     // Loads an initial native ad when this view is mounted
