@@ -36,6 +36,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)log:(NSString *)format, ...;
 
+/**
+ * Convenience method for invoking a native ad load failure event.
+ */
+- (void)handleNativeAdLoadFailureForAdUnitIdentifier:(NSString *)adUnitIdentifier error:(MAError *)error;
+
 @end
 
 NS_ASSUME_NONNULL_END

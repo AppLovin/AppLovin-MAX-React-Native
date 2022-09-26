@@ -208,8 +208,8 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         
     [self setPendingExtraParametersIfNeeded: self.sdk.settings];
 
-    [self.sdk initializeSdkWithCompletionHandler:^(ALSdkConfiguration *configuration)
-     {
+    [self.sdk initializeSdkWithCompletionHandler:^(ALSdkConfiguration *configuration) {
+        
         [self log: @"SDK initialized"];
         
         self.sdkConfiguration = configuration;
@@ -745,6 +745,16 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     [self sendReactNativeEventWithName: name body: [self adInfoForAd: ad]];
 }
 
+- (void)handleNativeAdLoadFailureForAdUnitIdentifier:(NSString *)adUnitIdentifier error:(MAError *)error
+{
+    [self sendReactNativeEventWithName: @"OnNativeAdLoadFailedEvent"
+                                  body: @{@"adUnitId" : adUnitIdentifier,
+                                          @"code" : @(error.code),
+                                          @"message" : error.message,
+                                          @"adLoadFailureInfo" : error.adLoadFailureInfo ?: @"",
+                                          @"waterfall": [self createAdWaterfallInfo: error.waterfall]}];
+}
+
 - (void)didFailToLoadAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(MAError *)error
 {
     if ( !adUnitIdentifier )
@@ -765,10 +775,6 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     else if ( self.rewardedAds[adUnitIdentifier] )
     {
         name = @"OnRewardedAdLoadFailedEvent";
-    }
-    else if ( [adUnitIdentifier isEqualToString: AppLovinMAXNativeAdView.loadErrorAdUnitIdentifier] )
-    {
-        name = @"OnNativeAdLoadFailedEvent";
     }
     else
     {

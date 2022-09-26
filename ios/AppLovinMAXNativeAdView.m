@@ -2,14 +2,19 @@
 #import <AppLovinSDK/AppLovinSDK.h>
 #import "AppLovinMAX.h"
 #import "AppLovinMAXNativeAdView.h"
-#import "AppLovinMAXNativeAdLoader.h"
 
-@interface AppLovinMAXNativeAdView()
+// NOTE: Exposed publicly as of 11.5.1
+@interface UIImageView (ALUtils)
+- (void)al_setImageWithURL:(NSURL *)URL;
+@end
+
+@interface AppLovinMAXNativeAdView()<MANativeAdDelegate>
 
 @property (nonatomic, weak) RCTBridge *bridge;
-@property (nonatomic, strong) AppLovinMaxNativeAdLoader *nativeAdLoader;
+@property (nonatomic, strong, nullable) MANativeAdLoader *adLoader;
 @property (nonatomic, strong, nullable) MAAd *nativeAd;
-@property (nonatomic, assign, getter=isLoadingNativeAd, setter=setLoadingNativeAd:) BOOL loadingNativeAd;
+@property (nonatomic, strong) MANativeAdView *nativeAdView;
+@property (nonatomic, strong) ALAtomicBoolean *isLoading; // Guard against repeated ad loads
 
 // JavaScript properties
 @property (nonatomic, copy) NSString *adUnitId;
@@ -17,30 +22,37 @@
 @property (nonatomic, copy, nullable) NSString *customData;
 @property (nonatomic, copy, nullable) NSDictionary *extraParameters;
 
-// Callback to JavaScript
+// Callback to `AppLovinNativeAdView.js`
 @property (nonatomic, copy) RCTDirectEventBlock onNativeAdLoaded;
 
 @end
 
 @implementation AppLovinMAXNativeAdView
 
-// Ad Unit ID that has an error from loading a native ad
-static NSString *NativeAdLoaderErrorAdUnitIdentifier;
-
-+ (NSString *)loadErrorAdUnitIdentifier
-{
-    return NativeAdLoaderErrorAdUnitIdentifier;
-}
-
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
-    if ( self = [super init] )
+    self = [super init];
+    if ( self )
     {
         self.bridge = bridge;
-        self.nativeAdLoader = [[AppLovinMaxNativeAdLoader alloc] init];
-        [self setLoadingNativeAd: NO];
+        self.isLoading = [[ALAtomicBoolean alloc] init];
     }
     return self;
+}
+
+// Lazily loaded for when Ad Unit ID is available
+- (nullable MANativeAdLoader *)adLoader
+{
+    if ( ![self.adUnitId al_isValidString] ) return nil;
+    
+    if ( ![self.adUnitId isEqualToString: _adLoader.adUnitIdentifier] )
+    {
+        _adLoader = [[MANativeAdLoader alloc] initWithAdUnitIdentifier: self.adUnitId sdk: [AppLovinMAX shared].sdk];
+        _adLoader.nativeAdDelegate = self;
+        _adLoader.revenueDelegate = [AppLovinMAX shared];
+    }
+    
+    return _adLoader;
 }
 
 - (void)didMoveToWindow
@@ -49,258 +61,209 @@ static NSString *NativeAdLoaderErrorAdUnitIdentifier;
     
     if ( !self.window )
     {
-        [[AppLovinMAX shared] log: @"Destroy AppLovinMAXNativeAdView: %@", self];
-        
-        [self destroyAd];
-        
-        [self.nativeAdLoader destroy];
+        [self destroyCurrentAdIfNeeded];
     }
 }
 
 - (void)setAdUnitId:(NSString *)adUnitId
 {
+    if ( ![adUnitId al_isValidString] ) return;
+        
     _adUnitId = adUnitId;
     
-    [self loadInitialNativeAd];
+    // Explicitly invoke ad load now that Ad Unit ID is set, but do so after 0.25s to allow other props to set
+    dispatchOnMainQueueAfter(0.25, ^{
+        [self loadAd];
+    });
 }
 
+// Called when Ad Unit ID is set, and via RN layer
+- (void)loadAd
+{
+    if ( [self.isLoading compareAndSet: NO update: YES] )
+    {
+        [[AppLovinMAX shared] log: @"Loading a native ad for Ad Unit ID: %@...", self.adUnitId];
+        
+        self.adLoader.placement = self.placement;
+        self.adLoader.customData = self.customData;
+        
+        for ( NSString *key in self.extraParameters )
+        {
+            [self.adLoader setExtraParameterForKey: key value: self.extraParameters[key]];
+        }
+        
+        [self.adLoader loadAd];
+    }
+    else
+    {
+        [[AppLovinMAX shared] log: @"Ignoring request to load native ad for Ad Unit ID %@, another ad load in progress", self.adUnitId];
+    }
+}
+
+#pragma mark - Views to Replace
+// TODO: I think next 3 calls are for custom... but setMediaView: is called...
+// I think he actually only supports custom... but TBD
 - (void)setMediaView:(NSNumber *)tag
 {
-    if ( !self.nativeAd )
-    {
-        [[AppLovinMAX shared] log: @"Attempting to set a media view without a MAAd ad with tag \"%@\" for %@", tag, self.adUnitId];
-        return;
-    }
+    if ( !self.nativeAd.nativeAd.mediaView ) return;
     
-    if ( !self.nativeAd.nativeAd )
-    {
-        [[AppLovinMAX shared] log: @"Attempting to set a media view without a MANativeAd native ad with tag \"%@\" for %@", tag, self.nativeAd];
-        return;
-    }
-    
-    if ( !self.nativeAd.nativeAd.mediaView )
-    {
-        [[AppLovinMAX shared] log: @"mediaView is not found in MANativeAd with tag \"%@\" for %@", tag, self.nativeAd.nativeAd];
-        return;
-    }
-    
-    UIView *view = [self getNativeView: tag];
+    UIView *view = [self.bridge.uiManager viewForReactTag: tag];
     if ( !view )
     {
         [[AppLovinMAX shared] log: @"Cannot find a media view with tag \"%@\" for %@", tag, self.adUnitId];
         return;
     }
     
-    [self addViewStretched: self.nativeAd.nativeAd.mediaView parent: view];
+//    [view addSubview: self.nativeAd.nativeAd.mediaView];
+//    [view al_pinToSuperview];
 }
 
 - (void)setOptionsView:(NSNumber *)tag
 {
-    if ( !self.nativeAd )
-    {
-        [[AppLovinMAX shared] log: @"Attempting to set an options view without a MAAd ad with tag \"%@\" for %@", tag, self.adUnitId];
-        return;
-    }
-    
-    if ( !self.nativeAd.nativeAd )
-    {
-        [[AppLovinMAX shared] log: @"Attempting to set an options view without a MANativeAd native ad with tag \"%@\" for %@", tag, self.nativeAd];
-        return;
-    }
-    
-    if ( !self.nativeAd.nativeAd.optionsView )
-    {
-        [[AppLovinMAX shared] log: @"optionsView is not found in MANativeAd with tag \"%@\" for %@", tag, self.nativeAd.nativeAd];
-        return;
-    }
-    
-    UIView *view = [self getNativeView: tag];
+    if ( !self.nativeAd.nativeAd.optionsView ) return;
+       
+    UIView *view = [self.bridge.uiManager viewForReactTag: tag];
     if ( !view )
     {
         [[AppLovinMAX shared] log: @"Cannot find an options view with tag \"%@\" for %@", tag, self.adUnitId];
         return;
     }
     
-    [self addViewStretched: self.nativeAd.nativeAd.optionsView parent: view];
+//    [view addSubview: self.nativeAd.nativeAd.optionsView];
+//    [view al_pinToSuperview];
 }
 
 - (void)setIconImage:(NSNumber *)tag
 {
-    if ( !self.nativeAd )
+    if ( !self.nativeAd.nativeAd.icon ) return;
+    
+    UIView *view = [self.bridge.uiManager viewForReactTag: tag];
+    if ( !view || ![view isKindOfClass: [UIImageView class]] )
     {
-        [[AppLovinMAX shared] log: @"Attempting to set an icon image without a MAAd ad with tag \"%@\" for %@", tag, self.adUnitId];
+        [[AppLovinMAX shared] log: @"Cannot find an icon image view with tag \"%@\" for %@", tag, self.adUnitId];
         return;
     }
     
-    if ( !self.nativeAd.nativeAd )
-    {
-        [[AppLovinMAX shared] log: @"Attempting to set an icon image without a MANativeAd native ad with tag \"%@\" for %@", tag, self.nativeAd];
-        return;
-    }
+    UIImageView *iconImageView = (UIImageView *) view;
+    UIImage *iconImage = self.nativeAd.nativeAd.icon.image;
+    NSURL *iconURL = self.nativeAd.nativeAd.icon.URL;
     
-    if ( !self.nativeAd.nativeAd.icon )
+    if ( iconImage )
     {
-        [[AppLovinMAX shared] log: @"icon is not found in MANativeAd with tag \"%@\" for %@", tag, self.nativeAd.nativeAd];
-        return;
+        iconImageView.image = iconImage;
     }
-    
-    if ( !self.nativeAd.nativeAd.icon.image )
+    else // iconURL
     {
-        [[AppLovinMAX shared] log: @"image is not found in the MANativeAd icon with tag \"%@\" for %@", tag, self.nativeAd.nativeAd.icon];
-        return;
+        [iconImageView al_setImageWithURL: iconURL];
     }
-    
-    UIView *view = [self getNativeView: tag];
-    if ( !view || ![view isKindOfClass:[UIImageView class]] )
-    {
-        [[AppLovinMAX shared] log: @"Cannot find an icon view with tag \"%@\" for %@", tag, self.adUnitId];
-        return;
-    }
-    
-    [self setImageView: self.nativeAd.nativeAd.icon.image view: (UIImageView *) view];
 }
 
-// Loads an initial native ad when this view is mounted
-- (void)loadInitialNativeAd
+#pragma mark - Ad Loader Delegate
+
+- (void)didLoadNativeAd:(nullable MANativeAdView *)nativeAdView forAd:(MAAd *)ad
 {
-    if ( ![self.adUnitId al_isValidString] )
+    [[AppLovinMAX shared] log: @"Native ad loaded: %@", ad];
+    
+    // NOTE: For v1, we only support template native ads
+    if ( !nativeAdView )
     {
-        [[AppLovinMAX shared] log: @"Attempting to load a native ad without Ad Unit ID"];
+        [[AppLovinMAX shared] log: @"Attempting to load native ad of non-template type, ignoring..."];
         return;
     }
     
-    // Run after 0.25 sec delay to allow all properties to set
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self loadNativeAd];
-    });
-}
-
-// Loads a next native ad with the current properties when this is called by JavaScript via the View Manager
-- (void)loadNativeAd
-{
-    if ( [self isLoadingNativeAd] )
-    {
-        [[AppLovinMAX shared] log: @"Attempting to load a native ad before completing previous loading: %@", self.adUnitId];
-        return;
-    }
+    // TODO(Hiroshi): Why did we previously (in `AppLovinMaxNativeAdLoader` remove this `AppLovinMAXNativeAdView` from superview?)
+    // [self destroyNativeAdView];
     
-    [self setLoadingNativeAd: YES];
-    
-    [[AppLovinMAX shared] log: @"Loading a native ad for %@", self.adUnitId];
-    
-    [self.nativeAdLoader load: self.adUnitId placement: self.placement customData: self.customData extraParameters: self.extraParameters reactView: self];
-}
-
-- (void)didLoadNativeAd:(MAAd *)ad
-{
-    [[AppLovinMAX shared] log: @"Loaded a native ad: %@", ad];
-    
-    // Destory the current ad
-    [self destroyAd];
+    [self destroyCurrentAdIfNeeded];
     
     self.nativeAd = ad;
     
-    // Send this native ad to JavaScript
-    [self sendNativeAd: ad];
+    self.nativeAdView = nativeAdView;
+    [self addSubview: nativeAdView];
     
-    // Inform the app
-    [[AppLovinMAX shared] didLoadAd: ad];
+    // Notify `AppLovinNativeAdView.js`
+    [self sendAdLoadedReactNativeEventForAd: ad.nativeAd];
     
-    // Adding nativeAdView will trigger a revenue delegate
-    [self.nativeAdLoader addNativeAdview: self];
+    // Notify publisher
+    [[AppLovinMAX shared] didLoadAd: ad]; 
     
-    [self setLoadingNativeAd: NO];
+    [self.isLoading set: NO];
 }
 
-- (void)didFailToLoadNativeAd:(MAError *)error
+- (void)sendAdLoadedReactNativeEventForAd:(MANativeAd *)ad
 {
-    [[AppLovinMAX shared] log: @"Failed to Load a native ad for %@ with error: %@", self.adUnitId, error];
+    NSMutableDictionary<NSString *, id> *jsNativeAd = [NSMutableDictionary dictionaryWithCapacity: 6];
     
-    // Inform the app
-    NativeAdLoaderErrorAdUnitIdentifier = self.adUnitId;
-    [[AppLovinMAX shared] didFailToLoadAdForAdUnitIdentifier: self.adUnitId withError: error];
-    NativeAdLoaderErrorAdUnitIdentifier = @"";
-    
-    [self setLoadingNativeAd: NO];
-}
-
-- (void)sendNativeAd:(MAAd *)ad
-{
-    MANativeAd *nativeAd = ad.nativeAd;
-    
-    if ( !nativeAd )
+    if ( ad.title )
     {
-        [[AppLovinMAX shared] log: @"MANativeAd not having a native ad: %@", ad];
-        return;
+        jsNativeAd[@"title"] = ad.title;
     }
-    
-    NSMutableDictionary *jsNativeAd = [NSMutableDictionary dictionary];
-    
-    if ( nativeAd.title )
+    if ( ad.advertiser )
     {
-        jsNativeAd[@"title"] = nativeAd.title;
+        jsNativeAd[@"advertiser"] = ad.advertiser;
     }
-    if ( nativeAd.advertiser )
+    if ( ad.body )
     {
-        jsNativeAd[@"advertiser"] = nativeAd.advertiser;
+        jsNativeAd[@"body"] = ad.body;
     }
-    if ( nativeAd.body )
+    if ( ad.callToAction )
     {
-        jsNativeAd[@"body"] = nativeAd.body;
+        jsNativeAd[@"callToAction"] = ad.callToAction;
     }
-    if ( nativeAd.callToAction )
+    if ( ad.icon )
     {
-        jsNativeAd[@"callToAction"] = nativeAd.callToAction;
-    }
-    if ( nativeAd.icon )
-    {
-        if ( nativeAd.icon.URL )
+        if ( ad.icon.URL )
         {
-            jsNativeAd[@"icon"] = [nativeAd.icon.URL absoluteString];
+            jsNativeAd[@"icon"] = ad.icon.URL.absoluteString;
         }
-        else if ( nativeAd.icon.image )
+        else if ( ad.icon.image )
         {
-            jsNativeAd[@"image"] = @YES;
+            jsNativeAd[@"image"] = @(YES);
         }
     }
-    if ( !isnan(nativeAd.mediaContentAspectRatio) )
+    if ( !isnan(ad.mediaContentAspectRatio) )
     {
-        jsNativeAd[@"mediaContentAspectRatio"] = @(nativeAd.mediaContentAspectRatio);
+        jsNativeAd[@"mediaContentAspectRatio"] = @(ad.mediaContentAspectRatio);
     }
-    
-    // Sending jsNativeAd to JavaScript as an event, then JavaScript will render the views with jsNativeAd
+     
+    // Send to `AppLovinNativeAdView.js` to render the views
     self.onNativeAdLoaded(jsNativeAd);
 }
 
-// Adds a view to a parent, and stretches it to the size of the parent
-- (void)addViewStretched:(UIView *)view parent:(UIView *)parent
+- (void)didFailToLoadNativeAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(MAError *)error
 {
-    view.translatesAutoresizingMaskIntoConstraints = NO;
-    [parent addSubview: view];
+    [[AppLovinMAX shared] log: @"Failed to load native ad for Ad Unit ID %@ with error: %@", self.adUnitId, error];
     
-    [view.widthAnchor constraintEqualToAnchor: parent.widthAnchor].active = YES;
-    [view.heightAnchor constraintEqualToAnchor: parent.heightAnchor].active = YES;
-    [view.centerXAnchor constraintEqualToAnchor: parent.centerXAnchor].active = YES;
-    [view.centerYAnchor constraintEqualToAnchor: parent.centerYAnchor].active = YES;
+    // Notify publisher
+    [[AppLovinMAX shared] handleNativeAdLoadFailureForAdUnitIdentifier: self.adUnitId error: error];
+    
+    [self.isLoading set: NO];
 }
 
-- (void)setImageView:(UIImage *)image view:(UIImageView *)view
+- (void)didClickNativeAd:(MAAd *)ad
 {
-    [view setImage: image];
+    [[AppLovinMAX shared] didClickAd: ad];
 }
 
 - (void)performCallToAction
 {
-    [self.nativeAdLoader performCallToAction];
+    // TODO(Thomas): Figure out implementation
+//    if ( !self.nativeAdView )
+//    {
+//        [AppLovinMAX.shared log: @"Attempting to generate a CTA event without a native ad view: %@", self];
+//        return;
+//    }
+//
+//    if ( !self.nativeAdView.callToActionButton )
+//    {
+//        [AppLovinMAX.shared log: @"callToActionButton is not found in MANativeAdView: %@", self.nativeAdView];
+//        return;
+//    }
+//
+//    [self.nativeAdView.callToActionButton sendActionsForControlEvents:UIControlEventTouchUpInside];
 }
 
-// Finds a native UIView from the specified tag (ref)
-- (UIView *)getNativeView:(NSNumber *)tag
-{
-    return [self.bridge.uiManager viewForReactTag: tag];
-}
-
-- (void)destroyAd
+- (void)destroyCurrentAdIfNeeded
 {
     if ( self.nativeAd )
     {
@@ -316,7 +279,7 @@ static NSString *NativeAdLoaderErrorAdUnitIdentifier;
             }
         }
         
-        [self.nativeAdLoader destroyAd: self.nativeAd];
+        [self.adLoader destroyAd: self.nativeAd];
         
         self.nativeAd = nil;
     }
