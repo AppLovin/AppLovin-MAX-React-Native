@@ -187,7 +187,7 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     // Set verbose logging state if needed
     if ( self.verboseLoggingToSet )
     {
-        self.sdk.settings.isVerboseLogging = self.verboseLoggingToSet.boolValue;
+        self.sdk.settings.verboseLoggingEnabled = self.verboseLoggingToSet.boolValue;
         self.verboseLoggingToSet = nil;
     }
     
@@ -312,7 +312,7 @@ RCT_EXPORT_METHOD(setVerboseLogging:(BOOL)enabled)
 {
     if ( [self isPluginInitialized] )
     {
-        self.sdk.settings.isVerboseLogging = enabled;
+        self.sdk.settings.verboseLoggingEnabled = enabled;
         self.verboseLoggingToSet = nil;
     }
     else
