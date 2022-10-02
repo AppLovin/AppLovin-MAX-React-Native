@@ -745,7 +745,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     [self sendReactNativeEventWithName: name body: [self adInfoForAd: ad]];
 }
 
-- (void)handleNativeAdLoadFailureForAdUnitIdentifier:(NSString *)adUnitIdentifier error:(MAError *)error
+- (void)handleNativeAdLoadFailureForAdUnitIdentifier:(NSString *)adUnitIdentifier error:(nullable MAError *)error
 {
     [self sendReactNativeEventWithName: @"OnNativeAdLoadFailedEvent"
                                   body: @{@"adUnitId" : adUnitIdentifier,

@@ -1,4 +1,5 @@
 #import <React/RCTUIManagerUtils.h>
+#import <React/RCTImageView.h>
 #import <AppLovinSDK/AppLovinSDK.h>
 #import "AppLovinMAX.h"
 #import "AppLovinMAXNativeAdView.h"
@@ -8,7 +9,6 @@
 @property (nonatomic, weak) RCTBridge *bridge;
 @property (nonatomic, strong, nullable) MANativeAdLoader *adLoader;
 @property (nonatomic, strong, nullable) MAAd *nativeAd;
-@property (nonatomic, strong) MANativeAdView *nativeAdView;
 @property (nonatomic, strong) ALAtomicBoolean *isLoading; // Guard against repeated ad loads
 
 // JavaScript properties
@@ -96,8 +96,7 @@
 }
 
 #pragma mark - Views to Replace
-// TODO: I think next 3 calls are for custom... but setMediaView: is called...
-// I think he actually only supports custom... but TBD
+
 - (void)setMediaView:(NSNumber *)tag
 {
     if ( !self.nativeAd.nativeAd.mediaView ) return;
@@ -109,8 +108,8 @@
         return;
     }
     
-//    [view addSubview: self.nativeAd.nativeAd.mediaView];
-//    [view al_pinToSuperview];
+    [view addSubview: self.nativeAd.nativeAd.mediaView];
+    [self.nativeAd.nativeAd.mediaView al_pinToSuperview];
 }
 
 - (void)setOptionsView:(NSNumber *)tag
@@ -124,33 +123,24 @@
         return;
     }
     
-//    [view addSubview: self.nativeAd.nativeAd.optionsView];
-//    [view al_pinToSuperview];
+    [view addSubview: self.nativeAd.nativeAd.optionsView];
+    [self.nativeAd.nativeAd.optionsView al_pinToSuperview];
 }
 
+// Only gets called from RN layer if we do not have "url" to pass up
 - (void)setIconImage:(NSNumber *)tag
 {
-    if ( !self.nativeAd.nativeAd.icon ) return;
+    if ( !self.nativeAd.nativeAd.icon.image ) return;
     
     UIView *view = [self.bridge.uiManager viewForReactTag: tag];
-    if ( !view || ![view isKindOfClass: [UIImageView class]] )
+    if ( ![view isKindOfClass: [RCTImageView class]] )
     {
         [[AppLovinMAX shared] log: @"Cannot find an icon image view with tag \"%@\" for %@", tag, self.adUnitId];
         return;
     }
     
-    UIImageView *iconImageView = (UIImageView *) view;
-    UIImage *iconImage = self.nativeAd.nativeAd.icon.image;
-    NSURL *iconURL = self.nativeAd.nativeAd.icon.URL;
-    
-    if ( iconImage )
-    {
-        iconImageView.image = iconImage;
-    }
-    else // iconURL
-    {
-        [iconImageView al_setImageWithURL: iconURL];
-    }
+    RCTImageView *iconImageView = (RCTImageView *) view;
+    iconImageView.defaultImage = self.nativeAd.nativeAd.icon.image;
 }
 
 #pragma mark - Ad Loader Delegate
@@ -158,23 +148,21 @@
 - (void)didLoadNativeAd:(nullable MANativeAdView *)nativeAdView forAd:(MAAd *)ad
 {
     [[AppLovinMAX shared] log: @"Native ad loaded: %@", ad];
-    
-    // NOTE: For v1, we only support template native ads
-    if ( !nativeAdView )
+ 
+    // Log a warning if it is a template native ad returned - as our plugin will be responsible for re-rendering the native ad's assets
+    if ( nativeAdView )
     {
-        [[AppLovinMAX shared] log: @"Attempting to load native ad of non-template type, ignoring..."];
+        [self.isLoading set: NO];
+        
+        [[AppLovinMAX shared] log: @"Native ad is of template type, failing ad load..."];
+        [[AppLovinMAX shared] handleNativeAdLoadFailureForAdUnitIdentifier: self.adUnitId error: nil];
+        
         return;
     }
-    
-    // TODO(Hiroshi): Why did we previously (in `AppLovinMaxNativeAdLoader` remove this `AppLovinMAXNativeAdView` from superview?)
-    // [self destroyNativeAdView];
     
     [self destroyCurrentAdIfNeeded];
     
     self.nativeAd = ad;
-    
-    self.nativeAdView = nativeAdView;
-    [self addSubview: nativeAdView];
     
     // Notify `AppLovinNativeAdView.js`
     [self sendAdLoadedReactNativeEventForAd: ad.nativeAd];
@@ -235,18 +223,13 @@
     [[AppLovinMAX shared] handleNativeAdLoadFailureForAdUnitIdentifier: self.adUnitId error: error];
 }
 
-- (void)didClickNativeAd:(MAAd *)ad
-{
-    [[AppLovinMAX shared] didClickAd: ad];
-}
-
 - (void)performCallToAction
 {
-    // TODO(Thomas): Figure out implementation
-//    if ( !self.nativeAdView )
-//    {
-//        [AppLovinMAX.shared log: @"Attempting to generate a CTA event without a native ad view: %@", self];
-//        return;
+    // TODO: Figure out `[self.nativeAd.nativeAd performClick];` since we do not use -[MANativeAdLoader renderAd:] ...
+}
+
+- (void)didClickNativeAd:(MAAd *)ad
+{
     [[AppLovinMAX shared] didClickAd: ad];
 }
 
