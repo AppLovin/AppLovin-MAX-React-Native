@@ -49,7 +49,7 @@ export const CallToActionView = (props) => {
     UIManager.dispatchViewManagerCommand(
       findNodeHandle(nativeAdView),
       UIManager.getViewManagerConfig("AppLovinMAXNativeAdView").Commands.performCallToAction,
-      undefined
+      []
     );
   };
 

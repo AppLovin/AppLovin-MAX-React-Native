@@ -402,7 +402,7 @@ const App = () => {
         />
         {
           isNativeAdShowing &&
-            <View style={{ position: 'absolute', top: '30%', width: '100%' }}>
+            <View style={{ position: 'absolute', top: '12%', width: '100%' }}>
               <NativeAdViewExample adUnitId={NATIVE_AD_UNIT_ID} ref={nativeAdViewRef}/>
             </View>
         }

@@ -30,7 +30,7 @@ RCT_EXPORT_METHOD(loadAd:(nonnull NSNumber *)viewTag)
     [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
         
         UIView *view = viewRegistry[viewTag];
-        if ( ![view isKindOfClass:[AppLovinMAXNativeAdView class]] )
+        if ( ![view isKindOfClass: [AppLovinMAXNativeAdView class]] )
         {
             [[AppLovinMAX shared] log: @"Cannot find AppLovinMAXNativeAdView with tag %@", viewTag];
             return;
@@ -46,7 +46,7 @@ RCT_EXPORT_METHOD(performCallToAction:(nonnull NSNumber *)viewTag)
     [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
         
         UIView *view = viewRegistry[viewTag];
-        if ( ![view isKindOfClass:[AppLovinMAXNativeAdView class]] )
+        if ( ![view isKindOfClass: [AppLovinMAXNativeAdView class]] )
         {
             [[AppLovinMAX shared] log: @"Cannot find AppLovinMAXNativeAdView with tag %@", viewTag];
             return;

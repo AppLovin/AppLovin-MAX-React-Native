@@ -247,15 +247,7 @@
 //    {
 //        [AppLovinMAX.shared log: @"Attempting to generate a CTA event without a native ad view: %@", self];
 //        return;
-//    }
-//
-//    if ( !self.nativeAdView.callToActionButton )
-//    {
-//        [AppLovinMAX.shared log: @"callToActionButton is not found in MANativeAdView: %@", self.nativeAdView];
-//        return;
-//    }
-//
-//    [self.nativeAdView.callToActionButton sendActionsForControlEvents:UIControlEventTouchUpInside];
+    [[AppLovinMAX shared] didClickAd: ad];
 }
 
 - (void)destroyCurrentAdIfNeeded
