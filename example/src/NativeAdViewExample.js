@@ -85,8 +85,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
   },
   callToAction: {
+    padding: 5,
     width: '100%',
-    height: 30,
     fontSize: 20,
     textAlign: 'center',
     fontWeight: 'bold',
