@@ -74,7 +74,7 @@ export const IconView = (props) => {
     if (Object.keys(nativeAd).length === 0 || !nativeAdView) return;
     if (nativeAd.image) {
       nativeAdView.setNativeProps({
-        iconView: findNodeHandle(imageRef.current),
+        iconImage: findNodeHandle(imageRef.current),
       });
     }
   }, [nativeAd, nativeAdView]);
