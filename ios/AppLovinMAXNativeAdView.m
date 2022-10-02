@@ -214,7 +214,7 @@
     {
         if ( ad.icon.URL )
         {
-            jsNativeAd[@"icon"] = ad.icon.URL.absoluteString;
+            jsNativeAd[@"url"] = ad.icon.URL.absoluteString;
         }
         else if ( ad.icon.image )
         {
