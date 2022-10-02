@@ -3,11 +3,6 @@
 #import "AppLovinMAX.h"
 #import "AppLovinMAXNativeAdView.h"
 
-// NOTE: Exposed publicly as of 11.5.1
-@interface UIImageView (ALUtils)
-- (void)al_setImageWithURL:(NSURL *)URL;
-@end
-
 @interface AppLovinMAXNativeAdView()<MANativeAdDelegate>
 
 @property (nonatomic, weak) RCTBridge *bridge;
