@@ -232,12 +232,12 @@
 
 - (void)didFailToLoadNativeAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(MAError *)error
 {
+    [self.isLoading set: NO];
+    
     [[AppLovinMAX shared] log: @"Failed to load native ad for Ad Unit ID %@ with error: %@", self.adUnitId, error];
     
     // Notify publisher
     [[AppLovinMAX shared] handleNativeAdLoadFailureForAdUnitIdentifier: self.adUnitId error: error];
-    
-    [self.isLoading set: NO];
 }
 
 - (void)didClickNativeAd:(MAAd *)ad
