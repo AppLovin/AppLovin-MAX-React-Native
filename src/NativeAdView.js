@@ -83,7 +83,7 @@ const NativeAdView = forwardRef((props, ref) => {
   );
 });
 
-// Adds the child ad components
+// Add the child ad components
 NativeAdViewWrapper.TitleView = TitleView;
 NativeAdViewWrapper.AdvertiserView = AdvertiserView;
 NativeAdViewWrapper.BodyView = BodyView;

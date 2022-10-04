@@ -4,6 +4,13 @@
 #import "AppLovinMAX.h"
 #import "AppLovinMAXNativeAdView.h"
 
+@interface MANativeAdLoader()
+- (void)registerClickableViews:(NSArray<UIView *> *)clickableViews
+                 withContainer:(UIView *)container
+                         forAd:(MAAd *)ad;
+- (void)handleNativeAdViewRenderedForAd:(MAAd *)ad;
+@end
+
 @interface AppLovinMAXNativeAdView()<MANativeAdDelegate>
 
 @property (nonatomic, weak) RCTBridge *bridge;
@@ -20,6 +27,9 @@
 // Callback to `AppLovinNativeAdView.js`
 @property (nonatomic, copy) RCTDirectEventBlock onNativeAdLoaded;
 
+// TODO: Allow publisher to select which views are clickable and which isn't via prop
+@property (nonatomic, strong) NSMutableArray<UIView *> *clickableViews;
+
 @end
 
 @implementation AppLovinMAXNativeAdView
@@ -31,6 +41,7 @@
     {
         self.bridge = bridge;
         self.isLoading = [[ALAtomicBoolean alloc] init];
+        self.clickableViews = [NSMutableArray array];
     }
     return self;
 }
@@ -97,17 +108,45 @@
 
 #pragma mark - Views to Replace
 
+- (void)setTitleView:(NSNumber *)tag
+{
+    if ( !self.nativeAd.nativeAd.title ) return;
+  
+    UIView *view = [self.bridge.uiManager viewForReactTag: tag];
+    [self.clickableViews addObject: view];
+}
+
+- (void)setAdvertiserView:(NSNumber *)tag
+{
+    if ( !self.nativeAd.nativeAd.advertiser ) return;
+  
+    UIView *view = [self.bridge.uiManager viewForReactTag: tag];
+    [self.clickableViews addObject: view];
+}
+
+- (void)setBodyView:(NSNumber *)tag
+{
+    if ( !self.nativeAd.nativeAd.body ) return;
+  
+    UIView *view = [self.bridge.uiManager viewForReactTag: tag];
+    [self.clickableViews addObject: view];
+}
+
+- (void)setCallToActionView:(NSNumber *)tag
+{
+    if ( !self.nativeAd.nativeAd.callToAction ) return;
+  
+    UIView *view = [self.bridge.uiManager viewForReactTag: tag];
+    [self.clickableViews addObject: view];
+}
+
 - (void)setMediaView:(NSNumber *)tag
 {
     if ( !self.nativeAd.nativeAd.mediaView ) return;
     
     UIView *view = [self.bridge.uiManager viewForReactTag: tag];
-    if ( !view )
-    {
-        [[AppLovinMAX shared] log: @"Cannot find a media view with tag \"%@\" for %@", tag, self.adUnitId];
-        return;
-    }
-    
+    [self.clickableViews addObject: view];
+  
     [view addSubview: self.nativeAd.nativeAd.mediaView];
     [self.nativeAd.nativeAd.mediaView al_pinToSuperview];
 }
@@ -117,30 +156,30 @@
     if ( !self.nativeAd.nativeAd.optionsView ) return;
        
     UIView *view = [self.bridge.uiManager viewForReactTag: tag];
-    if ( !view )
-    {
-        [[AppLovinMAX shared] log: @"Cannot find an options view with tag \"%@\" for %@", tag, self.adUnitId];
-        return;
-    }
-    
+  
     [view addSubview: self.nativeAd.nativeAd.optionsView];
     [self.nativeAd.nativeAd.optionsView al_pinToSuperview];
 }
 
-// Only gets called from RN layer if we do not have "url" to pass up
-- (void)setIconImage:(NSNumber *)tag
+- (void)setIconView:(NSNumber *)tag
 {
-    if ( !self.nativeAd.nativeAd.icon.image ) return;
-    
     UIView *view = [self.bridge.uiManager viewForReactTag: tag];
     if ( ![view isKindOfClass: [RCTImageView class]] )
     {
         [[AppLovinMAX shared] log: @"Cannot find an icon image view with tag \"%@\" for %@", tag, self.adUnitId];
         return;
     }
-    
-    RCTImageView *iconImageView = (RCTImageView *) view;
-    iconImageView.defaultImage = self.nativeAd.nativeAd.icon.image;
+ 
+  [self.clickableViews addObject: view];
+  
+  MANativeAdImage *icon = self.nativeAd.nativeAd.icon;
+  
+    // Check if "URL" was missing and therefore need to set the image data
+    if ( !icon.URL && icon.image )
+    {
+        RCTImageView *iconImageView = (RCTImageView *) view;
+        iconImageView.defaultImage = self.nativeAd.nativeAd.icon.image;
+    }
 }
 
 #pragma mark - Ad Loader Delegate
@@ -170,6 +209,9 @@
     // Notify publisher
     [[AppLovinMAX shared] didLoadAd: ad]; 
     
+    [self.adLoader registerClickableViews: self.clickableViews withContainer: self forAd: ad];
+    [self.adLoader handleNativeAdViewRenderedForAd: ad];
+  
     [self.isLoading set: NO];
 }
 
@@ -223,11 +265,6 @@
     [[AppLovinMAX shared] handleNativeAdLoadFailureForAdUnitIdentifier: self.adUnitId error: error];
 }
 
-- (void)performCallToAction
-{
-    // TODO: Figure out `[self.nativeAd.nativeAd performClick];` since we do not use -[MANativeAdLoader renderAd:] ...
-}
-
 - (void)didClickNativeAd:(MAAd *)ad
 {
     [[AppLovinMAX shared] didClickAd: ad];
@@ -253,6 +290,8 @@
         
         self.nativeAd = nil;
     }
+  
+    [self.clickableViews removeAllObjects];
 }
 
 @end

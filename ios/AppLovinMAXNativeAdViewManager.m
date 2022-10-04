@@ -6,14 +6,23 @@
 
 RCT_EXPORT_MODULE(AppLovinMAXNativeAdView)
 
+// Props
 RCT_EXPORT_VIEW_PROPERTY(adUnitId, NSString)
 RCT_EXPORT_VIEW_PROPERTY(placement, NSString)
 RCT_EXPORT_VIEW_PROPERTY(customData, NSString)
 RCT_EXPORT_VIEW_PROPERTY(extraParameters, NSDictionary)
-RCT_EXPORT_VIEW_PROPERTY(iconImage, NSNumber)
+
+// Callback
+RCT_EXPORT_VIEW_PROPERTY(onNativeAdLoaded, RCTDirectEventBlock)
+
+// Asset views
+RCT_EXPORT_VIEW_PROPERTY(titleView, NSNumber)
+RCT_EXPORT_VIEW_PROPERTY(advertiserView, NSNumber)
+RCT_EXPORT_VIEW_PROPERTY(bodyView, NSNumber)
+RCT_EXPORT_VIEW_PROPERTY(callToActionView, NSNumber)
+RCT_EXPORT_VIEW_PROPERTY(iconView, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(optionsView, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(mediaView, NSNumber)
-RCT_EXPORT_VIEW_PROPERTY(onNativeAdLoaded, RCTDirectEventBlock)
 
 + (BOOL)requiresMainQueueSetup
 {
@@ -38,22 +47,6 @@ RCT_EXPORT_METHOD(loadAd:(nonnull NSNumber *)viewTag)
         
         AppLovinMAXNativeAdView *nativeAdView = (AppLovinMAXNativeAdView *) view;
         [nativeAdView loadAd];
-    }];
-}
-
-RCT_EXPORT_METHOD(performCallToAction:(nonnull NSNumber *)viewTag)
-{
-    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-        
-        UIView *view = viewRegistry[viewTag];
-        if ( ![view isKindOfClass: [AppLovinMAXNativeAdView class]] )
-        {
-            [[AppLovinMAX shared] log: @"Cannot find AppLovinMAXNativeAdView with tag %@", viewTag];
-            return;
-        }
-        
-        AppLovinMAXNativeAdView *nativeAdView = (AppLovinMAXNativeAdView *) view;
-        [nativeAdView performCallToAction];
     }];
 }
 

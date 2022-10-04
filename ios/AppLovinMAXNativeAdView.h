@@ -12,11 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)loadAd;
 
-/**
- * Generates a click event on the Call-To-Action button of the native ad view.
- */
-- (void)performCallToAction;
-
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 
