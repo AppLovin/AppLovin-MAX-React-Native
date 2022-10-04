@@ -12,7 +12,6 @@
 		1DEA13CD24B9258700D42847 /* AppLovinMAX.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DEA13CC24B9258700D42847 /* AppLovinMAX.m */; };
 		7A47215228D8968100854002 /* AppLovinMAXNativeAdViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A47214F28D8968100854002 /* AppLovinMAXNativeAdViewManager.m */; };
 		7A47215728D8968800854002 /* AppLovinMAXNativeAdView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A47215328D8968800854002 /* AppLovinMAXNativeAdView.m */; };
-		7A47215828D8968800854002 /* AppLovinMAXNativeAdLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A47215528D8968800854002 /* AppLovinMAXNativeAdLoader.m */; };
 		DE4E5A3D46DDFAE766DFFE58 /* libPods-AppLovinMAX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF1B4EBC7187611714984C78 /* libPods-AppLovinMAX.a */; };
 /* End PBXBuildFile section */
 
@@ -40,8 +39,6 @@
 		7A47215128D8968100854002 /* AppLovinMAXNativeAdViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppLovinMAXNativeAdViewManager.h; sourceTree = "<group>"; };
 		7A47215328D8968800854002 /* AppLovinMAXNativeAdView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppLovinMAXNativeAdView.m; sourceTree = "<group>"; };
 		7A47215428D8968800854002 /* AppLovinMAXNativeAdView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppLovinMAXNativeAdView.h; sourceTree = "<group>"; };
-		7A47215528D8968800854002 /* AppLovinMAXNativeAdLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppLovinMAXNativeAdLoader.m; sourceTree = "<group>"; };
-		7A47215628D8968800854002 /* AppLovinMAXNativeAdLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppLovinMAXNativeAdLoader.h; sourceTree = "<group>"; };
 		B3E7B5881CC2AC0600A0062D /* AppLovinMAX.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppLovinMAX.h; sourceTree = "<group>"; };
 		EF1B4EBC7187611714984C78 /* libPods-AppLovinMAX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AppLovinMAX.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F80C453A02323F11AB9FD612 /* Pods-AppLovinMAX.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppLovinMAX.release.xcconfig"; path = "Target Support Files/Pods-AppLovinMAX/Pods-AppLovinMAX.release.xcconfig"; sourceTree = "<group>"; };
@@ -78,21 +75,19 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				7A47215628D8968800854002 /* AppLovinMAXNativeAdLoader.h */,
-				7A47215528D8968800854002 /* AppLovinMAXNativeAdLoader.m */,
-				7A47215428D8968800854002 /* AppLovinMAXNativeAdView.h */,
-				7A47215328D8968800854002 /* AppLovinMAXNativeAdView.m */,
-				7A47215128D8968100854002 /* AppLovinMAXNativeAdViewManager.h */,
-				7A47214F28D8968100854002 /* AppLovinMAXNativeAdViewManager.m */,
 				B3E7B5881CC2AC0600A0062D /* AppLovinMAX.h */,
 				1DEA13CC24B9258700D42847 /* AppLovinMAX.m */,
 				1D3CC33F28C18440003E5A07 /* AppLovinMAXAdView.h */,
 				1D3CC34028C18441003E5A07 /* AppLovinMAXAdView.m */,
 				1D2890F3251ABC83004F1CC4 /* AppLovinMAXAdViewManager.h */,
 				1D2890F4251ABC83004F1CC4 /* AppLovinMAXAdViewManager.m */,
-				134814211AA4EA7D00B7C361 /* Products */,
-				B20EE642686C6BAEB6C5B87A /* Pods */,
+				7A47215428D8968800854002 /* AppLovinMAXNativeAdView.h */,
+				7A47215328D8968800854002 /* AppLovinMAXNativeAdView.m */,
+				7A47215128D8968100854002 /* AppLovinMAXNativeAdViewManager.h */,
+				7A47214F28D8968100854002 /* AppLovinMAXNativeAdViewManager.m */,
 				1E696A0F28A9ED7C75EC4EC0 /* Frameworks */,
+				B20EE642686C6BAEB6C5B87A /* Pods */,
+				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -190,7 +185,6 @@
 			files = (
 				7A47215228D8968100854002 /* AppLovinMAXNativeAdViewManager.m in Sources */,
 				1D2890F5251ABC83004F1CC4 /* AppLovinMAXAdViewManager.m in Sources */,
-				7A47215828D8968800854002 /* AppLovinMAXNativeAdLoader.m in Sources */,
 				7A47215728D8968800854002 /* AppLovinMAXNativeAdView.m in Sources */,
 				1D3CC34128C18441003E5A07 /* AppLovinMAXAdView.m in Sources */,
 				1DEA13CD24B9258700D42847 /* AppLovinMAX.m in Sources */,
