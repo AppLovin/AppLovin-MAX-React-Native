@@ -1,3 +1,10 @@
+//
+//  AppLovinMAXNativeAdView.m
+//  AppLovin MAX React Native Module
+//
+//  Copyright © 2022 AppLovin. All rights reserved.
+//
+
 #import <React/RCTUIManagerUtils.h>
 #import <React/RCTImageView.h>
 #import <AppLovinSDK/AppLovinSDK.h>
