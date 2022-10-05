@@ -9,6 +9,13 @@ import com.applovin.mediation.ads.MaxAdView;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.views.view.ReactViewGroup;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import androidx.annotation.Nullable;
 
 /**
@@ -17,6 +24,9 @@ import androidx.annotation.Nullable;
 class AppLovinMAXAdView
         extends ReactViewGroup
 {
+    private static final Map<MaxAdFormat, List<NativeAdView>> adViewCache     = new HashMap<>( 2 );
+    private static final Object                               adViewCacheLock = new Object();
+
     private final ThemedReactContext reactContext;
 
     private @Nullable MaxAdView adView;
@@ -27,6 +37,17 @@ class AppLovinMAXAdView
     private @Nullable String      customData;
     private           boolean     adaptiveBannerEnabled;
     private           boolean     autoRefresh;
+
+    static class NativeAdView
+    {
+        MaxAdView   adView;
+        String      adUnitId;
+        MaxAdFormat adFormat;
+        @Nullable String placement;
+        @Nullable String customData;
+        boolean adaptiveBannerEnabled;
+        boolean autoRefresh;
+    }
 
     public AppLovinMAXAdView(final Context context)
     {
@@ -199,14 +220,20 @@ class AppLovinMAXAdView
 
             AppLovinMAXModule.d( "Attaching MaxAdView for " + adUnitId );
 
-            adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
-            adView.setListener( AppLovinMAXModule.getInstance() );
-            adView.setRevenueListener( AppLovinMAXModule.getInstance() );
-            adView.setPlacement( placement );
-            adView.setCustomData( customData );
-            adView.setExtraParameter( "adaptive_banner", Boolean.toString( adaptiveBannerEnabled ) );
-            // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
-            adView.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
+            boolean isNewAdView = false;
+
+            adView = retrieveAdView( adUnitId, adFormat, placement, customData, adaptiveBannerEnabled, autoRefresh );
+
+            if ( adView == null )
+            {
+                isNewAdView = true;
+
+                adView = createAdView( adUnitId, adFormat, placement, customData, adaptiveBannerEnabled, currentActivity );
+            }
+            else
+            {
+                AppLovinMAXModule.d( "Using a cached MaxAdView for " + adUnitId );
+            }
 
             if ( autoRefresh )
             {
@@ -217,7 +244,10 @@ class AppLovinMAXAdView
                 adView.stopAutoRefresh();
             }
 
-            adView.loadAd();
+            if ( isNewAdView )
+            {
+                adView.loadAd();
+            }
 
             addView( adView );
         }, 250 );
@@ -230,12 +260,85 @@ class AppLovinMAXAdView
             AppLovinMAXModule.d( "Unmounting MaxAdView: " + adView );
 
             removeView( adView );
-
+            adView.stopAutoRefresh();
             adView.setListener( null );
             adView.setRevenueListener( null );
-            adView.destroy();
+
+            saveAdView( adView, adUnitId, adFormat, placement, customData, adaptiveBannerEnabled, autoRefresh );
 
             adView = null;
+        }
+    }
+
+    private static MaxAdView createAdView(final String adUnitId, final MaxAdFormat adFormat, final String placement, final String customData, final boolean adaptiveBannerEnabled, final Context context)
+    {
+        MaxAdView adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), context );
+        adView.setListener( AppLovinMAXModule.getInstance() );
+        adView.setRevenueListener( AppLovinMAXModule.getInstance() );
+        adView.setPlacement( placement );
+        adView.setCustomData( customData );
+        adView.setExtraParameter( "adaptive_banner", Boolean.toString( adaptiveBannerEnabled ) );
+        // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
+        adView.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
+        // Disable autoRefresh until mounted
+        adView.stopAutoRefresh();
+        return adView;
+    }
+
+    private static MaxAdView retrieveAdView(final String adUnitId, final MaxAdFormat adFormat, final String placement, final String customData, final boolean adaptiveBannerEnabled, final boolean autoRefresh)
+    {
+        List<NativeAdView> adViews = adViewCache.get( adFormat );
+        if ( adViews == null )
+        {
+            return null;
+        }
+
+        synchronized ( adViewCacheLock )
+        {
+            MaxAdView adView = null;
+
+            Iterator<NativeAdView> iterator = adViews.iterator();
+            while ( iterator.hasNext() )
+            {
+                NativeAdView nativeAdView = iterator.next();
+                if ( nativeAdView.adUnitId.equals( adUnitId ) &&
+                        nativeAdView.adFormat == adFormat &&
+                        Objects.equals( nativeAdView.placement, placement ) &&
+                        Objects.equals( nativeAdView.customData, customData ) &&
+                        nativeAdView.adaptiveBannerEnabled == adaptiveBannerEnabled &&
+                        nativeAdView.autoRefresh == autoRefresh )
+                {
+                    adView = nativeAdView.adView;
+                    iterator.remove();
+                    break;
+                }
+            }
+
+            return adView;
+        }
+    }
+
+    private static void saveAdView(final MaxAdView adView, final String adUnitId, final MaxAdFormat adFormat, final String placement, final String customData, final boolean adaptiveBannerEnabled, final boolean autoRefresh)
+    {
+        NativeAdView nativeAdView = new NativeAdView();
+        nativeAdView.adView = adView;
+        nativeAdView.adUnitId = adUnitId;
+        nativeAdView.adFormat = adFormat;
+        nativeAdView.placement = placement;
+        nativeAdView.customData = customData;
+        nativeAdView.adaptiveBannerEnabled = adaptiveBannerEnabled;
+        nativeAdView.autoRefresh = autoRefresh;
+
+        synchronized ( adViewCacheLock )
+        {
+            List<NativeAdView> adViews = adViewCache.get( adFormat );
+            if ( adViews == null )
+            {
+                adViews = new ArrayList<>();
+                adViewCache.put( adFormat, adViews );
+            }
+
+            adViews.add( nativeAdView );
         }
     }
 }

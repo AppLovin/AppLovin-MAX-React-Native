@@ -18,6 +18,25 @@
 
 @implementation AppLovinMAXAdView
 
+typedef struct {
+    MAAdView *adView;
+    NSString *adUnitId;
+    MAAdFormat *adFormat;
+    NSString *placement;
+    NSString *customData;
+    BOOL adaptiveBannerEnabled;
+    BOOL autoRefresh;
+} NativeAdView;
+
+static NSMutableDictionary<MAAdFormat *, NSMutableArray *> *AdViewCache;
+static NSObject *AdViewCacheLock;
+
++ (void)initialize
+{
+    AdViewCache = [NSMutableDictionary dictionaryWithCapacity: 2];
+    AdViewCacheLock = [[NSObject alloc] init];
+}
+
 - (void)setAdUnitId:(NSString *)adUnitId
 {
     // Ad Unit ID must be set prior to creating MAAdView
@@ -134,17 +153,32 @@
         
         [[AppLovinMAX shared] log: @"Attaching MAAdView for %@", adUnitId];
         
-        self.adView = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitId
-                                                        adFormat: adFormat
-                                                             sdk: [AppLovinMAX shared].sdk];
+        bool isNewAdView = NO;
+        
+        self.adView = [AppLovinMAXAdView retrieveAdView: self.adUnitId
+                                               adFormat: self.adFormat
+                                              placement: self.placement
+                                             customData: self.customData
+                                  adaptiveBannerEnabled: self.adaptiveBannerEnabled
+                                            autoRefresh: self.autoRefresh];
+        
+        
+        if ( !self.adView )
+        {
+            isNewAdView = YES;
+            
+            self.adView = [AppLovinMAXAdView createAdView: adUnitId
+                                                 adFormat: adFormat
+                                                placement: self.placement
+                                               customData: self.customData
+                                    adaptiveBannerEnabled: self.adaptiveBannerEnabled];
+        }
+        else
+        {
+            [[AppLovinMAX shared] log: @"Using a cached MAAdView for %@", adUnitId];
+        }
+        
         self.adView.frame = (CGRect) { CGPointZero, self.frame.size };
-        self.adView.delegate = [AppLovinMAX shared]; // Go through core class for callback forwarding to React Native layer
-        self.adView.revenueDelegate = [AppLovinMAX shared];
-        self.adView.placement = self.placement;
-        self.adView.customData = self.customData;
-        [self.adView setExtraParameterForKey: @"adaptive_banner" value: [self isAdaptiveBannerEnabled] ? @"true" : @"false"];
-        // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
-        [self.adView setExtraParameterForKey: @"allow_pause_auto_refresh_immediately" value: @"true"];
         
         if ( [self isAutoRefresh] )
         {
@@ -155,7 +189,10 @@
             [self.adView stopAutoRefresh];
         }
         
-        [self.adView loadAd];
+        if ( isNewAdView )
+        {
+            [self.adView loadAd];
+        }
         
         [self addSubview: self.adView];
         
@@ -177,13 +214,121 @@
         {
             [[AppLovinMAX shared] log: @"Unmounting MAAdView: %@", self.adView];
             
+            [self.adView removeFromSuperview];
+            [self.adView stopAutoRefresh];
             self.adView.delegate = nil;
             self.adView.revenueDelegate = nil;
             
-            [self.adView removeFromSuperview];
+            [AppLovinMAXAdView saveAdView: self.adView
+                                 adUnitId: self.adUnitId
+                                 adFormat: self.adFormat
+                                placement: self.placement
+                               customData: self.customData
+                    adaptiveBannerEnabled: self.adaptiveBannerEnabled
+                              autoRefresh: self.autoRefresh];
             
             self.adView = nil;
         }
+    }
+}
+
++ (MAAdView *)createAdView:(NSString *)adUnitIdentifier
+                  adFormat:(MAAdFormat *)adFormat
+                 placement:(nullable NSString *)placement
+                customData:(nullable NSString *)customData
+     adaptiveBannerEnabled:(BOOL)adaptiveBannerEnabled
+{
+    MAAdView *adView = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitIdentifier
+                                                         adFormat: adFormat
+                                                              sdk: [AppLovinMAX shared].sdk];
+    adView.delegate = [AppLovinMAX shared];
+    adView.revenueDelegate = [AppLovinMAX shared];
+    [adView setPlacement: placement];
+    [adView setCustomData: customData];
+    [adView setExtraParameterForKey: @"adaptive_banner" value: adaptiveBannerEnabled ? @"true" : @"false"];
+    // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
+    [adView setExtraParameterForKey: @"allow_pause_auto_refresh_immediately" value: @"true"];
+    // Disable autoRefresh until mounted
+    [adView stopAutoRefresh];
+    return adView;
+}
+
++ (MAAdView *)retrieveAdView:adUnitIdentifier
+                    adFormat:(MAAdFormat *)adFormat
+                   placement:(nullable NSString *)placement
+                  customData:(nullable NSString *)customData
+       adaptiveBannerEnabled:(BOOL)adaptiveBannerEnabled
+                 autoRefresh:(BOOL)autoRefresh
+{
+    NSMutableArray *adViews = AdViewCache[adFormat];
+    if ( !adViews )
+    {
+        return nil;
+    }
+    
+    @synchronized ( AdViewCacheLock )
+    {
+        MAAdView *adView = nil;
+        NSMutableData *discardedData = nil;
+        
+        for ( NSMutableData *data in adViews )
+        {
+            NativeAdView *cachedAdView = (NativeAdView *) data.mutableBytes;
+            if ( [cachedAdView->adUnitId isEqualToString: adUnitIdentifier] &&
+                cachedAdView->adFormat == adFormat &&
+                (cachedAdView->placement == placement ||
+                 [cachedAdView->placement isEqualToString: placement]) &&
+                (cachedAdView->customData == customData ||
+                 [cachedAdView->customData isEqualToString: customData]) &&
+                cachedAdView->adaptiveBannerEnabled == adaptiveBannerEnabled &&
+                cachedAdView->autoRefresh == autoRefresh)
+            {
+                adView = cachedAdView->adView;
+                discardedData = data;
+                break;
+            }
+        }
+        
+        // when found, removes from the cache
+        if ( discardedData )
+        {
+            [adViews removeObject: discardedData];
+        }
+        
+        return adView;
+    }
+    
+    return nil;
+}
+
++ (void)saveAdView:(MAAdView *)adView
+          adUnitId:(NSString *)adUnitIdentifier
+          adFormat:(MAAdFormat *)adFormat
+         placement:(nullable NSString *)placement
+        customData:(nullable NSString *)customData
+adaptiveBannerEnabled:(BOOL)adaptiveBannerEnabled
+       autoRefresh:(BOOL)autoRefresh
+{
+    NSMutableData *data = [[NSMutableData alloc] initWithLength:sizeof(NativeAdView)];
+    NativeAdView *nativeAdView = (NativeAdView *) data.mutableBytes;
+    nativeAdView->adView = adView;
+    nativeAdView->adUnitId = adUnitIdentifier;
+    nativeAdView->adFormat = adFormat;
+    nativeAdView->placement = placement;
+    nativeAdView->customData = customData;
+    nativeAdView->adaptiveBannerEnabled = adaptiveBannerEnabled;
+    nativeAdView->autoRefresh = autoRefresh;
+    
+    @synchronized ( AdViewCacheLock )
+    {
+        NSMutableArray *adViews = AdViewCache[adFormat];
+        if ( !adViews )
+        {
+            adViews = [NSMutableArray array];
+            AdViewCache[adFormat] = adViews;
+        }
+        
+        [adViews addObject: data];
     }
 }
 

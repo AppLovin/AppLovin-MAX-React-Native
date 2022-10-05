@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+    * Add support for re-using AdViews after mount & un-mounts
 ## 3.3.1
     * Depend on Android SDK 11.5.1 and iOS SDK 11.5.1.
     * Update Android Gradle plugin to v3.5.4 to be compatible with <queries> element in manifest files.
