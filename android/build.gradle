@@ -41,8 +41,8 @@ android {
   defaultConfig {
     minSdkVersion 16
     targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
-    versionCode 3030000
-    versionName "3.3.0"
+    versionCode 3030100
+    versionName "3.3.1"
   }
 
   flavorDimensions("default")
@@ -150,5 +150,5 @@ dependencies {
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-  implementation 'com.applovin:applovin-sdk:11.4.4'
+  implementation 'com.applovin:applovin-sdk:11.5.1'
 }

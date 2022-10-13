@@ -2,6 +2,8 @@
 
 ## x.x.x
     * Add support for native ads via `<AppLovinMAX.NativeAdView adUnitId={...}/>`.
+## 3.3.1
+    * Depend on Android SDK 11.5.1 and iOS SDK 11.5.1.
     * Update Android Gradle plugin to v3.5.4 to be compatible with <queries> element in manifest files.
 ## 3.3.0
     * Add autorefresh support for banner and MREC native UI components: `<AppLovinMAX.AdView autoRefresh={true/false} .../>`
@@ -10,11 +12,11 @@
     * Fix `java.lang.ClassCastException` in Android when ad is loaded due to processing `ad.waterfall` object.
     * Fix not being able to show subsequent fullscreen ads if app is re-launched from app icon while in middle of an ad.
 ## 3.2.2
-    * Lock to Android SDK 11.4.4 and iOS SDK 11.4.3.
+    * Depend on Android SDK 11.4.4 and iOS SDK 11.4.3.
 ## 3.2.1
     * Add support for getting DSP name if the ad is served by AppLovin Exchange via `ad.dspName`.
 ## 3.2.0
-    * Lock to Android SDK 11.4.3 and iOS SDK 11.4.2.
+    * Depend on Android SDK 11.4.3 and iOS SDK 11.4.2.
     * Add support for custom data.
     * Add support for impression-level user revenue api.
     * Add support for waterfall.
@@ -23,16 +25,16 @@
     * Add support for data passing.
     * Add API for Android to provide a built-in consent flow that sets the user consent flag.
 ## 3.0.2
-    * Lock to Android SDK 11.3.2 and iOS SDK 11.3.2.
+    * Depend on Android SDK 11.3.2 and iOS SDK 11.3.2.
 ## 3.0.1
-    * Lock to Android SDK 11.3.1 and iOS SDK 11.3.1.
+    * Depend on Android SDK 11.3.1 and iOS SDK 11.3.1.
     * Fix safe area blocked if y offset used. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/59)
 ## 3.0.0
-    * Lock to Android SDK 11.3.0 and iOS SDK 11.3.0.
+    * Depend on Android SDK 11.3.0 and iOS SDK 11.3.0.
 ## 2.5.3
     * Add API to set Terms of Service URL for iOS' MAX consent flow.
 ## 2.5.2
-    * Lock to Android SDK 10.3.5 and iOS SDK 10.3.7.
+    * Depend on Android SDK 10.3.5 and iOS SDK 10.3.7.
 ## 2.5.1
     * Stop auto-refresh for native AdViews that have been removed from screen on Android. 
 ## 2.5.0
