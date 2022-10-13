@@ -43,7 +43,7 @@ public class AppLovinMAXNativeAdViewManager
     public Map<String, Object> getExportedCustomDirectEventTypeConstants()
     {
         return MapBuilder.<String, Object>builder()
-                .put( "onNativeAdLoaded", MapBuilder.of( "registrationName", "onNativeAdLoaded" ) )
+                .put( "onAdLoaded", MapBuilder.of( "registrationName", "onAdLoaded" ) )
                 .build();
     }
 

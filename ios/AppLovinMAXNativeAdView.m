@@ -32,7 +32,7 @@
 @property (nonatomic, copy, nullable) NSDictionary *extraParameters;
 
 // Callback to `AppLovinNativeAdView.js`
-@property (nonatomic, copy) RCTDirectEventBlock onNativeAdLoaded;
+@property (nonatomic, copy) RCTDirectEventBlock onAdLoaded;
 
 // TODO: Allow publisher to select which views are clickable and which isn't via prop
 @property (nonatomic, strong) NSMutableArray<UIView *> *clickableViews;
@@ -259,7 +259,7 @@
     }
      
     // Send to `AppLovinNativeAdView.js` to render the views
-    self.onNativeAdLoaded(jsNativeAd);
+    self.onAdLoaded(jsNativeAd);
 }
 
 - (void)didFailToLoadNativeAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(MAError *)error

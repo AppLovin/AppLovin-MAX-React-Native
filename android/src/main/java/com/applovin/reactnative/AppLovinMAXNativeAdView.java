@@ -317,7 +317,7 @@ public class AppLovinMAXNativeAdView
         }
 
         // Send to `AppLovinNativeAdView.js` to render the views
-        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onNativeAdLoaded", jsNativeAd );
+        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdLoaded", jsNativeAd );
     }
 
     private void destroyCurrentAdIfNeeded()

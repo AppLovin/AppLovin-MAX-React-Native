@@ -1,4 +1,5 @@
 import React, { forwardRef, useContext, useImperativeHandle, useRef, useCallback } from "react";
+import PropTypes from "prop-types";
 import { NativeModules, requireNativeComponent, UIManager, findNodeHandle, View, StyleSheet } from "react-native";
 import { NativeAdViewContext, NativeAdViewProvider } from "./NativeAdViewProvider";
 import { TitleView, AdvertiserView, BodyView, CallToActionView, IconView, OptionsView, MediaView } from "./NativeAdComponents";
@@ -72,16 +73,38 @@ const NativeAdView = forwardRef((props, ref) => {
   }, [nativeAdViewRef]);
 
   // callback from the native module to set a loaded ad
-  const onNativeAdLoaded = useCallback((event) => {
+  const onAdLoaded = useCallback((event) => {
     setNativeAd(event.nativeEvent);
   }, []);
 
   return (
-    <AppLovinMAXNativeAdView {...props} ref={saveElement} onNativeAdLoaded={onNativeAdLoaded}>
+    <AppLovinMAXNativeAdView {...props} ref={saveElement} onAdLoaded={onAdLoaded}>
       {props.children}
     </AppLovinMAXNativeAdView>
   );
 });
+
+NativeAdView.propTypes = {
+  /**
+   * A string value representing the ad unit id to load ads for.
+   */
+  adUnitId: PropTypes.string.isRequired,
+
+  /**
+   * A string value representing the placement name that you assign when you integrate each ad format, for granular reporting in ad events.
+   */
+  placement: PropTypes.string,
+
+  /**
+   * A string value representing the customData name that you assign when you integrate each ad format, for granular reporting in ad events.
+   */
+  customData: PropTypes.string,
+
+  /**
+   * A dictionary value representing the extra parameters to set a list of key-value string pairs.
+   */
+  extraParameters: PropTypes.object,
+};
 
 // Add the child ad components
 NativeAdViewWrapper.TitleView = TitleView;
