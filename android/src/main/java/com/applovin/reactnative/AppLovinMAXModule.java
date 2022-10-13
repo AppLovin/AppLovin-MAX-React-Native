@@ -495,13 +495,13 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
-    public void setConsentFlowEnabled(final boolean enabled) {}
+    public void setConsentFlowEnabled(final boolean enabled) { }
 
     @ReactMethod()
-    public void setPrivacyPolicyUrl(final String urlString) {}
+    public void setPrivacyPolicyUrl(final String urlString) { }
 
     @ReactMethod()
-    public void setTermsOfServiceUrl(final String urlString) {}
+    public void setTermsOfServiceUrl(final String urlString) { }
 
     // Data Passing
 
@@ -953,6 +953,11 @@ public class AppLovinMAXModule
         sendReactNativeEvent( name, getAdInfo( ad ) );
     }
 
+    public void handleNativeAdLoadFailureForAdUnitId(final String adUnitId, final MaxError error)
+    {
+        sendReactNativeEventForAdLoadFailed( "OnNativeAdLoadFailedEvent", adUnitId, error );
+    }
+
     @Override
     public void onAdLoadFailed(final String adUnitId, final MaxError error)
     {
@@ -974,10 +979,6 @@ public class AppLovinMAXModule
         else if ( mRewardedAds.containsKey( adUnitId ) )
         {
             name = "OnRewardedAdLoadFailedEvent";
-        }
-        else if ( adUnitId.equals( AppLovinMAXNativeAdView.loadErrorAdUnitId ) )
-        {
-            name = "OnNativeAdLoadFailedEvent";
         }
         else
         {

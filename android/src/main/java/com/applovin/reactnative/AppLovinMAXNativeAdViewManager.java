@@ -18,8 +18,7 @@ public class AppLovinMAXNativeAdViewManager
 {
     public static final String REACT_CLASS = "AppLovinMAXNativeAdView";
 
-    public final int COMMAND_LOAD_AD                = 1;
-    public final int COMMAND_PERFORM_CALL_TO_ACTION = 2;
+    public final int COMMAND_LOAD_AD = 1;
 
     public AppLovinMAXNativeAdViewManager(final ReactApplicationContext callerContext) { }
 
@@ -37,7 +36,7 @@ public class AppLovinMAXNativeAdViewManager
         return REACT_CLASS;
     }
 
-    /// Callback to JS
+    /// Callback to JavaScript
 
     @Nullable
     @Override
@@ -48,15 +47,14 @@ public class AppLovinMAXNativeAdViewManager
                 .build();
     }
 
-    /// Call from JS
+    /// Call from JavaScript
 
     @Nullable
     @Override
     public Map<String, Integer> getCommandsMap()
     {
         return MapBuilder.of(
-                "loadAd", COMMAND_LOAD_AD,
-                "performCallToAction", COMMAND_PERFORM_CALL_TO_ACTION
+                "loadAd", COMMAND_LOAD_AD
         );
     }
 
@@ -67,10 +65,7 @@ public class AppLovinMAXNativeAdViewManager
         switch ( commandId )
         {
             case COMMAND_LOAD_AD:
-                root.loadNativeAd();
-                break;
-            case COMMAND_PERFORM_CALL_TO_ACTION:
-                root.performCallToAction();
+                root.loadAd();
                 break;
         }
     }
@@ -101,6 +96,30 @@ public class AppLovinMAXNativeAdViewManager
         view.setExtraParameter( value );
     }
 
+    @ReactProp(name = "titleView")
+    public void setTitleView(final AppLovinMAXNativeAdView view, final int value)
+    {
+        view.setTitleView( value );
+    }
+
+    @ReactProp(name = "advertiserView")
+    public void setAdvertiserView(final AppLovinMAXNativeAdView view, final int value)
+    {
+        view.setAdvertiserView( value );
+    }
+
+    @ReactProp(name = "bodyView")
+    public void setBodyView(final AppLovinMAXNativeAdView view, final int value)
+    {
+        view.setBodyView( value );
+    }
+
+    @ReactProp(name = "callToActionView")
+    public void setCallToActionView(final AppLovinMAXNativeAdView view, final int value)
+    {
+        view.setCallToActionView( value );
+    }
+
     @ReactProp(name = "mediaView")
     public void setMediaView(final AppLovinMAXNativeAdView view, final int value)
     {
@@ -113,10 +132,10 @@ public class AppLovinMAXNativeAdViewManager
         view.setOptionsView( value );
     }
 
-    @ReactProp(name = "iconImage")
-    public void setIconImage(final AppLovinMAXNativeAdView view, final int value)
+    @ReactProp(name = "iconView")
+    public void setIconView(final AppLovinMAXNativeAdView view, final int value)
     {
-        view.setIconImage( value );
+        view.setIconView( value );
     }
 
     @Override
