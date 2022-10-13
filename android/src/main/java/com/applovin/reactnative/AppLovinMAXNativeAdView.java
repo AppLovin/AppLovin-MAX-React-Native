@@ -166,10 +166,11 @@ public class AppLovinMAXNativeAdView
 
     public void setMediaView(final int tag)
     {
-        if ( nativeAd.getNativeAd().getMediaView() == null ) return;
+        View mediaView = nativeAd.getNativeAd().getMediaView();
+        if ( mediaView == null ) return;
 
-        View view = findViewById( tag );
-        if ( !( view instanceof ViewGroup ) )
+        ViewGroup view = findViewById( tag );
+        if ( view == null )
         {
             AppLovinMAXModule.e( "Cannot find a media view with tag \"" + tag + "\" for " + adUnitId );
             return;
@@ -177,19 +178,19 @@ public class AppLovinMAXNativeAdView
 
         clickableViews.add( view );
 
-        View mediaView = nativeAd.getNativeAd().getMediaView();
         mediaView.measure( MeasureSpec.makeMeasureSpec( view.getWidth(), MeasureSpec.EXACTLY ),
                            MeasureSpec.makeMeasureSpec( view.getHeight(), MeasureSpec.EXACTLY ) );
-        mediaView.layout( view.getLeft(), 0, view.getRight(), view.getBottom() - view.getTop() );
-        ( (ViewGroup) view ).addView( mediaView );
+        mediaView.layout( 0, 0, view.getWidth(), view.getHeight() );
+        view.addView( mediaView );
     }
 
     public void setOptionsView(final int tag)
     {
-        if ( nativeAd.getNativeAd().getOptionsView() == null ) return;
+        View optionsView = nativeAd.getNativeAd().getOptionsView();
+        if ( optionsView == null ) return;
 
-        View view = findViewById( tag );
-        if ( !( view instanceof ViewGroup ) )
+        ViewGroup view = findViewById( tag );
+        if ( view == null )
         {
             AppLovinMAXModule.e( "Cannot find an options view with tag \"" + tag + "\" for " + adUnitId );
             return;
@@ -197,17 +198,16 @@ public class AppLovinMAXNativeAdView
 
         clickableViews.add( view );
 
-        View optionsView = nativeAd.getNativeAd().getMediaView();
         optionsView.measure( MeasureSpec.makeMeasureSpec( view.getWidth(), MeasureSpec.EXACTLY ),
                              MeasureSpec.makeMeasureSpec( view.getHeight(), MeasureSpec.EXACTLY ) );
-        optionsView.layout( view.getLeft(), 0, view.getRight(), view.getBottom() - view.getTop() );
-        ( (ViewGroup) view ).addView( optionsView );
+        optionsView.layout( 0, 0, view.getWidth(), view.getHeight() );
+        view.addView( optionsView );
     }
 
     public void setIconView(final int tag)
     {
-        View view = findViewById( tag );
-        if ( !( view instanceof ImageView ) )
+        ImageView view = findViewById( tag );
+        if ( view == null )
         {
             AppLovinMAXModule.e( "Cannot find an icon image with tag \"" + tag + "\" for " + adUnitId );
             return;
@@ -220,8 +220,7 @@ public class AppLovinMAXNativeAdView
         // Check if "URL" was missing and therefore need to set the image data
         if ( icon.getUri() == null && icon.getDrawable() != null )
         {
-            ImageView iconImageView = (ImageView) view;
-            iconImageView.setImageDrawable( nativeAd.getNativeAd().getIcon().getDrawable() );
+            view.setImageDrawable( nativeAd.getNativeAd().getIcon().getDrawable() );
         }
     }
 
@@ -256,8 +255,8 @@ public class AppLovinMAXNativeAdView
             // Notify publisher
             AppLovinMAXModule.getInstance().onAdLoaded( ad );
 
-            //adLoader.a(clickableViews, AppLovinMAXNativeAdView.this, ad);
-            //adLoader.b(ad);
+            //adLoader.a( clickableViews, AppLovinMAXNativeAdView.this, ad );
+            //adLoader.b( ad );
 
             isLoading.set( false );
         }
