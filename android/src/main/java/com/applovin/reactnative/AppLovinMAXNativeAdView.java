@@ -182,6 +182,8 @@ public class AppLovinMAXNativeAdView
             return;
         }
 
+        clickableViews.add( view );
+
         mediaView.measure( MeasureSpec.makeMeasureSpec( view.getWidth(), MeasureSpec.EXACTLY ),
                            MeasureSpec.makeMeasureSpec( view.getHeight(), MeasureSpec.EXACTLY ) );
         mediaView.layout( 0, 0, view.getWidth(), view.getHeight() );
