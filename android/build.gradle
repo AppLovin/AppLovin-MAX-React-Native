@@ -73,6 +73,9 @@ android {
 }
 
 repositories {
+
+  maven { url "https://artifacts.applovin.com/android/beta/" }
+
   mavenCentral()
   google()
 
@@ -150,5 +153,6 @@ dependencies {
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-  implementation 'com.applovin:applovin-sdk:11.5.1'
+  // implementation 'com.applovin:applovin-sdk:11.5.1'
+  implementation 'com.applovin:applovin-sdk:11.5.3-beta3'
 }

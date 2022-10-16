@@ -29,6 +29,7 @@ buildscript {
 
 allprojects {
     repositories {
+        maven { url "https://artifacts.applovin.com/android/beta/" }
         mavenLocal()
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
