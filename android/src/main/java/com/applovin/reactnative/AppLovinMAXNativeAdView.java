@@ -27,6 +27,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.Nullable;
 
+import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThreadDelayed;
+
 public class AppLovinMAXNativeAdView
         extends ReactViewGroup
 {
@@ -35,7 +37,7 @@ public class AppLovinMAXNativeAdView
     private       MaxNativeAdLoader adLoader;
     @Nullable
     private       MaxAd             nativeAd;
-    private final AtomicBoolean     isLoading; // Guard against repeated ad loads
+    private final AtomicBoolean     isLoading = new AtomicBoolean(); // Guard against repeated ad loads
 
     // JavaScript properties
     private String              adUnitId;
@@ -47,19 +49,17 @@ public class AppLovinMAXNativeAdView
     private Map<String, Object> extraParameters;
 
     // TODO: Allow publisher to select which views are clickable and which isn't via prop
-    private final List<View> clickableViews;
+    private final List<View> clickableViews = new ArrayList<>();
 
     public AppLovinMAXNativeAdView(final Context context)
     {
         super( context );
         reactContext = (ReactContext) context;
-        isLoading = new AtomicBoolean();
-        clickableViews = new ArrayList<View>();
     }
 
     public void destroy()
     {
-        destroyCurrentAdIfNeeded();
+        maybeDestroyCurrentAd();
 
         if ( adLoader != null )
         {
@@ -100,8 +100,6 @@ public class AppLovinMAXNativeAdView
     {
         if ( isLoading.compareAndSet( false, true ) )
         {
-            if ( TextUtils.isEmpty( adUnitId ) ) return;
-
             AppLovinMAXModule.d( "Loading a native ad for Ad Unit ID: " + adUnitId + "..." );
 
             if ( adLoader == null || !adUnitId.equals( adLoader.getAdUnitId() ) )
@@ -137,6 +135,8 @@ public class AppLovinMAXNativeAdView
         if ( nativeAd.getNativeAd().getTitle() == null ) return;
 
         View view = findViewById( tag );
+        view.setClickable( true );
+
         clickableViews.add( view );
     }
 
@@ -145,6 +145,8 @@ public class AppLovinMAXNativeAdView
         if ( nativeAd.getNativeAd().getAdvertiser() == null ) return;
 
         View view = findViewById( tag );
+        view.setClickable( true );
+
         clickableViews.add( view );
     }
 
@@ -153,6 +155,8 @@ public class AppLovinMAXNativeAdView
         if ( nativeAd.getNativeAd().getBody() == null ) return;
 
         View view = findViewById( tag );
+        view.setClickable( true );
+
         clickableViews.add( view );
     }
 
@@ -161,6 +165,8 @@ public class AppLovinMAXNativeAdView
         if ( nativeAd.getNativeAd().getCallToAction() == null ) return;
 
         View view = findViewById( tag );
+        view.setClickable( true );
+
         clickableViews.add( view );
     }
 
@@ -175,8 +181,6 @@ public class AppLovinMAXNativeAdView
             AppLovinMAXModule.e( "Cannot find a media view with tag \"" + tag + "\" for " + adUnitId );
             return;
         }
-
-        clickableViews.add( view );
 
         mediaView.measure( MeasureSpec.makeMeasureSpec( view.getWidth(), MeasureSpec.EXACTLY ),
                            MeasureSpec.makeMeasureSpec( view.getHeight(), MeasureSpec.EXACTLY ) );
@@ -196,8 +200,6 @@ public class AppLovinMAXNativeAdView
             return;
         }
 
-        clickableViews.add( view );
-
         optionsView.measure( MeasureSpec.makeMeasureSpec( view.getWidth(), MeasureSpec.EXACTLY ),
                              MeasureSpec.makeMeasureSpec( view.getHeight(), MeasureSpec.EXACTLY ) );
         optionsView.layout( 0, 0, view.getWidth(), view.getHeight() );
@@ -213,6 +215,7 @@ public class AppLovinMAXNativeAdView
             return;
         }
 
+        view.setClickable( true );
         clickableViews.add( view );
 
         MaxNativeAdImage icon = nativeAd.getNativeAd().getIcon();
@@ -245,20 +248,24 @@ public class AppLovinMAXNativeAdView
                 return;
             }
 
-            destroyCurrentAdIfNeeded();
+            maybeDestroyCurrentAd();
 
             nativeAd = ad;
 
             // Notify `AppLovinNativeAdView.js`
             sendAdLoadedReactNativeEventForAd( ad.getNativeAd() );
 
-            // Notify publisher
-            AppLovinMAXModule.getInstance().onAdLoaded( ad );
+            // After notifying the RN layer - have slight delay to let views bind to this layer in `clickableViews` before registering
 
-            //adLoader.a( clickableViews, AppLovinMAXNativeAdView.this, ad );
-            //adLoader.b( ad );
+            runOnUiThreadDelayed( () -> {
+                // Notify publisher
+                AppLovinMAXModule.getInstance().onAdLoaded( ad );
 
-            isLoading.set( false );
+                adLoader.a( clickableViews, AppLovinMAXNativeAdView.this, ad );
+                adLoader.b( ad );
+
+                isLoading.set( false );
+            }, 500L );
         }
 
         @Override
@@ -320,7 +327,7 @@ public class AppLovinMAXNativeAdView
         reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdLoaded", jsNativeAd );
     }
 
-    private void destroyCurrentAdIfNeeded()
+    private void maybeDestroyCurrentAd()
     {
         if ( nativeAd != null )
         {
