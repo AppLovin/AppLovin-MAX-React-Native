@@ -82,8 +82,8 @@ export const CallToActionView = (props) => {
 
   return (
     nativeAdView ?
-      <TouchableOpacity {...props} ref={callToActionRef}>
-        <Text {...props}>
+      <TouchableOpacity {...props}>
+        <Text {...props} ref={callToActionRef}>
           {nativeAd.callToAction || null}
         </Text>
       </TouchableOpacity>
@@ -99,6 +99,7 @@ export const IconView = (props) => {
 
   useEffect(() => {
     if (Object.keys(nativeAd).length === 0 || !nativeAdView) return;
+
     nativeAdView.setNativeProps({
       iconView: findNodeHandle(imageRef.current),
     });
@@ -119,6 +120,7 @@ export const OptionsView = (props) => {
 
   useEffect(() => {
     if (Object.keys(nativeAd).length === 0 || !nativeAdView) return;
+
     nativeAdView.setNativeProps({
       optionsView: findNodeHandle(viewRef.current),
     });
@@ -139,6 +141,7 @@ export const MediaView = (props) => {
 
   useEffect(() => {
     if (Object.keys(nativeAd).length === 0 || !nativeAdView) return;
+
     nativeAdView.setNativeProps({
       mediaView: findNodeHandle(viewRef.current),
     });
