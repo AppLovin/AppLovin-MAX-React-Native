@@ -12,7 +12,7 @@ export const NativeAdViewExample = forwardRef((props, ref) => {
                                   ref={ref}
                                   style={styles.nativead}>
             <View style={{flex: 1, flexDirection: 'column'}}>
-                <View style={{flexDirection: 'row'}}>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                     <AppLovinMAX.NativeAdView.IconView style={styles.icon}/>
                     <View style={{flexDirection: 'column', flexGrow: 1}}>
                         <AppLovinMAX.NativeAdView.TitleView style={styles.title}/>
