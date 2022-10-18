@@ -213,7 +213,9 @@
     // Notify `AppLovinNativeAdView.js`
     [self sendAdLoadedReactNativeEventForAd: ad.nativeAd];
     
+    // After notifying the RN layer - have slight delay to let views bind to this layer in `clickableViews` before registering
     dispatchOnMainQueueAfter(0.5, ^{
+        
         // Notify publisher
         [[AppLovinMAX shared] didLoadAd: ad];
         
