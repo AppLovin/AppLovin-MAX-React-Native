@@ -258,7 +258,6 @@ public class AppLovinMAXNativeAdView
             sendAdLoadedReactNativeEventForAd( ad.getNativeAd() );
 
             // After notifying the RN layer - have slight delay to let views bind to this layer in `clickableViews` before registering
-
             runOnUiThreadDelayed( () -> {
                 // Notify publisher
                 AppLovinMAXModule.getInstance().onAdLoaded( ad );
