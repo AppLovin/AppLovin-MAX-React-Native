@@ -88,7 +88,7 @@ public class AppLovinMAXNativeAdView
         customData = value;
     }
 
-    public void setExtraParameter(@Nullable final ReadableMap readableMap)
+    public void setExtraParameters(@Nullable final ReadableMap readableMap)
     {
         if ( readableMap != null )
         {
