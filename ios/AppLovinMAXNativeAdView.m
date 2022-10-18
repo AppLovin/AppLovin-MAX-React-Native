@@ -213,13 +213,15 @@
     // Notify `AppLovinNativeAdView.js`
     [self sendAdLoadedReactNativeEventForAd: ad.nativeAd];
     
-    // Notify publisher
-    [[AppLovinMAX shared] didLoadAd: ad]; 
-    
-    [self.adLoader registerClickableViews: self.clickableViews withContainer: self forAd: ad];
-    [self.adLoader handleNativeAdViewRenderedForAd: ad];
-  
-    [self.isLoading set: NO];
+    dispatchOnMainQueueAfter(0.5, ^{
+        // Notify publisher
+        [[AppLovinMAX shared] didLoadAd: ad];
+        
+        [self.adLoader registerClickableViews: self.clickableViews withContainer: self forAd: ad];
+        [self.adLoader handleNativeAdViewRenderedForAd: ad];
+      
+        [self.isLoading set: NO];
+    });
 }
 
 - (void)sendAdLoadedReactNativeEventForAd:(MANativeAd *)ad
