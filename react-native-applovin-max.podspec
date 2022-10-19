@@ -16,5 +16,5 @@ Pod::Spec.new do |s|
   s.source_files  = "ios/AppLovinMAX*.{h,m}"
 
   s.dependency "React"
-  s.dependency "AppLovinSDK", "11.5.2"
+  s.dependency "AppLovinSDK", "11.5.3"
 end

@@ -1,5 +1,5 @@
 PODS:
-  - AppLovinSDK (11.5.2)
+  - AppLovinSDK (11.5.3)
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.63.4)
@@ -249,7 +249,7 @@ PODS:
   - Yoga (1.14.0)
 
 DEPENDENCIES:
-  - AppLovinSDK (= 11.5.2)
+  - AppLovinSDK (= 11.5.3)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/Libraries/FBReactNativeSpec`)
@@ -339,7 +339,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  AppLovinSDK: 49ce94e20c228e882a9f6d8fde90bdb4b50ab723
+  AppLovinSDK: 6b10288343b15b31f7037ecd7aa630d6ea117585
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   FBLazyVector: 3bb422f41b18121b71783a905c10e58606f7dc3e
@@ -368,6 +368,6 @@ SPEC CHECKSUMS:
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
-PODFILE CHECKSUM: 882543fd9a1fa310efb75f3cb3b02671f65e4c94
+PODFILE CHECKSUM: 0c10edf9192bf11ff0acfafe564110bde14135a5
 
 COCOAPODS: 1.11.3
