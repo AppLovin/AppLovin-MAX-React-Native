@@ -495,13 +495,13 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
-    public void setConsentFlowEnabled(final boolean enabled) {}
+    public void setConsentFlowEnabled(final boolean enabled) { }
 
     @ReactMethod()
-    public void setPrivacyPolicyUrl(final String urlString) {}
+    public void setPrivacyPolicyUrl(final String urlString) { }
 
     @ReactMethod()
-    public void setTermsOfServiceUrl(final String urlString) {}
+    public void setTermsOfServiceUrl(final String urlString) { }
 
     // Data Passing
 
@@ -940,6 +940,10 @@ public class AppLovinMAXModule
         {
             name = "OnRewardedAdLoadedEvent";
         }
+        else if ( MaxAdFormat.NATIVE == adFormat )
+        {
+            name = "OnNativeAdLoadedEvent";
+        }
         else
         {
             logInvalidAdFormat( adFormat );
@@ -947,6 +951,11 @@ public class AppLovinMAXModule
         }
 
         sendReactNativeEvent( name, getAdInfo( ad ) );
+    }
+
+    public void handleNativeAdLoadFailureForAdUnitId(final String adUnitId, final MaxError error)
+    {
+        sendReactNativeEventForAdLoadFailed( "OnNativeAdLoadFailedEvent", adUnitId, error );
     }
 
     @Override
@@ -1020,6 +1029,10 @@ public class AppLovinMAXModule
         else if ( MaxAdFormat.REWARDED == adFormat )
         {
             name = "OnRewardedAdClickedEvent";
+        }
+        else if ( MaxAdFormat.NATIVE == adFormat )
+        {
+            name = "OnNativeAdClickedEvent";
         }
         else
         {
@@ -1140,6 +1153,10 @@ public class AppLovinMAXModule
         else if ( MaxAdFormat.REWARDED == adFormat )
         {
             name = "OnRewardedAdRevenuePaid";
+        }
+        else if ( MaxAdFormat.NATIVE == adFormat )
+        {
+            name = "OnNativeAdRevenuePaid";
         }
         else
         {

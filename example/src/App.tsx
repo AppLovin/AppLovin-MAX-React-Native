@@ -1,8 +1,9 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {Platform, StyleSheet, Text, View, SafeAreaView, Dimensions} from 'react-native';
 import AppLovinMAX from '../../src/index';
 import AppLogo from './components/AppLogo';
 import AppButton from './components/AppButton';
+import NativeAdViewExample from './NativeAdViewExample';
 
 const adLoadState = {
   notLoaded: 'NOT_LOADED',
@@ -35,6 +36,11 @@ const App = () => {
     android: 'ENTER_ANDROID_MREC_AD_UNIT_ID_HERE',
   });
 
+  const NATIVE_AD_UNIT_ID = Platform.select({
+    ios: 'ENTER_IOS_NATIVE_AD_UNIT_ID_HERE',
+    android: 'ENTER_ANDROID_NATIVE_AD_UNIT_ID_HERE',
+  });
+
   // Create states
   const [interstitialAdLoadState, setInterstitialAdLoadState] = useState(adLoadState.notLoaded);
   const [interstitialRetryAttempt, setInterstitialRetryAttempt] = useState(0);
@@ -47,6 +53,10 @@ const App = () => {
   const [isProgrammaticMRecShowing, setIsProgrammaticMRecShowing] = useState(false);
   const [isNativeUIMRecShowing, setIsNativeUIMRecShowing] = useState(false);
   const [statusText, setStatusText] = useState('Initializing SDK...');
+  const [isNativeAdShowing, setIsNativeAdShowing] = useState(false);
+
+  // Ref for NativeAdView
+  const nativeAdViewRef = useRef();
 
   // Run once after mounting
   useEffect(() => {
@@ -218,6 +228,20 @@ const App = () => {
     AppLovinMAX.addEventListener('OnMRecAdRevenuePaid', (adInfo) => {
       setStatusText('MREC ad revenue paid: ' + adInfo.revenue);
     });
+
+    // Native Ad Listeners
+    AppLovinMAX.addEventListener('OnNativeAdLoadedEvent', (adInfo) => {
+      setStatusText('Native ad loaded from: ' + adInfo.networkName);
+    });
+    AppLovinMAX.addEventListener('OnNativeAdLoadFailedEvent', (errorInfo) => {
+      setStatusText('Native ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+    });
+    AppLovinMAX.addEventListener('OnNativeAdClickedEvent', (adInfo) => {
+      setStatusText('Native ad clicked');
+    });
+    AppLovinMAX.addEventListener('OnNativeAdRevenuePaid', (adInfo) => {
+      setStatusText('Native ad revenue paid: ' + adInfo.revenue);
+    });
   }
 
   const getInterstitialButtonTitle = () => {
@@ -362,6 +386,26 @@ const App = () => {
             setIsProgrammaticMRecShowing(!isProgrammaticMRecShowing);
           }}
         />
+        <AppButton
+          title={isNativeAdShowing ? 'Hide Native Ad' : 'Show Native Ad'}
+          enabled={AppLovinMAX.isInitialized()}
+          onPress={() => {
+            setIsNativeAdShowing(!isNativeAdShowing);
+          }}
+        />
+        <AppButton
+          title={'Load Native Ad'}
+          enabled={AppLovinMAX.isInitialized() && isNativeAdShowing}
+          onPress={() => {
+            nativeAdViewRef.current?.loadAd();
+          }}
+        />
+        {
+          isNativeAdShowing &&
+            <View style={{ position: 'absolute', top: '12%', width: '100%' }}>
+              <NativeAdViewExample adUnitId={NATIVE_AD_UNIT_ID} ref={nativeAdViewRef}/>
+            </View>
+        }
       </View>
     </SafeAreaView>
   );

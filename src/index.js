@@ -1,6 +1,7 @@
 import { NativeModules, NativeEventEmitter } from "react-native";
 import AdView, { AdFormat, AdViewPosition } from "./AppLovinMAXAdView";
 import { TargetingData as targetingData, AdContentRating, UserGender } from "./TargetingData";
+import NativeAdView from "./NativeAdView";
 
 const { AppLovinMAX } = NativeModules;
 
@@ -90,6 +91,7 @@ export default {
   ConsentDialogState,
   AdViewPosition,
   AdFormat,
+  NativeAdView,
   addEventListener,
   removeEventListener,
   // Use callback to avoid need for attaching listeners at top level on each re-render

@@ -27,8 +27,9 @@ public class AppLovinMAXPackage
     @Override
     public @NonNull List<ViewManager> createViewManagers(@NonNull final ReactApplicationContext reactContext)
     {
-        List<ViewManager> viewManagers = new ArrayList<>( 1 );
+        List<ViewManager> viewManagers = new ArrayList<>( 2 );
         viewManagers.add( new AppLovinMAXAdViewManager( reactContext ) );
+        viewManagers.add( new AppLovinMAXNativeAdViewManager( reactContext ) );
         return viewManagers;
     }
 }
