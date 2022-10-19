@@ -953,11 +953,6 @@ public class AppLovinMAXModule
         sendReactNativeEvent( name, getAdInfo( ad ) );
     }
 
-    public void handleNativeAdLoadFailureForAdUnitId(final String adUnitId, final MaxError error)
-    {
-        sendReactNativeEventForAdLoadFailed( "OnNativeAdLoadFailedEvent", adUnitId, error );
-    }
-
     @Override
     public void onAdLoadFailed(final String adUnitId, final MaxError error)
     {
@@ -989,7 +984,7 @@ public class AppLovinMAXModule
         sendReactNativeEventForAdLoadFailed( name, adUnitId, error );
     }
 
-    private void sendReactNativeEventForAdLoadFailed(final String name, final String adUnitId, final @Nullable MaxError error)
+    public void sendReactNativeEventForAdLoadFailed(final String name, final String adUnitId, final @Nullable MaxError error)
     {
         WritableMap params = Arguments.createMap();
         params.putString( "adUnitId", adUnitId );

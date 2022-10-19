@@ -4,7 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdFormat;
+import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxAdViewAdListener;
+import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxAdView;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.views.view.ReactViewGroup;
@@ -16,6 +20,7 @@ import androidx.annotation.Nullable;
  */
 class AppLovinMAXAdView
         extends ReactViewGroup
+        implements MaxAdListener, MaxAdViewAdListener
 {
     private final ThemedReactContext reactContext;
 
@@ -200,7 +205,7 @@ class AppLovinMAXAdView
             AppLovinMAXModule.d( "Attaching MaxAdView for " + adUnitId );
 
             adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
-            adView.setListener( AppLovinMAXModule.getInstance() );
+            adView.setListener( this );
             adView.setRevenueListener( AppLovinMAXModule.getInstance() );
             adView.setPlacement( placement );
             adView.setCustomData( customData );
@@ -237,5 +242,55 @@ class AppLovinMAXAdView
 
             adView = null;
         }
+    }
+
+    @Override
+    public void onAdLoaded(final MaxAd ad)
+    {
+        AppLovinMAXModule.getInstance().onAdLoaded( ad );
+    }
+
+    @Override
+    public void onAdDisplayed(final MaxAd ad)
+    {
+        AppLovinMAXModule.getInstance().onAdDisplayed( ad );
+    }
+
+    @Override
+    public void onAdHidden(final MaxAd ad)
+    {
+        AppLovinMAXModule.getInstance().onAdHidden( ad );
+    }
+
+    @Override
+    public void onAdClicked(final MaxAd ad)
+    {
+        AppLovinMAXModule.getInstance().onAdClicked( ad );
+    }
+
+    @Override
+    public void onAdLoadFailed(final String adUnitId, final MaxError error)
+    {
+        String name = ( adFormat == MaxAdFormat.MREC ) ? "OnMRecAdLoadFailedEvent" : "OnBannerAdLoadFailedEvent";
+        
+        AppLovinMAXModule.getInstance().sendReactNativeEventForAdLoadFailed( name, adUnitId, error );
+    }
+
+    @Override
+    public void onAdDisplayFailed(final MaxAd ad, final MaxError error)
+    {
+        AppLovinMAXModule.getInstance().onAdDisplayFailed( ad, error );
+    }
+
+    @Override
+    public void onAdExpanded(final MaxAd ad)
+    {
+        AppLovinMAXModule.getInstance().onAdExpanded( ad );
+    }
+
+    @Override
+    public void onAdCollapsed(final MaxAd ad)
+    {
+        AppLovinMAXModule.getInstance().onAdCollapsed( ad );
     }
 }
