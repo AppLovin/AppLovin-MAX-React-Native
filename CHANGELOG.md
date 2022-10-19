@@ -1,7 +1,8 @@
 ## Versions
 
 ## x.x.x
-    * Add support for native ads via `<AppLovinMAX.NativeAdView adUnitId={...}/>`.
+    * Add support for native ads - [docs](https://dash.applovin.com/documentation/mediation/react-native/ad-formats/native-manual).
+    * Depend on Android SDK 11.5.3 and iOS SDK 11.5.3.
 ## 3.3.1
     * Depend on Android SDK 11.5.1 and iOS SDK 11.5.1.
     * Update Android Gradle plugin to v3.5.4 to be compatible with <queries> element in manifest files.
