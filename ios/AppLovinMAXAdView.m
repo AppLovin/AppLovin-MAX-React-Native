@@ -232,14 +232,7 @@
 
 #pragma mark - Deprecated Callbacks
 
-- (void)didDisplayAd:(MAAd *)ad
-{
-    [[AppLovinMAX shared] didDisplayAd: ad];
-}
-
-- (void)didHideAd:(MAAd *)ad
-{
-    [[AppLovinMAX shared] didHideAd: ad];
-}
+- (void)didDisplayAd:(MAAd *)ad {}
+- (void)didHideAd:(MAAd *)ad {}
 
 @end
