@@ -208,24 +208,14 @@
     [[AppLovinMAX shared] sendReactNativeEventForAdLoadFailed: name forAdUnitIdentifier: adUnitIdentifier withError: error];
 }
 
-- (void)didDisplayAd:(MAAd *)ad
+- (void)didFailToDisplayAd:(MAAd *)ad withError:(MAError *)error
 {
-    [[AppLovinMAX shared] didDisplayAd: ad];
-}
-
-- (void)didHideAd:(MAAd *)ad
-{
-    [[AppLovinMAX shared] didHideAd: ad];
+    [[AppLovinMAX shared] didFailToDisplayAd: ad withError: error];
 }
 
 - (void)didClickAd:(MAAd *)ad
 {
     [[AppLovinMAX shared] didClickAd: ad];
-}
-
-- (void)didFailToDisplayAd:(MAAd *)ad withError:(MAError *)error
-{
-    [[AppLovinMAX shared] didFailToDisplayAd: ad withError: error];
 }
 
 #pragma mark - MAAdViewAdDelegate Protocol
@@ -238,6 +228,18 @@
 - (void)didCollapseAd:(MAAd *)ad
 {
     [[AppLovinMAX shared] didCollapseAd: ad];
+}
+
+#pragma mark - Deprecated Callbacks
+
+- (void)didDisplayAd:(MAAd *)ad
+{
+    [[AppLovinMAX shared] didDisplayAd: ad];
+}
+
+- (void)didHideAd:(MAAd *)ad
+{
+    [[AppLovinMAX shared] didHideAd: ad];
 }
 
 @end

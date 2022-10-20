@@ -655,12 +655,6 @@ RCT_EXPORT_METHOD(destroyMRec:(NSString *)adUnitIdentifier)
 RCT_EXPORT_METHOD(loadInterstitial:(NSString *)adUnitIdentifier)
 {
     MAInterstitialAd *interstitial = [self retrieveInterstitialForAdUnitIdentifier: adUnitIdentifier];
-    if ( !interstitial )
-    {
-        [self sendReactNativeEventForAdLoadFailed: @"OnInterstitialLoadFailedEvent" forAdUnitIdentifier: adUnitIdentifier withError: nil];
-        return;
-    }
-    
     [interstitial loadAd];
 }
 
@@ -687,12 +681,6 @@ RCT_EXPORT_METHOD(setInterstitialExtraParameter:(NSString *)adUnitIdentifier :(N
 RCT_EXPORT_METHOD(loadRewardedAd:(NSString *)adUnitIdentifier)
 {
     MARewardedAd *rewardedAd = [self retrieveRewardedAdForAdUnitIdentifier: adUnitIdentifier];
-    if ( !rewardedAd )
-    {
-        [self sendReactNativeEventForAdLoadFailed: @"OnRewardedAdLoadFailedEvent" forAdUnitIdentifier: adUnitIdentifier withError: nil];
-        return;
-    }
-    
     [rewardedAd loadAd];
 }
 
@@ -759,19 +747,15 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 
 - (void)sendReactNativeEventForAdLoadFailed:(NSString *)name forAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(nullable MAError *)error
 {
-    NSMutableDictionary *body = @{@"adUnitId": adUnitIdentifier}.mutableCopy;
-    
-    if ( error )
-    {
-        [body addEntriesFromDictionary: @{@"code" : @(error.code),
-                                          @"message" : error.message,
-                                          @"adLoadFailureInfo" : error.adLoadFailureInfo ?: @"",
-                                          @"waterfall": [self createAdWaterfallInfo: error.waterfall]}];
-    }
-    else
-    {
-        [body addEntriesFromDictionary: @{@"code" : @(MAErrorCodeUnspecified)}];
-    }
+    NSDictionary *body = ( error ) ?
+        @{@"adUnitId": adUnitIdentifier,
+          @"code" : @(error.code),
+          @"message" : error.message,
+          @"adLoadFailureInfo" : error.adLoadFailureInfo ?: @"",
+          @"waterfall": [self createAdWaterfallInfo: error.waterfall]}
+    :
+        @{@"adUnitId": adUnitIdentifier,
+          @"code" : @(MAErrorCodeUnspecified)};
     
     [self sendReactNativeEventWithName: name body: body];
 }

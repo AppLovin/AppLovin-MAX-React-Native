@@ -251,24 +251,6 @@ class AppLovinMAXAdView
     }
 
     @Override
-    public void onAdDisplayed(final MaxAd ad)
-    {
-        AppLovinMAXModule.getInstance().onAdDisplayed( ad );
-    }
-
-    @Override
-    public void onAdHidden(final MaxAd ad)
-    {
-        AppLovinMAXModule.getInstance().onAdHidden( ad );
-    }
-
-    @Override
-    public void onAdClicked(final MaxAd ad)
-    {
-        AppLovinMAXModule.getInstance().onAdClicked( ad );
-    }
-
-    @Override
     public void onAdLoadFailed(final String adUnitId, final MaxError error)
     {
         String name = ( adFormat == MaxAdFormat.MREC ) ? "OnMRecAdLoadFailedEvent" : "OnBannerAdLoadFailedEvent";
@@ -283,6 +265,12 @@ class AppLovinMAXAdView
     }
 
     @Override
+    public void onAdClicked(final MaxAd ad)
+    {
+        AppLovinMAXModule.getInstance().onAdClicked( ad );
+    }
+
+    @Override
     public void onAdExpanded(final MaxAd ad)
     {
         AppLovinMAXModule.getInstance().onAdExpanded( ad );
@@ -292,5 +280,19 @@ class AppLovinMAXAdView
     public void onAdCollapsed(final MaxAd ad)
     {
         AppLovinMAXModule.getInstance().onAdCollapsed( ad );
+    }
+
+    /// Deprecated Callbacks
+
+    @Override
+    public void onAdDisplayed(final MaxAd ad)
+    {
+        AppLovinMAXModule.getInstance().onAdDisplayed( ad );
+    }
+
+    @Override
+    public void onAdHidden(final MaxAd ad)
+    {
+        AppLovinMAXModule.getInstance().onAdHidden( ad );
     }
 }
