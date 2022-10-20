@@ -288,8 +288,5 @@ class AppLovinMAXAdView
     public void onAdDisplayed(final MaxAd ad) {}
 
     @Override
-    public void onAdHidden(final MaxAd ad)
-    {
-        AppLovinMAXModule.getInstance().onAdHidden( ad );
-    }
+    public void onAdHidden(final MaxAd ad) {}
 }
