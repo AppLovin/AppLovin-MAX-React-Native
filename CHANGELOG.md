@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+    * Fix not emitting an `"OnBannerAdLoadFailedEvent"` or `"OnMRecAdLoadFailedEvent"` event for native UI component banners and MRECs.
 ## 4.0.0
     * Add support for native ads - [docs](https://dash.applovin.com/documentation/mediation/react-native/ad-formats/native-manual).
     * Depend on Android SDK 11.5.3 and iOS SDK 11.5.3.

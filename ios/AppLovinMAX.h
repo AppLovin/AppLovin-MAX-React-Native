@@ -37,9 +37,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)log:(NSString *)format, ...;
 
 /**
- * Convenience method for invoking a native ad load failure event.
+ * Convenience method for invoking an ad load failure event.
  */
-- (void)handleNativeAdLoadFailureForAdUnitIdentifier:(NSString *)adUnitIdentifier error:(nullable MAError *)error;
+- (void)sendReactNativeEventForAdLoadFailed:(NSString *)name forAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(nullable MAError *)error;
 
 @end
 

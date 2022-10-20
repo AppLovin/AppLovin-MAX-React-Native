@@ -176,11 +176,11 @@
         [[AppLovinMAX shared] log: @"Cannot find an icon image view with tag \"%@\" for %@", tag, self.adUnitId];
         return;
     }
- 
-  [self.clickableViews addObject: view];
-  
-  MANativeAdImage *icon = self.nativeAd.nativeAd.icon;
-  
+    
+    [self.clickableViews addObject: view];
+    
+    MANativeAdImage *icon = self.nativeAd.nativeAd.icon;
+    
     // Check if "URL" was missing and therefore need to set the image data
     if ( !icon.URL && icon.image )
     {
@@ -201,7 +201,7 @@
         [self.isLoading set: NO];
         
         [[AppLovinMAX shared] log: @"Native ad is of template type, failing ad load..."];
-        [[AppLovinMAX shared] handleNativeAdLoadFailureForAdUnitIdentifier: self.adUnitId error: nil];
+        [[AppLovinMAX shared] sendReactNativeEventForAdLoadFailed: @"OnNativeAdLoadFailedEvent" forAdUnitIdentifier: self.adUnitId withError: nil];
         
         return;
     }
@@ -273,7 +273,7 @@
     [[AppLovinMAX shared] log: @"Failed to load native ad for Ad Unit ID %@ with error: %@", self.adUnitId, error];
     
     // Notify publisher
-    [[AppLovinMAX shared] handleNativeAdLoadFailureForAdUnitIdentifier: self.adUnitId error: error];
+    [[AppLovinMAX shared] sendReactNativeEventForAdLoadFailed: @"OnNativeAdLoadFailedEvent" forAdUnitIdentifier: self.adUnitId withError: error];
 }
 
 - (void)didClickNativeAd:(MAAd *)ad

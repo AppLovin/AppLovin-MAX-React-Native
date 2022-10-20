@@ -745,14 +745,19 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     [self sendReactNativeEventWithName: name body: [self adInfoForAd: ad]];
 }
 
-- (void)handleNativeAdLoadFailureForAdUnitIdentifier:(NSString *)adUnitIdentifier error:(nullable MAError *)error
+- (void)sendReactNativeEventForAdLoadFailed:(NSString *)name forAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(nullable MAError *)error
 {
-    [self sendReactNativeEventWithName: @"OnNativeAdLoadFailedEvent"
-                                  body: @{@"adUnitId" : adUnitIdentifier,
-                                          @"code" : @(error.code),
-                                          @"message" : error.message,
-                                          @"adLoadFailureInfo" : error.adLoadFailureInfo ?: @"",
-                                          @"waterfall": [self createAdWaterfallInfo: error.waterfall]}];
+    NSDictionary *body = ( error ) ?
+        @{@"adUnitId": adUnitIdentifier,
+          @"code" : @(error.code),
+          @"message" : error.message,
+          @"adLoadFailureInfo" : error.adLoadFailureInfo ?: @"",
+          @"waterfall": [self createAdWaterfallInfo: error.waterfall]}
+    :
+        @{@"adUnitId": adUnitIdentifier,
+          @"code" : @(MAErrorCodeUnspecified)};
+    
+    [self sendReactNativeEventWithName: name body: body];
 }
 
 - (void)didFailToLoadAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(MAError *)error
@@ -782,11 +787,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         return;
     }
     
-    [self sendReactNativeEventWithName: name body: @{@"adUnitId" : adUnitIdentifier,
-                                                     @"code" : @(error.code),
-                                                     @"message" : error.message,
-                                                     @"adLoadFailureInfo" : error.adLoadFailureInfo ?: @"",
-                                                     @"waterfall": [self createAdWaterfallInfo: error.waterfall]}];
+    [self sendReactNativeEventForAdLoadFailed: name forAdUnitIdentifier: adUnitIdentifier withError: error];
 }
 
 - (void)didClickAd:(MAAd *)ad

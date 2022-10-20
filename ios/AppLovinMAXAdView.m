@@ -9,7 +9,7 @@
 #import "AppLovinMAX.h"
 #import "AppLovinMAXAdView.h"
 
-@interface AppLovinMAXAdView()
+@interface AppLovinMAXAdView()<MAAdViewAdDelegate>
 
 @property (nonatomic, strong, nullable) MAAdView *adView; // nil when unmounted
 
@@ -145,7 +145,7 @@
                                                         adFormat: adFormat
                                                              sdk: [AppLovinMAX shared].sdk];
         self.adView.frame = (CGRect) { CGPointZero, self.frame.size };
-        self.adView.delegate = [AppLovinMAX shared]; // Go through core class for callback forwarding to React Native layer
+        self.adView.delegate = self;
         self.adView.revenueDelegate = [AppLovinMAX shared];
         self.adView.placement = self.placement;
         self.adView.customData = self.customData;
@@ -193,5 +193,46 @@
         }
     }
 }
+
+#pragma mark - MAAdDelegate Protocol
+
+- (void)didLoadAd:(MAAd *)ad
+{
+    [[AppLovinMAX shared] didLoadAd: ad];
+}
+
+- (void)didFailToLoadAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(MAError *)error
+{
+    NSString *name = ( MAAdFormat.mrec == self.adFormat ) ? @"OnMRecAdLoadFailedEvent" : @"OnBannerAdLoadFailedEvent";
+    
+    [[AppLovinMAX shared] sendReactNativeEventForAdLoadFailed: name forAdUnitIdentifier: adUnitIdentifier withError: error];
+}
+
+- (void)didFailToDisplayAd:(MAAd *)ad withError:(MAError *)error
+{
+    [[AppLovinMAX shared] didFailToDisplayAd: ad withError: error];
+}
+
+- (void)didClickAd:(MAAd *)ad
+{
+    [[AppLovinMAX shared] didClickAd: ad];
+}
+
+#pragma mark - MAAdViewAdDelegate Protocol
+
+- (void)didExpandAd:(MAAd *)ad
+{
+    [[AppLovinMAX shared] didExpandAd: ad];
+}
+
+- (void)didCollapseAd:(MAAd *)ad
+{
+    [[AppLovinMAX shared] didCollapseAd: ad];
+}
+
+#pragma mark - Deprecated Callbacks
+
+- (void)didDisplayAd:(MAAd *)ad {}
+- (void)didHideAd:(MAAd *)ad {}
 
 @end

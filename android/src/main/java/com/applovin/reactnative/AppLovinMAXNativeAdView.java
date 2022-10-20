@@ -245,7 +245,7 @@ public class AppLovinMAXNativeAdView
                 isLoading.set( false );
 
                 AppLovinMAXModule.e( "Native ad is of template type, failing ad load..." );
-                AppLovinMAXModule.getInstance().handleNativeAdLoadFailureForAdUnitId( adUnitId, null );
+                AppLovinMAXModule.getInstance().sendReactNativeEventForAdLoadFailed( "OnNativeAdLoadFailedEvent", adUnitId, null );
 
                 return;
             }
@@ -277,7 +277,7 @@ public class AppLovinMAXNativeAdView
             AppLovinMAXModule.e( "Failed to load native ad for Ad Unit ID " + adUnitId + " with error: " + error );
 
             // Notify publisher
-            AppLovinMAXModule.getInstance().handleNativeAdLoadFailureForAdUnitId( adUnitId, error );
+            AppLovinMAXModule.getInstance().sendReactNativeEventForAdLoadFailed( "OnNativeAdLoadFailedEvent", adUnitId, error );
         }
 
         @Override
