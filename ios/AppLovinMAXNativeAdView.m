@@ -120,6 +120,12 @@
     if ( !self.nativeAd.nativeAd.title ) return;
   
     UIView *view = [self.bridge.uiManager viewForReactTag: tag];
+    if ( !view )
+    {
+        [[AppLovinMAX shared] log: @"Cannot find a title view with tag \"%@\" for %@", tag, self.adUnitId];
+        return;
+    }
+    
     [self.clickableViews addObject: view];
 }
 
@@ -128,6 +134,12 @@
     if ( !self.nativeAd.nativeAd.advertiser ) return;
   
     UIView *view = [self.bridge.uiManager viewForReactTag: tag];
+    if ( !view )
+    {
+        [[AppLovinMAX shared] log: @"Cannot find an advertiser view with tag \"%@\" for %@", tag, self.adUnitId];
+        return;
+    }
+
     [self.clickableViews addObject: view];
 }
 
@@ -136,6 +148,12 @@
     if ( !self.nativeAd.nativeAd.body ) return;
   
     UIView *view = [self.bridge.uiManager viewForReactTag: tag];
+    if ( !view )
+    {
+        [[AppLovinMAX shared] log: @"Cannot find a body view with tag \"%@\" for %@", tag, self.adUnitId];
+        return;
+    }
+
     [self.clickableViews addObject: view];
 }
 
@@ -144,6 +162,12 @@
     if ( !self.nativeAd.nativeAd.callToAction ) return;
   
     UIView *view = [self.bridge.uiManager viewForReactTag: tag];
+    if ( !view )
+    {
+        [[AppLovinMAX shared] log: @"Cannot find a callToAction view with tag \"%@\" for %@", tag, self.adUnitId];
+        return;
+    }
+
     [self.clickableViews addObject: view];
 }
 
@@ -152,6 +176,12 @@
     if ( !self.nativeAd.nativeAd.mediaView ) return;
     
     UIView *view = [self.bridge.uiManager viewForReactTag: tag];
+    if ( !view )
+    {
+        [[AppLovinMAX shared] log: @"Cannot find a media view with tag \"%@\" for %@", tag, self.adUnitId];
+        return;
+    }
+
     [self.clickableViews addObject: view];
   
     [view addSubview: self.nativeAd.nativeAd.mediaView];
@@ -163,6 +193,11 @@
     if ( !self.nativeAd.nativeAd.optionsView ) return;
        
     UIView *view = [self.bridge.uiManager viewForReactTag: tag];
+    if ( !view )
+    {
+        [[AppLovinMAX shared] log: @"Cannot find an option view with tag \"%@\" for %@", tag, self.adUnitId];
+        return;
+    }
   
     [view addSubview: self.nativeAd.nativeAd.optionsView];
     [self.nativeAd.nativeAd.optionsView al_pinToSuperview];
