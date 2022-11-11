@@ -135,6 +135,12 @@ public class AppLovinMAXNativeAdView
         if ( nativeAd.getNativeAd().getTitle() == null ) return;
 
         View view = findViewById( tag );
+        if ( view == null )
+        {
+            AppLovinMAXModule.e( "Cannot find a title view with tag \"" + tag + "\" for " + adUnitId );
+            return;
+        }
+
         view.setClickable( true );
 
         clickableViews.add( view );
@@ -145,6 +151,12 @@ public class AppLovinMAXNativeAdView
         if ( nativeAd.getNativeAd().getAdvertiser() == null ) return;
 
         View view = findViewById( tag );
+        if ( view == null )
+        {
+            AppLovinMAXModule.e( "Cannot find an advertiser view with tag \"" + tag + "\" for " + adUnitId );
+            return;
+        }
+
         view.setClickable( true );
 
         clickableViews.add( view );
@@ -155,6 +167,12 @@ public class AppLovinMAXNativeAdView
         if ( nativeAd.getNativeAd().getBody() == null ) return;
 
         View view = findViewById( tag );
+        if ( view == null )
+        {
+            AppLovinMAXModule.e( "Cannot find a body view with tag \"" + tag + "\" for " + adUnitId );
+            return;
+        }
+
         view.setClickable( true );
 
         clickableViews.add( view );
@@ -165,6 +183,12 @@ public class AppLovinMAXNativeAdView
         if ( nativeAd.getNativeAd().getCallToAction() == null ) return;
 
         View view = findViewById( tag );
+        if ( view == null )
+        {
+            AppLovinMAXModule.e( "Cannot find a callToAction view with tag \"" + tag + "\" for " + adUnitId );
+            return;
+        }
+
         view.setClickable( true );
 
         clickableViews.add( view );
@@ -262,8 +286,12 @@ public class AppLovinMAXNativeAdView
                 // Notify publisher
                 AppLovinMAXModule.getInstance().onAdLoaded( ad );
 
-                adLoader.a( clickableViews, AppLovinMAXNativeAdView.this, ad );
-                adLoader.b( ad );
+                // Loader can be null when the user hides before the properties are fully set 
+                if ( adLoader != null )
+                {
+                    adLoader.a( clickableViews, AppLovinMAXNativeAdView.this, ad );
+                    adLoader.b( ad );
+                }
 
                 isLoading.set( false );
             }, 500L );
