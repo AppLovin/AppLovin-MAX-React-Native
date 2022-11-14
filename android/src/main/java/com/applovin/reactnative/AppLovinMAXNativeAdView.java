@@ -208,6 +208,16 @@ public class AppLovinMAXNativeAdView
 
         clickableViews.add( view );
 
+        view.addOnLayoutChangeListener( new OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(final View view, final int i, final int i1, final int i2, final int i3, final int i4, final int i5, final int i6, final int i7)
+            {
+                mediaView.measure( MeasureSpec.makeMeasureSpec( view.getWidth(), MeasureSpec.EXACTLY ),
+                                   MeasureSpec.makeMeasureSpec( view.getHeight(), MeasureSpec.EXACTLY ) );
+                mediaView.layout( 0, 0, view.getWidth(), view.getHeight() );
+            }
+        } );
+
         mediaView.measure( MeasureSpec.makeMeasureSpec( view.getWidth(), MeasureSpec.EXACTLY ),
                            MeasureSpec.makeMeasureSpec( view.getHeight(), MeasureSpec.EXACTLY ) );
         mediaView.layout( 0, 0, view.getWidth(), view.getHeight() );
@@ -225,6 +235,16 @@ public class AppLovinMAXNativeAdView
             AppLovinMAXModule.e( "Cannot find an options view with tag \"" + tag + "\" for " + adUnitId );
             return;
         }
+
+        view.addOnLayoutChangeListener( new OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(final View view, final int i, final int i1, final int i2, final int i3, final int i4, final int i5, final int i6, final int i7)
+            {
+                optionsView.measure( MeasureSpec.makeMeasureSpec( view.getWidth(), MeasureSpec.EXACTLY ),
+                                     MeasureSpec.makeMeasureSpec( view.getHeight(), MeasureSpec.EXACTLY ) );
+                optionsView.layout( 0, 0, view.getWidth(), view.getHeight() );
+            }
+        } );
 
         optionsView.measure( MeasureSpec.makeMeasureSpec( view.getWidth(), MeasureSpec.EXACTLY ),
                              MeasureSpec.makeMeasureSpec( view.getHeight(), MeasureSpec.EXACTLY ) );
