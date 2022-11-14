@@ -75,4 +75,12 @@ class AppLovinMAXAdViewManager
 
         super.onDropViewInstance( view );
     }
+
+    @Override
+    public void onAfterUpdateTransaction(final AppLovinMAXAdView view)
+    {
+        super.onAfterUpdateTransaction( view );
+
+        view.onSetProps();
+    }
 }

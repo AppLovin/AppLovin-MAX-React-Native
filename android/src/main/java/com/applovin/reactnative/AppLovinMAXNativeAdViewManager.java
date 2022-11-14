@@ -145,4 +145,12 @@ public class AppLovinMAXNativeAdViewManager
 
         super.onDropViewInstance( view );
     }
+
+    @Override
+    public void onAfterUpdateTransaction(@NonNull final AppLovinMAXNativeAdView view)
+    {
+        super.onAfterUpdateTransaction( view );
+
+        view.onSetProps();
+    }
 }

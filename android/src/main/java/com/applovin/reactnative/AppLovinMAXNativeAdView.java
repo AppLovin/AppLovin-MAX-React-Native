@@ -27,8 +27,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.Nullable;
 
-import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThreadDelayed;
-
 public class AppLovinMAXNativeAdView
         extends ReactViewGroup
         implements View.OnLayoutChangeListener
@@ -38,7 +36,8 @@ public class AppLovinMAXNativeAdView
     private       MaxNativeAdLoader adLoader;
     @Nullable
     private       MaxAd             nativeAd;
-    private final AtomicBoolean     isLoading = new AtomicBoolean(); // Guard against repeated ad loads
+    private final AtomicBoolean     isLoading           = new AtomicBoolean(); // Guard against repeated ad loads
+    private final AtomicBoolean     hasAddUnitIdUpdated = new AtomicBoolean();
 
     @Nullable
     private View mediaView;
@@ -80,8 +79,7 @@ public class AppLovinMAXNativeAdView
 
         adUnitId = value;
 
-        // Explicitly invoke ad load now that Ad Unit ID is set, but do so after 0.25s to allow other props to set
-        postDelayed( this::loadAd, 250 );
+        hasAddUnitIdUpdated.set( true );
     }
 
     public void setPlacement(@Nullable final String value)
@@ -259,6 +257,21 @@ public class AppLovinMAXNativeAdView
         }
     }
 
+    public void onSetProps()
+    {
+        if ( hasAddUnitIdUpdated.compareAndSet( true, false ) )
+        {
+            loadAd();
+        }
+        else
+        {
+            if ( adLoader == null || nativeAd == null || clickableViews.isEmpty() ) return;
+
+            adLoader.a( clickableViews, this, nativeAd );
+            adLoader.b( nativeAd );
+        }
+    }
+
     @Override
     public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom)
     {
@@ -304,20 +317,10 @@ public class AppLovinMAXNativeAdView
             // Notify `AppLovinNativeAdView.js`
             sendAdLoadedReactNativeEventForAd( ad.getNativeAd() );
 
-            // After notifying the RN layer - have slight delay to let views bind to this layer in `clickableViews` before registering
-            runOnUiThreadDelayed( () -> {
-                // Notify publisher
-                AppLovinMAXModule.getInstance().onAdLoaded( ad );
+            // Notify publisher
+            AppLovinMAXModule.getInstance().onAdLoaded( ad );
 
-                // Loader can be null when the user hides before the properties are fully set
-                if ( adLoader != null )
-                {
-                    adLoader.a( clickableViews, AppLovinMAXNativeAdView.this, ad );
-                    adLoader.b( ad );
-                }
-
-                isLoading.set( false );
-            }, 500L );
+            isLoading.set( false );
         }
 
         @Override

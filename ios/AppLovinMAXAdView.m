@@ -21,9 +21,21 @@
 @property (nonatomic, assign, readonly, getter=isAdaptiveBannerEnabled) BOOL adaptiveBannerEnabled;
 @property (nonatomic, assign, readonly, getter=isAutoRefresh) BOOL autoRefresh;
 
+@property (nonatomic, strong) ALAtomicBoolean *shouldAddViewUpdate;
+
 @end
 
 @implementation AppLovinMAXAdView
+
+- (instancetype)init
+{
+    self = [super init];
+    if ( self )
+    {
+        self.shouldAddViewUpdate = [[ALAtomicBoolean alloc] init];
+    }
+    return self;
+}
 
 - (void)setAdUnitId:(NSString *)adUnitId
 {
@@ -36,8 +48,8 @@
     
     _adUnitId = adUnitId;
     
-    [self attachAdViewIfNeeded];
-}  
+    [self.shouldAddViewUpdate set: YES];
+}
 
 - (void)setAdFormat:(NSString *)adFormat
 {
@@ -62,7 +74,7 @@
         return;
     }
     
-    [self attachAdViewIfNeeded];
+    [self.shouldAddViewUpdate set: YES];
 }  
 
 - (void)setPlacement:(NSString *)placement
@@ -112,14 +124,22 @@
     }
 }
 
+// Called after the all AdView properties are set
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
+{
+    if ( [self.shouldAddViewUpdate compareAndSet: YES update: NO] )
+    {
+        [self attachAdViewIfNeeded];
+    }
+}
+
 - (void)attachAdViewIfNeeded
 {
     // Re-assign in case of race condition
     NSString *adUnitId = self.adUnitId;
     MAAdFormat *adFormat = self.adFormat;
-    
-    // Run after 0.25 sec delay to allow all properties to set
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+
+    dispatch_async(dispatch_get_main_queue(), ^{
         
         if ( ![adUnitId al_isValidString] )
         {

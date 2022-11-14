@@ -13,6 +13,8 @@ import com.applovin.mediation.ads.MaxAdView;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.views.view.ReactViewGroup;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import androidx.annotation.Nullable;
 
 /**
@@ -33,6 +35,8 @@ class AppLovinMAXAdView
     private           boolean     adaptiveBannerEnabled;
     private           boolean     autoRefresh;
 
+    private final AtomicBoolean shouldAddViewUpdate = new AtomicBoolean();
+
     public AppLovinMAXAdView(final Context context)
     {
         super( context );
@@ -50,7 +54,7 @@ class AppLovinMAXAdView
 
         adUnitId = value;
 
-        maybeAttachAdView();
+        shouldAddViewUpdate.set( true );
     }
 
     public void setAdFormat(final String value)
@@ -76,7 +80,7 @@ class AppLovinMAXAdView
             return;
         }
 
-        maybeAttachAdView();
+        shouldAddViewUpdate.set( true );
     }
 
     public void setPlacement(@Nullable final String value)
@@ -123,6 +127,15 @@ class AppLovinMAXAdView
             {
                 adView.stopAutoRefresh();
             }
+        }
+    }
+
+    // Called after the all AdView properties are set
+    public void onSetProps()
+    {
+        if ( shouldAddViewUpdate.compareAndSet( true, false ) )
+        {
+            maybeAttachAdView();
         }
     }
 
@@ -181,51 +194,54 @@ class AppLovinMAXAdView
         final String adUnitId = this.adUnitId;
         final MaxAdFormat adFormat = this.adFormat;
 
-        // Run after 0.25 sec delay to allow all properties to set
-        postDelayed( () -> {
-
-            if ( TextUtils.isEmpty( adUnitId ) )
+        reactContext.runOnUiQueueThread( new Runnable()
+        {
+            @Override
+            public void run()
             {
-                AppLovinMAXModule.e( "Attempting to attach MaxAdView without Ad Unit ID" );
-                return;
+                if ( TextUtils.isEmpty( adUnitId ) )
+                {
+                    AppLovinMAXModule.e( "Attempting to attach MaxAdView without Ad Unit ID" );
+                    return;
+                }
+
+                if ( adFormat == null )
+                {
+                    AppLovinMAXModule.e( "Attempting to attach MaxAdView without ad format" );
+                    return;
+                }
+
+                if ( adView != null )
+                {
+                    AppLovinMAXModule.e( "Attempting to re-attach with existing MaxAdView: " + adView );
+                    return;
+                }
+
+                AppLovinMAXModule.d( "Attaching MaxAdView for " + adUnitId );
+
+                adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
+                adView.setListener( AppLovinMAXAdView.this );
+                adView.setRevenueListener( AppLovinMAXModule.getInstance() );
+                adView.setPlacement( placement );
+                adView.setCustomData( customData );
+                adView.setExtraParameter( "adaptive_banner", Boolean.toString( adaptiveBannerEnabled ) );
+                // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
+                adView.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
+
+                if ( autoRefresh )
+                {
+                    adView.startAutoRefresh();
+                }
+                else
+                {
+                    adView.stopAutoRefresh();
+                }
+
+                adView.loadAd();
+
+                addView( adView );
             }
-
-            if ( adFormat == null )
-            {
-                AppLovinMAXModule.e( "Attempting to attach MaxAdView without ad format" );
-                return;
-            }
-
-            if ( adView != null )
-            {
-                AppLovinMAXModule.e( "Attempting to re-attach with existing MaxAdView: " + adView );
-                return;
-            }
-
-            AppLovinMAXModule.d( "Attaching MaxAdView for " + adUnitId );
-
-            adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
-            adView.setListener( this );
-            adView.setRevenueListener( AppLovinMAXModule.getInstance() );
-            adView.setPlacement( placement );
-            adView.setCustomData( customData );
-            adView.setExtraParameter( "adaptive_banner", Boolean.toString( adaptiveBannerEnabled ) );
-            // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
-            adView.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
-
-            if ( autoRefresh )
-            {
-                adView.startAutoRefresh();
-            }
-            else
-            {
-                adView.stopAutoRefresh();
-            }
-
-            adView.loadAd();
-
-            addView( adView );
-        }, 250 );
+        } );
     }
 
     public void destroy()
@@ -285,8 +301,8 @@ class AppLovinMAXAdView
     /// Deprecated Callbacks
 
     @Override
-    public void onAdDisplayed(final MaxAd ad) {}
+    public void onAdDisplayed(final MaxAd ad) { }
 
     @Override
-    public void onAdHidden(final MaxAd ad) {}
+    public void onAdHidden(final MaxAd ad) { }
 }
