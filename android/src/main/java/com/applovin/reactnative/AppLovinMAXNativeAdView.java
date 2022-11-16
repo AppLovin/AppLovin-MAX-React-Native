@@ -31,6 +31,7 @@ import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThreadDelayed;
 
 public class AppLovinMAXNativeAdView
         extends ReactViewGroup
+        implements View.OnLayoutChangeListener
 {
     private final ReactContext      reactContext;
     @Nullable
@@ -38,6 +39,11 @@ public class AppLovinMAXNativeAdView
     @Nullable
     private       MaxAd             nativeAd;
     private final AtomicBoolean     isLoading = new AtomicBoolean(); // Guard against repeated ad loads
+
+    @Nullable
+    private View mediaView;
+    @Nullable
+    private View optionsView;
 
     // JavaScript properties
     private String              adUnitId;
@@ -196,7 +202,7 @@ public class AppLovinMAXNativeAdView
 
     public void setMediaView(final int tag)
     {
-        View mediaView = nativeAd.getNativeAd().getMediaView();
+        mediaView = nativeAd.getNativeAd().getMediaView();
         if ( mediaView == null ) return;
 
         ViewGroup view = findViewById( tag );
@@ -208,15 +214,15 @@ public class AppLovinMAXNativeAdView
 
         clickableViews.add( view );
 
-        mediaView.measure( MeasureSpec.makeMeasureSpec( view.getWidth(), MeasureSpec.EXACTLY ),
-                           MeasureSpec.makeMeasureSpec( view.getHeight(), MeasureSpec.EXACTLY ) );
-        mediaView.layout( 0, 0, view.getWidth(), view.getHeight() );
+        view.addOnLayoutChangeListener( this );
         view.addView( mediaView );
+
+        sizeToFit( mediaView, view );
     }
 
     public void setOptionsView(final int tag)
     {
-        View optionsView = nativeAd.getNativeAd().getOptionsView();
+        optionsView = nativeAd.getNativeAd().getOptionsView();
         if ( optionsView == null ) return;
 
         ViewGroup view = findViewById( tag );
@@ -226,10 +232,10 @@ public class AppLovinMAXNativeAdView
             return;
         }
 
-        optionsView.measure( MeasureSpec.makeMeasureSpec( view.getWidth(), MeasureSpec.EXACTLY ),
-                             MeasureSpec.makeMeasureSpec( view.getHeight(), MeasureSpec.EXACTLY ) );
-        optionsView.layout( 0, 0, view.getWidth(), view.getHeight() );
+        view.addOnLayoutChangeListener( this );
         view.addView( optionsView );
+
+        sizeToFit( optionsView, view );
     }
 
     public void setIconView(final int tag)
@@ -250,6 +256,23 @@ public class AppLovinMAXNativeAdView
         if ( icon.getUri() == null && icon.getDrawable() != null )
         {
             view.setImageDrawable( nativeAd.getNativeAd().getIcon().getDrawable() );
+        }
+    }
+
+    @Override
+    public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom)
+    {
+        sizeToFit( mediaView, view );
+        sizeToFit( optionsView, view );
+    }
+
+    private void sizeToFit(final @Nullable View view, final View parentView)
+    {
+        if ( view != null )
+        {
+            view.measure( MeasureSpec.makeMeasureSpec( parentView.getWidth(), MeasureSpec.EXACTLY ),
+                          MeasureSpec.makeMeasureSpec( parentView.getHeight(), MeasureSpec.EXACTLY ) );
+            view.layout( 0, 0, parentView.getWidth(), parentView.getHeight() );
         }
     }
 
@@ -286,7 +309,7 @@ public class AppLovinMAXNativeAdView
                 // Notify publisher
                 AppLovinMAXModule.getInstance().onAdLoaded( ad );
 
-                // Loader can be null when the user hides before the properties are fully set 
+                // Loader can be null when the user hides before the properties are fully set
                 if ( adLoader != null )
                 {
                     adLoader.a( clickableViews, AppLovinMAXNativeAdView.this, ad );
@@ -362,23 +385,23 @@ public class AppLovinMAXNativeAdView
         {
             if ( nativeAd.getNativeAd() != null )
             {
-                View view = nativeAd.getNativeAd().getMediaView();
-                if ( view != null )
+                if ( mediaView != null )
                 {
-                    ViewGroup parentView = (ViewGroup) view.getParent();
+                    ViewGroup parentView = (ViewGroup) mediaView.getParent();
                     if ( parentView != null )
                     {
-                        parentView.removeView( view );
+                        parentView.removeOnLayoutChangeListener( AppLovinMAXNativeAdView.this );
+                        parentView.removeView( mediaView );
                     }
                 }
 
-                view = nativeAd.getNativeAd().getOptionsView();
-                if ( view != null )
+                if ( optionsView != null )
                 {
-                    ViewGroup parentView = (ViewGroup) view.getParent();
+                    ViewGroup parentView = (ViewGroup) optionsView.getParent();
                     if ( parentView != null )
                     {
-                        parentView.removeView( view );
+                        parentView.removeOnLayoutChangeListener( AppLovinMAXNativeAdView.this );
+                        parentView.removeView( optionsView );
                     }
                 }
             }
