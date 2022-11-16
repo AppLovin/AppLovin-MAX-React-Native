@@ -216,6 +216,8 @@ public class AppLovinMAXNativeAdView
 
         view.addOnLayoutChangeListener( this );
         view.addView( mediaView );
+
+        sizeToFit( mediaView, view );
     }
 
     public void setOptionsView(final int tag)
@@ -232,6 +234,8 @@ public class AppLovinMAXNativeAdView
 
         view.addOnLayoutChangeListener( this );
         view.addView( optionsView );
+
+        sizeToFit( optionsView, view );
     }
 
     public void setIconView(final int tag)
