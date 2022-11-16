@@ -32,6 +32,7 @@ import com.applovin.mediation.MaxNetworkResponseInfo;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.MaxRewardedAdListener;
 import com.applovin.mediation.ads.MaxAdView;
+import com.applovin.mediation.ads.MaxAppOpenAd;
 import com.applovin.mediation.ads.MaxInterstitialAd;
 import com.applovin.mediation.ads.MaxRewardedAd;
 import com.applovin.sdk.AppLovinAdContentRating;
@@ -104,6 +105,7 @@ public class AppLovinMAXModule
     // Fullscreen Ad Fields
     private final Map<String, MaxInterstitialAd> mInterstitials = new HashMap<>( 2 );
     private final Map<String, MaxRewardedAd>     mRewardedAds   = new HashMap<>( 2 );
+    private final Map<String, MaxAppOpenAd>      mAppOpenAds    = new HashMap<>( 2 );
 
     // Banner Fields
     private final Map<String, MaxAdView>   mAdViews                         = new HashMap<>( 2 );
@@ -906,6 +908,36 @@ public class AppLovinMAXModule
         rewardedAd.setExtraParameter( key, value );
     }
 
+    // APP OPEN AD
+
+    @ReactMethod()
+    public void loadAppOpenAd(final String adUnitId)
+    {
+        MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
+        appOpenAd.loadAd();
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public boolean isAppOpenAdReady(final String adUnitId)
+    {
+        MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
+        return appOpenAd.isReady();
+    }
+
+    @ReactMethod()
+    public void showAppOpenAd(final String adUnitId, @Nullable final String placement, @Nullable final String customData)
+    {
+        MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
+        appOpenAd.showAd( placement, customData );
+    }
+
+    @ReactMethod()
+    public void setAppOpenAdExtraParameter(final String adUnitId, final String key, final String value)
+    {
+        MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
+        appOpenAd.setExtraParameter( key, value );
+    }
+
     // AD CALLBACKS
 
     @Override
@@ -944,6 +976,10 @@ public class AppLovinMAXModule
         {
             name = "OnNativeAdLoadedEvent";
         }
+        else if ( MaxAdFormat.APP_OPEN == adFormat )
+        {
+            name = "OnAppOpenAdLoadedEvent";
+        }
         else
         {
             logInvalidAdFormat( adFormat );
@@ -974,6 +1010,10 @@ public class AppLovinMAXModule
         else if ( mRewardedAds.containsKey( adUnitId ) )
         {
             name = "OnRewardedAdLoadFailedEvent";
+        }
+        else if ( mAppOpenAds.containsKey( adUnitId ) )
+        {
+            name = "OnAppOpenAdLoadFailedEvent";
         }
         else
         {
@@ -1029,6 +1069,10 @@ public class AppLovinMAXModule
         {
             name = "OnNativeAdClickedEvent";
         }
+        else if ( MaxAdFormat.APP_OPEN == adFormat )
+        {
+            name = "OnAppOpenAdClickedEvent";
+        }
         else
         {
             logInvalidAdFormat( adFormat );
@@ -1043,16 +1087,20 @@ public class AppLovinMAXModule
     {
         // BMLs do not support [DISPLAY] events
         final MaxAdFormat adFormat = ad.getFormat();
-        if ( adFormat != MaxAdFormat.INTERSTITIAL && adFormat != MaxAdFormat.REWARDED ) return;
+        if ( adFormat != MaxAdFormat.INTERSTITIAL && adFormat != MaxAdFormat.REWARDED && adFormat != MaxAdFormat.APP_OPEN ) return;
 
         final String name;
         if ( MaxAdFormat.INTERSTITIAL == adFormat )
         {
             name = "OnInterstitialDisplayedEvent";
         }
-        else // REWARDED
+        else if ( MaxAdFormat.REWARDED == adFormat )
         {
             name = "OnRewardedAdDisplayedEvent";
+        }
+        else // APP OPEN
+        {
+            name = "OnAppOpenAdDisplayedEvent";
         }
 
         sendReactNativeEvent( name, getAdInfo( ad ) );
@@ -1063,16 +1111,20 @@ public class AppLovinMAXModule
     {
         // BMLs do not support [DISPLAY] events
         final MaxAdFormat adFormat = ad.getFormat();
-        if ( adFormat != MaxAdFormat.INTERSTITIAL && adFormat != MaxAdFormat.REWARDED ) return;
+        if ( adFormat != MaxAdFormat.INTERSTITIAL && adFormat != MaxAdFormat.REWARDED && adFormat != MaxAdFormat.APP_OPEN ) return;
 
         final String name;
         if ( MaxAdFormat.INTERSTITIAL == adFormat )
         {
             name = "OnInterstitialAdFailedToDisplayEvent";
         }
-        else // REWARDED
+        else if ( MaxAdFormat.REWARDED == adFormat )
         {
             name = "OnRewardedAdFailedToDisplayEvent";
+        }
+        else // APP OPEN
+        {
+            name = "OnAppOpenAdFailedToDisplayEvent";
         }
 
         WritableMap params = getAdInfo( ad );
@@ -1087,16 +1139,20 @@ public class AppLovinMAXModule
     {
         // BMLs do not support [HIDDEN] events
         final MaxAdFormat adFormat = ad.getFormat();
-        if ( adFormat != MaxAdFormat.INTERSTITIAL && adFormat != MaxAdFormat.REWARDED ) return;
+        if ( adFormat != MaxAdFormat.INTERSTITIAL && adFormat != MaxAdFormat.REWARDED && adFormat != MaxAdFormat.APP_OPEN ) return;
 
         String name;
         if ( MaxAdFormat.INTERSTITIAL == adFormat )
         {
             name = "OnInterstitialHiddenEvent";
         }
-        else // REWARDED
+        else if ( MaxAdFormat.REWARDED == adFormat )
         {
             name = "OnRewardedAdHiddenEvent";
+        }
+        else // APP OPEN
+        {
+            name = "OnAppOpenAdHiddenEvent";
         }
 
         sendReactNativeEvent( name, getAdInfo( ad ) );
@@ -1152,6 +1208,10 @@ public class AppLovinMAXModule
         else if ( MaxAdFormat.NATIVE == adFormat )
         {
             name = "OnNativeAdRevenuePaid";
+        }
+        else if ( MaxAdFormat.APP_OPEN == adFormat )
+        {
+            name = "OnAppOpenAdRevenuePaid";
         }
         else
         {
@@ -1566,6 +1626,21 @@ public class AppLovinMAXModule
             result.setRevenueListener( this );
 
             mRewardedAds.put( adUnitId, result );
+        }
+
+        return result;
+    }
+
+    private MaxAppOpenAd retrieveAppOpenAd(String adUnitId)
+    {
+        MaxAppOpenAd result = mAppOpenAds.get( adUnitId );
+        if ( result == null )
+        {
+            result = new MaxAppOpenAd( adUnitId, sdk );
+            result.setListener( this );
+            result.setRevenueListener( this );
+
+            mAppOpenAds.put( adUnitId, result );
         }
 
         return result;

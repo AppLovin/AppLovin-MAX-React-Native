@@ -82,6 +82,23 @@ const showRewardedAd = (adUnitId, ...args) => {
   }
 };
 
+const showAppOpenAd = (adUnitId, ...args) => {
+  switch (args.length) {
+  case 0:
+    AppLovinMAX.showAppOpenAd(adUnitId, null, null);
+    break;
+  case 1:
+    AppLovinMAX.showAppOpenAd(adUnitId, args[0], null);
+    break;
+  case 2:
+    AppLovinMAX.showAppOpenAd(adUnitId, args[0], args[1]);
+    break;
+  default:
+    // do nothing - unexpected number of arguments
+    break;
+  }
+};
+
 export default {
   ...AppLovinMAX,
   AdView,
@@ -100,6 +117,7 @@ export default {
   },
   showInterstitial,
   showRewardedAd,
+  showAppOpenAd,
 
   /*----------------------*/
   /** AUTO-DECLARED APIs **/
@@ -110,7 +128,6 @@ export default {
   /*----------------*/
   /* isInitialized() */
   /* initialize(pluginVersion, sdkKey, callback) */
-  /* showMediationDebugger() */
 
   /*--------------*/
   /* PRIVACY APIs */
@@ -127,6 +144,7 @@ export default {
   /*--------------------*/
   /* GENERAL PUBLIC API */
   /*--------------------*/
+  /* showMediationDebugger() */
   /* isTablet() */
   /* setUserId(userId) */
   /* setMuted(muted) */
@@ -134,6 +152,7 @@ export default {
   /* setVerboseLogging(verboseLoggingEnabled) */
   /* setTestDeviceAdvertisingIds(advertisingIds) */
   /* setCreativeDebuggerEnabled(enabled) */
+  /* setExtraParameter(key, value) */
   /* setConsentFlowEnabled(enabled) */
   /* setPrivacyPolicyUrl(urlString) */
   /* setTermsOfServiceUrl(urlString) */
@@ -167,6 +186,8 @@ export default {
   /* updateBannerPosition(adUnitId, bannerPosition) */
   /* updateBannerOffsets(adUnitId, xOffset, yOffset) */
   /* setBannerExtraParameter(adUnitId, key, value) */
+  /* startBannerAutoRefresh(adUnitId) */
+  /* stopBannerAutoRefresh(adUnitId) */
   /* showBanner(adUnitId) */
   /* hideBanner(adUnitId) */
   /* destroyBanner(adUnitId) */
@@ -178,11 +199,14 @@ export default {
   /* createMRec(adUnitId, mrecPosition) */
   /* setMRecBackgroundColor(adUnitId, hexColorCode) */
   /* setMRecPlacement(adUnitId, placement) */
+  /* setMRecCustomData(adUnitId, customData) */
   /* updateMRecPosition(adUnitId, mrecPosition) */
   /* setMRecExtraParameter(adUnitId, key, value) */
+  /* startMRecAutoRefresh(adUnitId) */
+  /* stopMRecAutoRefresh(adUnitId) */
   /* showMRec(adUnitId) */
   /* hideMRec(adUnitId) */
-  /* destroyMRec
+  /* destroyMRec(adUnitId) */
 
   /*---------------*/
   /* INTERSTITIALS */
@@ -199,4 +223,12 @@ export default {
   /* isRewardedAdReady(adUnitId) */
   /* showRewardedAd(adUnitId, placement) */
   /* setRewardedAdExtraParameter(adUnitId, key, value) */
+
+  /*----------*/
+  /* APP OPEN */
+  /*----------*/
+  /* loadAppOpenAd(adUnitId) */
+  /* isAppOpenAdReady(adUnitId) */
+  /* showAppOpenAd(adUnitId, placement, customData) */
+  /* setAppOpenAdExtraParameter(adUnitId, key, value) */
 };
