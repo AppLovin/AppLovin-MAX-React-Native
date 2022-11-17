@@ -51,6 +51,7 @@
 // Fullscreen Ad Fields
 @property (nonatomic, strong) NSMutableDictionary<NSString *, MAInterstitialAd *> *interstitials;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, MARewardedAd *> *rewardedAds;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, MAAppOpenAd *> *appOpenAds;
 
 // Banner Fields
 @property (nonatomic, strong) NSMutableDictionary<NSString *, MAAdView *> *adViews;
@@ -105,6 +106,7 @@ RCT_EXPORT_MODULE()
         self.interstitials = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.rewardedAds = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.adViews = [NSMutableDictionary dictionaryWithCapacity: 2];
+        self.appOpenAds = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.adViewAdFormats = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.adViewPositions = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.adViewOffsets = [NSMutableDictionary dictionaryWithCapacity: 2];
@@ -702,6 +704,32 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     [rewardedAd setExtraParameterForKey: key value: value];
 }
 
+#pragma mark - App Open Ad
+
+RCT_EXPORT_METHOD(loadAppOpenAd:(NSString *)adUnitIdentifier)
+{
+    MAAppOpenAd *appOpenAd = [self retrieveAppOpenAdForAdUnitIdentifier: adUnitIdentifier];
+    [appOpenAd loadAd];
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isAppOpenAdReady:(NSString *)adUnitIdentifier)
+{
+    MAAppOpenAd *appOpenAd = [self retrieveAppOpenAdForAdUnitIdentifier: adUnitIdentifier];
+    return @([appOpenAd isReady]);
+}
+
+RCT_EXPORT_METHOD(showAppOpenAd:(NSString *)adUnitIdentifier placement:(nullable NSString *)placement customData:(nullable NSString *)customData)
+{
+    MAAppOpenAd *appOpenAd = [self retrieveAppOpenAdForAdUnitIdentifier: adUnitIdentifier];
+    [appOpenAd showAdForPlacement: placement customData: customData];
+}
+
+RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(NSString *)key value:(nullable NSString *)value)
+{
+    MAAppOpenAd *appOpenAd = [self retrieveAppOpenAdForAdUnitIdentifier: adUnitIdentifier];
+    [appOpenAd setExtraParameterForKey: key value: value];
+}
+
 #pragma mark - Ad Callbacks
 
 - (void)didLoadAd:(MAAd *)ad
@@ -735,6 +763,10 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     else if ( MAAdFormat.native == adFormat )
     {
         name = @"OnNativeAdLoadedEvent";
+    }
+    else if ( MAAdFormat.appOpen == adFormat )
+    {
+        name = @"OnAppOpenAdLoadedEvent";
     }
     else
     {
@@ -781,6 +813,10 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     {
         name = @"OnRewardedAdLoadFailedEvent";
     }
+    else if ( self.appOpenAds[adUnitIdentifier] )
+    {
+        name = @"OnAppOpenAdLoadFailedEvent";
+    }
     else
     {
         [self log: @"invalid adUnitId from %@", [NSThread callStackSymbols]];
@@ -814,6 +850,10 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     {
         name = @"OnNativeAdClickedEvent";
     }
+    else if ( MAAdFormat.appOpen == adFormat )
+    {
+        name = @"OnAppOpenAdClickedEvent";
+    }
     else
     {
         [self logInvalidAdFormat: adFormat];
@@ -827,16 +867,20 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 {
     // BMLs do not support [DISPLAY] events in Unity
     MAAdFormat *adFormat = ad.format;
-    if ( adFormat != MAAdFormat.interstitial && adFormat != MAAdFormat.rewarded ) return;
+    if ( adFormat != MAAdFormat.interstitial && adFormat != MAAdFormat.rewarded && adFormat != MAAdFormat.appOpen ) return;
     
     NSString *name;
     if ( MAAdFormat.interstitial == adFormat )
     {
         name = @"OnInterstitialDisplayedEvent";
     }
-    else // REWARDED
+    else if ( MAAdFormat.rewarded == adFormat )
     {
         name = @"OnRewardedAdDisplayedEvent";
+    }
+    else // APP OPEN
+    {
+        name = @"OnAppOpenAdDisplayedEvent";
     }
     
     [self sendReactNativeEventWithName: name body: [self adInfoForAd: ad]];
@@ -846,16 +890,20 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 {
     // BMLs do not support [DISPLAY] events in Unity
     MAAdFormat *adFormat = ad.format;
-    if ( adFormat != MAAdFormat.interstitial && adFormat != MAAdFormat.rewarded ) return;
+    if ( adFormat != MAAdFormat.interstitial && adFormat != MAAdFormat.rewarded && adFormat != MAAdFormat.appOpen ) return;
     
     NSString *name;
     if ( MAAdFormat.interstitial == adFormat )
     {
         name = @"OnInterstitialAdFailedToDisplayEvent";
     }
-    else // REWARDED
+    else if ( MAAdFormat.rewarded == adFormat )
     {
         name = @"OnRewardedAdFailedToDisplayEvent";
+    }
+    else // APP OPEN
+    {
+        name = @"OnAppOpenAdFailedToDisplayEvent";
     }
     
     NSMutableDictionary *body = [@{@"code" : @(error.code),
@@ -869,16 +917,20 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 {
     // BMLs do not support [HIDDEN] events in Unity
     MAAdFormat *adFormat = ad.format;
-    if ( adFormat != MAAdFormat.interstitial && adFormat != MAAdFormat.rewarded ) return;
+    if ( adFormat != MAAdFormat.interstitial && adFormat != MAAdFormat.rewarded && adFormat != MAAdFormat.appOpen ) return;
     
     NSString *name;
     if ( MAAdFormat.interstitial == adFormat )
     {
         name = @"OnInterstitialHiddenEvent";
     }
-    else // REWARDED
+    else if ( MAAdFormat.rewarded == adFormat )
     {
         name = @"OnRewardedAdHiddenEvent";
+    }
+    else // APP OPEN
+    {
+        name = @"OnAppOpenAdHiddenEvent";
     }
     
     [self sendReactNativeEventWithName: name body: [self adInfoForAd: ad]];
@@ -933,6 +985,10 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     else if ( MAAdFormat.native == adFormat )
     {
         name = @"OnNativeAdRevenuePaid";
+    }
+    else if ( MAAdFormat.appOpen == adFormat )
+    {
+        name = @"OnAppOpenAdRevenuePaid";
     }
     else
     {
@@ -1224,6 +1280,21 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         result.revenueDelegate = self;
         
         self.rewardedAds[adUnitIdentifier] = result;
+    }
+    
+    return result;
+}
+
+- (MAAppOpenAd *)retrieveAppOpenAdForAdUnitIdentifier:(NSString *)adUnitIdentifier
+{
+    MAAppOpenAd *result = self.appOpenAds[adUnitIdentifier];
+    if ( !result )
+    {
+        result = [[MAAppOpenAd alloc] initWithAdUnitIdentifier: adUnitIdentifier sdk: self.sdk];
+        result.delegate = self;
+        result.revenueDelegate = self;
+        
+        self.appOpenAds[adUnitIdentifier] = result;
     }
     
     return result;
@@ -1599,6 +1670,14 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
              @"OnRewardedAdHiddenEvent",
              @"OnRewardedAdReceivedRewardEvent",
              @"OnRewardedAdRevenuePaid",
+             
+             @"OnAppOpenAdLoadedEvent",
+             @"OnAppOpenAdLoadFailedEvent",
+             @"OnAppOpenAdClickedEvent",
+             @"OnAppOpenAdDisplayedEvent",
+             @"OnAppOpenAdFailedToDisplayEvent",
+             @"OnAppOpenAdHiddenEvent",
+             @"OnAppOpenAdRevenuePaid",
              
              @"OnNativeAdLoadedEvent",
              @"OnNativeAdLoadFailedEvent",

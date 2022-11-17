@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+    * Add support for App Open ads
     * Fix NPE for accessing the unmounted child views in the native ad.
     * Fix not emitting an `"OnBannerAdLoadFailedEvent"` or `"OnMRecAdLoadFailedEvent"` event for native UI component banners and MRECs.
 ## 4.0.0
