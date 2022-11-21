@@ -102,6 +102,14 @@ public class AppLovinMAXModule
     private       Boolean             locationCollectionEnabledToSet;
     private final Map<String, String> extraParametersToSet = new HashMap<>( 8 );
 
+    private Integer       targetingYearOfBirthToSet;
+    private String        targetingGenderToSet;
+    private Integer       targetingMaximumAdContentRatingToSet;
+    private String        targetingEmailToSet;
+    private String        targetingPhoneNumberToSet;
+    private ReadableArray targetingKeywordsToSet;
+    private ReadableArray targetingInterestsToSet;
+
     // Fullscreen Ad Fields
     private final Map<String, MaxInterstitialAd> mInterstitials = new HashMap<>( 2 );
     private final Map<String, MaxRewardedAd>     mRewardedAds   = new HashMap<>( 2 );
@@ -267,6 +275,48 @@ public class AppLovinMAXModule
         {
             sdk.getSettings().setLocationCollectionEnabled( locationCollectionEnabledToSet );
             locationCollectionEnabledToSet = null;
+        }
+
+        if ( targetingYearOfBirthToSet != null )
+        {
+            sdk.getTargetingData().setYearOfBirth( targetingYearOfBirthToSet <= 0 ? null : targetingYearOfBirthToSet );
+            targetingYearOfBirthToSet = null;
+        }
+
+        if ( targetingGenderToSet != null )
+        {
+            sdk.getTargetingData().setGender( getAppLovinGender( targetingGenderToSet ) );
+            targetingGenderToSet = null;
+        }
+
+        if ( targetingMaximumAdContentRatingToSet != null )
+        {
+            sdk.getTargetingData().setMaximumAdContentRating( getAppLovinAdContentRating( targetingMaximumAdContentRatingToSet ) );
+            targetingMaximumAdContentRatingToSet = null;
+        }
+
+        if ( targetingEmailToSet != null )
+        {
+            sdk.getTargetingData().setEmail( targetingEmailToSet );
+            targetingEmailToSet = null;
+        }
+
+        if ( targetingPhoneNumberToSet != null )
+        {
+            sdk.getTargetingData().setPhoneNumber( targetingPhoneNumberToSet );
+            targetingPhoneNumberToSet = null;
+        }
+
+        if ( targetingKeywordsToSet != null )
+        {
+            sdk.getTargetingData().setKeywords( getStringArrayList( targetingKeywordsToSet ) );
+            targetingKeywordsToSet = null;
+        }
+
+        if ( targetingInterestsToSet != null )
+        {
+            sdk.getTargetingData().setInterests( getStringArrayList( targetingInterestsToSet ) );
+            targetingInterestsToSet = null;
         }
 
         setPendingExtraParametersIfNeeded( sdk.getSettings() );
@@ -512,7 +562,7 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            logUninitializedAccessError( "setTargetingDataYearOfBirth" );
+            targetingYearOfBirthToSet = yearOfBirth;
             return;
         }
 
@@ -520,30 +570,15 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
-    public void setTargetingDataGender(final String gender)
+    public void setTargetingDataGender(@Nullable final String gender)
     {
         if ( sdk == null )
         {
-            logUninitializedAccessError( "setTargetingDataGender" );
+            targetingGenderToSet = gender;
             return;
         }
 
-        AppLovinGender alGender = AppLovinGender.UNKNOWN;
-
-        if ( "F".equals( gender ) )
-        {
-            alGender = AppLovinGender.FEMALE;
-        }
-        else if ( "M".equals( gender ) )
-        {
-            alGender = AppLovinGender.MALE;
-        }
-        else if ( "O".equals( gender ) )
-        {
-            alGender = AppLovinGender.OTHER;
-        }
-
-        sdk.getTargetingData().setGender( alGender );
+        sdk.getTargetingData().setGender( getAppLovinGender( gender ) );
     }
 
     @ReactMethod()
@@ -551,34 +586,19 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            logUninitializedAccessError( "setTargetingDataMaximumAdContentRating" );
+            targetingMaximumAdContentRatingToSet = maximumAdContentRating;
             return;
         }
 
-        AppLovinAdContentRating rating = AppLovinAdContentRating.NONE;
-
-        if ( maximumAdContentRating == 1 )
-        {
-            rating = AppLovinAdContentRating.ALL_AUDIENCES;
-        }
-        else if ( maximumAdContentRating == 2 )
-        {
-            rating = AppLovinAdContentRating.EVERYONE_OVER_TWELVE;
-        }
-        else if ( maximumAdContentRating == 3 )
-        {
-            rating = AppLovinAdContentRating.MATURE_AUDIENCES;
-        }
-
-        sdk.getTargetingData().setMaximumAdContentRating( rating );
+        sdk.getTargetingData().setMaximumAdContentRating( getAppLovinAdContentRating( maximumAdContentRating ) );
     }
 
     @ReactMethod()
-    public void setTargetingDataEmail(final String email)
+    public void setTargetingDataEmail(@Nullable final String email)
     {
         if ( sdk == null )
         {
-            logUninitializedAccessError( "setTargetingDataEmail" );
+            targetingEmailToSet = email;
             return;
         }
 
@@ -586,11 +606,11 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
-    public void setTargetingDataPhoneNumber(final String phoneNumber)
+    public void setTargetingDataPhoneNumber(@Nullable final String phoneNumber)
     {
         if ( sdk == null )
         {
-            logUninitializedAccessError( "setTargetingDataPhoneNumber" );
+            targetingPhoneNumberToSet = phoneNumber;
             return;
         }
 
@@ -598,49 +618,27 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod()
-    public void setTargetingDataKeywords(final ReadableArray rawKeywords)
+    public void setTargetingDataKeywords(@Nullable final ReadableArray rawKeywords)
     {
         if ( sdk == null )
         {
-            logUninitializedAccessError( "setTargetingDataKeywords" );
+            targetingKeywordsToSet = rawKeywords;
             return;
         }
 
-        List<String> keywords = null;
-
-        if ( rawKeywords != null )
-        {
-            keywords = new ArrayList<>( rawKeywords.size() );
-            for ( Object rawKeyword : rawKeywords.toArrayList() )
-            {
-                keywords.add( (String) rawKeyword );
-            }
-        }
-
-        sdk.getTargetingData().setKeywords( keywords );
+        sdk.getTargetingData().setKeywords( getStringArrayList( rawKeywords ) );
     }
 
     @ReactMethod()
-    public void setTargetingDataInterests(final ReadableArray rawInterests)
+    public void setTargetingDataInterests(@Nullable final ReadableArray rawInterests)
     {
         if ( sdk == null )
         {
-            logUninitializedAccessError( "setTargetingDataInterests" );
+            targetingInterestsToSet = rawInterests;
             return;
         }
 
-        List<String> interests = null;
-
-        if ( rawInterests != null )
-        {
-            interests = new ArrayList<>( rawInterests.size() );
-            for ( Object rawInterest : rawInterests.toArrayList() )
-            {
-                interests.add( (String) rawInterest );
-            }
-        }
-
-        sdk.getTargetingData().setInterests( interests );
+        sdk.getTargetingData().setInterests( getStringArrayList( rawInterests ) );
     }
 
     @ReactMethod()
@@ -1898,6 +1896,59 @@ public class AppLovinMAXModule
     private static Point getOffsetPixels(final float xDp, final float yDp, final Context context)
     {
         return new Point( AppLovinSdkUtils.dpToPx( context, (int) xDp ), AppLovinSdkUtils.dpToPx( context, (int) yDp ) );
+    }
+
+    private static AppLovinGender getAppLovinGender(@Nullable String gender)
+    {
+        if ( gender != null )
+        {
+            if ( "F".equalsIgnoreCase( gender ) )
+            {
+                return AppLovinGender.FEMALE;
+            }
+            else if ( "M".equalsIgnoreCase( gender ) )
+            {
+                return AppLovinGender.MALE;
+            }
+            else if ( "O".equalsIgnoreCase( gender ) )
+            {
+                return AppLovinGender.OTHER;
+            }
+        }
+
+        return AppLovinGender.UNKNOWN;
+    }
+
+    private static AppLovinAdContentRating getAppLovinAdContentRating(int maximumAdContentRating)
+    {
+        if ( maximumAdContentRating == 1 )
+        {
+            return AppLovinAdContentRating.ALL_AUDIENCES;
+        }
+        else if ( maximumAdContentRating == 2 )
+        {
+            return AppLovinAdContentRating.EVERYONE_OVER_TWELVE;
+        }
+        else if ( maximumAdContentRating == 3 )
+        {
+            return AppLovinAdContentRating.MATURE_AUDIENCES;
+        }
+
+        return AppLovinAdContentRating.NONE;
+    }
+
+    private List<String> getStringArrayList(@Nullable ReadableArray readableArray)
+    {
+        if ( readableArray == null ) return null;
+
+        List<String> list = new ArrayList<>( readableArray.size() );
+
+        for ( Object item : readableArray.toArrayList() )
+        {
+            list.add( (String) item );
+        }
+
+        return list;
     }
 
     // AD INFO
