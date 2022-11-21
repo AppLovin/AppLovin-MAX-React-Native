@@ -646,7 +646,13 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            logUninitializedAccessError( "clearAllTargetingData" );
+            targetingYearOfBirthToSet = null;
+            targetingGenderToSet = null;
+            targetingMaximumAdContentRatingToSet = null;
+            targetingEmailToSet = null;
+            targetingPhoneNumberToSet = null;
+            targetingKeywordsToSet = null;
+            targetingInterestsToSet = null;
             return;
         }
 

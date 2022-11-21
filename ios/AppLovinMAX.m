@@ -518,7 +518,13 @@ RCT_EXPORT_METHOD(clearAllTargetingData)
 {
     if ( !self.sdk )
     {
-        [self logUninitializedAccessError: @"clearAllTargetingData"];
+        self.targetingYearOfBirthToSet = nil;
+        self.targetingGenderToSet = nil;
+        self.targetingMaximumAdContentRatingToSet = nil;
+        self.targetingEmailToSet = nil;
+        self.targetingPhoneNumberToSet = nil;
+        self.targetingKeywordsToSet = nil;
+        self.targetingInterestsToSet = nil;
         return;
     }
     

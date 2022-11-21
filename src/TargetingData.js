@@ -16,7 +16,7 @@ const UserGender = {
   Other:   'O'
 };
 
-let TargetingData = {
+const TargetingData = {
 
   set yearOfBirth(value) {
     AppLovinMAX.setTargetingDataYearOfBirth(value);
