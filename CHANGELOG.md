@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+    * Depend on Android SDK 11.5.5 and iOS SDK 11.5.5.
     * Add support for App Open ads.
     * Fix NPE for accessing the MAX components before the SDK initialization.
     * Fix media view not sizing correctly when the React Native view is initially not sized when native ad is loaded.
