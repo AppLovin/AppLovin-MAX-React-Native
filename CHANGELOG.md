@@ -1,10 +1,12 @@
 ## Versions
 
 ## x.x.x
-    * Fix NPE for accessing the MAX components before the SDK initialization.
     * Add support for App Open ads.
+    * Fix NPE for accessing the MAX components before the SDK initialization.
+    * Fix media view not sizing correctly when the React Native view is initially not sized when native ad is loaded.
     * Fix NPE for accessing the unmounted child views in the native ad.
     * Fix not emitting an `"OnBannerAdLoadFailedEvent"` or `"OnMRecAdLoadFailedEvent"` event for native UI component banners and MRECs.
+    * Allow data passing APIs to be invoked before plugin initialization.
 ## 4.0.0
     * Add support for native ads - [docs](https://dash.applovin.com/documentation/mediation/react-native/ad-formats/native-manual).
     * Depend on Android SDK 11.5.3 and iOS SDK 11.5.3.
