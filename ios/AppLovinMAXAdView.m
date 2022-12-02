@@ -124,7 +124,9 @@
     }
 }
 
-// Called after the all AdView properties are set
+
+// Called after all properties are set during the widget creation, but after the widget is created,
+// called every property is updated.
 - (void)didSetProps:(NSArray<NSString *> *)changedProps
 {
     if ( [self.shouldAddViewUpdate compareAndSet: YES update: NO] )

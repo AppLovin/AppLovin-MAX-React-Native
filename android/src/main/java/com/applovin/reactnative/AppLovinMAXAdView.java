@@ -130,7 +130,8 @@ class AppLovinMAXAdView
         }
     }
 
-    // Called after the all AdView properties are set
+    // Called after all properties are set during the widget creation, but after the widget is
+    // created, called every property is updated.
     public void onSetProps()
     {
         if ( shouldAddViewUpdate.compareAndSet( true, false ) )
@@ -194,53 +195,48 @@ class AppLovinMAXAdView
         final String adUnitId = this.adUnitId;
         final MaxAdFormat adFormat = this.adFormat;
 
-        reactContext.runOnUiQueueThread( new Runnable()
-        {
-            @Override
-            public void run()
+        reactContext.runOnUiQueueThread( () -> {
+            if ( TextUtils.isEmpty( adUnitId ) )
             {
-                if ( TextUtils.isEmpty( adUnitId ) )
-                {
-                    AppLovinMAXModule.e( "Attempting to attach MaxAdView without Ad Unit ID" );
-                    return;
-                }
-
-                if ( adFormat == null )
-                {
-                    AppLovinMAXModule.e( "Attempting to attach MaxAdView without ad format" );
-                    return;
-                }
-
-                if ( adView != null )
-                {
-                    AppLovinMAXModule.e( "Attempting to re-attach with existing MaxAdView: " + adView );
-                    return;
-                }
-
-                AppLovinMAXModule.d( "Attaching MaxAdView for " + adUnitId );
-
-                adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
-                adView.setListener( AppLovinMAXAdView.this );
-                adView.setRevenueListener( AppLovinMAXModule.getInstance() );
-                adView.setPlacement( placement );
-                adView.setCustomData( customData );
-                adView.setExtraParameter( "adaptive_banner", Boolean.toString( adaptiveBannerEnabled ) );
-                // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
-                adView.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
-
-                if ( autoRefresh )
-                {
-                    adView.startAutoRefresh();
-                }
-                else
-                {
-                    adView.stopAutoRefresh();
-                }
-
-                adView.loadAd();
-
-                addView( adView );
+                AppLovinMAXModule.e( "Attempting to attach MaxAdView without Ad Unit ID" );
+                return;
             }
+
+            if ( adFormat == null )
+            {
+                AppLovinMAXModule.e( "Attempting to attach MaxAdView without ad format" );
+                return;
+            }
+
+            if ( adView != null )
+            {
+                AppLovinMAXModule.e( "Attempting to re-attach with existing MaxAdView: " + adView );
+                return;
+            }
+
+            AppLovinMAXModule.d( "Attaching MaxAdView for " + adUnitId );
+
+            adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
+            adView.setListener( AppLovinMAXAdView.this );
+            adView.setRevenueListener( AppLovinMAXModule.getInstance() );
+            adView.setPlacement( placement );
+            adView.setCustomData( customData );
+            adView.setExtraParameter( "adaptive_banner", Boolean.toString( adaptiveBannerEnabled ) );
+            // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
+            adView.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
+
+            if ( autoRefresh )
+            {
+                adView.startAutoRefresh();
+            }
+            else
+            {
+                adView.stopAutoRefresh();
+            }
+
+            adView.loadAd();
+
+            addView( adView );
         } );
     }
 

@@ -24,7 +24,7 @@
 @property (nonatomic, strong, nullable) MANativeAdLoader *adLoader;
 @property (nonatomic, strong, nullable) MAAd *nativeAd;
 @property (nonatomic, strong) ALAtomicBoolean *isLoading; // Guard against repeated ad loads
-@property (nonatomic, strong) ALAtomicBoolean *hasAddUnitUpdated;
+@property (nonatomic, strong) ALAtomicBoolean *hasAdUnitUpdated;
 
 // JavaScript properties
 @property (nonatomic, copy) NSString *adUnitId;
@@ -49,7 +49,7 @@
     {
         self.bridge = bridge;
         self.isLoading = [[ALAtomicBoolean alloc] init];
-        self.hasAddUnitUpdated = [[ALAtomicBoolean alloc] init];
+        self.hasAdUnitUpdated = [[ALAtomicBoolean alloc] init];
         self.clickableViews = [NSMutableArray array];
     }
     return self;
@@ -86,7 +86,7 @@
         
     _adUnitId = adUnitId;
     
-    [self.hasAddUnitUpdated set: YES];
+    [self.hasAdUnitUpdated set: YES];
 }
 
 // Called when Ad Unit ID is set, and via RN layer
@@ -225,7 +225,7 @@
 
 - (void)didSetProps:(NSArray<NSString *> *)changedProps
 {
-    if ( [self.hasAddUnitUpdated compareAndSet:YES update: NO] )
+    if ( [self.hasAdUnitUpdated compareAndSet:YES update: NO] )
     {
         [self loadAd];
     }
