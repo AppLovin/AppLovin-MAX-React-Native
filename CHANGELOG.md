@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+    * Fix banner and MREC native UI components unmounting when fullscreen ad is displayed. 
 ## 4.1.0
     * Depend on Android SDK 11.5.5 and iOS SDK 11.5.5.
     * Add support for App Open ads.
