@@ -178,7 +178,7 @@
     [super didMoveToWindow];
     
     // This view is unmounted
-    if ( !self.window )
+    if ( !self.window && !self.superview )
     {
         if ( self.adView )
         {
