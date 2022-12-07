@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+    * Fix native ad UI components unmounting when fullscreen ad is displayed. 
 ## 4.1.1
     * Depend on Android SDK 11.6.0 and iOS SDK 11.6.0.
     * Fix banner and MREC native UI components unmounting when fullscreen ad is displayed. 
