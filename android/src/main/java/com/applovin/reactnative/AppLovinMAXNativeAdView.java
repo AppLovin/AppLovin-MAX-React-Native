@@ -37,7 +37,7 @@ public class AppLovinMAXNativeAdView
     @Nullable
     private       MaxAd             nativeAd;
     private final AtomicBoolean isLoading          = new AtomicBoolean(); // Guard against repeated ad loads
-    private final AtomicBoolean hasAdUnitIdUpdated = new AtomicBoolean();
+    private final AtomicBoolean shouldNativeAdLoad = new AtomicBoolean();
 
     @Nullable
     private View mediaView;
@@ -75,11 +75,18 @@ public class AppLovinMAXNativeAdView
 
     public void setAdUnitId(final String value)
     {
+        // Ad Unit ID must be set prior to creating MaxNativeAdLoader
+        if ( adLoader != null )
+        {
+            AppLovinMAXModule.e( "Attempting to set Ad Unit ID " + value + " after MaxNativeAdLoader is created" );
+            return;
+        }
+
         if ( TextUtils.isEmpty( value ) ) return;
 
         adUnitId = value;
 
-        hasAdUnitIdUpdated.set( true );
+        shouldNativeAdLoad.set( true );
     }
 
     public void setPlacement(@Nullable final String value)
@@ -259,7 +266,7 @@ public class AppLovinMAXNativeAdView
 
     public void onSetProps()
     {
-        if ( hasAdUnitIdUpdated.compareAndSet( true, false ) )
+        if ( shouldNativeAdLoad.compareAndSet( true, false ) )
         {
             loadAd();
         }

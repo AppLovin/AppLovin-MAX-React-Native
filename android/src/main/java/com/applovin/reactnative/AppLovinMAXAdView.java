@@ -35,7 +35,7 @@ class AppLovinMAXAdView
     private           boolean     adaptiveBannerEnabled;
     private           boolean     autoRefresh;
 
-    private final AtomicBoolean shouldAddViewUpdate = new AtomicBoolean();
+    private final AtomicBoolean shouldAdViewAttach = new AtomicBoolean();
 
     public AppLovinMAXAdView(final Context context)
     {
@@ -54,7 +54,7 @@ class AppLovinMAXAdView
 
         adUnitId = value;
 
-        shouldAddViewUpdate.set( true );
+        shouldAdViewAttach.set( true );
     }
 
     public void setAdFormat(final String value)
@@ -80,7 +80,7 @@ class AppLovinMAXAdView
             return;
         }
 
-        shouldAddViewUpdate.set( true );
+        shouldAdViewAttach.set( true );
     }
 
     public void setPlacement(@Nullable final String value)
@@ -130,11 +130,12 @@ class AppLovinMAXAdView
         }
     }
 
-    // Called after all properties are set during the widget creation, but after the widget is
-    // created, called every property is updated.
+    // Called after all properties are set to the widget during its creation, but after the widget
+    // is created, this is called either when each property is updated or when a bulk of properties
+    // are updated.
     public void onSetProps()
     {
-        if ( shouldAddViewUpdate.compareAndSet( true, false ) )
+        if ( adUnitId != null && adFormat != null && shouldAdViewAttach.compareAndSet( true, false ) )
         {
             maybeAttachAdView();
         }

@@ -21,7 +21,7 @@
 @property (nonatomic, assign, readonly, getter=isAdaptiveBannerEnabled) BOOL adaptiveBannerEnabled;
 @property (nonatomic, assign, readonly, getter=isAutoRefresh) BOOL autoRefresh;
 
-@property (nonatomic, strong) ALAtomicBoolean *shouldAddViewUpdate;
+@property (nonatomic, strong) ALAtomicBoolean *shouldAdViewAttach;
 
 @end
 
@@ -32,7 +32,7 @@
     self = [super init];
     if ( self )
     {
-        self.shouldAddViewUpdate = [[ALAtomicBoolean alloc] init];
+        self.shouldAdViewAttach = [[ALAtomicBoolean alloc] init];
     }
     return self;
 }
@@ -48,7 +48,7 @@
     
     _adUnitId = adUnitId;
     
-    [self.shouldAddViewUpdate set: YES];
+    [self.shouldAdViewAttach set: YES];
 }
 
 - (void)setAdFormat:(NSString *)adFormat
@@ -74,7 +74,7 @@
         return;
     }
     
-    [self.shouldAddViewUpdate set: YES];
+    [self.shouldAdViewAttach set: YES];
 }  
 
 - (void)setPlacement:(NSString *)placement
@@ -124,12 +124,12 @@
     }
 }
 
-
-// Called after all properties are set during the widget creation, but after the widget is created,
-// called every property is updated.
+// Called after all properties are set to the widget during its creation, but after the widget is
+// created, this is called either when each property is updated or when a bulk of properties are
+// updated.
 - (void)didSetProps:(NSArray<NSString *> *)changedProps
 {
-    if ( [self.shouldAddViewUpdate compareAndSet: YES update: NO] )
+    if ( self.adUnitId && self.adFormat && [self.shouldAdViewAttach compareAndSet: YES update: NO] )
     {
         [self attachAdViewIfNeeded];
     }
