@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+    * Fix AppLovin.initialize(...) firing its callback multiple times on iOS.
 ## 4.1.2
     * Fix native ad UI components unmounting when fullscreen ad is displayed. 
 ## 4.1.1

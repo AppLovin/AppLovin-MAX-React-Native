@@ -142,12 +142,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isInitialized)
 RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCTResponseSenderBlock)callback)
 {
     // Guard against running init logic multiple times
-    if ( [self isPluginInitialized] )
-    {
-        callback(@[@{@"consentDialogState" : @(self.sdk.configuration.consentDialogState),
-                     @"countryCode" : self.sdk.configuration.countryCode}]);
-        return;
-    }
+    if ( [self isPluginInitialized] ) return;
     
     self.pluginInitialized = YES;
     
