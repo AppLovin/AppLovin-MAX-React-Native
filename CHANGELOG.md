@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 4.1.3
     * Fix `AppLovinMax.initialize(sdkKey, callback)` firing its callback multiple times on iOS.
 ## 4.1.2
     * Fix native ad UI components unmounting when fullscreen ad is displayed. 
