@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
     optionsView: {
         height: 20,
         width: 20,
+        backgroundColor: '#EFEFEF',
     },
     advertiser: {
         marginHorizontal: 5,
