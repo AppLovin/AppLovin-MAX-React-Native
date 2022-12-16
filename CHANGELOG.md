@@ -1,7 +1,7 @@
 ## Versions
 
-## x.x.x
-    * Fix NPE for accessing a null icon in the native ad.
+## 4.1.4
+    * Fix NPE for accessing a null icon in the native ad on Android.
 ## 4.1.3
     * Fix `AppLovinMax.initialize(sdkKey, callback)` firing its callback multiple times on iOS.
 ## 4.1.2
