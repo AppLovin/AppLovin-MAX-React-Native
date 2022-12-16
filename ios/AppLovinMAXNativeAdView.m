@@ -215,12 +215,14 @@
     [self.clickableViews addObject: view];
     
     MANativeAdImage *icon = self.nativeAd.nativeAd.icon;
-    
-    // Check if "URL" was missing and therefore need to set the image data
-    if ( !icon.URL && icon.image )
+    if ( icon )
     {
-        RCTImageView *iconImageView = (RCTImageView *) view;
-        iconImageView.defaultImage = self.nativeAd.nativeAd.icon.image;
+        // Check if "URL" was missing and therefore need to set the image data
+        if ( !icon.URL && icon.image )
+        {
+            RCTImageView *iconImageView = (RCTImageView *) view;
+            iconImageView.defaultImage = icon.image;
+        }
     }
 }
 
