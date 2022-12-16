@@ -251,11 +251,13 @@ public class AppLovinMAXNativeAdView
         clickableViews.add( view );
 
         MaxNativeAdImage icon = nativeAd.getNativeAd().getIcon();
-
-        // Check if "URL" was missing and therefore need to set the image data
-        if ( icon.getUri() == null && icon.getDrawable() != null )
+        if ( icon != null )
         {
-            view.setImageDrawable( nativeAd.getNativeAd().getIcon().getDrawable() );
+            // Check if "URL" was missing and therefore need to set the image data
+            if ( icon.getUri() == null && icon.getDrawable() != null )
+            {
+                view.setImageDrawable( icon.getDrawable() );
+            }
         }
     }
 
