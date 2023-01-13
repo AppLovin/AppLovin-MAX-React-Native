@@ -42,6 +42,7 @@ const App = () => {
   });
 
   // Create states
+  const [isInitialized, setIsInitialized] = useState(false);
   const [interstitialAdLoadState, setInterstitialAdLoadState] = useState(adLoadState.notLoaded);
   const [interstitialRetryAttempt, setInterstitialRetryAttempt] = useState(0);
   const [rewardedAdLoadState, setRewardedAdLoadState] = useState(adLoadState.notLoaded);
@@ -69,7 +70,7 @@ const App = () => {
   }, [statusText]);
 
   const initAppLovinMax = () => {
-    if (AppLovinMAX.isInitialized()) return;
+    if (isInitialized) return;
 
     // MAX Consent Flow for iOS 14.5+
     if (Platform.OS === 'ios' && parseFloat(Platform.Version) >= 14.5) {
@@ -80,7 +81,8 @@ const App = () => {
     }
 
     AppLovinMAX.setTestDeviceAdvertisingIds([]);
-    AppLovinMAX.initialize(SDK_KEY, (configuration) => {
+    AppLovinMAX.initialize(SDK_KEY).then(configuration => {
+      setIsInitialized(true);
       setStatusText('SDK Initialized');
 
       if (Platform.OS === 'android') {
@@ -100,6 +102,8 @@ const App = () => {
 
       // Attach ad listeners for interstitial ads, rewarded ads, and banner ads
       attachAdListeners();
+    }).catch(error => {
+      setStatusText(error.toString());
     });
   }
 
@@ -273,7 +277,7 @@ const App = () => {
         </Text>
         <AppButton
           title="Mediation Debugger"
-          enabled={AppLovinMAX.isInitialized()}
+          enabled={isInitialized}
           onPress={() => {
             AppLovinMAX.showMediationDebugger();
           }}
@@ -281,34 +285,42 @@ const App = () => {
         <AppButton
           title={getInterstitialButtonTitle()}
           enabled={
-            AppLovinMAX.isInitialized() && interstitialAdLoadState !== adLoadState.loading
+            isInitialized && interstitialAdLoadState !== adLoadState.loading
           }
           onPress={() => {
-            if (AppLovinMAX.isInterstitialReady(INTERSTITIAL_AD_UNIT_ID)) {
-              AppLovinMAX.showInterstitial(INTERSTITIAL_AD_UNIT_ID);
-            } else {
-              setStatusText('Loading interstitial ad...');
-              setInterstitialAdLoadState(adLoadState.loading);
-              AppLovinMAX.loadInterstitial(INTERSTITIAL_AD_UNIT_ID);
-            }
+            AppLovinMAX.isInterstitialReady(INTERSTITIAL_AD_UNIT_ID).then(isInterstitialReady => {
+              if (isInterstitialReady) {
+                AppLovinMAX.showInterstitial(INTERSTITIAL_AD_UNIT_ID);
+              } else {
+                setStatusText('Loading interstitial ad...');
+                setInterstitialAdLoadState(adLoadState.loading);
+                AppLovinMAX.loadInterstitial(INTERSTITIAL_AD_UNIT_ID);
+              }
+            }).catch(error => {
+              setStatusText(error.toString());
+            });
           }}
         />
         <AppButton
           title={getRewardedButtonTitle()}
-          enabled={AppLovinMAX.isInitialized() && rewardedAdLoadState !== adLoadState.loading}
+          enabled={isInitialized && rewardedAdLoadState !== adLoadState.loading}
           onPress={() => {
-            if (AppLovinMAX.isRewardedAdReady(REWARDED_AD_UNIT_ID)) {
-              AppLovinMAX.showRewardedAd(REWARDED_AD_UNIT_ID);
-            } else {
-              setStatusText('Loading rewarded ad...');
-              setRewardedAdLoadState(adLoadState.loading);
-              AppLovinMAX.loadRewardedAd(REWARDED_AD_UNIT_ID);
-            }
+            AppLovinMAX.isRewardedAdReady(REWARDED_AD_UNIT_ID).then(isRewardedAdReady => {
+              if (isRewardedAdReady) {
+                AppLovinMAX.showRewardedAd(REWARDED_AD_UNIT_ID);
+              } else {
+                setStatusText('Loading rewarded ad...');
+                setRewardedAdLoadState(adLoadState.loading);
+                AppLovinMAX.loadRewardedAd(REWARDED_AD_UNIT_ID);
+              }
+            }).catch(error => {
+              setStatusText(error.toString());
+            });
           }}
         />
         <AppButton
           title={isProgrammaticBannerShowing ? 'Hide Programmatic Banner' : 'Show Programmatic Banner'}
-          enabled={AppLovinMAX.isInitialized() && !isNativeUIBannerShowing}
+          enabled={isInitialized && !isNativeUIBannerShowing}
           onPress={() => {
             if (isProgrammaticBannerShowing) {
               AppLovinMAX.hideBanner(BANNER_AD_UNIT_ID);
@@ -339,7 +351,7 @@ const App = () => {
         />
         <AppButton
           title={isNativeUIBannerShowing ? 'Hide Native UI Banner' : 'Show Native UI Banner'}
-          enabled={AppLovinMAX.isInitialized() && !isProgrammaticBannerShowing}
+          enabled={isInitialized && !isProgrammaticBannerShowing}
           onPress={() => {
             setIsNativeUIBannerShowing(!isNativeUIBannerShowing);
           }}
@@ -352,7 +364,7 @@ const App = () => {
         }
         <AppButton
           title={isNativeUIMRecShowing ? 'Hide Native UI MREC' : 'Show Native UI MREC'}
-          enabled={AppLovinMAX.isInitialized() && !isProgrammaticMRecShowing}
+          enabled={isInitialized && !isProgrammaticMRecShowing}
           onPress={() => {
             setIsNativeUIMRecShowing(!isNativeUIMRecShowing);
           }}
@@ -365,7 +377,7 @@ const App = () => {
         }
         <AppButton
           title={isProgrammaticMRecShowing ? 'Hide Programmatic MREC' : 'Show Programmatic MREC'}
-          enabled={AppLovinMAX.isInitialized() && !isNativeUIMRecShowing}
+          enabled={isInitialized && !isNativeUIMRecShowing}
           onPress={() => {
             if (isProgrammaticMRecShowing) {
               AppLovinMAX.hideMRec(MREC_AD_UNIT_ID);
@@ -388,14 +400,14 @@ const App = () => {
         />
         <AppButton
           title={isNativeAdShowing ? 'Hide Native Ad' : 'Show Native Ad'}
-          enabled={AppLovinMAX.isInitialized()}
+          enabled={isInitialized}
           onPress={() => {
             setIsNativeAdShowing(!isNativeAdShowing);
           }}
         />
         <AppButton
           title={'Load Native Ad'}
-          enabled={AppLovinMAX.isInitialized() && isNativeAdShowing}
+          enabled={isInitialized && isNativeAdShowing}
           onPress={() => {
             nativeAdViewRef.current?.loadAd();
           }}
@@ -430,7 +442,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
     position: 'absolute',
     width: '100%',
-    height: AppLovinMAX.getAdaptiveBannerHeightForWidth(-1),
     bottom: Platform.select({
       ios: 36, // For bottom safe area
       android: 0,
