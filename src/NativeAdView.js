@@ -61,20 +61,39 @@ const NativeAdView = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({ loadAd }), []);
 
   // save the DOM element via the ref callback
-  const saveElement = useCallback((element) => {
+  const saveElement = (element) => {
     if (element) {
       nativeAdViewRef.current = element;
       setNativeAdView(element);
     }
-  }, [nativeAdViewRef]);
+  };
 
-  // callback from the native module to set a loaded ad
-  const onAdLoaded = useCallback((event) => {
-    setNativeAd(event.nativeEvent);
-  }, []);
+  const onAdLoadedEvent = (event) => {
+    setNativeAd(event.nativeEvent.nativeAd);
+    if (props.onAdLoaded) props.onAdLoaded(event.nativeEvent.adInfo);
+  };
+
+  const onAdLoadFailedEvent = (event) => {
+    if (props.onAdLoadFailed) props.onAdLoadFailed(event.nativeEvent);
+  };
+
+  const onAdClickedEvent = (event) => {
+    if (props.onAdClicked) props.onAdClicked(event.nativeEvent);
+  };
+
+  const onAdRevenuePaidEvent = (event) => {
+    if (props.onAdRevenuePaid) props.onAdRevenuePaid(event.nativeEvent);
+  };
 
   return (
-    <AppLovinMAXNativeAdView {...props} ref={saveElement} onAdLoaded={onAdLoaded}>
+    <AppLovinMAXNativeAdView
+      ref={saveElement}
+      onAdLoadedEvent={onAdLoadedEvent}
+      onAdLoadFailedEvent={onAdLoadFailedEvent}
+      onAdClickedEvent={onAdClickedEvent}
+      onAdRevenuePaidEvent={onAdRevenuePaidEvent}
+      {...props}
+    >
       {props.children}
     </AppLovinMAXNativeAdView>
   );
@@ -100,6 +119,26 @@ NativeAdView.propTypes = {
    * A dictionary value representing the extra parameters to set a list of key-value string pairs.
    */
   extraParameters: PropTypes.object,
+
+  /**
+   * A callback fuction to be fired when a new ad has been loaded.
+   */
+  onAdLoaded: PropTypes.func,
+
+  /**
+   * A callback fuction to be fired when an ad could not be retrieved.
+   */
+  onAdLoadFailed: PropTypes.func,
+
+  /**
+   * A callback fuction to be fired when ad is clicked.
+   */
+  onAdClicked: PropTypes.func,
+
+  /**
+   * A callback fuction to be fired when the revenue event is detected.
+   */
+  onAdRevenuePaid: PropTypes.func,
 };
 
 // Add the child ad components

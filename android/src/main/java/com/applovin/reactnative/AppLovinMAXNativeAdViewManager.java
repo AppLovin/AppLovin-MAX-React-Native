@@ -42,8 +42,12 @@ public class AppLovinMAXNativeAdViewManager
     @Override
     public Map<String, Object> getExportedCustomDirectEventTypeConstants()
     {
+        // mapping Android events to JavaScript events
         return MapBuilder.<String, Object>builder()
-                .put( "onAdLoaded", MapBuilder.of( "registrationName", "onAdLoaded" ) )
+                .put( "onAdLoadedEvent", MapBuilder.of( "registrationName", "onAdLoadedEvent" ) )
+                .put( "onAdLoadFailedEvent", MapBuilder.of( "registrationName", "onAdLoadFailedEvent" ) )
+                .put( "onAdClickedEvent", MapBuilder.of( "registrationName", "onAdClickedEvent" ) )
+                .put( "onAdRevenuePaidEvent", MapBuilder.of( "registrationName", "onAdRevenuePaidEvent" ) )
                 .build();
     }
 

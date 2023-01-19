@@ -1,16 +1,44 @@
-import React, {forwardRef} from 'react';
+import React, {forwardRef, useState, useEffect} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import AppLovinMAX from '../../src/index';
 
 export const NativeAdViewExample = forwardRef((props, ref) => {
     const {adUnitId} = props;
+    const [aspectRatio, setAspectRatio] = useState(1.0);
+    const [mediaViewSize, setMediaViewSize] = useState({});
+
+    // adjust the size of MediaView when `aspectRatio` changes
+    useEffect(() => {
+        if (aspectRatio > 1) {
+            // landscape 
+            setMediaViewSize({aspectRatio: aspectRatio, width: '80%', height: undefined});
+        } else {
+            // portrait or square
+            setMediaViewSize({aspectRatio: aspectRatio, width: undefined, height: 180});
+        }
+    }, [aspectRatio]);
 
     return (
-        <AppLovinMAX.NativeAdView adUnitId={adUnitId}
-                                  placement='myplacement'
-                                  customData='mycustomdata'
-                                  ref={ref}
-                                  style={styles.nativead}>
+        <AppLovinMAX.NativeAdView
+            adUnitId={adUnitId}
+            placement='myplacement'
+            customData='mycustomdata'
+            ref={ref}
+            style={styles.nativead}
+            onAdLoaded={(adInfo) => {
+                setAspectRatio(adInfo.nativeAd.mediaContentAspectRatio);
+                props.onStatusText('Native ad loaded from ' + adInfo.networkName);
+            }}
+            onAdLoadFailed={(errorInfo) => {
+                props.onStatusText('Native ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+            }}
+            onAdClicked={(adInfo) => {
+                props.onStatusText('Native ad clicked');
+            }}
+            onAdRevenuePaid={(adInfo) => {
+                props.onStatusText('Native ad revenue paid: ' + adInfo.revenue);
+            }}
+            >
             <View style={{flex: 1, flexDirection: 'column'}}>
                 <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                     <AppLovinMAX.NativeAdView.IconView style={styles.icon}/>
@@ -21,7 +49,7 @@ export const NativeAdViewExample = forwardRef((props, ref) => {
                     <AppLovinMAX.NativeAdView.OptionsView style={styles.optionsView}/>
                 </View>
                 <AppLovinMAX.NativeAdView.BodyView style={styles.body}/>
-                <AppLovinMAX.NativeAdView.MediaView style={styles.mediaView}/>
+                <AppLovinMAX.NativeAdView.MediaView style={{...styles.mediaView, ...mediaViewSize}}/>
                 <AppLovinMAX.NativeAdView.CallToActionView style={styles.callToAction}/>
             </View>
         </AppLovinMAX.NativeAdView>
@@ -32,7 +60,6 @@ const styles = StyleSheet.create({
     nativead: {
         margin: 10,
         padding: 10,
-        height: 350,
         backgroundColor: '#EFEFEF',
     },
     title: {
@@ -41,7 +68,6 @@ const styles = StyleSheet.create({
         marginHorizontal: 5,
         textAlign: 'left',
         fontWeight: 'bold',
-        alignItems: 'center',
         color: 'black',
     },
     icon: {
@@ -64,15 +90,12 @@ const styles = StyleSheet.create({
         color: 'gray',
     },
     body: {
-        height: 'auto',
         fontSize: 14,
         marginVertical: 8,
     },
     mediaView: {
-        flexGrow: 1,
-        height: 'auto',
-        width: '100%',
-        backgroundColor: 'black',
+        alignSelf: 'center',
+        aspectRatio: 1,
     },
     callToAction: {
         padding: 5,

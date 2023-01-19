@@ -1,11 +1,14 @@
 package com.applovin.reactnative;
 
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
 
 import androidx.annotation.Nullable;
 
@@ -22,6 +25,22 @@ class AppLovinMAXAdViewManager
     public String getName()
     {
         return "AppLovinMAXAdView";
+    }
+
+    @Nullable
+    @Override
+    public Map<String, Object> getExportedCustomDirectEventTypeConstants()
+    {
+        // mapping Android events to JavaScript events
+        return MapBuilder.<String, Object>builder()
+                .put( "onAdLoadedEvent", MapBuilder.of( "registrationName", "onAdLoadedEvent" ) )
+                .put( "onAdLoadFailedEvent", MapBuilder.of( "registrationName", "onAdLoadFailedEvent" ) )
+                .put( "onAdDisplayFailedEvent", MapBuilder.of( "registrationName", "onAdDisplayFailedEvent" ) )
+                .put( "onAdClickedEvent", MapBuilder.of( "registrationName", "onAdClickedEvent" ) )
+                .put( "onAdExpandedEvent", MapBuilder.of( "registrationName", "onAdExpandedEvent" ) )
+                .put( "onAdCollapsedEvent", MapBuilder.of( "registrationName", "onAdCollapsedEvent" ) )
+                .put( "onAdRevenuePaidEvent", MapBuilder.of( "registrationName", "onAdRevenuePaidEvent" ) )
+                .build();
     }
 
     @NotNull

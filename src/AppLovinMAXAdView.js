@@ -68,6 +68,34 @@ const AdView = (props) => {
     }
   }, [isInitialized]);
 
+  const onAdLoadedEvent = (event) => {
+    if (props.onAdLoaded) props.onAdLoaded(event.nativeEvent);
+  };
+
+  const onAdLoadFailedEvent = (event) => {
+    if (props.onAdLoadFailed) props.onAdLoadFailed(event.nativeEvent);
+  };
+
+  const onAdDisplayFailedEvent = (event) => {
+    if (props.onAdDisplayFailed) props.onAdDisplayFailed(event.nativeEvent);
+  };
+
+  const onAdClickedEvent = (event) => {
+    if (props.onAdClicked) props.onAdClicked(event.nativeEvent);
+  };
+
+  const onAdExpandedEvent = (event) => {
+    if (props.onAdExpanded) props.onAdExpanded(event.nativeEvent);
+  };
+
+  const onAdCollapsedEvent = (event) => {
+    if (props.onAdCollapsed) props.onAdCollapsed(event.nativeEvent);
+  };
+
+  const onAdRevenuePaidEvent = (event) => {
+    if (props.onAdRevenuePaid) props.onAdRevenuePaid(event.nativeEvent);
+  };
+
   // Not initialized
   if (!isInitialized) {
     return null;
@@ -85,6 +113,13 @@ const AdView = (props) => {
   return (
     <AppLovinMAXAdView
       style={{...style, ...dimensions}}
+      onAdLoadedEvent={onAdLoadedEvent}
+      onAdLoadFailedEvent={onAdLoadFailedEvent}
+      onAdDisplayFailedEvent={onAdDisplayFailedEvent}
+      onAdClickedEvent={onAdClickedEvent}
+      onAdExpandedEvent={onAdExpandedEvent}
+      onAdCollapsedEvent={onAdCollapsedEvent}
+      onAdRevenuePaidEvent={onAdRevenuePaidEvent}
       {...otherProps}
     />
   );
@@ -120,6 +155,41 @@ AdView.propTypes = {
    * A boolean value representing whether or not to enable auto-refresh. Note that auto-refresh is enabled by default.
    */
   autoRefresh: PropTypes.bool,
+
+  /**
+   * A callback fuction to be fired when a new ad has been loaded.
+   */
+  onAdLoaded: PropTypes.func,
+
+  /**
+   * A callback fuction to be fired when an ad could not be retrieved.
+   */
+  onAdLoadFailed: PropTypes.func,
+
+  /**
+   * A callback fuction to be fired when the ad failed to display.
+   */
+  onAdDisplayFailed: PropTypes.func,
+
+  /**
+   * A callback fuction to be fired when ad is clicked.
+   */
+  onAdClicked: PropTypes.func,
+
+  /**
+   * A callback fuction to be fired when the ad view is expanded.
+   */
+  onAdExpanded: PropTypes.func,
+
+  /**
+   * A callback fuction to be fired when the ad view is collapsed.
+   */
+  onAdCollapsed: PropTypes.func,
+
+  /**
+   * A callback fuction to be fired when the revenue event is detected.
+   */
+  onAdRevenuePaid: PropTypes.func,
 };
 
 // Defiens default values for the props.

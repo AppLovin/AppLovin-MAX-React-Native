@@ -20,7 +20,10 @@ RCT_EXPORT_VIEW_PROPERTY(customData, NSString)
 RCT_EXPORT_VIEW_PROPERTY(extraParameters, NSDictionary)
 
 // Callback
-RCT_EXPORT_VIEW_PROPERTY(onAdLoaded, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onAdLoadedEvent, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onAdLoadFailedEvent, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onAdClickedEvent, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onAdRevenuePaidEvent, RCTDirectEventBlock)
 
 // Asset views
 RCT_EXPORT_VIEW_PROPERTY(titleView, NSNumber)
