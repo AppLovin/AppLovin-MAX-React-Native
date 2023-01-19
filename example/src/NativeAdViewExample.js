@@ -1,27 +1,63 @@
-import React, {forwardRef} from 'react';
+import React, {forwardRef, useState, useEffect} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import AppLovinMAX from '../../src/index';
 
 export const NativeAdViewExample = forwardRef((props, ref) => {
     const {adUnitId} = props;
+    const [aspectRatio, setAspectRatio] = useState(1.0);
+    const [mediaViewSize, setMediaViewSize] = useState({});
+    const [hasOptionsView, setHasOptionsView] = useState(false);
+
+    // adjust the size of MediaView when `aspectRatio` changes
+    useEffect(() => {
+        if (aspectRatio > 1) {
+            // landscape 
+            setMediaViewSize({aspectRatio: aspectRatio, width: '80%', height: undefined});
+        } else {
+            // portrait or square
+            setMediaViewSize({aspectRatio: aspectRatio, width: undefined, height: 180});
+        }
+    }, [aspectRatio]);
 
     return (
-        <AppLovinMAX.NativeAdView adUnitId={adUnitId}
-                                  placement='myplacement'
-                                  customData='mycustomdata'
-                                  ref={ref}
-                                  style={styles.nativead}>
+        <AppLovinMAX.NativeAdView
+            adUnitId={adUnitId}
+            placement='myplacement'
+            customData='mycustomdata'
+            ref={ref}
+            style={styles.nativead}
+            onAdLoaded={(adInfo) => {
+                setAspectRatio(adInfo.nativeAd.mediaContentAspectRatio);
+                setHasOptionsView(adInfo.nativeAd.hasOptionsView);
+                props.onStatusText('Native ad loaded from ' + adInfo.networkName);
+            }}
+            onAdLoadFailed={(errorInfo) => {
+                props.onStatusText('Native ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+            }}
+            onAdClicked={(adInfo) => {
+                props.onStatusText('Native ad clicked');
+            }}
+            onAdRevenuePaid={(adInfo) => {
+                props.onStatusText('Native ad revenue paid: ' + adInfo.revenue);
+            }}
+            >
             <View style={{flex: 1, flexDirection: 'column'}}>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <View style={{flexDirection: 'row'}}>
                     <AppLovinMAX.NativeAdView.IconView style={styles.icon}/>
                     <View style={{flexDirection: 'column', flexGrow: 1}}>
-                        <AppLovinMAX.NativeAdView.TitleView style={styles.title}/>
+                    {
+                        hasOptionsView ?
+                            <AppLovinMAX.NativeAdView.OptionsView style={styles.optionsView}/>
+                        :
+                            // show 'AD' when OptionsView is missing
+                            <Text style={styles.adMark}>AD</Text>
+                    }
                         <AppLovinMAX.NativeAdView.AdvertiserView style={styles.advertiser}/>
                     </View>
-                    <AppLovinMAX.NativeAdView.OptionsView style={styles.optionsView}/>
                 </View>
+                <AppLovinMAX.NativeAdView.TitleView style={styles.title}/>
+                <AppLovinMAX.NativeAdView.MediaView style={{...styles.mediaView, ...mediaViewSize}}/>
                 <AppLovinMAX.NativeAdView.BodyView style={styles.body}/>
-                <AppLovinMAX.NativeAdView.MediaView style={styles.mediaView}/>
                 <AppLovinMAX.NativeAdView.CallToActionView style={styles.callToAction}/>
             </View>
         </AppLovinMAX.NativeAdView>
@@ -31,48 +67,49 @@ export const NativeAdViewExample = forwardRef((props, ref) => {
 const styles = StyleSheet.create({
     nativead: {
         margin: 10,
-        padding: 10,
-        height: 350,
+        padding: 4,
         backgroundColor: '#EFEFEF',
     },
     title: {
-        fontSize: 20,
-        marginTop: 4,
-        marginHorizontal: 5,
-        textAlign: 'left',
+        alignSelf: 'center',
+        fontSize: 18,
         fontWeight: 'bold',
-        alignItems: 'center',
         color: 'black',
     },
     icon: {
-        margin: 5,
         height: 40,
         aspectRatio: 1,
         borderRadius: 5,
     },
     optionsView: {
+        alignSelf: 'flex-end',
         height: 20,
         width: 20,
         backgroundColor: '#EFEFEF',
     },
+    adMark: {
+        alignSelf: 'flex-end',
+        height: 20,
+        width: 20,
+        backgroundColor: '#EFEFEF',
+        fontWeight: 'bold',
+        fontSize: 12,
+    },
     advertiser: {
-        marginHorizontal: 5,
-        marginTop: 2,
+        alignSelf: 'flex-end',
         textAlign: 'left',
         fontSize: 16,
         fontWeight: '400',
         color: 'gray',
     },
     body: {
-        height: 'auto',
+        alignSelf: 'center',
         fontSize: 14,
-        marginVertical: 8,
+        margin: 4,
     },
     mediaView: {
-        flexGrow: 1,
-        height: 'auto',
-        width: '100%',
-        backgroundColor: 'black',
+        alignSelf: 'center',
+        aspectRatio: 1,
     },
     callToAction: {
         padding: 5,

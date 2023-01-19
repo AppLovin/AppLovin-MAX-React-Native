@@ -976,10 +976,6 @@ public class AppLovinMAXModule
         {
             name = "OnRewardedAdLoadedEvent";
         }
-        else if ( MaxAdFormat.NATIVE == adFormat )
-        {
-            name = "OnNativeAdLoadedEvent";
-        }
         else if ( MaxAdFormat.APP_OPEN == adFormat )
         {
             name = "OnAppOpenAdLoadedEvent";
@@ -1028,24 +1024,9 @@ public class AppLovinMAXModule
         sendReactNativeEventForAdLoadFailed( name, adUnitId, error );
     }
 
-    public void sendReactNativeEventForAdLoadFailed(final String name, final String adUnitId, final @Nullable MaxError error)
+    void sendReactNativeEventForAdLoadFailed(final String name, final String adUnitId, @Nullable final MaxError error)
     {
-        WritableMap params = Arguments.createMap();
-        params.putString( "adUnitId", adUnitId );
-
-        if ( error != null )
-        {
-            params.putInt( "code", error.getCode() );
-            params.putString( "message", error.getMessage() );
-            params.putString( "adLoadFailureInfo", error.getAdLoadFailureInfo() );
-            params.putMap( "waterfall", createAdWaterfallInfo( error.getWaterfall() ) );
-        }
-        else
-        {
-            params.putInt( "code", MaxErrorCode.UNSPECIFIED );
-        }
-
-        sendReactNativeEvent( name, params );
+        sendReactNativeEvent( name, getAdLoadFailedInfo( adUnitId, error ) );
     }
 
     @Override
@@ -1068,10 +1049,6 @@ public class AppLovinMAXModule
         else if ( MaxAdFormat.REWARDED == adFormat )
         {
             name = "OnRewardedAdClickedEvent";
-        }
-        else if ( MaxAdFormat.NATIVE == adFormat )
-        {
-            name = "OnNativeAdClickedEvent";
         }
         else if ( MaxAdFormat.APP_OPEN == adFormat )
         {
@@ -1131,11 +1108,7 @@ public class AppLovinMAXModule
             name = "OnAppOpenAdFailedToDisplayEvent";
         }
 
-        WritableMap params = getAdInfo( ad );
-        params.putInt( "code", error.getCode() );
-        params.putString( "message", error.getMessage() );
-
-        sendReactNativeEvent( name, params );
+        sendReactNativeEvent( name, getAdDisplayFailedInfo( ad, error ) );
     }
 
     @Override
@@ -1209,10 +1182,6 @@ public class AppLovinMAXModule
         {
             name = "OnRewardedAdRevenuePaid";
         }
-        else if ( MaxAdFormat.NATIVE == adFormat )
-        {
-            name = "OnNativeAdRevenuePaid";
-        }
         else if ( MaxAdFormat.APP_OPEN == adFormat )
         {
             name = "OnAppOpenAdRevenuePaid";
@@ -1223,12 +1192,7 @@ public class AppLovinMAXModule
             return;
         }
 
-        WritableMap adInfo = getAdInfo( ad );
-        adInfo.putString( "networkPlacement", ad.getNetworkPlacement() );
-        adInfo.putString( "revenuePrecision", ad.getRevenuePrecision() );
-        adInfo.putString( "countryCode", sdkConfiguration.getCountryCode() );
-
-        sendReactNativeEvent( name, adInfo );
+        sendReactNativeEvent( name, getAdRevenueInfo( ad ) );
     }
 
     @Override
@@ -1959,7 +1923,7 @@ public class AppLovinMAXModule
 
     // AD INFO
 
-    private WritableMap getAdInfo(final MaxAd ad)
+    public WritableMap getAdInfo(final MaxAd ad)
     {
         WritableMap adInfo = Arguments.createMap();
         adInfo.putString( "adUnitId", ad.getAdUnitId() );
@@ -1970,6 +1934,43 @@ public class AppLovinMAXModule
         adInfo.putMap( "waterfall", createAdWaterfallInfo( ad.getWaterfall() ) );
         adInfo.putString( "dspName", !TextUtils.isEmpty( ad.getDspName() ) ? ad.getDspName() : "" );
 
+        return adInfo;
+    }
+
+    public WritableMap getAdLoadFailedInfo(final String adUnitId, @Nullable final MaxError error)
+    {
+        WritableMap errInfo = Arguments.createMap();
+        errInfo.putString( "adUnitId", adUnitId );
+
+        if ( error != null )
+        {
+            errInfo.putInt( "code", error.getCode() );
+            errInfo.putString( "message", error.getMessage() );
+            errInfo.putString( "adLoadFailureInfo", error.getAdLoadFailureInfo() );
+            errInfo.putMap( "waterfall", createAdWaterfallInfo( error.getWaterfall() ) );
+        }
+        else
+        {
+            errInfo.putInt( "code", MaxErrorCode.UNSPECIFIED );
+        }
+
+        return errInfo;
+    }
+
+    public WritableMap getAdDisplayFailedInfo(final MaxAd ad, final MaxError error)
+    {
+        WritableMap params = getAdInfo( ad );
+        params.putInt( "code", error.getCode() );
+        params.putString( "message", error.getMessage() );
+        return params;
+    }
+
+    public WritableMap getAdRevenueInfo(final MaxAd ad)
+    {
+        WritableMap adInfo = getAdInfo( ad );
+        adInfo.putString( "networkPlacement", ad.getNetworkPlacement() );
+        adInfo.putString( "revenuePrecision", ad.getRevenuePrecision() );
+        adInfo.putString( "countryCode", sdkConfiguration.getCountryCode() );
         return adInfo;
     }
 

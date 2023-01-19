@@ -775,10 +775,6 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
     {
         name = @"OnRewardedAdLoadedEvent";
     }
-    else if ( MAAdFormat.native == adFormat )
-    {
-        name = @"OnNativeAdLoadedEvent";
-    }
     else if ( MAAdFormat.appOpen == adFormat )
     {
         name = @"OnAppOpenAdLoadedEvent";
@@ -790,21 +786,6 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
     }
     
     [self sendReactNativeEventWithName: name body: [self adInfoForAd: ad]];
-}
-
-- (void)sendReactNativeEventForAdLoadFailed:(NSString *)name forAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(nullable MAError *)error
-{
-    NSDictionary *body = ( error ) ?
-        @{@"adUnitId": adUnitIdentifier,
-          @"code" : @(error.code),
-          @"message" : error.message,
-          @"adLoadFailureInfo" : error.adLoadFailureInfo ?: @"",
-          @"waterfall": [self createAdWaterfallInfo: error.waterfall]}
-    :
-        @{@"adUnitId": adUnitIdentifier,
-          @"code" : @(MAErrorCodeUnspecified)};
-    
-    [self sendReactNativeEventWithName: name body: body];
 }
 
 - (void)didFailToLoadAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(MAError *)error
@@ -838,7 +819,7 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
         return;
     }
     
-    [self sendReactNativeEventForAdLoadFailed: name forAdUnitIdentifier: adUnitIdentifier withError: error];
+    [self sendReactNativeEventWithName: name body: [self adLoadFailedInfoForAd: adUnitIdentifier withError: error]];
 }
 
 - (void)didClickAd:(MAAd *)ad
@@ -860,10 +841,6 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
     else if ( MAAdFormat.rewarded == adFormat )
     {
         name = @"OnRewardedAdClickedEvent";
-    }
-    else if ( MAAdFormat.native == adFormat )
-    {
-        name = @"OnNativeAdClickedEvent";
     }
     else if ( MAAdFormat.appOpen == adFormat )
     {
@@ -921,11 +898,7 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
         name = @"OnAppOpenAdFailedToDisplayEvent";
     }
     
-    NSMutableDictionary *body = [@{@"code" : @(error.code),
-                                   @"message" : error.message} mutableCopy];
-    [body addEntriesFromDictionary: [self adInfoForAd: ad]];
-    
-    [self sendReactNativeEventWithName: name body: body];
+    [self sendReactNativeEventWithName: name body: [self adDisplayFailedInfoForAd: ad withError: error]];
 }
 
 - (void)didHideAd:(MAAd *)ad
@@ -997,10 +970,6 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
     {
         name = @"OnRewardedAdRevenuePaid";
     }
-    else if ( MAAdFormat.native == adFormat )
-    {
-        name = @"OnNativeAdRevenuePaid";
-    }
     else if ( MAAdFormat.appOpen == adFormat )
     {
         name = @"OnAppOpenAdRevenuePaid";
@@ -1010,13 +979,8 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
         [self logInvalidAdFormat: adFormat];
         return;
     }
-
-    NSMutableDictionary *body = [self adInfoForAd: ad].mutableCopy;
-    body[@"networkPlacement"] = ad.networkPlacement;
-    body[@"revenuePrecision"] = ad.revenuePrecision;
-    body[@"countryCode"] = self.sdk.configuration.countryCode;
-
-    [self sendReactNativeEventWithName: name body: body];
+    
+    [self sendReactNativeEventWithName: name body: [self adRevenueInfoForAd: ad]];
 }
 
 - (void)didCompleteRewardedVideoForAd:(MAAd *)ad
@@ -1627,6 +1591,36 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
              @"dspName" : ad.DSPName ?: @""};
 }
 
+- (NSDictionary<NSString *, id> *)adLoadFailedInfoForAd:(NSString *)adUnitIdentifier withError:(MAError *)error
+{
+    return ( error ) ?
+        @{@"adUnitId": adUnitIdentifier,
+          @"code" : @(error.code),
+          @"message" : error.message,
+          @"adLoadFailureInfo" : error.adLoadFailureInfo ?: @"",
+          @"waterfall": [self createAdWaterfallInfo: error.waterfall]}
+    :
+        @{@"adUnitId": adUnitIdentifier,
+          @"code" : @(MAErrorCodeUnspecified)};
+}
+
+- (NSDictionary<NSString *, id> *)adDisplayFailedInfoForAd:(MAAd *)ad withError:(MAError *)error
+{
+    NSMutableDictionary *body = [@{@"code" : @(error.code),
+                                   @"message" : error.message} mutableCopy];
+    [body addEntriesFromDictionary: [self adInfoForAd: ad]];
+    return body;
+}
+
+- (NSDictionary<NSString *, id> *)adRevenueInfoForAd:(MAAd *)ad
+{
+    NSMutableDictionary *body = [self adInfoForAd: ad].mutableCopy;
+    body[@"networkPlacement"] = ad.networkPlacement;
+    body[@"revenuePrecision"] = ad.revenuePrecision;
+    body[@"countryCode"] = self.sdk.configuration.countryCode;
+    return body;
+}
+
 #pragma mark - Waterfall Information
 
 - (NSDictionary<NSString *, id> *)createAdWaterfallInfo:(MAAdWaterfallInfo *)waterfallInfo
@@ -1736,12 +1730,7 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
              @"OnAppOpenAdDisplayedEvent",
              @"OnAppOpenAdFailedToDisplayEvent",
              @"OnAppOpenAdHiddenEvent",
-             @"OnAppOpenAdRevenuePaid",
-             
-             @"OnNativeAdLoadedEvent",
-             @"OnNativeAdLoadFailedEvent",
-             @"OnNativeAdClickedEvent",
-             @"OnNativeAdRevenuePaid"];
+             @"OnAppOpenAdRevenuePaid"];
 }
 
 - (void)startObserving

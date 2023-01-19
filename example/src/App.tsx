@@ -232,20 +232,6 @@ const App = () => {
     AppLovinMAX.addEventListener('OnMRecAdRevenuePaid', (adInfo) => {
       setStatusText('MREC ad revenue paid: ' + adInfo.revenue);
     });
-
-    // Native Ad Listeners
-    AppLovinMAX.addEventListener('OnNativeAdLoadedEvent', (adInfo) => {
-      setStatusText('Native ad loaded from: ' + adInfo.networkName);
-    });
-    AppLovinMAX.addEventListener('OnNativeAdLoadFailedEvent', (errorInfo) => {
-      setStatusText('Native ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
-    });
-    AppLovinMAX.addEventListener('OnNativeAdClickedEvent', (adInfo) => {
-      setStatusText('Native ad clicked');
-    });
-    AppLovinMAX.addEventListener('OnNativeAdRevenuePaid', (adInfo) => {
-      setStatusText('Native ad revenue paid: ' + adInfo.revenue);
-    });
   }
 
   const getInterstitialButtonTitle = () => {
@@ -360,7 +346,26 @@ const App = () => {
           isNativeUIBannerShowing &&
             <AppLovinMAX.AdView adUnitId={BANNER_AD_UNIT_ID}
                                 adFormat={AppLovinMAX.AdFormat.BANNER}
-                                style={styles.banner}/>
+                                style={styles.banner}
+                                onAdLoaded={(adInfo) => {
+                                  setStatusText('Banner ad loaded from ' + adInfo.networkName);
+                                }}
+                                onAdLoadFailed={(errorInfo) => {
+                                  setStatusText('Banner ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+                                }}
+                                onAdClicked={(adInfo) => {
+                                  setStatusText('Banner ad clicked');
+                                }}
+                                onAdExpanded={(adInfo) => {
+                                  setStatusText('Banner ad expanded')
+                                }}
+                                onAdCollapsed={(adInfo) => {
+                                  setStatusText('Banner ad collapsed')
+                                }}
+                                onAdRevenuePaid={(adInfo) => {
+                                  setStatusText('Banner ad revenue paid: ' + adInfo.revenue);
+                                }}
+            />
         }
         <AppButton
           title={isNativeUIMRecShowing ? 'Hide Native UI MREC' : 'Show Native UI MREC'}
@@ -373,8 +378,27 @@ const App = () => {
           isNativeUIMRecShowing &&
             <AppLovinMAX.AdView adUnitId={MREC_AD_UNIT_ID}
                                 adFormat={AppLovinMAX.AdFormat.MREC}
-                                style={styles.mrec}/>
-        }
+                                style={styles.mrec}
+                                onAdLoaded={(adInfo) => {
+                                  setStatusText('MREC ad loaded from ' + adInfo.networkName);
+                                }}
+                                onAdLoadFailed={(errorInfo) => {
+                                  setStatusText('MREC ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+                                }}
+                                onAdClicked={(adInfo) => {
+                                  setStatusText('MREC ad clicked');
+                                }}
+                                onAdExpanded={(adInfo) => {
+                                  setStatusText('MREC ad expanded')
+                                }}
+                                onAdCollapsed={(adInfo) => {
+                                  setStatusText('MREC ad collapsed')
+                                }}
+                                onAdRevenuePaid={(adInfo) => {
+                                  setStatusText('MREC ad revenue paid: ' + adInfo.revenue);
+                                }}
+            />
+       }
         <AppButton
           title={isProgrammaticMRecShowing ? 'Hide Programmatic MREC' : 'Show Programmatic MREC'}
           enabled={isInitialized && !isNativeUIMRecShowing}
@@ -415,7 +439,13 @@ const App = () => {
         {
           isNativeAdShowing &&
             <View style={{ position: 'absolute', top: '12%', width: '100%' }}>
-              <NativeAdViewExample adUnitId={NATIVE_AD_UNIT_ID} ref={nativeAdViewRef}/>
+              <NativeAdViewExample
+                adUnitId={NATIVE_AD_UNIT_ID}
+                ref={nativeAdViewRef}
+                onStatusText={(text) => {
+                  setStatusText(text);
+                }}
+              />
             </View>
         }
       </View>
