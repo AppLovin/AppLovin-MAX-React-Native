@@ -483,6 +483,11 @@ const setAppOpenAdExtraParameter = (adUnitId, key, value) => {
   });
 }
 
+const getConsentDialogState = () => {
+  console.warn("getConsentDialogState() has been deprecated and will be removed in a future release.");
+  return AppLovinMAX.getConsentDialogState();
+};
+
 export default {
   ...AppLovinMAX,
   AdView,
@@ -559,6 +564,11 @@ export default {
   showAppOpenAd,
   setAppOpenAdExtraParameter,
 
+  /*--------------------------------------------------*/
+  /* DEPRECATED (will be removed in a future release) */
+  /*--------------------------------------------------*/
+  getConsentDialogState,
+
   /*----------------------*/
   /** AUTO-DECLARED APIs **/
   /*----------------------*/
@@ -573,7 +583,6 @@ export default {
   /* PRIVACY APIs */
   /*--------------*/
   /* showConsentDialog(promise) */
-  /* getConsentDialogState(promise) */
   /* setHasUserConsent(hasUserConsent) */
   /* hasUserConsent(promise) */
   /* setIsAgeRestrictedUser(isAgeRestrictedUser) */

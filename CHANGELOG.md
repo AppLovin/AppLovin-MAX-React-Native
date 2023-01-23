@@ -2,6 +2,7 @@
 
 ## x.x.x
 * Update synchronous APIs to use `Promise`s.
+* Deprecated getConsentDialogState().
 ## 4.1.4
 * Fix NPE for accessing a null icon in the native ad on Android.
 ## 4.1.3
