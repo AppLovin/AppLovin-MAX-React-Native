@@ -1,7 +1,7 @@
 ## Versions
 
 ## x.x.x
-* Add support for Promise to replace synchronous methods.
+* Update synchronous APIs to use `Promise`s.
 ## 4.1.4
 * Fix NPE for accessing a null icon in the native ad on Android.
 ## 4.1.3

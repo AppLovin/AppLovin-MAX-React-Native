@@ -34,6 +34,12 @@ const AdView = (props) => {
         console.warn("ERROR: AppLovinMAX.AdView is mounted before the initialization of the AppLovin MAX React Native module");
       }
     });
+  }, []);
+
+  useEffect(() => {
+    if (!isInitialized) {
+      return;
+    }
 
     const sizeForBannerFormat = async () => {
       const isTablet = await AppLovinMAX.isTablet();
@@ -44,27 +50,41 @@ const AdView = (props) => {
       } else {
         height = isTablet ? 90 : 50;
       }
-      setDimensions({width: style.width ? style.width : width, height: style.height ? style.height : height});
+      setDimensions({width: (style.width && style.width !== 'auto') ? style.width : width,
+                     height: (style.height && style.height !== 'auto') ? style.height : height});
     }
 
-    // set width and height when either one of them or both are not specified
-    if (!(style.width && style.height)) {
+    // Check whether or not app specifies both width and height but not with 'auto'
+    const isSizeSpecified = ((style.width && style.width !== 'auto') &&
+                             (style.height && style.height !== 'auto'));
+
+    if (!isSizeSpecified) {
       if (props.adFormat === AdFormat.BANNER) {
         sizeForBannerFormat();
       } else {
-        setDimensions({width: style.width ? style.width : 300, height: style.height ? style.height : 250});
+        setDimensions({width: (style.width && style.width !== 'auto') ? style.width : 300,
+                       height: (style.height && style.height !== 'auto') ? style.height : 250});
       }
     }
-  }, []);
+  }, [isInitialized]);
 
-  // Not ready to render AppLovinMAXAdView
-  if (!isInitialized || !((style.width && style.height) || (Object.keys(dimensions).length > 0))) {
+  // Not initialized
+  if (!isInitialized) {
     return null;
+  } else {
+    const isSizeSpecified = ((style.width && style.width !== 'auto') &&
+                             (style.height && style.height !== 'auto'));
+    const isDimensionsSet = (Object.keys(dimensions).length > 0);
+
+    // Not sized yet
+    if (!(isSizeSpecified || isDimensionsSet)) {
+      return null;
+    }
   }
 
   return (
     <AppLovinMAXAdView
-      style={{...dimensions, ...style}}
+      style={{ ...style, ...dimensions}}
       {...otherProps}
     />
   );
