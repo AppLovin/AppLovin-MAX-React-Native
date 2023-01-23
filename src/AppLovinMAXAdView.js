@@ -84,7 +84,7 @@ const AdView = (props) => {
 
   return (
     <AppLovinMAXAdView
-      style={{ ...style, ...dimensions}}
+      style={{...style, ...dimensions}}
       {...otherProps}
     />
   );
