@@ -401,6 +401,7 @@ public class AppLovinMAXModule
         } );
     }
 
+    @Deprecated
     @ReactMethod(isBlockingSynchronousMethod = true)
     public int getConsentDialogState()
     {
