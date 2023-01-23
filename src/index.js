@@ -315,13 +315,9 @@ const loadInterstitial = (adUnitId) => {
 }
 
 const isInterstitialReady = (adUnitId) => {
-  return new Promise((resolve, reject) => {
-    resolve(AppLovinMAX.isInitialized());
-  }).then(isInitialized => {
+  return AppLovinMAX.isInitialized().then(isInitialized => {
     if (isInitialized) {
-      return new Promise((resolve, reject) => {
-        resolve(AppLovinMAX.isInterstitialReady(adUnitId));
-      });
+      return AppLovinMAX.isInterstitialReady(adUnitId);
     } else {
       throw new Error("Failed to execute isInterstitialReady() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!");
     }
@@ -376,13 +372,9 @@ const loadRewardedAd = (adUnitId) => {
 }
 
 const isRewardedAdReady = (adUnitId) => {
-  return new Promise((resolve, reject) => {
-    resolve(AppLovinMAX.isInitialized());
-  }).then(isInitialized => {
+  return AppLovinMAX.isInitialized().then(isInitialized => {
     if (isInitialized) {
-      return new Promise((resolve, reject) => {
-        resolve(AppLovinMAX.isRewardedAdReady(adUnitId));
-      });
+      return AppLovinMAX.isRewardedAdReady(adUnitId);
     } else {
       throw new Error("Failed to execute isRewardedAdReady() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!");
     }
@@ -437,13 +429,9 @@ const loadAppOpenAd = (adUnitId) => {
 }
 
 const isAppOpenAdReady = (adUnitId) => {
-  return new Promise((resolve, reject) => {
-    resolve(AppLovinMAX.isInitialized());
-  }).then(isInitialized => {
+  return AppLovinMAX.isInitialized().then(isInitialized => {
     if (isInitialized) {
-      return new Promise((resolve, reject) => {
-        resolve(AppLovinMAX.isAppOpenAdReady(adUnitId));
-      });
+      return AppLovinMAX.isAppOpenAdReady(adUnitId);
     } else {
       throw new Error("Failed to execute isAppOpenAdReady() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!");
     }
@@ -503,9 +491,7 @@ export default {
   addEventListener,
   removeEventListener,
   initialize(sdkKey) {
-    return new Promise((resolve, reject) => {
-      resolve(AppLovinMAX.initialize(VERSION, sdkKey));
-    });
+    return AppLovinMAX.initialize(VERSION, sdkKey);
   },
 
   /*---------*/
