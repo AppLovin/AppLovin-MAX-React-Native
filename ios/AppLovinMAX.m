@@ -134,7 +134,7 @@ RCT_EXPORT_MODULE()
     return self;
 }
 
-RCT_EXPORT_METHOD(isInitialized :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(isInitialized:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
     resolve(@([self isPluginInitialized] && [self isSDKInitialized]));
 }
@@ -269,7 +269,7 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
 
 #pragma mark - General Public API
 
-RCT_EXPORT_METHOD(isTablet :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(isTablet:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
     resolve(@([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad));
 }
@@ -285,14 +285,14 @@ RCT_EXPORT_METHOD(showMediationDebugger)
     [self.sdk showMediationDebugger];
 }
 
-RCT_EXPORT_METHOD(showConsentDialog:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(showConsentDialog:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
     [self log: @"Failed to show consent dialog - Unavailable on iOS, please use the consent flow: https://dash.applovin.com/documentation/mediation/react-native/getting-started/consent-flow"];
     
-    callback(nil);
+    resolve(nil);
 }
 
-RCT_EXPORT_METHOD(getConsentDialogState :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(getConsentDialogState:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
     resolve([self isSDKInitialized] ? @(self.sdkConfiguration.consentDialogState) : @(ALConsentDialogStateUnknown));
 }
@@ -302,7 +302,7 @@ RCT_EXPORT_METHOD(setHasUserConsent:(BOOL)hasUserConsent)
     [ALPrivacySettings setHasUserConsent: hasUserConsent];
 }
 
-RCT_EXPORT_METHOD(hasUserConsent :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(hasUserConsent:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
     resolve(@([ALPrivacySettings hasUserConsent]));
 }
@@ -312,7 +312,7 @@ RCT_EXPORT_METHOD(setIsAgeRestrictedUser:(BOOL)isAgeRestrictedUser)
     [ALPrivacySettings setIsAgeRestrictedUser: isAgeRestrictedUser];
 }
 
-RCT_EXPORT_METHOD(isAgeRestrictedUser :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(isAgeRestrictedUser:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
     resolve(@([ALPrivacySettings isAgeRestrictedUser]));
 }
@@ -322,7 +322,7 @@ RCT_EXPORT_METHOD(setDoNotSell:(BOOL)doNotSell)
     [ALPrivacySettings setDoNotSell: doNotSell];
 }
 
-RCT_EXPORT_METHOD(isDoNotSell :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(isDoNotSell:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
     resolve(@([ALPrivacySettings isDoNotSell]));
 }
@@ -347,7 +347,7 @@ RCT_EXPORT_METHOD(setMuted:(BOOL)muted)
     self.sdk.settings.muted = muted;
 }
 
-RCT_EXPORT_METHOD(isMuted :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(isMuted:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
     resolve([self isPluginInitialized] ? @(self.sdk.settings.muted) : @(NO) );
 }

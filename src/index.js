@@ -572,7 +572,7 @@ export default {
   /*--------------*/
   /* PRIVACY APIs */
   /*--------------*/
-  /* showConsentDialog(callback) */
+  /* showConsentDialog(promise) */
   /* getConsentDialogState(promise) */
   /* setHasUserConsent(hasUserConsent) */
   /* hasUserConsent(promise) */

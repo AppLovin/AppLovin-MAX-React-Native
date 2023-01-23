@@ -385,7 +385,7 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod
-    public void showConsentDialog(final Callback callback)
+    public void showConsentDialog(final Promise promise)
     {
         if ( sdk == null )
         {
@@ -398,7 +398,7 @@ public class AppLovinMAXModule
             @Override
             public void onDismiss()
             {
-                callback.invoke();
+                promise.resolve( null );
             }
         } );
     }
