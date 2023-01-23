@@ -134,12 +134,12 @@ RCT_EXPORT_MODULE()
     return self;
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isInitialized)
+RCT_EXPORT_METHOD(isInitialized:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    return @([self isPluginInitialized] && [self isSDKInitialized]);
+    resolve(@([self isPluginInitialized] && [self isSDKInitialized]));
 }
 
-RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
     // Guard against running init logic multiple times
     if ( [self isPluginInitialized] ) return;
@@ -157,8 +157,8 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         }
         else
         {
-            [NSException raise: NSInternalInconsistencyException
-                        format: @"Unable to initialize AppLovin SDK - no SDK key provided and not found in Info.plist!"];
+            reject(RCTErrorUnspecified, @"Unable to initialize AppLovin SDK - no SDK key provided and not found in Info.plist!", nil);
+            return;
         }
     }
     
@@ -262,16 +262,16 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         self.sdkConfiguration = configuration;
         self.sdkInitialized = YES;
         
-        callback(@[@{@"consentDialogState" : @(configuration.consentDialogState),
-                     @"countryCode" : self.sdk.configuration.countryCode}]);
+        resolve(@[@{@"consentDialogState" : @(configuration.consentDialogState),
+                    @"countryCode" : self.sdk.configuration.countryCode}]);
     }];
 }
 
 #pragma mark - General Public API
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isTablet)
+RCT_EXPORT_METHOD(isTablet:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    return @([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad);
+    resolve(@([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad));
 }
 
 RCT_EXPORT_METHOD(showMediationDebugger)
@@ -285,18 +285,16 @@ RCT_EXPORT_METHOD(showMediationDebugger)
     [self.sdk showMediationDebugger];
 }
 
-RCT_EXPORT_METHOD(showConsentDialog:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(showConsentDialog:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
     [self log: @"Failed to show consent dialog - Unavailable on iOS, please use the consent flow: https://dash.applovin.com/documentation/mediation/react-native/getting-started/consent-flow"];
     
-    callback(nil);
+    resolve(nil);
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getConsentDialogState)
+RCT_EXPORT_METHOD(getConsentDialogState:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    if ( ![self isInitialized] ) return @(ALConsentDialogStateUnknown);
-    
-    return @(self.sdkConfiguration.consentDialogState);
+    resolve([self isSDKInitialized] ? @(self.sdkConfiguration.consentDialogState) : @(ALConsentDialogStateUnknown));
 }
 
 RCT_EXPORT_METHOD(setHasUserConsent:(BOOL)hasUserConsent)
@@ -304,9 +302,9 @@ RCT_EXPORT_METHOD(setHasUserConsent:(BOOL)hasUserConsent)
     [ALPrivacySettings setHasUserConsent: hasUserConsent];
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(hasUserConsent)
+RCT_EXPORT_METHOD(hasUserConsent:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    return @([ALPrivacySettings hasUserConsent]);
+    resolve(@([ALPrivacySettings hasUserConsent]));
 }
 
 RCT_EXPORT_METHOD(setIsAgeRestrictedUser:(BOOL)isAgeRestrictedUser)
@@ -314,9 +312,9 @@ RCT_EXPORT_METHOD(setIsAgeRestrictedUser:(BOOL)isAgeRestrictedUser)
     [ALPrivacySettings setIsAgeRestrictedUser: isAgeRestrictedUser];
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isAgeRestrictedUser)
+RCT_EXPORT_METHOD(isAgeRestrictedUser:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    return @([ALPrivacySettings isAgeRestrictedUser]);
+    resolve(@([ALPrivacySettings isAgeRestrictedUser]));
 }
 
 RCT_EXPORT_METHOD(setDoNotSell:(BOOL)doNotSell)
@@ -324,9 +322,9 @@ RCT_EXPORT_METHOD(setDoNotSell:(BOOL)doNotSell)
     [ALPrivacySettings setDoNotSell: doNotSell];
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isDoNotSell)
+RCT_EXPORT_METHOD(isDoNotSell:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    return @([ALPrivacySettings isDoNotSell]);
+    resolve(@([ALPrivacySettings isDoNotSell]));
 }
 
 RCT_EXPORT_METHOD(setUserId:(NSString *)userId)
@@ -349,11 +347,9 @@ RCT_EXPORT_METHOD(setMuted:(BOOL)muted)
     self.sdk.settings.muted = muted;
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isMuted)
+RCT_EXPORT_METHOD(isMuted:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    if ( ![self isPluginInitialized] ) return @(NO);
-    
-    return @(self.sdk.settings.muted);
+    resolve([self isPluginInitialized] ? @(self.sdk.settings.muted) : @(NO) );
 }
 
 RCT_EXPORT_METHOD(setVerboseLogging:(BOOL)enabled)
@@ -619,9 +615,9 @@ RCT_EXPORT_METHOD(destroyBanner:(NSString *)adUnitIdentifier)
     [self destroyAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getAdaptiveBannerHeightForWidth:(CGFloat)width)
+RCT_EXPORT_METHOD(getAdaptiveBannerHeightForWidth:(CGFloat)width :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    return @([DEVICE_SPECIFIC_ADVIEW_AD_FORMAT adaptiveSizeForWidth: width].height);
+    resolve(@([DEVICE_SPECIFIC_ADVIEW_AD_FORMAT adaptiveSizeForWidth: width].height));
 }
 
 #pragma mark - MRECs
@@ -679,10 +675,10 @@ RCT_EXPORT_METHOD(loadInterstitial:(NSString *)adUnitIdentifier)
     [interstitial loadAd];
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isInterstitialReady:(NSString *)adUnitIdentifier)
+RCT_EXPORT_METHOD(isInterstitialReady:(NSString *)adUnitIdentifier :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
     MAInterstitialAd *interstitial = [self retrieveInterstitialForAdUnitIdentifier: adUnitIdentifier];
-    return @([interstitial isReady]);
+    resolve(@([interstitial isReady]));
 }
 
 RCT_EXPORT_METHOD(showInterstitial:(NSString *)adUnitIdentifier :(nullable NSString *)placement :(nullable NSString *)customData)
@@ -705,10 +701,10 @@ RCT_EXPORT_METHOD(loadRewardedAd:(NSString *)adUnitIdentifier)
     [rewardedAd loadAd];
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isRewardedAdReady:(NSString *)adUnitIdentifier)
+RCT_EXPORT_METHOD(isRewardedAdReady:(NSString *)adUnitIdentifier :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
     MARewardedAd *rewardedAd = [self retrieveRewardedAdForAdUnitIdentifier: adUnitIdentifier];
-    return @([rewardedAd isReady]);
+    resolve(@([rewardedAd isReady]));
 }
 
 RCT_EXPORT_METHOD(showRewardedAd:(NSString *)adUnitIdentifier :(nullable NSString *)placement :(nullable NSString *)customData)
@@ -731,10 +727,10 @@ RCT_EXPORT_METHOD(loadAppOpenAd:(NSString *)adUnitIdentifier)
     [appOpenAd loadAd];
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isAppOpenAdReady:(NSString *)adUnitIdentifier)
+RCT_EXPORT_METHOD(isAppOpenAdReady:(NSString *)adUnitIdentifier :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
     MAAppOpenAd *appOpenAd = [self retrieveAppOpenAdForAdUnitIdentifier: adUnitIdentifier];
-    return @([appOpenAd isReady]);
+    resolve(@([appOpenAd isReady]));
 }
 
 RCT_EXPORT_METHOD(showAppOpenAd:(NSString *)adUnitIdentifier placement:(nullable NSString *)placement customData:(nullable NSString *)customData)

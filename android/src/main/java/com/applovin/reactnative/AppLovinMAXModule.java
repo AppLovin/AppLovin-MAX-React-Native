@@ -47,6 +47,7 @@ import com.applovin.sdk.AppLovinUserService;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -167,20 +168,20 @@ public class AppLovinMAXModule
         return sCurrentActivity;
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public boolean isInitialized()
+    @ReactMethod
+    public void isInitialized(final Promise promise)
     {
-        return isPluginInitialized && isSdkInitialized;
+        promise.resolve( isPluginInitialized && isSdkInitialized );
     }
 
     @ReactMethod
-    public void initialize(final String pluginVersion, final String sdkKey, final Callback callback)
+    public void initialize(final String pluginVersion, final String sdkKey, final Promise promise)
     {
         // Check if Activity is available
         Activity currentActivity = maybeGetCurrentActivity();
         if ( currentActivity != null )
         {
-            performInitialization( pluginVersion, sdkKey, currentActivity, callback );
+            performInitialization( pluginVersion, sdkKey, currentActivity, promise );
         }
         else
         {
@@ -198,13 +199,13 @@ public class AppLovinMAXModule
                         contextToUse = getReactApplicationContext();
                     }
 
-                    performInitialization( pluginVersion, sdkKey, contextToUse, callback );
+                    performInitialization( pluginVersion, sdkKey, contextToUse, promise );
                 }
             }, TimeUnit.SECONDS.toMillis( 3 ) );
         }
     }
 
-    private void performInitialization(final String pluginVersion, final String sdkKey, final Context context, final Callback callback)
+    private void performInitialization(final String pluginVersion, final String sdkKey, final Context context, final Promise promise)
     {
         // Guard against running init logic multiple times
         if ( isPluginInitialized ) return;
@@ -233,7 +234,8 @@ public class AppLovinMAXModule
 
             if ( TextUtils.isEmpty( sdkKeyToUse ) )
             {
-                throw new IllegalStateException( "Unable to initialize AppLovin SDK - no SDK key provided and not found in Android Manifest!" );
+                promise.reject( new IllegalStateException( "Unable to initialize AppLovin SDK - no SDK key provided and not found in Android Manifest!" ) );
+                return;
             }
         }
 
@@ -356,18 +358,18 @@ public class AppLovinMAXModule
                 WritableMap sdkConfiguration = Arguments.createMap();
                 sdkConfiguration.putInt( "consentDialogState", configuration.getConsentDialogState().ordinal() );
                 sdkConfiguration.putString( "countryCode", configuration.getCountryCode() );
-                callback.invoke( sdkConfiguration );
+                promise.resolve( sdkConfiguration );
             }
         } );
     }
 
     // General Public API
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public boolean isTablet()
+    @ReactMethod
+    public void isTablet(final Promise promise)
     {
         Context contextToUse = ( maybeGetCurrentActivity() != null ) ? maybeGetCurrentActivity() : getReactApplicationContext();
-        return AppLovinSdkUtils.isTablet( contextToUse );
+        promise.resolve( AppLovinSdkUtils.isTablet( contextToUse ) );
     }
 
     @ReactMethod
@@ -382,8 +384,8 @@ public class AppLovinMAXModule
         sdk.showMediationDebugger();
     }
 
-    @ReactMethod()
-    public void showConsentDialog(final Callback callback)
+    @ReactMethod
+    public void showConsentDialog(final Promise promise)
     {
         if ( sdk == null )
         {
@@ -396,56 +398,56 @@ public class AppLovinMAXModule
             @Override
             public void onDismiss()
             {
-                callback.invoke();
+                promise.resolve( null );
             }
         } );
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public int getConsentDialogState()
+    @ReactMethod
+    public void getConsentDialogState(final Promise promise)
     {
-        if ( !isInitialized() ) return AppLovinSdkConfiguration.ConsentDialogState.UNKNOWN.ordinal();
-
-        return sdkConfiguration.getConsentDialogState().ordinal();
+        promise.resolve( isSdkInitialized ?
+                                 sdkConfiguration.getConsentDialogState().ordinal() :
+                                 AppLovinSdkConfiguration.ConsentDialogState.UNKNOWN.ordinal() );
     }
 
-    @ReactMethod()
-    public void setHasUserConsent(boolean hasUserConsent)
+    @ReactMethod
+    public void setHasUserConsent(final boolean hasUserConsent)
     {
         AppLovinPrivacySettings.setHasUserConsent( hasUserConsent, maybeGetCurrentActivity() );
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public boolean hasUserConsent()
+    @ReactMethod
+    public void hasUserConsent(final Promise promise)
     {
-        return AppLovinPrivacySettings.hasUserConsent( maybeGetCurrentActivity() );
+        promise.resolve( AppLovinPrivacySettings.hasUserConsent( maybeGetCurrentActivity() ) );
     }
 
-    @ReactMethod()
-    public void setIsAgeRestrictedUser(boolean isAgeRestrictedUser)
+    @ReactMethod
+    public void setIsAgeRestrictedUser(final boolean isAgeRestrictedUser)
     {
         AppLovinPrivacySettings.setIsAgeRestrictedUser( isAgeRestrictedUser, maybeGetCurrentActivity() );
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public boolean isAgeRestrictedUser()
+    @ReactMethod
+    public void isAgeRestrictedUser(final Promise promise)
     {
-        return AppLovinPrivacySettings.isAgeRestrictedUser( maybeGetCurrentActivity() );
+        promise.resolve( AppLovinPrivacySettings.isAgeRestrictedUser( maybeGetCurrentActivity() ) );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setDoNotSell(final boolean doNotSell)
     {
         AppLovinPrivacySettings.setDoNotSell( doNotSell, maybeGetCurrentActivity() );
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public boolean isDoNotSell()
+    @ReactMethod
+    public void isDoNotSell(final Promise promise)
     {
-        return AppLovinPrivacySettings.isDoNotSell( maybeGetCurrentActivity() );
+        promise.resolve( AppLovinPrivacySettings.isDoNotSell( maybeGetCurrentActivity() ) );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setUserId(String userId)
     {
         if ( isPluginInitialized )
@@ -459,7 +461,7 @@ public class AppLovinMAXModule
         }
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setMuted(final boolean muted)
     {
         if ( !isPluginInitialized ) return;
@@ -467,15 +469,13 @@ public class AppLovinMAXModule
         sdk.getSettings().setMuted( muted );
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public boolean isMuted()
+    @ReactMethod
+    public void isMuted(final Promise promise)
     {
-        if ( !isPluginInitialized ) return false;
-
-        return sdk.getSettings().isMuted();
+        promise.resolve( isPluginInitialized ? sdk.getSettings().isMuted() : false );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setVerboseLogging(final boolean enabled)
     {
         if ( isPluginInitialized )
@@ -489,7 +489,7 @@ public class AppLovinMAXModule
         }
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setCreativeDebuggerEnabled(final boolean enabled)
     {
         if ( isPluginInitialized )
@@ -503,7 +503,7 @@ public class AppLovinMAXModule
         }
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setTestDeviceAdvertisingIds(final ReadableArray rawAdvertisingIds)
     {
         List<String> advertisingIds = new ArrayList<>( rawAdvertisingIds.size() );
@@ -525,7 +525,7 @@ public class AppLovinMAXModule
         }
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setExtraParameter(final String key, @Nullable final String value)
     {
         if ( TextUtils.isEmpty( key ) )
@@ -546,18 +546,18 @@ public class AppLovinMAXModule
         }
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setConsentFlowEnabled(final boolean enabled) { }
 
-    @ReactMethod()
+    @ReactMethod
     public void setPrivacyPolicyUrl(final String urlString) { }
 
-    @ReactMethod()
+    @ReactMethod
     public void setTermsOfServiceUrl(final String urlString) { }
 
     // Data Passing
 
-    @ReactMethod()
+    @ReactMethod
     public void setTargetingDataYearOfBirth(final int yearOfBirth)
     {
         if ( sdk == null )
@@ -569,7 +569,7 @@ public class AppLovinMAXModule
         sdk.getTargetingData().setYearOfBirth( yearOfBirth <= 0 ? null : yearOfBirth );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setTargetingDataGender(@Nullable final String gender)
     {
         if ( sdk == null )
@@ -581,7 +581,7 @@ public class AppLovinMAXModule
         sdk.getTargetingData().setGender( getAppLovinGender( gender ) );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setTargetingDataMaximumAdContentRating(final int maximumAdContentRating)
     {
         if ( sdk == null )
@@ -593,7 +593,7 @@ public class AppLovinMAXModule
         sdk.getTargetingData().setMaximumAdContentRating( getAppLovinAdContentRating( maximumAdContentRating ) );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setTargetingDataEmail(@Nullable final String email)
     {
         if ( sdk == null )
@@ -605,7 +605,7 @@ public class AppLovinMAXModule
         sdk.getTargetingData().setEmail( email );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setTargetingDataPhoneNumber(@Nullable final String phoneNumber)
     {
         if ( sdk == null )
@@ -617,7 +617,7 @@ public class AppLovinMAXModule
         sdk.getTargetingData().setPhoneNumber( phoneNumber );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setTargetingDataKeywords(@Nullable final ReadableArray rawKeywords)
     {
         if ( sdk == null )
@@ -629,7 +629,7 @@ public class AppLovinMAXModule
         sdk.getTargetingData().setKeywords( getStringArrayList( rawKeywords ) );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setTargetingDataInterests(@Nullable final ReadableArray rawInterests)
     {
         if ( sdk == null )
@@ -641,7 +641,7 @@ public class AppLovinMAXModule
         sdk.getTargetingData().setInterests( getStringArrayList( rawInterests ) );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void clearAllTargetingData()
     {
         if ( sdk == null )
@@ -659,7 +659,7 @@ public class AppLovinMAXModule
         sdk.getTargetingData().clearAll();
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setLocationCollectionEnabled(final boolean enabled)
     {
         if ( isPluginInitialized )
@@ -675,7 +675,7 @@ public class AppLovinMAXModule
 
     // EVENT TRACKING
 
-    @ReactMethod()
+    @ReactMethod
     public void trackEvent(final String event, final ReadableMap parameters)
     {
         // Convert Map<String, Object> type of `parameters.toHashMap()` to Map<String, String>
@@ -694,147 +694,147 @@ public class AppLovinMAXModule
 
     // BANNERS
 
-    @ReactMethod()
+    @ReactMethod
     public void createBanner(final String adUnitId, final String bannerPosition)
     {
         createAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), bannerPosition, DEFAULT_AD_VIEW_OFFSET );
     }
 
-    @ReactMethod() // NOTE: No function overloading in JS so we need new method signature
+    @ReactMethod // NOTE: No function overloading in JS so we need new method signature
     public void createBannerWithOffsets(final String adUnitId, final String bannerPosition, final float x, final float y)
     {
         createAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), bannerPosition, getOffsetPixels( x, y, getCurrentActivity() ) );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setBannerBackgroundColor(final String adUnitId, final String hexColorCode)
     {
         setAdViewBackgroundColor( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), hexColorCode );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setBannerPlacement(final String adUnitId, final String placement)
     {
         setAdViewPlacement( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), placement );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setBannerCustomData(final String adUnitId, final String customData)
     {
         setAdViewCustomData( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), customData );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setBannerWidth(final String adUnitId, final int widthDp)
     {
         setAdViewWidth( adUnitId, widthDp, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void updateBannerPosition(final String adUnitId, final String bannerPosition)
     {
         updateAdViewPosition( adUnitId, bannerPosition, DEFAULT_AD_VIEW_OFFSET, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void updateBannerOffsets(final String adUnitId, final float x, final float y)
     {
         updateAdViewPosition( adUnitId, mAdViewPositions.get( adUnitId ), getOffsetPixels( x, y, getCurrentActivity() ), getDeviceSpecificBannerAdViewAdFormat() );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setBannerExtraParameter(final String adUnitId, final String key, final String value)
     {
         setAdViewExtraParameters( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), key, value );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void startBannerAutoRefresh(final String adUnitId)
     {
         startAutoRefresh( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void stopBannerAutoRefresh(final String adUnitId)
     {
         stopAutoRefresh( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void showBanner(final String adUnitId)
     {
         showAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void hideBanner(final String adUnitId)
     {
         hideAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void destroyBanner(final String adUnitId)
     {
         destroyAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public float getAdaptiveBannerHeightForWidth(final float width)
+    @ReactMethod
+    public void getAdaptiveBannerHeightForWidth(final float width, final Promise promise)
     {
-        return getDeviceSpecificBannerAdViewAdFormat().getAdaptiveSize( (int) width, getCurrentActivity() ).getHeight();
+        promise.resolve( getDeviceSpecificBannerAdViewAdFormat().getAdaptiveSize( (int) width, getCurrentActivity() ).getHeight() );
     }
 
     // MRECS
 
-    @ReactMethod()
+    @ReactMethod
     public void createMRec(final String adUnitId, final String mrecPosition)
     {
         createAdView( adUnitId, MaxAdFormat.MREC, mrecPosition, DEFAULT_AD_VIEW_OFFSET );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setMRecPlacement(final String adUnitId, final String placement)
     {
         setAdViewPlacement( adUnitId, MaxAdFormat.MREC, placement );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setMRecCustomData(final String adUnitId, final String customData)
     {
         setAdViewCustomData( adUnitId, MaxAdFormat.MREC, customData );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void updateMRecPosition(final String adUnitId, final String mrecPosition)
     {
         updateAdViewPosition( adUnitId, mrecPosition, DEFAULT_AD_VIEW_OFFSET, MaxAdFormat.MREC );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void startMRecAutoRefresh(final String adUnitId)
     {
         startAutoRefresh( adUnitId, MaxAdFormat.MREC );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void stopMRecAutoRefresh(final String adUnitId)
     {
         stopAutoRefresh( adUnitId, MaxAdFormat.MREC );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void showMRec(final String adUnitId)
     {
         showAdView( adUnitId, MaxAdFormat.MREC );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void hideMRec(final String adUnitId)
     {
         hideAdView( adUnitId, MaxAdFormat.MREC );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void destroyMRec(final String adUnitId)
     {
         destroyAdView( adUnitId, MaxAdFormat.MREC );
@@ -842,7 +842,7 @@ public class AppLovinMAXModule
 
     // INTERSTITIALS
 
-    @ReactMethod()
+    @ReactMethod
     public void loadInterstitial(final String adUnitId)
     {
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
@@ -855,21 +855,21 @@ public class AppLovinMAXModule
         interstitial.loadAd();
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public boolean isInterstitialReady(final String adUnitId)
+    @ReactMethod
+    public void isInterstitialReady(final String adUnitId, final Promise promise)
     {
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
-        return interstitial.isReady();
+        promise.resolve( interstitial.isReady() );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void showInterstitial(final String adUnitId, final String placement, final String customData)
     {
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
         interstitial.showAd( placement, customData );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setInterstitialExtraParameter(final String adUnitId, final String key, final String value)
     {
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
@@ -878,7 +878,7 @@ public class AppLovinMAXModule
 
     // REWARDED
 
-    @ReactMethod()
+    @ReactMethod
     public void loadRewardedAd(final String adUnitId)
     {
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
@@ -891,21 +891,21 @@ public class AppLovinMAXModule
         rewardedAd.loadAd();
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public boolean isRewardedAdReady(final String adUnitId)
+    @ReactMethod
+    public void isRewardedAdReady(final String adUnitId, final Promise promise)
     {
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
-        return rewardedAd.isReady();
+        promise.resolve( rewardedAd.isReady() );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void showRewardedAd(final String adUnitId, final String placement, final String customData)
     {
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
         rewardedAd.showAd( placement, customData );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setRewardedAdExtraParameter(final String adUnitId, final String key, final String value)
     {
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
@@ -914,28 +914,28 @@ public class AppLovinMAXModule
 
     // APP OPEN AD
 
-    @ReactMethod()
+    @ReactMethod
     public void loadAppOpenAd(final String adUnitId)
     {
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
         appOpenAd.loadAd();
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public boolean isAppOpenAdReady(final String adUnitId)
+    @ReactMethod
+    public void isAppOpenAdReady(final String adUnitId, final Promise promise)
     {
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
-        return appOpenAd.isReady();
+        promise.resolve( appOpenAd.isReady() );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void showAppOpenAd(final String adUnitId, @Nullable final String placement, @Nullable final String customData)
     {
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
         appOpenAd.showAd( placement, customData );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setAppOpenAdExtraParameter(final String adUnitId, final String key, final String value)
     {
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );

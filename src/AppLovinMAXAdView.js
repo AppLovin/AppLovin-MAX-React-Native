@@ -1,6 +1,6 @@
 import { NativeModules, requireNativeComponent, UIManager, findNodeHandle, View, Text, StyleSheet } from "react-native";
 import PropTypes from "prop-types";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const { AppLovinMAX } = NativeModules;
 
@@ -21,65 +21,70 @@ export const AdViewPosition = {
   BOTTOM_RIGHT: "bottom_right",
 };
 
-/**
- * Returns AdView when AppLovinMax has been initialized or returns a black empty View as 
- * a placeholder of AdView when AppLovinMax has not been initialized.  
- *
- * The purpose of this AdView wrapper is for the application not to access AdView 
- * before the completion of the AppLovinMax initialization. 
- *
- * Note: this does not re-render itself when the status of the AppLovinMax initialization
- * has changed so that the black view may stay even after the completion of 
- * the AppLovinMax initialization.
- */
-const AdViewWrapper = (props) => {
-  const {style, ...rest} = props;
-  return (
-    AppLovinMAX.isInitialized() ?
-      <AdView {...style} {...rest}/>
-    :
-      <View style={[styles.container, style]} {...rest}>
-        {
-          console.warn('[AppLovinSdk] [AppLovinMAX] <AdView/> has been mounted before AppLovin initialization')
-        } 
-      </View>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    backgroundColor: 'black',
-    borderColor: 'whitesmoke',
-    borderWidth: 1,
-  },
-});
-
 const AdView = (props) => {
   const {style, ...otherProps} = props;
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [dimensions, setDimensions] = useState({});
 
-  const sizeForAdFormat = () => {
-    if (props.adFormat === AdFormat.BANNER) {
-      let width = AppLovinMAX.isTablet() ? 728 : 320;
-      let height;
-
-      if (props.adaptiveBannerEnabled) {
-        height = AppLovinMAX.getAdaptiveBannerHeightForWidth(-1);
-      } else {
-        height = AppLovinMAX.isTablet() ? 90 : 50;
+  useEffect(() => {
+    // check that AppLovinMAX has been initialized
+    AppLovinMAX.isInitialized().then(result => {
+      setIsInitialized(result);
+      if (!result) {
+        console.warn("ERROR: AppLovinMAX.AdView is mounted before the initialization of the AppLovin MAX React Native module");
       }
+    });
+  }, []);
 
-      return { width: width, height: height }
-    } else {
-      return { width: 300, height: 250 }
+  useEffect(() => {
+    if (!isInitialized) {
+      return;
     }
-  };
+
+    const sizeForBannerFormat = async () => {
+      const isTablet = await AppLovinMAX.isTablet();
+      const width = isTablet ? 728 : 320;
+      let height;
+      if (props.adaptiveBannerEnabled) {
+        height = await AppLovinMAX.getAdaptiveBannerHeightForWidth(-1);
+      } else {
+        height = isTablet ? 90 : 50;
+      }
+      setDimensions({width: (style.width && style.width !== 'auto') ? style.width : width,
+                     height: (style.height && style.height !== 'auto') ? style.height : height});
+    }
+
+    // Check whether or not app specifies both width and height but not with 'auto'
+    const isSizeSpecified = ((style.width && style.width !== 'auto') &&
+                             (style.height && style.height !== 'auto'));
+
+    if (!isSizeSpecified) {
+      if (props.adFormat === AdFormat.BANNER) {
+        sizeForBannerFormat();
+      } else {
+        setDimensions({width: (style.width && style.width !== 'auto') ? style.width : 300,
+                       height: (style.height && style.height !== 'auto') ? style.height : 250});
+      }
+    }
+  }, [isInitialized]);
+
+  // Not initialized
+  if (!isInitialized) {
+    return null;
+  } else {
+    const isSizeSpecified = ((style.width && style.width !== 'auto') &&
+                             (style.height && style.height !== 'auto'));
+    const isDimensionsSet = (Object.keys(dimensions).length > 0);
+
+    // Not sized yet
+    if (!(isSizeSpecified || isDimensionsSet)) {
+      return null;
+    }
+  }
 
   return (
     <AppLovinMAXAdView
-      style={[sizeForAdFormat(), style]}
+      style={{...style, ...dimensions}}
       {...otherProps}
     />
   );
@@ -123,8 +128,7 @@ AdView.defaultProps = {
   autoRefresh: true,
 };
 
-
 // requireNativeComponent automatically resolves 'AppLovinMAXAdView' to 'AppLovinMAXAdViewManager'
 const AppLovinMAXAdView = requireNativeComponent("AppLovinMAXAdView", AdView);
 
-export default AdViewWrapper;
+export default AdView;

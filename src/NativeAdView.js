@@ -1,4 +1,4 @@
-import React, { forwardRef, useContext, useImperativeHandle, useRef, useCallback } from "react";
+import React, { forwardRef, useContext, useImperativeHandle, useRef, useCallback, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { NativeModules, requireNativeComponent, UIManager, findNodeHandle, View, StyleSheet } from "react-native";
 import { NativeAdViewContext, NativeAdViewProvider } from "./NativeAdViewProvider";
@@ -6,33 +6,29 @@ import { TitleView, AdvertiserView, BodyView, CallToActionView, IconView, Option
 
 const { AppLovinMAX } = NativeModules;
 
-// Returns NativeAdView if AppLovinMAX has been initialized, or returns an empty black view if
-// AppLovinMAX has not been initialized
 const NativeAdViewWrapper = forwardRef((props, ref) => {
-  const {style, ...rest} = props;
-  return (
-    AppLovinMAX.isInitialized() ?
-      <NativeAdViewProvider>
-        <NativeAdView {...props} ref={ref}/>
-      </NativeAdViewProvider>
-    :
-      <View style={[styles.container, style]} {...rest}>
-        {
-          console.warn('[AppLovinSdk] [AppLovinMAX] <NativeAdView/> has been mounted before AppLovin initialization')
-        } 
-      </View>
-  );
-});
+  const [isInitialized, setIsInitialized] = useState(false);
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    backgroundColor: 'black',
-    borderColor: 'whitesmoke',
-    borderWidth: 1,
-  },
+  useEffect(() => {
+    // check that AppLovinMAX has been initialized
+    AppLovinMAX.isInitialized().then(result => {
+      setIsInitialized(result);
+      if (!result) {
+        console.warn("ERROR: AppLovinMAX.NativeAdView is mounted before the initialization of the AppLovin MAX React Native module");
+      }
+    });
+  }, []);
+
+  // Not ready to render NativeAdView
+  if (!isInitialized) {
+    return null;
+  }
+
+  return (
+    <NativeAdViewProvider>
+      <NativeAdView {...props} ref={ref}/>
+    </NativeAdViewProvider>
+  );
 });
 
 const AppLovinMAXNativeAdView = requireNativeComponent('AppLovinMAXNativeAdView', NativeAdView);
