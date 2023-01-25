@@ -389,7 +389,7 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            logUninitializedAccessError( "showConsentDialog" );
+            promise.reject( "EUNSPECIFIED", "Failed to execute showConsentDialog() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!" );
             return;
         }
 
