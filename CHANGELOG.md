@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+* Add support for callback functions to  `AppLovinAdView` and `AppLovinNativeAdView` native UI components.
 * Update synchronous APIs to use `Promise`s.
 * Deprecated getConsentDialogState().
 ## 4.1.4

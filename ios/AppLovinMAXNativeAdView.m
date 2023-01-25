@@ -18,7 +18,7 @@
 - (void)handleNativeAdViewRenderedForAd:(MAAd *)ad;
 @end
 
-@interface AppLovinMAXNativeAdView()<MANativeAdDelegate>
+@interface AppLovinMAXNativeAdView()<MANativeAdDelegate, MAAdRevenueDelegate>
 
 @property (nonatomic, weak) RCTBridge *bridge;
 @property (nonatomic, strong, nullable) MANativeAdLoader *adLoader;
@@ -32,7 +32,10 @@
 @property (nonatomic, copy, nullable) NSDictionary *extraParameters;
 
 // Callback to `AppLovinNativeAdView.js`
-@property (nonatomic, copy) RCTDirectEventBlock onAdLoaded;
+@property (nonatomic, copy) RCTDirectEventBlock onAdLoadedEvent;
+@property (nonatomic, copy) RCTDirectEventBlock onAdLoadFailedEvent;
+@property (nonatomic, copy) RCTDirectEventBlock onAdClickedEvent;
+@property (nonatomic, copy) RCTDirectEventBlock onAdRevenuePaidEvent;
 
 // TODO: Allow publisher to select which views are clickable and which isn't via prop
 @property (nonatomic, strong) NSMutableArray<UIView *> *clickableViews;
@@ -62,7 +65,7 @@
     {
         _adLoader = [[MANativeAdLoader alloc] initWithAdUnitIdentifier: self.adUnitId sdk: [AppLovinMAX shared].sdk];
         _adLoader.nativeAdDelegate = self;
-        _adLoader.revenueDelegate = [AppLovinMAX shared];
+        _adLoader.revenueDelegate = self;
     }
     
     return _adLoader;
@@ -238,7 +241,7 @@
         [self.isLoading set: NO];
         
         [[AppLovinMAX shared] log: @"Native ad is of template type, failing ad load..."];
-        [[AppLovinMAX shared] sendReactNativeEventForAdLoadFailed: @"OnNativeAdLoadFailedEvent" forAdUnitIdentifier: self.adUnitId withError: nil];
+        self.onAdLoadFailedEvent([[AppLovinMAX shared] adLoadFailedInfoForAd: self.adUnitId withError: nil]);
         
         return;
     }
@@ -253,9 +256,6 @@
     // After notifying the RN layer - have slight delay to let views bind to this layer in `clickableViews` before registering
     dispatchOnMainQueueAfter(0.5, ^{
         
-        // Notify publisher
-        [[AppLovinMAX shared] didLoadAd: ad];
-        
         [self.adLoader registerClickableViews: self.clickableViews withContainer: self forAd: ad];
         [self.adLoader handleNativeAdViewRenderedForAd: ad];
       
@@ -265,8 +265,32 @@
 
 - (void)sendAdLoadedReactNativeEventForAd:(MANativeAd *)ad
 {
-    NSMutableDictionary<NSString *, id> *jsNativeAd = [NSMutableDictionary dictionaryWithCapacity: 6];
+    // 1. AdInfo for publisher to be notified via `onAdLoaded`
     
+    NSMutableDictionary<NSString *, id> *nativeAdInfo = [NSMutableDictionary dictionaryWithCapacity: 2];
+    if ( !isnan(ad.mediaContentAspectRatio) )
+    {
+        // The aspect ratio can be 0.0f when it is not provided by the network.
+        if ( fabs(ad.mediaContentAspectRatio) < FLT_EPSILON )
+        {
+            nativeAdInfo[@"mediaContentAspectRatio"] = @(1.0);
+        }
+        else
+        {
+            nativeAdInfo[@"mediaContentAspectRatio"] = @(ad.mediaContentAspectRatio);
+        }
+    }
+    else
+    {
+        nativeAdInfo[@"mediaContentAspectRatio"] = @(1.0);
+    }
+
+    NSMutableDictionary *adInfo = [[AppLovinMAX shared] adInfoForAd: self.nativeAd].mutableCopy;
+    adInfo[@"nativeAd"] = nativeAdInfo;
+    
+    // 2. NativeAd for `AppLovinNativeAdView.js` to render the views
+    
+    NSMutableDictionary<NSString *, id> *jsNativeAd = [NSMutableDictionary dictionaryWithCapacity: 5];
     if ( ad.title )
     {
         jsNativeAd[@"title"] = ad.title;
@@ -294,13 +318,13 @@
             jsNativeAd[@"image"] = @(YES);
         }
     }
-    if ( !isnan(ad.mediaContentAspectRatio) )
-    {
-        jsNativeAd[@"mediaContentAspectRatio"] = @(ad.mediaContentAspectRatio);
-    }
-     
-    // Send to `AppLovinNativeAdView.js` to render the views
-    self.onAdLoaded(jsNativeAd);
+    
+    NSMutableDictionary<NSString *, id> *arg = [NSMutableDictionary dictionaryWithCapacity: 2];
+    arg[@"adInfo"] = adInfo;
+    arg[@"nativeAd"] = jsNativeAd;
+    
+    // Send to `AppLovinNativeAdView.js`
+    self.onAdLoadedEvent(arg);
 }
 
 - (void)didFailToLoadNativeAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(MAError *)error
@@ -310,12 +334,19 @@
     [[AppLovinMAX shared] log: @"Failed to load native ad for Ad Unit ID %@ with error: %@", self.adUnitId, error];
     
     // Notify publisher
-    [[AppLovinMAX shared] sendReactNativeEventForAdLoadFailed: @"OnNativeAdLoadFailedEvent" forAdUnitIdentifier: self.adUnitId withError: error];
+    self.onAdLoadFailedEvent([[AppLovinMAX shared] adLoadFailedInfoForAd: adUnitIdentifier withError: error]);
 }
 
 - (void)didClickNativeAd:(MAAd *)ad
 {
-    [[AppLovinMAX shared] didClickAd: ad];
+    self.onAdClickedEvent([[AppLovinMAX shared] adInfoForAd: ad]);
+}
+
+#pragma mark - Ad Revenue Delegate
+
+- (void)didPayRevenueForAd:(MAAd *)ad
+{
+    self.onAdRevenuePaidEvent([[AppLovinMAX shared] adRevenueInfoForAd: ad]);
 }
 
 - (void)destroyCurrentAdIfNeeded
