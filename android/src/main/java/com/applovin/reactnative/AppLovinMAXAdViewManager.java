@@ -6,7 +6,6 @@ import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
@@ -20,7 +19,6 @@ class AppLovinMAXAdViewManager
 {
     public AppLovinMAXAdViewManager(final ReactApplicationContext reactApplicationContext) { }
 
-    @NotNull
     @Override
     public String getName()
     {
@@ -43,9 +41,8 @@ class AppLovinMAXAdViewManager
                 .build();
     }
 
-    @NotNull
     @Override
-    protected AppLovinMAXAdView createViewInstance(@NotNull final ThemedReactContext reactContext)
+    protected AppLovinMAXAdView createViewInstance(final ThemedReactContext reactContext)
     {
         // NOTE: Do not set frame or backgroundColor as RN will overwrite the values set by your custom class in order to match your JavaScript component's layout props - hence wrapper
         return new AppLovinMAXAdView( reactContext );
@@ -88,7 +85,7 @@ class AppLovinMAXAdViewManager
     }
 
     @Override
-    public void onDropViewInstance(@NotNull AppLovinMAXAdView view)
+    public void onDropViewInstance(AppLovinMAXAdView view)
     {
         view.destroy();
 
