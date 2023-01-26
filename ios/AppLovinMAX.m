@@ -287,9 +287,7 @@ RCT_EXPORT_METHOD(showMediationDebugger)
 
 RCT_EXPORT_METHOD(showConsentDialog:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    [self log: @"Failed to show consent dialog - Unavailable on iOS, please use the consent flow: https://dash.applovin.com/documentation/mediation/react-native/getting-started/consent-flow"];
-    
-    resolve(nil);
+    reject(RCTErrorUnspecified, @"Failed to show consent dialog - Unavailable on iOS, please use the consent flow: https://dash.applovin.com/documentation/mediation/react-native/getting-started/consent-flow", nil);
 }
 
 RCT_EXPORT_METHOD(getConsentDialogState:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
