@@ -150,5 +150,5 @@ dependencies {
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-  implementation 'com.applovin:applovin-sdk:11.6.0'
+  implementation 'com.applovin:applovin-sdk:11.7.0'
 }
