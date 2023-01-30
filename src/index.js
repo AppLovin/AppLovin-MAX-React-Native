@@ -48,8 +48,14 @@ const removeEventListener = (event) => {
   }
 };
 
-const logUninitializedAccessError = (callingMethod) => {
-  console.warn("ERROR: Failed to execute " + callingMethod + "() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!");
+const runIfInit = (callingMethodName, callingMethod, ...params) => {
+  return AppLovinMAX.isInitialized().then(isInitialized => {
+    if (isInitialized) {
+      return callingMethod(...params);
+    } else {
+      throw new Error("Failed to execute " + callingMethodName + "() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!");
+    }
+  });
 }
 
 /*---------*/
@@ -57,133 +63,81 @@ const logUninitializedAccessError = (callingMethod) => {
 /*---------*/
 
 const createBanner = (adUnitId, bannerPosition) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.createBanner(adUnitId, bannerPosition);
-    } else {
-      logUninitializedAccessError('createBanner');
-    }
-  });
+  return runIfInit(createBanner.name,
+                   AppLovinMAX.createBanner,
+                   adUnitId, bannerPosition);
 }
 
 const createBannerWithOffsets = (adUnitId, bannerPosition, xOffset, yOffset) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.createBannerWithOffsets(adUnitId, bannerPosition, xOffset, yOffset);
-    } else {
-      logUninitializedAccessError('createBannerWithOffsets');
-    }
-  });
+  return runIfInit(createBannerWithOffsets.name,
+                   AppLovinMAX.createBannerWithOffsets,
+                   adUnitId, bannerPosition, xOffset, yOffset);
 }
 
 const setBannerBackgroundColor = (adUnitId, hexColorCode) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.setBannerBackgroundColor(adUnitId, hexColorCode);
-    } else {
-      logUninitializedAccessError('setBannerBackgroundColor');
-    }
-  });
+  return runIfInit(setBannerBackgroundColor.name,
+                   AppLovinMAX.setBannerBackgroundColor,
+                   adUnitId, hexColorCode);
 }
 
 const setBannerPlacement = (adUnitId, placement) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.setBannerPlacement(adUnitId, placement);
-    } else {
-      logUninitializedAccessError('setBannerPlacement');
-    }
-  });
+  return runIfInit(setBannerPlacement.name,
+                   AppLovinMAX.setBannerPlacement,
+                   adUnitId, placement);
 }
 
 const setBannerWidth = (adUnitId, width) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.setBannerWidth(adUnitId, width);
-    } else {
-      logUninitializedAccessError('setBannerWidth');
-    }
-  });
+  return runIfInit(setBannerWidth.name,
+                   AppLovinMAX.setBannerWidth,
+                   adUnitId, width);
 }
 
 const updateBannerPosition = (adUnitId, bannerPosition) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.updateBannerPosition(adUnitId, bannerPosition);
-    } else {
-      logUninitializedAccessError('updateBannerPosition');
-    }
-  });
+  return runIfInit(updateBannerPosition.name,
+                   AppLovinMAX.updateBannerPosition,
+                   adUnitId, bannerPosition);
 }
 
 const updateBannerOffsets = (adUnitId, xOffset, yOffset) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.updateBannerOffsets(adUnitId, xOffset, yOffset);
-    } else {
-      logUninitializedAccessError('updateBannerOffsets');
-    }
-  });
+  return runIfInit(updateBannerOffsets.name,
+                   AppLovinMAX.updateBannerOffsets,
+                   adUnitId, xOffset, yOffset);
 }
 
 const setBannerExtraParameter = (adUnitId, key, value) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.setBannerExtraParameter(adUnitId, key, value);
-    } else {
-      logUninitializedAccessError('setBannerExtraParameter');
-    }
-  });
+  return runIfInit(setBannerExtraParameter.name,
+                   AppLovinMAX.setBannerExtraParameter,
+                   adUnitId, key, value);
 }
 
 const startBannerAutoRefresh = (adUnitId) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.startBannerAutoRefresh(adUnitId);
-    } else {
-      logUninitializedAccessError('startBannerAutoRefresh');
-    }
-  });
+  return runIfInit(startBannerAutoRefresh.name,
+                   AppLovinMAX.startBannerAutoRefresh,
+                   adUnitId);
 }
 
 const stopBannerAutoRefresh = (adUnitId) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.stopBannerAutoRefresh(adUnitId);
-    } else {
-      logUninitializedAccessError('stopBannerAutoRefresh');
-    }
-  });
+  return runIfInit(stopBannerAutoRefresh.name,
+                   AppLovinMAX.stopBannerAutoRefresh,
+                   adUnitId);
 }
 
 const showBanner = (adUnitId) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.showBanner(adUnitId);
-    } else {
-      logUninitializedAccessError('showBanner');
-    }
-  });
+  return runIfInit(showBanner.name,
+                   AppLovinMAX.showBanner,
+                   adUnitId);
 }
 
 const hideBanner = (adUnitId) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.hideBanner(adUnitId);
-    } else {
-      logUninitializedAccessError('hideBanner');
-    }
-  });
+  return runIfInit(hideBanner.name,
+                   AppLovinMAX.hideBanner,
+                   adUnitId);
 }
 
 const destroyBanner = (adUnitId) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.destroyBanner(adUnitId);
-    } else {
-      logUninitializedAccessError('destroyBanner');
-    }
-  });
+  return runIfInit(destroyBanner.name,
+                   AppLovinMAX.destroyBanner,
+                   adUnitId);
 }
 
 /*-------*/
@@ -191,113 +145,69 @@ const destroyBanner = (adUnitId) => {
 /*-------*/
 
 const createMRec = (adUnitId, mrecPosition) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.createMRec(adUnitId, mrecPosition);
-    } else {
-      logUninitializedAccessError('createMRec');
-    }
-  });
+  return runIfInit(createMRec.name,
+                   AppLovinMAX.createMRec,
+                   adUnitId, mrecPosition);
 }
 
 const setMRecBackgroundColor = (adUnitId, hexColorCode) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.setMRecBackgroundColor(adUnitId, hexColorCode);
-    } else {
-      logUninitializedAccessError('setMRecBackgroundColor');
-    }
-  });
+  return runIfInit(setMRecBackgroundColor.name,
+                   AppLovinMAX.setMRecBackgroundColor,
+                   adUnitId, hexColorCode);
 }
 
 const setMRecPlacement = (adUnitId, placement) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.setMRecPlacement(adUnitId, placement);
-    } else {
-      logUninitializedAccessError('setMRecPlacement');
-    }
-  });
+  return runIfInit(setMRecPlacement.name,
+                   AppLovinMAX.setMRecPlacement,
+                   adUnitId, placement);
 }
 
 const setMRecCustomData = (adUnitId, customData) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.setMRecCustomData(adUnitId, customData);
-    } else {
-      logUninitializedAccessError('setMRecCustomData');
-    }
-  });
+  return runIfInit(setMRecCustomData.name,
+                   AppLovinMAX.setMRecCustomData,
+                   adUnitId, customData);
 }
 
 const updateMRecPosition = (adUnitId, mrecPosition) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.updateMRecPosition(adUnitId, mrecPosition);
-    } else {
-      logUninitializedAccessError('updateMRecPosition');
-    }
-  });
+  return runIfInit(updateMRecPosition.name,
+                   AppLovinMAX.updateMRecPosition,
+                   adUnitId, mrecPosition);
 }
 
 const setMRecExtraParameter = (adUnitId, key, value) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.setMRecExtraParameter(adUnitId, key, value);
-    } else {
-      logUninitializedAccessError('setMRecExtraParameter');
-    }
-  });
+  return runIfInit(setMRecExtraParameter.name,
+                   AppLovinMAX.setMRecExtraParameter,
+                   adUnitId, key, value);
 }
 
 const startMRecAutoRefresh = (adUnitId) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.startMRecAutoRefresh(adUnitId);
-    } else {
-      logUninitializedAccessError('startMRecAutoRefresh');
-    }
-  });
+  return runIfInit(startMRecAutoRefresh.name,
+                   AppLovinMAX.startMRecAutoRefresh,
+                   adUnitId);
 }
 
 const stopMRecAutoRefresh = (adUnitId) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.stopMRecAutoRefresh(adUnitId);
-    } else {
-      logUninitializedAccessError('stopMRecAutoRefresh');
-    }
-  });
+  return runIfInit(stopMRecAutoRefresh.name,
+                   AppLovinMAX.stopMRecAutoRefresh,
+                   adUnitId);
 }
 
 const showMRec = (adUnitId) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.showMRec(adUnitId);
-    } else {
-      logUninitializedAccessError('showMRec');
-    }
-  });
+  return runIfInit(showMRec.name,
+                   AppLovinMAX.showMRec,
+                   adUnitId);
 }
 
 const hideMRec = (adUnitId) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.hideMRec(adUnitId);
-    } else {
-      logUninitializedAccessError('hideMRec');
-    }
-  });
+  return runIfInit(hideMRec.name,
+                   AppLovinMAX.hideMRec,
+                   adUnitId);
 }
 
 const destroyMRec = (adUnitId) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.destroyMRec(adUnitId);
-    } else {
-      logUninitializedAccessError('destroyMRec');
-    }
-  });
+  return runIfInit(destroyMRec.name,
+                   AppLovinMAX.destroyMRec,
+                   adUnitId);
 }
 
 /*---------------*/
@@ -305,56 +215,27 @@ const destroyMRec = (adUnitId) => {
 /*---------------*/
 
 const loadInterstitial = (adUnitId) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.loadInterstitial(adUnitId);
-    } else {
-      logUninitializedAccessError('loadInterstitial');
-    }
-  });
+  return runIfInit(loadInterstitial.name,
+                   AppLovinMAX.loadInterstitial,
+                   adUnitId);
 }
 
 const isInterstitialReady = (adUnitId) => {
-  return AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      return AppLovinMAX.isInterstitialReady(adUnitId);
-    } else {
-      throw new Error("Failed to execute isInterstitialReady() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!");
-    }
-  });
+  return runIfInit(isInterstitialReady.name,
+                   AppLovinMAX.isInterstitialReady,
+                   adUnitId);
 }
 
-const showInterstitial = (adUnitId, ...args) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      switch (args.length) {
-      case 0:
-        AppLovinMAX.showInterstitial(adUnitId, null, null);
-        break;
-      case 1:
-        AppLovinMAX.showInterstitial(adUnitId, args[0], null);
-        break;
-      case 2:
-        AppLovinMAX.showInterstitial(adUnitId, args[0], args[1]);
-        break;
-      default:
-        // do nothing - unexpected number of arguments
-        break;
-      }
-    } else {
-      logUninitializedAccessError('showInterstitial');
-    }
-  });
+const showInterstitial = (adUnitId, ...params) => {
+  return runIfInit(showInterstitial.name,
+                   AppLovinMAX.showInterstitial,
+                   adUnitId, params[0], params[1]);
 };
 
 const setInterstitialExtraParameter = (adUnitId, key, value) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.setInterstitialExtraParameter(adUnitId, key, value);
-    } else {
-      logUninitializedAccessError('setInterstitialExtraParameter');
-    }
-  });
+  return runIfInit(setInterstitialExtraParameter.name,
+                   AppLovinMAX.setInterstitialExtraParameter,
+                   adUnitId, key, value);
 }
 
 /*----------*/
@@ -362,56 +243,27 @@ const setInterstitialExtraParameter = (adUnitId, key, value) => {
 /*----------*/
 
 const loadRewardedAd = (adUnitId) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.loadRewardedAd(adUnitId);
-    } else {
-      logUninitializedAccessError('loadRewardedAd');
-    }
-  });
+  return runIfInit(loadRewardedAd.name,
+                   AppLovinMAX.loadRewardedAd,
+                   adUnitId);
 }
 
 const isRewardedAdReady = (adUnitId) => {
-  return AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      return AppLovinMAX.isRewardedAdReady(adUnitId);
-    } else {
-      throw new Error("Failed to execute isRewardedAdReady() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!");
-    }
-  });
+  return runIfInit(isRewardedAdReady.name,
+                   AppLovinMAX.isRewardedAdReady,
+                   adUnitId);
 }
 
-const showRewardedAd = (adUnitId, ...args) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      switch (args.length) {
-      case 0:
-        AppLovinMAX.showRewardedAd(adUnitId, null, null);
-        break;
-      case 1:
-        AppLovinMAX.showRewardedAd(adUnitId, args[0], null);
-        break;
-      case 2:
-        AppLovinMAX.showRewardedAd(adUnitId, args[0], args[1]);
-        break;
-      default:
-        // do nothing - unexpected number of arguments
-        break;
-      }
-    } else {
-      logUninitializedAccessError('showRewardedAd');
-    }
-  });
+const showRewardedAd = (adUnitId, ...params) => {
+  return runIfInit(showRewardedAd.name,
+                   AppLovinMAX.showRewardedAd,
+                   adUnitId, params[0], params[1]);
 };
 
 const setRewardedAdExtraParameter = (adUnitId, key, value) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.setRewardedAdExtraParameter(adUnitId, key, value);
-    } else {
-      logUninitializedAccessError('setRewardedAdExtraParameter');
-    }
-  });
+  return runIfInit(setRewardedAdExtraParameter.name,
+                   AppLovinMAX.setRewardedAdExtraParameter,
+                   adUnitId, key, value);
 }
 
 /*----------*/
@@ -419,56 +271,27 @@ const setRewardedAdExtraParameter = (adUnitId, key, value) => {
 /*----------*/
 
 const loadAppOpenAd = (adUnitId) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.loadAppOpenAd(adUnitId);
-    } else {
-      logUninitializedAccessError('loadAppOpenAd');
-    }
-  });
+  return runIfInit(loadAppOpenAd.name,
+                   AppLovinMAX.loadAppOpenAd,
+                   adUnitId);
 }
 
 const isAppOpenAdReady = (adUnitId) => {
-  return AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      return AppLovinMAX.isAppOpenAdReady(adUnitId);
-    } else {
-      throw new Error("Failed to execute isAppOpenAdReady() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!");
-    }
-  });
+  return runIfInit(isAppOpenAdReady.name,
+                   AppLovinMAX.isAppOpenAdReady,
+                   adUnitId);
 }
 
-const showAppOpenAd = (adUnitId, ...args) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      switch (args.length) {
-      case 0:
-        AppLovinMAX.showAppOpenAd(adUnitId, null, null);
-        break;
-      case 1:
-        AppLovinMAX.showAppOpenAd(adUnitId, args[0], null);
-        break;
-      case 2:
-        AppLovinMAX.showAppOpenAd(adUnitId, args[0], args[1]);
-        break;
-      default:
-        // do nothing - unexpected number of arguments
-        break;
-      }
-    } else {
-      logUninitializedAccessError('showAppOpenAd');
-    }
-  });
+const showAppOpenAd = (adUnitId, ...params) => {
+  return runIfInit(showAppOpenAd.name,
+                   AppLovinMAX.showAppOpenAd,
+                   adUnitId, params[0], params[1]);
 };
 
 const setAppOpenAdExtraParameter = (adUnitId, key, value) => {
-  AppLovinMAX.isInitialized().then(isInitialized => {
-    if (isInitialized) {
-      AppLovinMAX.setAppOpenAdExtraParameter(adUnitId, key, value);
-    } else {
-      logUninitializedAccessError('setAppOpenAdExtraParameter');
-    }
-  });
+  return runIfInit(setAppOpenAdExtraParameter.name,
+                   AppLovinMAX.setAppOpenAdExtraParameter,
+                   adUnitId, key, value);
 }
 
 const getConsentDialogState = () => {
