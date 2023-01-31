@@ -7,19 +7,20 @@ export const TitleView = (props) => {
   const {nativeAd, nativeAdView} = useContext(NativeAdViewContext);
 
   useEffect(() => {
-    if (!nativeAdView || !nativeAd.title) return;
+    if (Object.keys(nativeAd).length === 0 || !nativeAdView) return;
 
     nativeAdView.setNativeProps({
       titleView: findNodeHandle(titleRef.current),
     });
   }, [nativeAd, nativeAdView]);
 
-  if (!nativeAdView) return null;
-
   return (
-    <Text {...props} ref={titleRef}>
-      {nativeAd.title || null}
-    </Text>
+    nativeAdView ?
+      <Text {...props} ref={titleRef}>
+        {nativeAd.title || null}
+      </Text>
+      :
+      null
   );
 };
 
@@ -28,19 +29,20 @@ export const AdvertiserView = (props) => {
   const {nativeAd, nativeAdView} = useContext(NativeAdViewContext);
 
   useEffect(() => {
-    if (!nativeAdView || !nativeAd.advertiser) return;
+    if (Object.keys(nativeAd).length === 0 || !nativeAdView) return;
 
     nativeAdView.setNativeProps({
       advertiserView: findNodeHandle(advertiserRef.current),
     });
   }, [nativeAd, nativeAdView]);
 
-  if (!nativeAdView) return null;
-
   return (
-    <Text {...props} ref={advertiserRef}>
-      {nativeAd.advertiser || null}
-    </Text>
+    nativeAdView ?
+      <Text {...props} ref={advertiserRef}>
+        {nativeAd.advertiser || null}
+      </Text>
+      :
+      null
   );
 };
 
@@ -49,19 +51,20 @@ export const BodyView = (props) => {
   const {nativeAd, nativeAdView} = useContext(NativeAdViewContext);
 
   useEffect(() => {
-    if (!nativeAdView || !nativeAd.body) return;
+    if (Object.keys(nativeAd).length === 0 || !nativeAdView) return;
 
     nativeAdView.setNativeProps({
       bodyView: findNodeHandle(bodyRef.current),
     });
   }, [nativeAd, nativeAdView]);
 
-  if (!nativeAdView) return null;
-
   return (
-    <Text {...props} ref={bodyRef}>
-      {nativeAd.body || null}
-    </Text>
+    nativeAdView ?
+      <Text {...props} ref={bodyRef}>
+        {nativeAd.body || null}
+      </Text>
+      :
+      null
   );
 };
 
@@ -70,21 +73,22 @@ export const CallToActionView = (props) => {
   const {nativeAd, nativeAdView} = useContext(NativeAdViewContext);
 
   useEffect(() => {
-    if (!nativeAdView || !nativeAd.callToAction) return;
+    if (Object.keys(nativeAd).length === 0 || !nativeAdView) return;
 
     nativeAdView.setNativeProps({
       callToActionView: findNodeHandle(callToActionRef.current),
     });
   }, [nativeAd, nativeAdView]);
 
-  if (!nativeAdView) return null;
-
   return (
-    <TouchableOpacity {...props}>
-      <Text {...props} ref={callToActionRef}>
-        {nativeAd.callToAction || null}
-      </Text>
-    </TouchableOpacity>
+    nativeAdView ?
+      <TouchableOpacity {...props}>
+        <Text {...props} ref={callToActionRef}>
+          {nativeAd.callToAction || null}
+        </Text>
+      </TouchableOpacity>
+      :
+      null
   );
 };
 
@@ -94,17 +98,18 @@ export const IconView = (props) => {
   const {nativeAd, nativeAdView} = useContext(NativeAdViewContext);
 
   useEffect(() => {
-    if (!nativeAdView || !(nativeAd.url || nativeAd.image)) return;
+    if (Object.keys(nativeAd).length === 0 || !nativeAdView) return;
 
     nativeAdView.setNativeProps({
       iconView: findNodeHandle(imageRef.current),
     });
   }, [nativeAd, nativeAdView]);
 
-  if (!nativeAdView) return null;
-
   return (
-    <Image {...props} ref={imageRef} source={{uri: nativeAd.url || null}}/>
+    nativeAdView ?
+      <Image {...props} ref={imageRef} source={{uri: nativeAd.url || null}}/>
+      :
+      null
   );
 };
 
@@ -114,17 +119,18 @@ export const OptionsView = (props) => {
   const {nativeAd, nativeAdView} = useContext(NativeAdViewContext);
 
   useEffect(() => {
-    if (!nativeAdView || !nativeAd.optionsView) return;
+    if (Object.keys(nativeAd).length === 0 || !nativeAdView) return;
 
     nativeAdView.setNativeProps({
       optionsView: findNodeHandle(viewRef.current),
     });
   }, [nativeAd, nativeAdView]);
 
-  if (!nativeAdView) return null;
-
   return (
-    <View {...props} ref={viewRef}/>
+    nativeAdView ?
+      <View {...props} ref={viewRef}/>
+      :
+      null
   );
 };
 
@@ -134,16 +140,17 @@ export const MediaView = (props) => {
   const {nativeAd, nativeAdView} = useContext(NativeAdViewContext);
 
   useEffect(() => {
-    if (!nativeAdView || !nativeAd.mediaView) return;
+    if (Object.keys(nativeAd).length === 0 || !nativeAdView) return;
 
     nativeAdView.setNativeProps({
       mediaView: findNodeHandle(viewRef.current),
     });
   }, [nativeAd, nativeAdView]);
 
-  if (!nativeAdView) return null;
-
   return (
-    <View {...props} ref={viewRef}/>
+    nativeAdView ?
+      <View {...props} ref={viewRef}/>
+      :
+      null
   );
 };

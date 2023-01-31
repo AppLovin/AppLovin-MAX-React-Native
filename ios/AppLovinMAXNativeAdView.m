@@ -318,8 +318,6 @@
             jsNativeAd[@"image"] = @(YES);
         }
     }
-    jsNativeAd[@"optionsView"] = ad.optionsView ? @(YES) : @(NO);
-    jsNativeAd[@"mediaView"] = ad.mediaView ? @(YES) : @(NO);
     
     NSMutableDictionary<NSString *, id> *arg = [NSMutableDictionary dictionaryWithCapacity: 2];
     arg[@"adInfo"] = adInfo;

@@ -414,9 +414,6 @@ public class AppLovinMAXNativeAdView
             }
         }
 
-        jsNativeAd.putBoolean( "optionsView", ( ad.getOptionsView() != null ) );
-        jsNativeAd.putBoolean( "mediaView", ( ad.getMediaView() != null ) );
-
         WritableMap arg = Arguments.createMap();
         arg.putMap( "adInfo", adInfo );
         arg.putMap( "nativeAd", jsNativeAd );
