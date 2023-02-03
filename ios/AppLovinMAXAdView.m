@@ -56,11 +56,11 @@
         return;
     }
     
-    if ( [@"banner" isEqualToString: adFormat] )
+    if ( [MAAdFormat.banner.label isEqualToString: adFormat] )
     {
         _adFormat = DEVICE_SPECIFIC_ADVIEW_AD_FORMAT;
     }
-    else if ( [@"mrec" isEqualToString: adFormat] )
+    else if ( [MAAdFormat.mrec.label isEqualToString: adFormat] )
     {
         _adFormat = MAAdFormat.mrec;
     }

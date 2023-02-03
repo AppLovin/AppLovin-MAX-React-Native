@@ -1,11 +1,18 @@
-import { NativeModules, NativeEventEmitter } from "react-native";
+import { NativeModules } from "react-native";
 import AdView, { AdFormat, AdViewPosition } from "./AppLovinMAXAdView";
 import { TargetingData, AdContentRating, UserGender } from "./TargetingData";
 import NativeAdView from "./NativeAdView";
+import EventListeners from "./AppLovinMAXEventListeners";
 
 const { AppLovinMAX } = NativeModules;
 
 const VERSION = "4.1.5";
+
+const {
+  CONSENT_DIALOG_STATE_UNKNOWN,
+  CONSENT_DIALOG_STATE_APPLIES,
+  CONSENT_DIALOG_STATE_DOES_NOT_APPLY,
+} = AppLovinMAX.getConstants();
 
 /**
  * This enum represents whether or not the consent dialog should be shown for this user.
@@ -15,37 +22,17 @@ const ConsentDialogState = {
   /**
    * The consent dialog state could not be determined. This is likely due to SDK failing to initialize.
    */
-  UNKNOWN: 0,
+  UNKNOWN: CONSENT_DIALOG_STATE_UNKNOWN,
 
   /**
    * This user should be shown a consent dialog.
    */
-  APPLIES: 1,
+  APPLIES: CONSENT_DIALOG_STATE_APPLIES,
 
   /**
    * This user should not be shown a consent dialog.
    */
-  DOES_NOT_APPLY: 2,
-};
-
-const emitter = new NativeEventEmitter(AppLovinMAX);
-const subscriptions = {};
-
-const addEventListener = (event, handler) => {
-  let subscription = emitter.addListener(event, handler);
-  let currentSubscription = subscriptions[event];
-  if (currentSubscription) {
-    currentSubscription.remove();
-  }
-  subscriptions[event] = subscription;
-};
-
-const removeEventListener = (event) => {
-  let currentSubscription = subscriptions[event];
-  if (currentSubscription) {
-    currentSubscription.remove();
-    delete subscriptions[event];
-  }
+  DOES_NOT_APPLY: CONSENT_DIALOG_STATE_DOES_NOT_APPLY,
 };
 
 const runIfInitialized = (callingMethodName, callingMethod, ...params) => {
@@ -301,6 +288,7 @@ const getConsentDialogState = () => {
 
 export default {
   ...AppLovinMAX,
+  ...EventListeners,
   AdView,
   get targetingData() {
     return TargetingData;
@@ -311,8 +299,6 @@ export default {
   AdViewPosition,
   AdFormat,
   NativeAdView,
-  addEventListener,
-  removeEventListener,
   initialize(sdkKey) {
     return AppLovinMAX.initialize(VERSION, sdkKey);
   },

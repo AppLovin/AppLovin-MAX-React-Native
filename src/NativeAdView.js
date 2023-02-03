@@ -1,6 +1,6 @@
-import React, { forwardRef, useContext, useImperativeHandle, useRef, useCallback, useState, useEffect } from "react";
+import React, { forwardRef, useContext, useImperativeHandle, useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { NativeModules, requireNativeComponent, UIManager, findNodeHandle, View, StyleSheet } from "react-native";
+import { NativeModules, requireNativeComponent, UIManager, findNodeHandle } from "react-native";
 import { NativeAdViewContext, NativeAdViewProvider } from "./NativeAdViewProvider";
 import { TitleView, AdvertiserView, BodyView, CallToActionView, IconView, OptionsView, MediaView } from "./NativeAdComponents";
 
