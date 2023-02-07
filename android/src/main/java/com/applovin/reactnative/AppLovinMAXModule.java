@@ -80,44 +80,44 @@ public class AppLovinMAXModule
     private static final String SDK_TAG = "AppLovinSdk";
     private static final String TAG     = "AppLovinMAXModule";
 
-    private static final String ON_BANNER_AD_LOADED_EVENT     = "OnBannerAdLoadedEvent";
+    private static final String ON_BANNER_AD_LOADED_EVENT      = "OnBannerAdLoadedEvent";
     private static final String ON_BANNER_AD_LOAD_FAILED_EVENT = "OnBannerAdLoadFailedEvent";
-    private static final String ON_BANNER_AD_CLICKED_EVENT    = "OnBannerAdClickedEvent";
-    private static final String ON_BANNER_AD_COLLAPSED_EVENT  = "OnBannerAdCollapsedEvent";
-    private static final String ON_BANNER_AD_EXPANDED_EVENT   = "OnBannerAdExpandedEvent";
-    private static final String ON_BANNER_AD_REVENUE_PAID     = "OnBannerAdRevenuePaid";
+    private static final String ON_BANNER_AD_CLICKED_EVENT     = "OnBannerAdClickedEvent";
+    private static final String ON_BANNER_AD_COLLAPSED_EVENT   = "OnBannerAdCollapsedEvent";
+    private static final String ON_BANNER_AD_EXPANDED_EVENT    = "OnBannerAdExpandedEvent";
+    private static final String ON_BANNER_AD_REVENUE_PAID      = "OnBannerAdRevenuePaid";
 
-    private static final String ON_MREC_AD_LOADED_EVENT     = "OnMRecAdLoadedEvent";
+    private static final String ON_MREC_AD_LOADED_EVENT      = "OnMRecAdLoadedEvent";
     private static final String ON_MREC_AD_LOAD_FAILED_EVENT = "OnMRecAdLoadFailedEvent";
-    private static final String ON_MREC_AD_CLICKED_EVENT    = "OnMRecAdClickedEvent";
-    private static final String ON_MREC_AD_COLLAPSED_EVENT  = "OnMRecAdCollapsedEvent";
-    private static final String ON_MREC_AD_EXPANDED_EVENT   = "OnMRecAdExpandedEvent";
-    private static final String ON_MREC_AD_REVENUE_PAID     = "OnMRecAdRevenuePaid";
+    private static final String ON_MREC_AD_CLICKED_EVENT     = "OnMRecAdClickedEvent";
+    private static final String ON_MREC_AD_COLLAPSED_EVENT   = "OnMRecAdCollapsedEvent";
+    private static final String ON_MREC_AD_EXPANDED_EVENT    = "OnMRecAdExpandedEvent";
+    private static final String ON_MREC_AD_REVENUE_PAID      = "OnMRecAdRevenuePaid";
 
-    private static final String ON_INTERSTITIAL_LOADED_EVENT             = "OnInterstitialLoadedEvent";
-    private static final String ON_INTERSTITIAL_LOAD_FAILED_EVENT         = "OnInterstitialLoadFailedEvent";
-    private static final String ON_INTERSTITIAL_CLICKED_EVENT            = "OnInterstitialClickedEvent";
-    private static final String ON_INTERSTITIAL_DISPLAYED_EVENT          = "OnInterstitialDisplayedEvent";
+    private static final String ON_INTERSTITIAL_LOADED_EVENT               = "OnInterstitialLoadedEvent";
+    private static final String ON_INTERSTITIAL_LOAD_FAILED_EVENT          = "OnInterstitialLoadFailedEvent";
+    private static final String ON_INTERSTITIAL_CLICKED_EVENT              = "OnInterstitialClickedEvent";
+    private static final String ON_INTERSTITIAL_DISPLAYED_EVENT            = "OnInterstitialDisplayedEvent";
     private static final String ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT = "OnInterstitialAdFailedToDisplayEvent";
-    private static final String ON_INTERSTITIAL_HIDDEN_EVENT             = "OnInterstitialHiddenEvent";
-    private static final String ON_INTERSTITIAL_AD_REVENUE_PAID          = "OnInterstitialAdRevenuePaid";
+    private static final String ON_INTERSTITIAL_HIDDEN_EVENT               = "OnInterstitialHiddenEvent";
+    private static final String ON_INTERSTITIAL_AD_REVENUE_PAID            = "OnInterstitialAdRevenuePaid";
 
-    private static final String ON_REWARDED_AD_LOADED_EVENT          = "OnRewardedAdLoadedEvent";
-    private static final String ON_REWARDED_AD_LOAD_FAILED_EVENT      = "OnRewardedAdLoadFailedEvent";
-    private static final String ON_REWARDED_AD_CLICKED_EVENT         = "OnRewardedAdClickedEvent";
-    private static final String ON_REWARDED_AD_DISPLAYED_EVENT       = "OnRewardedAdDisplayedEvent";
+    private static final String ON_REWARDED_AD_LOADED_EVENT            = "OnRewardedAdLoadedEvent";
+    private static final String ON_REWARDED_AD_LOAD_FAILED_EVENT       = "OnRewardedAdLoadFailedEvent";
+    private static final String ON_REWARDED_AD_CLICKED_EVENT           = "OnRewardedAdClickedEvent";
+    private static final String ON_REWARDED_AD_DISPLAYED_EVENT         = "OnRewardedAdDisplayedEvent";
     private static final String ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT = "OnRewardedAdFailedToDisplayEvent";
-    private static final String ON_REWARDED_AD_HIDDEN_EVENT          = "OnRewardedAdHiddenEvent";
-    private static final String ON_REWARDED_AD_RECEIVED_REWARD_EVENT  = "OnRewardedAdReceivedRewardEvent";
-    private static final String ON_REWARDED_AD_REVENUE_PAID          = "OnRewardedAdRevenuePaid";
+    private static final String ON_REWARDED_AD_HIDDEN_EVENT            = "OnRewardedAdHiddenEvent";
+    private static final String ON_REWARDED_AD_RECEIVED_REWARD_EVENT   = "OnRewardedAdReceivedRewardEvent";
+    private static final String ON_REWARDED_AD_REVENUE_PAID            = "OnRewardedAdRevenuePaid";
 
-    private static final String ON_APPOPEN_AD_LOADED_EVENT          = "OnAppOpenAdLoadedEvent";
-    private static final String ON_APPOPEN_AD_LOAD_FAILED_EVENT      = "OnAppOpenAdLoadFailedEvent";
-    private static final String ON_APPOPEN_AD_CLICKED_EVENT         = "OnAppOpenAdClickedEvent";
-    private static final String ON_APPOPEN_AD_DISPLAYED_EVENT       = "OnAppOpenAdDisplayedEvent";
+    private static final String ON_APPOPEN_AD_LOADED_EVENT            = "OnAppOpenAdLoadedEvent";
+    private static final String ON_APPOPEN_AD_LOAD_FAILED_EVENT       = "OnAppOpenAdLoadFailedEvent";
+    private static final String ON_APPOPEN_AD_CLICKED_EVENT           = "OnAppOpenAdClickedEvent";
+    private static final String ON_APPOPEN_AD_DISPLAYED_EVENT         = "OnAppOpenAdDisplayedEvent";
     private static final String ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT = "OnAppOpenAdFailedToDisplayEvent";
-    private static final String ON_APPOPEN_AD_HIDDEN_EVENT          = "OnAppOpenAdHiddenEvent";
-    private static final String ON_APPOPEN_AD_REVENUE_PAID          = "OnAppOpenAdRevenuePaid";
+    private static final String ON_APPOPEN_AD_HIDDEN_EVENT            = "OnAppOpenAdHiddenEvent";
+    private static final String ON_APPOPEN_AD_REVENUE_PAID            = "OnAppOpenAdRevenuePaid";
 
     private static final String TOP_CENTER    = "top_center";
     private static final String TOP_LEFT      = "top_left";
