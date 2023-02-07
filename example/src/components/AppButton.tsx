@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 
-const AppButton = (props) => {
-  const {style, ...rest} = props;
+const AppButton = (props:any) => {
+  const {style} = props;
   return (
     <View style={[styles.container, style]}>
       <TouchableOpacity
@@ -34,16 +34,16 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     paddingTop: 8,
-    paddingHorizontal: 40,
+    paddingHorizontal: 48,
   },
   button: {
     borderRadius: 8,
-    height: 40,
+    height: 36,
     justifyContent: 'center', // vertical-align
     alignItems: 'center', // horizontal-align
   },
   text: {
-    fontSize: 20,
+    fontSize: 18,
   },
 });
 
