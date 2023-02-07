@@ -1,5 +1,5 @@
 import React, {useContext, useRef, useEffect} from "react";
-import {findNodeHandle, UIManager, Text, Image, View, TouchableOpacity} from "react-native";
+import {findNodeHandle, Text, Image, View, TouchableOpacity} from "react-native";
 import {NativeAdViewContext} from "./NativeAdViewProvider";
 
 export const TitleView = (props) => {

@@ -82,6 +82,55 @@
 static NSString *const SDK_TAG = @"AppLovinSdk";
 static NSString *const TAG = @"AppLovinMAX";
 
+static NSString *const ON_BANNER_AD_LOADED_EVENT = @"OnBannerAdLoadedEvent";
+static NSString *const ON_BANNER_AD_LOAD_FAILED_EVENT = @"OnBannerAdLoadFailedEvent";
+static NSString *const ON_BANNER_AD_CLICKED_EVENT = @"OnBannerAdClickedEvent";
+static NSString *const ON_BANNER_AD_COLLAPSED_EVENT = @"OnBannerAdCollapsedEvent";
+static NSString *const ON_BANNER_AD_EXPANDED_EVENT = @"OnBannerAdExpandedEvent";
+static NSString *const ON_BANNER_AD_REVENUE_PAID = @"OnBannerAdRevenuePaid";
+
+static NSString *const ON_MREC_AD_LOADED_EVENT = @"OnMRecAdLoadedEvent";
+static NSString *const ON_MREC_AD_LOAD_FAILED_EVENT = @"OnMRecAdLoadFailedEvent";
+static NSString *const ON_MREC_AD_CLICKED_EVENT= @"OnMRecAdClickedEvent";
+static NSString *const ON_MREC_AD_COLLAPSED_EVENT = @"OnMRecAdCollapsedEvent";
+static NSString *const ON_MREC_AD_EXPANDED_EVENT = @"OnMRecAdExpandedEvent";
+static NSString *const ON_MREC_AD_REVENUE_PAID = @"OnMRecAdRevenuePaid";
+
+static NSString *const ON_INTERSTITIAL_LOADED_EVENT = @"OnInterstitialLoadedEvent";
+static NSString *const ON_INTERSTITIAL_LOAD_FAILED_EVENT = @"OnInterstitialLoadFailedEvent";
+static NSString *const ON_INTERSTITIAL_CLICKED_EVENT = @"OnInterstitialClickedEvent";
+static NSString *const ON_INTERSTITIAL_DISPLAYED_EVENT = @"OnInterstitialDisplayedEvent";
+static NSString *const ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT = @"OnInterstitialAdFailedToDisplayEvent";
+static NSString *const ON_INTERSTITIAL_HIDDEN_EVENT = @"OnInterstitialHiddenEvent";
+static NSString *const ON_INTERSTITIAL_AD_REVENUE_PAID = @"OnInterstitialAdRevenuePaid";
+
+static NSString *const ON_REWARDED_AD_LOADED_EVENT = @"OnRewardedAdLoadedEvent";
+static NSString *const ON_REWARDED_AD_LOAD_FAILED_EVENT = @"OnRewardedAdLoadFailedEvent";
+static NSString *const ON_REWARDED_AD_CLICKED_EVENT = @"OnRewardedAdClickedEvent";
+static NSString *const ON_REWARDED_AD_DISPLAYED_EVENT = @"OnRewardedAdDisplayedEvent";
+static NSString *const ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT = @"OnRewardedAdFailedToDisplayEvent";
+static NSString *const ON_REWARDED_AD_HIDDEN_EVENT = @"OnRewardedAdHiddenEvent";
+static NSString *const ON_REWARDED_AD_RECEIVED_REWARD_EVENT = @"OnRewardedAdReceivedRewardEvent";
+static NSString *const ON_REWARDED_AD_REVENUE_PAID = @"OnRewardedAdRevenuePaid";
+
+static NSString *const ON_APPOPEN_AD_LOADED_EVENT = @"OnAppOpenAdLoadedEvent";
+static NSString *const ON_APPOPEN_AD_LOAD_FAILED_EVENT = @"OnAppOpenAdLoadFailedEvent";
+static NSString *const ON_APPOPEN_AD_CLICKED_EVENT = @"OnAppOpenAdClickedEvent";
+static NSString *const ON_APPOPEN_AD_DISPLAYED_EVENT = @"OnAppOpenAdDisplayedEvent";
+static NSString *const ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT = @"OnAppOpenAdFailedToDisplayEvent";
+static NSString *const ON_APPOPEN_AD_HIDDEN_EVENT = @"OnAppOpenAdHiddenEvent";
+static NSString *const ON_APPOPEN_AD_REVENUE_PAID = @"OnAppOpenAdRevenuePaid";
+
+static NSString *const TOP_CENTER = @"top_center";
+static NSString *const TOP_LEFT = @"top_left";
+static NSString *const TOP_RIGHT = @"top_right";
+static NSString *const CENTERED = @"centered";
+static NSString *const CENTER_LEFT = @"center_left";
+static NSString *const CENTER_RIGHT = @"center_right";
+static NSString *const BOTTOM_LEFT = @"bottom_left";
+static NSString *const BOTTOM_CENTER = @"bottom_center";
+static NSString *const BOTTOM_RIGHT = @"bottom_right";
+
 static AppLovinMAX *AppLovinMAXShared; // Shared instance of this bridge module.
 
 // To export a module named AppLovinMAX ("RCT" automatically removed)
@@ -262,8 +311,7 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         self.sdkConfiguration = configuration;
         self.sdkInitialized = YES;
         
-        resolve(@[@{@"consentDialogState" : @(configuration.consentDialogState),
-                    @"countryCode" : self.sdk.configuration.countryCode}]);
+        resolve(@[@{@"countryCode" : self.sdk.configuration.countryCode}]);
     }];
 }
 
@@ -288,11 +336,6 @@ RCT_EXPORT_METHOD(showMediationDebugger)
 RCT_EXPORT_METHOD(showConsentDialog:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
     reject(RCTErrorUnspecified, @"Failed to show consent dialog - Unavailable on iOS, please use the consent flow: https://dash.applovin.com/documentation/mediation/react-native/getting-started/consent-flow", nil);
-}
-
-RCT_EXPORT_METHOD(getConsentDialogState:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
-{
-    resolve([self isSDKInitialized] ? @(self.sdkConfiguration.consentDialogState) : @(ALConsentDialogStateUnknown));
 }
 
 RCT_EXPORT_METHOD(setHasUserConsent:(BOOL)hasUserConsent)
@@ -755,7 +798,7 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
         // An ad is now being shown, enable user interaction.
         adView.userInteractionEnabled = YES;
         
-        name = ( MAAdFormat.mrec == adFormat ) ? @"OnMRecAdLoadedEvent" : @"OnBannerAdLoadedEvent";
+        name = ( MAAdFormat.mrec == adFormat ) ? ON_MREC_AD_LOADED_EVENT : ON_BANNER_AD_LOADED_EVENT;
         [self positionAdViewForAd: ad];
         
         // Do not auto-refresh by default if the ad view is not showing yet (e.g. first load during app launch and publisher does not automatically show banner upon load success)
@@ -767,15 +810,15 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
     }
     else if ( MAAdFormat.interstitial == adFormat )
     {
-        name = @"OnInterstitialLoadedEvent";
+        name = ON_INTERSTITIAL_LOADED_EVENT;
     }
     else if ( MAAdFormat.rewarded == adFormat )
     {
-        name = @"OnRewardedAdLoadedEvent";
+        name = ON_REWARDED_AD_LOADED_EVENT;
     }
     else if ( MAAdFormat.appOpen == adFormat )
     {
-        name = @"OnAppOpenAdLoadedEvent";
+        name = ON_APPOPEN_AD_LOADED_EVENT;
     }
     else
     {
@@ -801,15 +844,15 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
     }
     else if ( self.interstitials[adUnitIdentifier] )
     {
-        name = @"OnInterstitialLoadFailedEvent";
+        name = ON_INTERSTITIAL_LOAD_FAILED_EVENT;
     }
     else if ( self.rewardedAds[adUnitIdentifier] )
     {
-        name = @"OnRewardedAdLoadFailedEvent";
+        name = ON_REWARDED_AD_LOAD_FAILED_EVENT;
     }
     else if ( self.appOpenAds[adUnitIdentifier] )
     {
-        name = @"OnAppOpenAdLoadFailedEvent";
+        name = ON_APPOPEN_AD_LOAD_FAILED_EVENT;
     }
     else
     {
@@ -826,23 +869,23 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
     MAAdFormat *adFormat = ad.format;
     if ( MAAdFormat.banner == adFormat || MAAdFormat.leader == adFormat )
     {
-        name = @"OnBannerAdClickedEvent";
+        name = ON_BANNER_AD_CLICKED_EVENT;
     }
     else if ( MAAdFormat.mrec == adFormat )
     {
-        name = @"OnMRecAdClickedEvent";
+        name = ON_MREC_AD_CLICKED_EVENT;
     }
     else if ( MAAdFormat.interstitial == adFormat )
     {
-        name = @"OnInterstitialClickedEvent";
+        name = ON_INTERSTITIAL_CLICKED_EVENT;
     }
     else if ( MAAdFormat.rewarded == adFormat )
     {
-        name = @"OnRewardedAdClickedEvent";
+        name = ON_REWARDED_AD_CLICKED_EVENT;
     }
     else if ( MAAdFormat.appOpen == adFormat )
     {
-        name = @"OnAppOpenAdClickedEvent";
+        name = ON_APPOPEN_AD_CLICKED_EVENT;
     }
     else
     {
@@ -862,15 +905,15 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
     NSString *name;
     if ( MAAdFormat.interstitial == adFormat )
     {
-        name = @"OnInterstitialDisplayedEvent";
+        name = ON_INTERSTITIAL_DISPLAYED_EVENT;
     }
     else if ( MAAdFormat.rewarded == adFormat )
     {
-        name = @"OnRewardedAdDisplayedEvent";
+        name = ON_REWARDED_AD_DISPLAYED_EVENT;
     }
     else // APP OPEN
     {
-        name = @"OnAppOpenAdDisplayedEvent";
+        name = ON_APPOPEN_AD_DISPLAYED_EVENT;
     }
     
     [self sendReactNativeEventWithName: name body: [self adInfoForAd: ad]];
@@ -885,15 +928,15 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
     NSString *name;
     if ( MAAdFormat.interstitial == adFormat )
     {
-        name = @"OnInterstitialAdFailedToDisplayEvent";
+        name = ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT;
     }
     else if ( MAAdFormat.rewarded == adFormat )
     {
-        name = @"OnRewardedAdFailedToDisplayEvent";
+        name = ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT;
     }
     else // APP OPEN
     {
-        name = @"OnAppOpenAdFailedToDisplayEvent";
+        name = ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT;
     }
     
     [self sendReactNativeEventWithName: name body: [self adDisplayFailedInfoForAd: ad withError: error]];
@@ -908,15 +951,15 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
     NSString *name;
     if ( MAAdFormat.interstitial == adFormat )
     {
-        name = @"OnInterstitialHiddenEvent";
+        name = ON_INTERSTITIAL_HIDDEN_EVENT;
     }
     else if ( MAAdFormat.rewarded == adFormat )
     {
-        name = @"OnRewardedAdHiddenEvent";
+        name = ON_REWARDED_AD_HIDDEN_EVENT;
     }
     else // APP OPEN
     {
-        name = @"OnAppOpenAdHiddenEvent";
+        name = ON_APPOPEN_AD_HIDDEN_EVENT;
     }
     
     [self sendReactNativeEventWithName: name body: [self adInfoForAd: ad]];
@@ -931,7 +974,7 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
         return;
     }
     
-    [self sendReactNativeEventWithName: ( MAAdFormat.mrec == adFormat ) ? @"OnMRecAdExpandedEvent" : @"OnBannerAdExpandedEvent"
+    [self sendReactNativeEventWithName: ( MAAdFormat.mrec == adFormat ) ? ON_MREC_AD_EXPANDED_EVENT : ON_BANNER_AD_EXPANDED_EVENT
                                   body: [self adInfoForAd: ad]];
 }
 
@@ -944,7 +987,7 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
         return;
     }
     
-    [self sendReactNativeEventWithName: ( MAAdFormat.mrec == adFormat ) ? @"OnMRecAdCollapsedEvent" : @"OnBannerAdCollapsedEvent"
+    [self sendReactNativeEventWithName: ( MAAdFormat.mrec == adFormat ) ? ON_MREC_AD_COLLAPSED_EVENT : ON_BANNER_AD_COLLAPSED_EVENT
                                   body: [self adInfoForAd: ad]];
 }
 
@@ -954,23 +997,23 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
     MAAdFormat *adFormat = ad.format;
     if ( MAAdFormat.banner == adFormat || MAAdFormat.leader == adFormat )
     {
-        name = @"OnBannerAdRevenuePaid";
+        name = ON_BANNER_AD_REVENUE_PAID;
     }
     else if ( MAAdFormat.mrec == adFormat )
     {
-        name = @"OnMRecAdRevenuePaid";
+        name = ON_MREC_AD_REVENUE_PAID;
     }
     else if ( MAAdFormat.interstitial == adFormat )
     {
-        name = @"OnInterstitialAdRevenuePaid";
+        name = ON_INTERSTITIAL_AD_REVENUE_PAID;
     }
     else if ( MAAdFormat.rewarded == adFormat )
     {
-        name = @"OnRewardedAdRevenuePaid";
+        name = ON_REWARDED_AD_REVENUE_PAID;
     }
     else if ( MAAdFormat.appOpen == adFormat )
     {
-        name = @"OnAppOpenAdRevenuePaid";
+        name = ON_APPOPEN_AD_REVENUE_PAID;
     }
     else
     {
@@ -1008,7 +1051,7 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
                                    @"rewardAmount": rewardAmount} mutableCopy];
     [body addEntriesFromDictionary: [self adInfoForAd: ad]];
     
-    [self sendReactNativeEventWithName: @"OnRewardedAdReceivedRewardEvent" body: body];
+    [self sendReactNativeEventWithName: ON_REWARDED_AD_RECEIVED_REWARD_EVENT body: body];
 }
 
 #pragma mark - Internal Methods
@@ -1363,7 +1406,7 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
         adViewWidth = self.adViewWidths[adUnitIdentifier].floatValue;
     }
     // Top center / bottom center stretches full screen
-    else if ( [adViewPosition isEqual: @"top_center"] || [adViewPosition isEqual: @"bottom_center"] )
+    else if ( [adViewPosition isEqual: TOP_CENTER] || [adViewPosition isEqual: BOTTOM_CENTER] )
     {
         adViewWidth = CGRectGetWidth(KEY_WINDOW.bounds);
     }
@@ -1403,14 +1446,14 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
     }
     
     // If top of bottom center, stretch width of screen
-    if ( [adViewPosition isEqual: @"top_center"] || [adViewPosition isEqual: @"bottom_center"] )
+    if ( [adViewPosition isEqual: TOP_CENTER] || [adViewPosition isEqual: BOTTOM_CENTER] )
     {
         // Non AdMob banners will still be of 50/90 points tall. Set the auto sizing mask such that the inner ad view is pinned to the bottom or top according to the ad view position.
         if ( !isAdaptiveBannerDisabled )
         {
             adView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
             
-            if ( [@"top_center" isEqual: adViewPosition] )
+            if ( [TOP_CENTER isEqual: adViewPosition] )
             {
                 adView.autoresizingMask |= UIViewAutoresizingFlexibleBottomMargin;
             }
@@ -1428,7 +1471,7 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
                                                 [self.safeAreaBackground.widthAnchor constraintEqualToConstant: adViewWidth],
                                                 [self.safeAreaBackground.centerXAnchor constraintEqualToAnchor: layoutGuide.centerXAnchor]]];
             
-            if ( [adViewPosition isEqual: @"top_center"] )
+            if ( [adViewPosition isEqual: TOP_CENTER] )
             {
                 [constraints addObjectsFromArray: @[[adView.topAnchor constraintEqualToAnchor: layoutGuide.topAnchor],
                                                     [self.safeAreaBackground.topAnchor constraintEqualToAnchor: superview.topAnchor],
@@ -1450,7 +1493,7 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
             [constraints addObjectsFromArray: @[[adView.widthAnchor constraintEqualToConstant: adViewWidth],
                                                 [adView.centerXAnchor constraintEqualToAnchor: layoutGuide.centerXAnchor]]];
             
-            if ( [adViewPosition isEqual: @"top_center"] )
+            if ( [adViewPosition isEqual: TOP_CENTER] )
             {
                 [constraints addObject: [adView.topAnchor constraintEqualToAnchor: layoutGuide.topAnchor constant: yOffset]];
             }
@@ -1468,27 +1511,27 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
         // Assign constant width of 320 or 728
         [constraints addObject: [adView.widthAnchor constraintEqualToConstant: adViewWidth]];
         
-        if ( [adViewPosition isEqual: @"top_left"] )
+        if ( [adViewPosition isEqual: TOP_LEFT] )
         {
             [constraints addObjectsFromArray: @[[adView.topAnchor constraintEqualToAnchor: layoutGuide.topAnchor constant: yOffset],
                                                 [adView.leftAnchor constraintEqualToAnchor: superview.leftAnchor constant: xOffset]]];
         }
-        else if ( [adViewPosition isEqual: @"top_right"] )
+        else if ( [adViewPosition isEqual: TOP_RIGHT] )
         {
             [constraints addObjectsFromArray: @[[adView.topAnchor constraintEqualToAnchor: layoutGuide.topAnchor constant: yOffset],
                                                 [adView.rightAnchor constraintEqualToAnchor: superview.rightAnchor constant: xOffset]]];
         }
-        else if ( [adViewPosition isEqual: @"centered"] )
+        else if ( [adViewPosition isEqual: CENTERED] )
         {
             [constraints addObjectsFromArray: @[[adView.centerXAnchor constraintEqualToAnchor: layoutGuide.centerXAnchor],
                                                 [adView.centerYAnchor constraintEqualToAnchor: layoutGuide.centerYAnchor]]];
         }
-        else if ( [adViewPosition isEqual: @"bottom_left"] )
+        else if ( [adViewPosition isEqual: BOTTOM_LEFT] )
         {
             [constraints addObjectsFromArray: @[[adView.bottomAnchor constraintEqualToAnchor: layoutGuide.bottomAnchor constant: yOffset],
                                                 [adView.leftAnchor constraintEqualToAnchor: superview.leftAnchor constant: xOffset]]];
         }
-        else if ( [adViewPosition isEqual: @"bottom_right"] )
+        else if ( [adViewPosition isEqual: BOTTOM_RIGHT] )
         {
             [constraints addObjectsFromArray: @[[adView.bottomAnchor constraintEqualToAnchor: layoutGuide.bottomAnchor constant: yOffset],
                                                 [adView.rightAnchor constraintEqualToAnchor: superview.rightAnchor constant: xOffset]]];
@@ -1691,44 +1734,99 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
 // From RCTBridgeModule protocol
 - (NSArray<NSString *> *)supportedEvents
 {
-    return @[@"OnMRecAdLoadedEvent",
-             @"OnMRecAdLoadFailedEvent",
-             @"OnMRecAdClickedEvent",
-             @"OnMRecAdCollapsedEvent",
-             @"OnMRecAdExpandedEvent",
-             @"OnMRecAdRevenuePaid",
+    return @[ON_MREC_AD_LOADED_EVENT,
+             ON_MREC_AD_LOAD_FAILED_EVENT,
+             ON_MREC_AD_CLICKED_EVENT,
+             ON_MREC_AD_COLLAPSED_EVENT,
+             ON_MREC_AD_EXPANDED_EVENT,
+             ON_MREC_AD_REVENUE_PAID,
              
-             @"OnBannerAdLoadedEvent",
-             @"OnBannerAdLoadFailedEvent",
-             @"OnBannerAdClickedEvent",
-             @"OnBannerAdCollapsedEvent",
-             @"OnBannerAdExpandedEvent",
-             @"OnBannerAdRevenuePaid",
+             ON_BANNER_AD_LOADED_EVENT,
+             ON_BANNER_AD_LOAD_FAILED_EVENT,
+             ON_BANNER_AD_CLICKED_EVENT,
+             ON_BANNER_AD_COLLAPSED_EVENT,
+             ON_BANNER_AD_EXPANDED_EVENT,
+             ON_BANNER_AD_REVENUE_PAID,
              
-             @"OnInterstitialLoadedEvent",
-             @"OnInterstitialLoadFailedEvent",
-             @"OnInterstitialClickedEvent",
-             @"OnInterstitialDisplayedEvent",
-             @"OnInterstitialAdFailedToDisplayEvent",
-             @"OnInterstitialHiddenEvent",
-             @"OnInterstitialAdRevenuePaid",
+             ON_INTERSTITIAL_LOADED_EVENT,
+             ON_INTERSTITIAL_LOAD_FAILED_EVENT,
+             ON_INTERSTITIAL_CLICKED_EVENT,
+             ON_INTERSTITIAL_DISPLAYED_EVENT,
+             ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT,
+             ON_INTERSTITIAL_HIDDEN_EVENT,
+             ON_INTERSTITIAL_AD_REVENUE_PAID,
              
-             @"OnRewardedAdLoadedEvent",
-             @"OnRewardedAdLoadFailedEvent",
-             @"OnRewardedAdClickedEvent",
-             @"OnRewardedAdDisplayedEvent",
-             @"OnRewardedAdFailedToDisplayEvent",
-             @"OnRewardedAdHiddenEvent",
-             @"OnRewardedAdReceivedRewardEvent",
-             @"OnRewardedAdRevenuePaid",
+             ON_REWARDED_AD_LOADED_EVENT,
+             ON_REWARDED_AD_LOAD_FAILED_EVENT,
+             ON_REWARDED_AD_CLICKED_EVENT,
+             ON_REWARDED_AD_DISPLAYED_EVENT,
+             ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT,
+             ON_REWARDED_AD_HIDDEN_EVENT,
+             ON_REWARDED_AD_RECEIVED_REWARD_EVENT,
+             ON_REWARDED_AD_REVENUE_PAID,
              
-             @"OnAppOpenAdLoadedEvent",
-             @"OnAppOpenAdLoadFailedEvent",
-             @"OnAppOpenAdClickedEvent",
-             @"OnAppOpenAdDisplayedEvent",
-             @"OnAppOpenAdFailedToDisplayEvent",
-             @"OnAppOpenAdHiddenEvent",
-             @"OnAppOpenAdRevenuePaid"];
+             ON_APPOPEN_AD_LOADED_EVENT,
+             ON_APPOPEN_AD_LOAD_FAILED_EVENT,
+             ON_APPOPEN_AD_CLICKED_EVENT,
+             ON_APPOPEN_AD_DISPLAYED_EVENT,
+             ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT,
+             ON_APPOPEN_AD_HIDDEN_EVENT,
+             ON_APPOPEN_AD_REVENUE_PAID];
+}
+
+- (NSDictionary *)constantsToExport
+{
+    return @{@"ON_MREC_AD_LOADED_EVENT": ON_MREC_AD_LOADED_EVENT,
+             @"ON_MREC_AD_LOAD_FAILED_EVENT" : ON_MREC_AD_LOAD_FAILED_EVENT,
+             @"ON_MREC_AD_CLICKED_EVENT" : ON_MREC_AD_CLICKED_EVENT,
+             @"ON_MREC_AD_COLLAPSED_EVENT" : ON_MREC_AD_COLLAPSED_EVENT,
+             @"ON_MREC_AD_EXPANDED_EVENT" : ON_MREC_AD_EXPANDED_EVENT,
+             @"ON_MREC_AD_REVENUE_PAID" : ON_MREC_AD_REVENUE_PAID,
+             
+             @"ON_BANNER_AD_LOADED_EVENT" : ON_BANNER_AD_LOADED_EVENT,
+             @"ON_BANNER_AD_LOAD_FAILED_EVENT" : ON_BANNER_AD_LOAD_FAILED_EVENT,
+             @"ON_BANNER_AD_CLICKED_EVENT" : ON_BANNER_AD_CLICKED_EVENT,
+             @"ON_BANNER_AD_COLLAPSED_EVENT" : ON_BANNER_AD_COLLAPSED_EVENT,
+             @"ON_BANNER_AD_EXPANDED_EVENT" : ON_BANNER_AD_EXPANDED_EVENT,
+             @"ON_BANNER_AD_REVENUE_PAID" : ON_BANNER_AD_REVENUE_PAID,
+             
+             @"ON_INTERSTITIAL_LOADED_EVENT" : ON_INTERSTITIAL_LOADED_EVENT,
+             @"ON_INTERSTITIAL_LOAD_FAILED_EVENT" : ON_INTERSTITIAL_LOAD_FAILED_EVENT,
+             @"ON_INTERSTITIAL_CLICKED_EVENT" : ON_INTERSTITIAL_CLICKED_EVENT,
+             @"ON_INTERSTITIAL_DISPLAYED_EVENT" : ON_INTERSTITIAL_DISPLAYED_EVENT,
+             @"ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT" : ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT,
+             @"ON_INTERSTITIAL_HIDDEN_EVENT" : ON_INTERSTITIAL_HIDDEN_EVENT,
+             @"ON_INTERSTITIAL_AD_REVENUE_PAID" : ON_INTERSTITIAL_AD_REVENUE_PAID,
+             
+             @"ON_REWARDED_AD_LOADED_EVENT" : ON_REWARDED_AD_LOADED_EVENT,
+             @"ON_REWARDED_AD_LOAD_FAILED_EVENT" : ON_REWARDED_AD_LOAD_FAILED_EVENT,
+             @"ON_REWARDED_AD_CLICKED_EVENT" : ON_REWARDED_AD_CLICKED_EVENT,
+             @"ON_REWARDED_AD_DISPLAYED_EVENT" : ON_REWARDED_AD_DISPLAYED_EVENT,
+             @"ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT" : ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT,
+             @"ON_REWARDED_AD_HIDDEN_EVENT" : ON_REWARDED_AD_HIDDEN_EVENT,
+             @"ON_REWARDED_AD_RECEIVED_REWARD_EVENT" : ON_REWARDED_AD_RECEIVED_REWARD_EVENT,
+             @"ON_REWARDED_AD_REVENUE_PAID" : ON_REWARDED_AD_REVENUE_PAID,
+             
+             @"ON_APPOPEN_AD_LOADED_EVENT" : ON_APPOPEN_AD_LOADED_EVENT,
+             @"ON_APPOPEN_AD_LOAD_FAILED_EVENT" : ON_APPOPEN_AD_LOAD_FAILED_EVENT,
+             @"ON_APPOPEN_AD_CLICKED_EVENT" : ON_APPOPEN_AD_CLICKED_EVENT,
+             @"ON_APPOPEN_AD_DISPLAYED_EVENT" : ON_APPOPEN_AD_DISPLAYED_EVENT,
+             @"ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT" : ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT,
+             @"ON_APPOPEN_AD_HIDDEN_EVENT" : ON_APPOPEN_AD_HIDDEN_EVENT,
+             @"ON_APPOPEN_AD_REVENUE_PAID" : ON_APPOPEN_AD_REVENUE_PAID,
+             
+             @"TOP_CENTER_POSITION" : TOP_CENTER,
+             @"TOP_LEFT_POSITION" : TOP_LEFT,
+             @"TOP_RIGHT_POSITION" : TOP_RIGHT,
+             @"CENTERED_POSITION" : CENTERED,
+             @"CENTER_LEFT_POSITION" : CENTER_LEFT,
+             @"CENTER_RIGHT_POSITION" : CENTER_RIGHT,
+             @"BOTTOM_LEFT_POSITION" : BOTTOM_LEFT,
+             @"BOTTOM_CENTER_POSITION" : BOTTOM_CENTER,
+             @"BOTTOM_RIGHT_POSITION" : BOTTOM_RIGHT,
+             
+             @"BANNER_AD_FORMAT_LABEL" : MAAdFormat.banner.label,
+             @"MREC_AD_FORMAT_LABEL" : MAAdFormat.mrec.label};
 }
 
 - (void)startObserving

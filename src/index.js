@@ -1,52 +1,12 @@
-import { NativeModules, NativeEventEmitter } from "react-native";
+import { NativeModules } from "react-native";
 import AdView, { AdFormat, AdViewPosition } from "./AppLovinMAXAdView";
 import { TargetingData, AdContentRating, UserGender } from "./TargetingData";
 import NativeAdView from "./NativeAdView";
+import EventListeners from "./AppLovinMAXEventListeners";
 
 const { AppLovinMAX } = NativeModules;
 
 const VERSION = "4.1.5";
-
-/**
- * This enum represents whether or not the consent dialog should be shown for this user.
- * The state where no such determination could be made is represented by `Unknown`.
- */
-const ConsentDialogState = {
-  /**
-   * The consent dialog state could not be determined. This is likely due to SDK failing to initialize.
-   */
-  UNKNOWN: 0,
-
-  /**
-   * This user should be shown a consent dialog.
-   */
-  APPLIES: 1,
-
-  /**
-   * This user should not be shown a consent dialog.
-   */
-  DOES_NOT_APPLY: 2,
-};
-
-const emitter = new NativeEventEmitter(AppLovinMAX);
-const subscriptions = {};
-
-const addEventListener = (event, handler) => {
-  let subscription = emitter.addListener(event, handler);
-  let currentSubscription = subscriptions[event];
-  if (currentSubscription) {
-    currentSubscription.remove();
-  }
-  subscriptions[event] = subscription;
-};
-
-const removeEventListener = (event) => {
-  let currentSubscription = subscriptions[event];
-  if (currentSubscription) {
-    currentSubscription.remove();
-    delete subscriptions[event];
-  }
-};
 
 const runIfInitialized = (callingMethodName, callingMethod, ...params) => {
   return AppLovinMAX.isInitialized().then(isInitialized => {
@@ -294,25 +254,18 @@ const setAppOpenAdExtraParameter = (adUnitId, key, value) => {
                           adUnitId, key, value);
 }
 
-const getConsentDialogState = () => {
-  console.warn("getConsentDialogState() has been deprecated and will be removed in a future release.");
-  return AppLovinMAX.getConsentDialogState();
-};
-
 export default {
   ...AppLovinMAX,
+  ...EventListeners,
   AdView,
   get targetingData() {
     return TargetingData;
   },
   AdContentRating,
   UserGender,
-  ConsentDialogState,
   AdViewPosition,
   AdFormat,
   NativeAdView,
-  addEventListener,
-  removeEventListener,
   initialize(sdkKey) {
     return AppLovinMAX.initialize(VERSION, sdkKey);
   },
@@ -372,11 +325,6 @@ export default {
   isAppOpenAdReady,
   showAppOpenAd,
   setAppOpenAdExtraParameter,
-
-  /*--------------------------------------------------*/
-  /* DEPRECATED (will be removed in a future release) */
-  /*--------------------------------------------------*/
-  getConsentDialogState,
 
   /*----------------------*/
   /** AUTO-DECLARED APIs **/

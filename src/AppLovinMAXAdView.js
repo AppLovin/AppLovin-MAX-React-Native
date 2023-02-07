@@ -1,24 +1,39 @@
-import { NativeModules, requireNativeComponent, UIManager, findNodeHandle, View, Text, StyleSheet } from "react-native";
+import { NativeModules, requireNativeComponent } from "react-native";
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 
 const { AppLovinMAX } = NativeModules;
 
+const {
+  TOP_CENTER_POSITION,
+  TOP_LEFT_POSITION,
+  TOP_RIGHT_POSITION,
+  CENTERED_POSITION,
+  CENTER_LEFT_POSITION,
+  CENTER_RIGHT_POSITION,
+  BOTTOM_LEFT_POSITION,
+  BOTTOM_CENTER_POSITION,
+  BOTTOM_RIGHT_POSITION,
+
+  BANNER_AD_FORMAT_LABEL,
+  MREC_AD_FORMAT_LABEL,      
+} = AppLovinMAX.getConstants();
+
 export const AdFormat = {
-  BANNER: "banner",
-  MREC: "mrec",
+  BANNER: BANNER_AD_FORMAT_LABEL,
+  MREC: MREC_AD_FORMAT_LABEL,
 };
 
 export const AdViewPosition = {
-  TOP_CENTER: "top_center",
-  TOP_LEFT: "top_left",
-  TOP_RIGHT: "top_right",
-  CENTERED: "centered",
-  CENTER_LEFT: "center_left",
-  CENTER_RIGHT: "center_right",
-  BOTTOM_LEFT: "bottom_left",
-  BOTTOM_CENTER: "bottom_center",
-  BOTTOM_RIGHT: "bottom_right",
+  TOP_CENTER : TOP_CENTER_POSITION,
+  TOP_LEFT : TOP_LEFT_POSITION,
+  TOP_RIGHT : TOP_RIGHT_POSITION,
+  CENTERED : CENTERED_POSITION,
+  CENTER_LEFT : CENTER_LEFT_POSITION,
+  CENTER_RIGHT : CENTER_RIGHT_POSITION,
+  BOTTOM_LEFT : BOTTOM_LEFT_POSITION,
+  BOTTOM_CENTER : BOTTOM_CENTER_POSITION,
+  BOTTOM_RIGHT : BOTTOM_RIGHT_POSITION,
 };
 
 const AdView = (props) => {

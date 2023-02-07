@@ -65,11 +65,11 @@ class AppLovinMAXAdView
             return;
         }
 
-        if ( "banner".equals( value ) )
+        if ( MaxAdFormat.BANNER.getLabel().equals( value ) )
         {
             adFormat = AppLovinMAXModule.getDeviceSpecificBannerAdViewAdFormat( reactContext );
         }
-        else if ( "mrec".equals( value ) )
+        else if ( MaxAdFormat.MREC.getLabel().equals( value ) )
         {
             adFormat = MaxAdFormat.MREC;
         }
