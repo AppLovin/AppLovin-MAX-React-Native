@@ -85,21 +85,6 @@ const App = () => {
       setIsInitialized(true);
       setStatusText('SDK Initialized');
 
-      if (Platform.OS === 'android') {
-        if (configuration.consentDialogState == AppLovinMAX.ConsentDialogState.APPLIES) {
-          // Show user consent dialog
-          AppLovinMAX.showConsentDialog(() => {
-            setStatusText('Consent dialog closed');
-          });
-        } else if (configuration.consentDialogState == AppLovinMAX.ConsentDialogState.DOES_NOT_APPLY) {
-          // No need to show consent dialog, proceed with initialization
-        } else {
-          // Consent dialog state is unknown. Proceed with initialization, but check if the consent
-          // dialog should be shown on the next application initialization
-          // No need to show consent dialog, proceed with initialization
-        }
-      }
-
       // Attach ad listeners for interstitial ads, rewarded ads, and banner ads
       attachAdListeners();
     }).catch(error => {

@@ -311,8 +311,7 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         self.sdkConfiguration = configuration;
         self.sdkInitialized = YES;
         
-        resolve(@[@{@"consentDialogState" : @(configuration.consentDialogState),
-                    @"countryCode" : self.sdk.configuration.countryCode}]);
+        resolve(@[@{@"countryCode" : self.sdk.configuration.countryCode}]);
     }];
 }
 
@@ -337,11 +336,6 @@ RCT_EXPORT_METHOD(showMediationDebugger)
 RCT_EXPORT_METHOD(showConsentDialog:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
     reject(RCTErrorUnspecified, @"Failed to show consent dialog - Unavailable on iOS, please use the consent flow: https://dash.applovin.com/documentation/mediation/react-native/getting-started/consent-flow", nil);
-}
-
-RCT_EXPORT_METHOD(getConsentDialogState:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
-{
-    resolve([self isSDKInitialized] ? @(self.sdkConfiguration.consentDialogState) : @(ALConsentDialogStateUnknown));
 }
 
 RCT_EXPORT_METHOD(setHasUserConsent:(BOOL)hasUserConsent)
@@ -1832,11 +1826,7 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
              @"BOTTOM_RIGHT_POSITION" : BOTTOM_RIGHT,
              
              @"BANNER_AD_FORMAT_LABEL" : MAAdFormat.banner.label,
-             @"MREC_AD_FORMAT_LABEL" : MAAdFormat.mrec.label,
-             
-             @"CONSENT_DIALOG_STATE_UNKNOWN" : @(ALConsentDialogStateUnknown),
-             @"CONSENT_DIALOG_STATE_APPLIES" : @(ALConsentDialogStateApplies),
-             @"CONSENT_DIALOG_STATE_DOES_NOT_APPLY" : @(ALConsentDialogStateDoesNotApply)};
+             @"MREC_AD_FORMAT_LABEL" : MAAdFormat.mrec.label};
 }
 
 - (void)startObserving

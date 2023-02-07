@@ -404,7 +404,6 @@ public class AppLovinMAXModule
                 }.enable();
 
                 WritableMap sdkConfiguration = Arguments.createMap();
-                sdkConfiguration.putInt( "consentDialogState", configuration.getConsentDialogState().ordinal() );
                 sdkConfiguration.putString( "countryCode", configuration.getCountryCode() );
                 promise.resolve( sdkConfiguration );
             }
@@ -449,14 +448,6 @@ public class AppLovinMAXModule
                 promise.resolve( null );
             }
         } );
-    }
-
-    @ReactMethod
-    public void getConsentDialogState(final Promise promise)
-    {
-        promise.resolve( isSdkInitialized ?
-                                 sdkConfiguration.getConsentDialogState().ordinal() :
-                                 AppLovinSdkConfiguration.ConsentDialogState.UNKNOWN.ordinal() );
     }
 
     @ReactMethod
@@ -2198,10 +2189,6 @@ public class AppLovinMAXModule
 
         constants.put( "BANNER_AD_FORMAT_LABEL", MaxAdFormat.BANNER.getLabel() );
         constants.put( "MREC_AD_FORMAT_LABEL", MaxAdFormat.MREC.getLabel() );
-
-        constants.put( "CONSENT_DIALOG_STATE_UNKNOWN", AppLovinSdkConfiguration.ConsentDialogState.UNKNOWN.ordinal() );
-        constants.put( "CONSENT_DIALOG_STATE_APPLIES", AppLovinSdkConfiguration.ConsentDialogState.APPLIES.ordinal() );
-        constants.put( "CONSENT_DIALOG_STATE_DOES_NOT_APPLY", AppLovinSdkConfiguration.ConsentDialogState.DOES_NOT_APPLY.ordinal() );
 
         return constants;
     }
