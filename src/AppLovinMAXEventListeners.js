@@ -4,41 +4,41 @@ const { AppLovinMAX } = NativeModules;
 
 const {
   ON_MREC_AD_LOADED_EVENT,
-  ON_MREC_AD_LOADFAILED_EVENT,
+  ON_MREC_AD_LOAD_FAILED_EVENT,
   ON_MREC_AD_CLICKED_EVENT,
   ON_MREC_AD_COLLAPSED_EVENT,
   ON_MREC_AD_EXPANDED_EVENT,
   ON_MREC_AD_REVENUE_PAID,
 
   ON_BANNER_AD_LOADED_EVENT,
-  ON_BANNER_AD_LOADFAILED_EVENT,
+  ON_BANNER_AD_LOAD_FAILED_EVENT,
   ON_BANNER_AD_CLICKED_EVENT,
   ON_BANNER_AD_COLLAPSED_EVENT,
   ON_BANNER_AD_EXPANDED_EVENT,
   ON_BANNER_AD_REVENUE_PAID,
 
   ON_INTERSTITIAL_LOADED_EVENT,
-  ON_INTERSTITIAL_LOADFAILED_EVENT,
+  ON_INTERSTITIAL_LOAD_FAILED_EVENT,
   ON_INTERSTITIAL_CLICKED_EVENT,
   ON_INTERSTITIAL_DISPLAYED_EVENT,
-  ON_INTERSTITIAL_AD_FAILEDTODISPLAY_EVENT,
+  ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT,
   ON_INTERSTITIAL_HIDDEN_EVENT,
   ON_INTERSTITIAL_AD_REVENUE_PAID,
   
   ON_REWARDED_AD_LOADED_EVENT,
-  ON_REWARDED_AD_LOADFAILED_EVENT,
+  ON_REWARDED_AD_LOAD_FAILED_EVENT,
   ON_REWARDED_AD_CLICKED_EVENT,
   ON_REWARDED_AD_DISPLAYED_EVENT,
-  ON_REWARDED_AD_FAILEDTODISPLAY_EVENT,
+  ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT,
   ON_REWARDED_AD_HIDDEN_EVENT,
-  ON_REWARDED_AD_RECEIVEDREWARD_EVENT,
+  ON_REWARDED_AD_RECEIVED_REWARD_EVENT,
   ON_REWARDED_AD_REVENUE_PAID,
   
   ON_APPOPEN_AD_LOADED_EVENT,
-  ON_APPOPEN_AD_LOADFAILED_EVENT,
+  ON_APPOPEN_AD_LOAD_FAILED_EVENT,
   ON_APPOPEN_AD_CLICKED_EVENT,
   ON_APPOPEN_AD_DISPLAYED_EVENT,
-  ON_APPOPEN_AD_FAILEDTODISPLAY_EVENT,
+  ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT,
   ON_APPOPEN_AD_HIDDEN_EVENT,
   ON_APPOPEN_AD_REVENUE_PAID,
 } = AppLovinMAX.getConstants();
@@ -72,11 +72,11 @@ const removeMRecAdLoadedEventListener = () => {
 };
 
 const addMRecAdLoadFailedEventListener = (listener) => {
-  addEventListener(ON_MREC_AD_LOADFAILED_EVENT, (errorInfo) => listener(errorInfo));
+  addEventListener(ON_MREC_AD_LOAD_FAILED_EVENT, (errorInfo) => listener(errorInfo));
 };
 
 const removeMRecAdLoadFailedEventListener = () => {
-  removeEventListener(ON_MREC_AD_LOADFAILED_EVENT);  
+  removeEventListener(ON_MREC_AD_LOAD_FAILED_EVENT);  
 };
 
 const addMRecAdClickedEventListener = (listener) => {
@@ -120,11 +120,11 @@ const removeBannerAdLoadedEventListener = () => {
 };
 
 const addBannerAdLoadFailedEventListener = (listener) => {
-  addEventListener(ON_BANNER_AD_LOADFAILED_EVENT, (errorInfo) => listener(errorInfo));
+  addEventListener(ON_BANNER_AD_LOAD_FAILED_EVENT, (errorInfo) => listener(errorInfo));
 };
 
 const removeBannerAdLoadFailedEventListener = () => {
-  removeEventListener(ON_BANNER_AD_LOADFAILED_EVENT);  
+  removeEventListener(ON_BANNER_AD_LOAD_FAILED_EVENT);  
 };
 
 const addBannerAdClickedEventListener = (listener) => {
@@ -168,11 +168,11 @@ const removeInterstitialLoadedEventListener = () => {
 };
 
 const addInterstitialLoadFailedEventListener = (listener) => {
-  addEventListener(ON_INTERSTITIAL_LOADFAILED_EVENT, (errorInfo) => listener(errorInfo));
+  addEventListener(ON_INTERSTITIAL_LOAD_FAILED_EVENT, (errorInfo) => listener(errorInfo));
 };
 
 const removeInterstitialLoadFailedEventListener = () => {
-  removeEventListener(ON_INTERSTITIAL_LOADFAILED_EVENT);  
+  removeEventListener(ON_INTERSTITIAL_LOAD_FAILED_EVENT);  
 };
 
 const addInterstitialClickedEventListener = (listener) => {
@@ -192,11 +192,11 @@ const removeInterstitialDisplayedEventListener = () => {
 };
 
 const addInterstitialAdFailedToDisplayEventListener = (listener) => {
-  addEventListener(ON_INTERSTITIAL_AD_FAILEDTODISPLAY_EVENT, (adInfo) => listener(adInfo));
+  addEventListener(ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT, (adInfo) => listener(adInfo));
 };
 
 const removeInterstitialAdFailedToDisplayEventListener = () => {
-  removeEventListener(ON_INTERSTITIAL_AD_FAILEDTODISPLAY_EVENT);  
+  removeEventListener(ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT);  
 };
 
 const addInterstitialHiddenEventListener = (listener) => {
@@ -224,11 +224,11 @@ const removeRewardedAdLoadedEventListener = () => {
 };
 
 const addRewardedAdLoadFailedEventListener = (listener) => {
-  addEventListener(ON_REWARDED_AD_LOADFAILED_EVENT, (errorInfo) => listener(errorInfo));
+  addEventListener(ON_REWARDED_AD_LOAD_FAILED_EVENT, (errorInfo) => listener(errorInfo));
 };
 
 const removeRewardedAdLoadFailedEventListener = () => {
-  removeEventListener(ON_REWARDED_AD_LOADFAILED_EVENT);  
+  removeEventListener(ON_REWARDED_AD_LOAD_FAILED_EVENT);  
 };
 
 const addRewardedAdClickedEventListener = (listener) => {
@@ -248,11 +248,11 @@ const removeRewardedAdDisplayedEventListener = () => {
 };
 
 const addRewardedAdFailedToDisplayEventListener = (listener) => {
-  addEventListener(ON_REWARDED_AD_FAILEDTODISPLAY_EVENT, (adInfo) => listener(adInfo));
+  addEventListener(ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT, (adInfo) => listener(adInfo));
 };
 
 const removeRewardedAdFailedToDisplayEventListener = () => {
-  removeEventListener(ON_REWARDED_AD_FAILEDTODISPLAY_EVENT);  
+  removeEventListener(ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT);  
 };
 
 const addRewardedAdHiddenEventListener = (listener) => {
@@ -264,11 +264,11 @@ const removeRewardedAdHiddenEventListener = () => {
 };
 
 const addRewardedAdReceivedRewardEventListener = (listener) => {
-  addEventListener(ON_REWARDED_AD_RECEIVEDREWARD_EVENT, (adInfo) => listener(adInfo));
+  addEventListener(ON_REWARDED_AD_RECEIVED_REWARD_EVENT, (adInfo) => listener(adInfo));
 };
 
 const removeRewardedAdReceivedRewardEventListener = () => {
-  removeEventListener(ON_REWARDED_AD_RECEIVEDREWARD_EVENT);  
+  removeEventListener(ON_REWARDED_AD_RECEIVED_REWARD_EVENT);  
 };
 
 const addRewardedAdRevenuePaidListener = (listener) => {
@@ -288,11 +288,11 @@ const removeAppOpenAdLoadedEventListener = () => {
 };
 
 const addAppOpenAdLoadFailedEventListener = (listener) => {
-  addEventListener(ON_APPOPEN_AD_LOADFAILED_EVENT, (errorInfo) => listener(errorInfo));
+  addEventListener(ON_APPOPEN_AD_LOAD_FAILED_EVENT, (errorInfo) => listener(errorInfo));
 };
 
 const removeAppOpenAdLoadFailedEventListener = () => {
-  removeEventListener(ON_APPOPEN_AD_LOADFAILED_EVENT);  
+  removeEventListener(ON_APPOPEN_AD_LOAD_FAILED_EVENT);  
 };
 
 const addAppOpenAdClickedEventListener = (listener) => {
@@ -312,11 +312,11 @@ const removeAppOpenAdDisplayedEventListener = () => {
 };
 
 const addAppOpenAdFailedToDisplayEventListener = (listener) => {
-  addEventListener(ON_APPOPEN_AD_FAILEDTODISPLAY_EVENT, (adInfo) => listener(adInfo));
+  addEventListener(ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT, (adInfo) => listener(adInfo));
 };
 
 const removeAppOpenAdFailedToDisplayEventListener = () => {
-  removeEventListener(ON_APPOPEN_AD_FAILEDTODISPLAY_EVENT);  
+  removeEventListener(ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT);  
 };
 
 const addAppOpenAdHiddenEventListener = (listener) => {

@@ -83,41 +83,41 @@ static NSString *const SDK_TAG = @"AppLovinSdk";
 static NSString *const TAG = @"AppLovinMAX";
 
 static NSString *const ON_BANNER_AD_LOADED_EVENT = @"OnBannerAdLoadedEvent";
-static NSString *const ON_BANNER_AD_LOADFAILED_EVENT = @"OnBannerAdLoadFailedEvent";
+static NSString *const ON_BANNER_AD_LOAD_FAILED_EVENT = @"OnBannerAdLoadFailedEvent";
 static NSString *const ON_BANNER_AD_CLICKED_EVENT = @"OnBannerAdClickedEvent";
 static NSString *const ON_BANNER_AD_COLLAPSED_EVENT = @"OnBannerAdCollapsedEvent";
 static NSString *const ON_BANNER_AD_EXPANDED_EVENT = @"OnBannerAdExpandedEvent";
 static NSString *const ON_BANNER_AD_REVENUE_PAID = @"OnBannerAdRevenuePaid";
 
 static NSString *const ON_MREC_AD_LOADED_EVENT = @"OnMRecAdLoadedEvent";
-static NSString *const ON_MREC_AD_LOADFAILED_EVENT = @"OnMRecAdLoadFailedEvent";
+static NSString *const ON_MREC_AD_LOAD_FAILED_EVENT = @"OnMRecAdLoadFailedEvent";
 static NSString *const ON_MREC_AD_CLICKED_EVENT= @"OnMRecAdClickedEvent";
 static NSString *const ON_MREC_AD_COLLAPSED_EVENT = @"OnMRecAdCollapsedEvent";
 static NSString *const ON_MREC_AD_EXPANDED_EVENT = @"OnMRecAdExpandedEvent";
 static NSString *const ON_MREC_AD_REVENUE_PAID = @"OnMRecAdRevenuePaid";
 
 static NSString *const ON_INTERSTITIAL_LOADED_EVENT = @"OnInterstitialLoadedEvent";
-static NSString *const ON_INTERSTITIAL_LOADFAILED_EVENT = @"OnInterstitialLoadFailedEvent";
+static NSString *const ON_INTERSTITIAL_LOAD_FAILED_EVENT = @"OnInterstitialLoadFailedEvent";
 static NSString *const ON_INTERSTITIAL_CLICKED_EVENT = @"OnInterstitialClickedEvent";
 static NSString *const ON_INTERSTITIAL_DISPLAYED_EVENT = @"OnInterstitialDisplayedEvent";
-static NSString *const ON_INTERSTITIAL_AD_FAILEDTODISPLAY_EVENT = @"OnInterstitialAdFailedToDisplayEvent";
+static NSString *const ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT = @"OnInterstitialAdFailedToDisplayEvent";
 static NSString *const ON_INTERSTITIAL_HIDDEN_EVENT = @"OnInterstitialHiddenEvent";
 static NSString *const ON_INTERSTITIAL_AD_REVENUE_PAID = @"OnInterstitialAdRevenuePaid";
 
 static NSString *const ON_REWARDED_AD_LOADED_EVENT = @"OnRewardedAdLoadedEvent";
-static NSString *const ON_REWARDED_AD_LOADFAILED_EVENT = @"OnRewardedAdLoadFailedEvent";
+static NSString *const ON_REWARDED_AD_LOAD_FAILED_EVENT = @"OnRewardedAdLoadFailedEvent";
 static NSString *const ON_REWARDED_AD_CLICKED_EVENT = @"OnRewardedAdClickedEvent";
 static NSString *const ON_REWARDED_AD_DISPLAYED_EVENT = @"OnRewardedAdDisplayedEvent";
-static NSString *const ON_REWARDED_AD_FAILEDTODISPLAY_EVENT = @"OnRewardedAdFailedToDisplayEvent";
+static NSString *const ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT = @"OnRewardedAdFailedToDisplayEvent";
 static NSString *const ON_REWARDED_AD_HIDDEN_EVENT = @"OnRewardedAdHiddenEvent";
-static NSString *const ON_REWARDED_AD_RECEIVEDREWARD_EVENT = @"OnRewardedAdReceivedRewardEvent";
+static NSString *const ON_REWARDED_AD_RECEIVED_REWARD_EVENT = @"OnRewardedAdReceivedRewardEvent";
 static NSString *const ON_REWARDED_AD_REVENUE_PAID = @"OnRewardedAdRevenuePaid";
 
 static NSString *const ON_APPOPEN_AD_LOADED_EVENT = @"OnAppOpenAdLoadedEvent";
-static NSString *const ON_APPOPEN_AD_LOADFAILED_EVENT = @"OnAppOpenAdLoadFailedEvent";
+static NSString *const ON_APPOPEN_AD_LOAD_FAILED_EVENT = @"OnAppOpenAdLoadFailedEvent";
 static NSString *const ON_APPOPEN_AD_CLICKED_EVENT = @"OnAppOpenAdClickedEvent";
 static NSString *const ON_APPOPEN_AD_DISPLAYED_EVENT = @"OnAppOpenAdDisplayedEvent";
-static NSString *const ON_APPOPEN_AD_FAILEDTODISPLAY_EVENT = @"OnAppOpenAdFailedToDisplayEvent";
+static NSString *const ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT = @"OnAppOpenAdFailedToDisplayEvent";
 static NSString *const ON_APPOPEN_AD_HIDDEN_EVENT = @"OnAppOpenAdHiddenEvent";
 static NSString *const ON_APPOPEN_AD_REVENUE_PAID = @"OnAppOpenAdRevenuePaid";
 
@@ -850,15 +850,15 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
     }
     else if ( self.interstitials[adUnitIdentifier] )
     {
-        name = ON_INTERSTITIAL_LOADFAILED_EVENT;
+        name = ON_INTERSTITIAL_LOAD_FAILED_EVENT;
     }
     else if ( self.rewardedAds[adUnitIdentifier] )
     {
-        name = ON_REWARDED_AD_LOADFAILED_EVENT;
+        name = ON_REWARDED_AD_LOAD_FAILED_EVENT;
     }
     else if ( self.appOpenAds[adUnitIdentifier] )
     {
-        name = ON_APPOPEN_AD_LOADFAILED_EVENT;
+        name = ON_APPOPEN_AD_LOAD_FAILED_EVENT;
     }
     else
     {
@@ -934,15 +934,15 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
     NSString *name;
     if ( MAAdFormat.interstitial == adFormat )
     {
-        name = ON_INTERSTITIAL_AD_FAILEDTODISPLAY_EVENT;
+        name = ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT;
     }
     else if ( MAAdFormat.rewarded == adFormat )
     {
-        name = ON_REWARDED_AD_FAILEDTODISPLAY_EVENT;
+        name = ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT;
     }
     else // APP OPEN
     {
-        name = ON_APPOPEN_AD_FAILEDTODISPLAY_EVENT;
+        name = ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT;
     }
     
     [self sendReactNativeEventWithName: name body: [self adDisplayFailedInfoForAd: ad withError: error]];
@@ -1057,7 +1057,7 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
                                    @"rewardAmount": rewardAmount} mutableCopy];
     [body addEntriesFromDictionary: [self adInfoForAd: ad]];
     
-    [self sendReactNativeEventWithName: ON_REWARDED_AD_RECEIVEDREWARD_EVENT body: body];
+    [self sendReactNativeEventWithName: ON_REWARDED_AD_RECEIVED_REWARD_EVENT body: body];
 }
 
 #pragma mark - Internal Methods
@@ -1741,41 +1741,41 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
 - (NSArray<NSString *> *)supportedEvents
 {
     return @[ON_MREC_AD_LOADED_EVENT,
-             ON_MREC_AD_LOADFAILED_EVENT,
+             ON_MREC_AD_LOAD_FAILED_EVENT,
              ON_MREC_AD_CLICKED_EVENT,
              ON_MREC_AD_COLLAPSED_EVENT,
              ON_MREC_AD_EXPANDED_EVENT,
              ON_MREC_AD_REVENUE_PAID,
              
              ON_BANNER_AD_LOADED_EVENT,
-             ON_BANNER_AD_LOADFAILED_EVENT,
+             ON_BANNER_AD_LOAD_FAILED_EVENT,
              ON_BANNER_AD_CLICKED_EVENT,
              ON_BANNER_AD_COLLAPSED_EVENT,
              ON_BANNER_AD_EXPANDED_EVENT,
              ON_BANNER_AD_REVENUE_PAID,
              
              ON_INTERSTITIAL_LOADED_EVENT,
-             ON_INTERSTITIAL_LOADFAILED_EVENT,
+             ON_INTERSTITIAL_LOAD_FAILED_EVENT,
              ON_INTERSTITIAL_CLICKED_EVENT,
              ON_INTERSTITIAL_DISPLAYED_EVENT,
-             ON_INTERSTITIAL_AD_FAILEDTODISPLAY_EVENT,
+             ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT,
              ON_INTERSTITIAL_HIDDEN_EVENT,
              ON_INTERSTITIAL_AD_REVENUE_PAID,
              
              ON_REWARDED_AD_LOADED_EVENT,
-             ON_REWARDED_AD_LOADFAILED_EVENT,
+             ON_REWARDED_AD_LOAD_FAILED_EVENT,
              ON_REWARDED_AD_CLICKED_EVENT,
              ON_REWARDED_AD_DISPLAYED_EVENT,
-             ON_REWARDED_AD_FAILEDTODISPLAY_EVENT,
+             ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT,
              ON_REWARDED_AD_HIDDEN_EVENT,
-             ON_REWARDED_AD_RECEIVEDREWARD_EVENT,
+             ON_REWARDED_AD_RECEIVED_REWARD_EVENT,
              ON_REWARDED_AD_REVENUE_PAID,
              
              ON_APPOPEN_AD_LOADED_EVENT,
-             ON_APPOPEN_AD_LOADFAILED_EVENT,
+             ON_APPOPEN_AD_LOAD_FAILED_EVENT,
              ON_APPOPEN_AD_CLICKED_EVENT,
              ON_APPOPEN_AD_DISPLAYED_EVENT,
-             ON_APPOPEN_AD_FAILEDTODISPLAY_EVENT,
+             ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT,
              ON_APPOPEN_AD_HIDDEN_EVENT,
              ON_APPOPEN_AD_REVENUE_PAID];
 }
@@ -1783,41 +1783,41 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
 - (NSDictionary *)constantsToExport
 {
     return @{@"ON_MREC_AD_LOADED_EVENT": ON_MREC_AD_LOADED_EVENT,
-             @"ON_MREC_AD_LOADFAILED_EVENT" : ON_MREC_AD_LOADFAILED_EVENT,
+             @"ON_MREC_AD_LOAD_FAILED_EVENT" : ON_MREC_AD_LOAD_FAILED_EVENT,
              @"ON_MREC_AD_CLICKED_EVENT" : ON_MREC_AD_CLICKED_EVENT,
              @"ON_MREC_AD_COLLAPSED_EVENT" : ON_MREC_AD_COLLAPSED_EVENT,
              @"ON_MREC_AD_EXPANDED_EVENT" : ON_MREC_AD_EXPANDED_EVENT,
              @"ON_MREC_AD_REVENUE_PAID" : ON_MREC_AD_REVENUE_PAID,
              
              @"ON_BANNER_AD_LOADED_EVENT" : ON_BANNER_AD_LOADED_EVENT,
-             @"ON_BANNER_AD_LOADFAILED_EVENT" : ON_BANNER_AD_LOADFAILED_EVENT,
+             @"ON_BANNER_AD_LOAD_FAILED_EVENT" : ON_BANNER_AD_LOAD_FAILED_EVENT,
              @"ON_BANNER_AD_CLICKED_EVENT" : ON_BANNER_AD_CLICKED_EVENT,
              @"ON_BANNER_AD_COLLAPSED_EVENT" : ON_BANNER_AD_COLLAPSED_EVENT,
              @"ON_BANNER_AD_EXPANDED_EVENT" : ON_BANNER_AD_EXPANDED_EVENT,
              @"ON_BANNER_AD_REVENUE_PAID" : ON_BANNER_AD_REVENUE_PAID,
              
              @"ON_INTERSTITIAL_LOADED_EVENT" : ON_INTERSTITIAL_LOADED_EVENT,
-             @"ON_INTERSTITIAL_LOADFAILED_EVENT" : ON_INTERSTITIAL_LOADFAILED_EVENT,
+             @"ON_INTERSTITIAL_LOAD_FAILED_EVENT" : ON_INTERSTITIAL_LOAD_FAILED_EVENT,
              @"ON_INTERSTITIAL_CLICKED_EVENT" : ON_INTERSTITIAL_CLICKED_EVENT,
              @"ON_INTERSTITIAL_DISPLAYED_EVENT" : ON_INTERSTITIAL_DISPLAYED_EVENT,
-             @"ON_INTERSTITIAL_AD_FAILEDTODISPLAY_EVENT" : ON_INTERSTITIAL_AD_FAILEDTODISPLAY_EVENT,
+             @"ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT" : ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT,
              @"ON_INTERSTITIAL_HIDDEN_EVENT" : ON_INTERSTITIAL_HIDDEN_EVENT,
              @"ON_INTERSTITIAL_AD_REVENUE_PAID" : ON_INTERSTITIAL_AD_REVENUE_PAID,
              
              @"ON_REWARDED_AD_LOADED_EVENT" : ON_REWARDED_AD_LOADED_EVENT,
-             @"ON_REWARDED_AD_LOADFAILED_EVENT" : ON_REWARDED_AD_LOADFAILED_EVENT,
+             @"ON_REWARDED_AD_LOAD_FAILED_EVENT" : ON_REWARDED_AD_LOAD_FAILED_EVENT,
              @"ON_REWARDED_AD_CLICKED_EVENT" : ON_REWARDED_AD_CLICKED_EVENT,
              @"ON_REWARDED_AD_DISPLAYED_EVENT" : ON_REWARDED_AD_DISPLAYED_EVENT,
-             @"ON_REWARDED_AD_FAILEDTODISPLAY_EVENT" : ON_REWARDED_AD_FAILEDTODISPLAY_EVENT,
+             @"ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT" : ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT,
              @"ON_REWARDED_AD_HIDDEN_EVENT" : ON_REWARDED_AD_HIDDEN_EVENT,
-             @"ON_REWARDED_AD_RECEIVEDREWARD_EVENT" : ON_REWARDED_AD_RECEIVEDREWARD_EVENT,
+             @"ON_REWARDED_AD_RECEIVED_REWARD_EVENT" : ON_REWARDED_AD_RECEIVED_REWARD_EVENT,
              @"ON_REWARDED_AD_REVENUE_PAID" : ON_REWARDED_AD_REVENUE_PAID,
              
              @"ON_APPOPEN_AD_LOADED_EVENT" : ON_APPOPEN_AD_LOADED_EVENT,
-             @"ON_APPOPEN_AD_LOADFAILED_EVENT" : ON_APPOPEN_AD_LOADFAILED_EVENT,
+             @"ON_APPOPEN_AD_LOAD_FAILED_EVENT" : ON_APPOPEN_AD_LOAD_FAILED_EVENT,
              @"ON_APPOPEN_AD_CLICKED_EVENT" : ON_APPOPEN_AD_CLICKED_EVENT,
              @"ON_APPOPEN_AD_DISPLAYED_EVENT" : ON_APPOPEN_AD_DISPLAYED_EVENT,
-             @"ON_APPOPEN_AD_FAILEDTODISPLAY_EVENT" : ON_APPOPEN_AD_FAILEDTODISPLAY_EVENT,
+             @"ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT" : ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT,
              @"ON_APPOPEN_AD_HIDDEN_EVENT" : ON_APPOPEN_AD_HIDDEN_EVENT,
              @"ON_APPOPEN_AD_REVENUE_PAID" : ON_APPOPEN_AD_REVENUE_PAID,
              
