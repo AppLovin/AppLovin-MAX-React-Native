@@ -311,7 +311,7 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         self.sdkConfiguration = configuration;
         self.sdkInitialized = YES;
         
-        resolve(@[@{@"countryCode" : self.sdk.configuration.countryCode}]);
+        resolve(@{@"countryCode" : self.sdk.configuration.countryCode});
     }];
 }
 
