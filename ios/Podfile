@@ -1,6 +1,7 @@
 # Uncomment the next line to define a global platform for your project
 platform :ios, '10.0'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+source 'https://github.com/AppLovin/CocoaPods-Specs.git'
 
 target 'AppLovinMAX' do
 
@@ -35,6 +36,6 @@ target 'AppLovinMAX' do
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
-  pod 'AppLovinSDK', '11.7.0'
+  pod 'AppLovinSDK', '11.7.2-beta4'
 
 end
