@@ -2,11 +2,12 @@ package com.applovin.enterprise.apps.demoapp;
 
 import android.app.Application;
 
-import com.applovin.reactnative.AppLovinMAXPackage;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
+import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.soloader.SoLoader;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public class MainApplication
 {
 
     private final ReactNativeHost mReactNativeHost =
-            new ReactNativeHost( this )
+            new DefaultReactNativeHost( this )
             {
                 @Override
                 public boolean getUseDeveloperSupport()
@@ -30,9 +31,8 @@ public class MainApplication
                 {
                     @SuppressWarnings("UnnecessaryLocalVariable")
                     List<ReactPackage> packages = new PackageList( this ).getPackages();
-                    // Packages that cannot be autolinked yet can be added manually here, for AppLovinMAXExample:
+                    // Packages that cannot be autolinked yet can be added manually here, for example:
                     // packages.add(new MyReactNativePackage());
-
                     return packages;
                 }
 
@@ -40,6 +40,18 @@ public class MainApplication
                 protected String getJSMainModuleName()
                 {
                     return "index";
+                }
+
+                @Override
+                protected boolean isNewArchEnabled()
+                {
+                    return BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
+                }
+
+                @Override
+                protected Boolean isHermesEnabled()
+                {
+                    return BuildConfig.IS_HERMES_ENABLED;
                 }
             };
 
@@ -54,5 +66,11 @@ public class MainApplication
     {
         super.onCreate();
         SoLoader.init( this, /* native exopackage */ false );
+        if ( BuildConfig.IS_NEW_ARCHITECTURE_ENABLED )
+        {
+            // If you opted-in for the New Architecture, we load the native entry point for this app.
+            DefaultNewArchitectureEntryPoint.load();
+        }
+        ReactNativeFlipper.initializeFlipper( this, getReactNativeHost().getReactInstanceManager() );
     }
 }
