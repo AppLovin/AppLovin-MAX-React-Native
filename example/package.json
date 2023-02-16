@@ -13,8 +13,8 @@
     "android:bundle:release": "react-native bundle --platform android --dev false --entry-file index.tsx --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/build/intermediates/res/merged/release/"
   },
   "dependencies": {
-    "react": "^16.13.1",
-    "react-native": "^0.63.1",
+    "react": "^18.2.0",
+    "react-native": "^0.71.2",
     "react-native-applovin-max": "^2.3.1"
   },
   "devDependencies": {
