@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.ImageView;
 
 import com.applovin.mediation.MaxAd;
@@ -215,6 +216,14 @@ public class AppLovinMAXNativeAdView
         clickableViews.add( view );
 
         view.addOnLayoutChangeListener( this );
+
+        // NOTE: There may be case where `mediaView` had already been added
+        ViewParent parent = mediaView.getParent();
+        if ( parent instanceof ViewGroup )
+        {
+            ( (ViewGroup) parent ).removeView( mediaView );
+        }
+
         view.addView( mediaView );
 
         sizeToFit( mediaView, view );
@@ -233,6 +242,14 @@ public class AppLovinMAXNativeAdView
         }
 
         view.addOnLayoutChangeListener( this );
+
+        // NOTE: There may be case where `mediaView` had already been added
+        ViewParent parent = optionsView.getParent();
+        if ( parent instanceof ViewGroup )
+        {
+            ( (ViewGroup) parent ).removeView( optionsView );
+        }
+
         view.addView( optionsView );
 
         sizeToFit( optionsView, view );
@@ -240,7 +257,8 @@ public class AppLovinMAXNativeAdView
 
     public void setIconView(final int tag)
     {
-        ImageView view = findViewById( tag );
+        // NOTE: Do not cast to `ImageView` (e.g. we've seen `com.facebook.ads.DefaultMediaViewVideoRenderer` give a ClassCastException)
+        View view = findViewById( tag );
         if ( view == null )
         {
             AppLovinMAXModule.e( "Cannot find an icon image with tag \"" + tag + "\" for " + adUnitId );
@@ -250,13 +268,18 @@ public class AppLovinMAXNativeAdView
         view.setClickable( true );
         clickableViews.add( view );
 
-        MaxNativeAdImage icon = nativeAd.getNativeAd().getIcon();
-        if ( icon != null )
+        if ( view instanceof ImageView )
         {
-            // Check if "URL" was missing and therefore need to set the image data
-            if ( icon.getUri() == null && icon.getDrawable() != null )
+            ImageView imageView = (ImageView) view;
+
+            MaxNativeAdImage icon = nativeAd.getNativeAd().getIcon();
+            if ( icon != null )
             {
-                view.setImageDrawable( icon.getDrawable() );
+                // Check if "URL" was missing and therefore need to set the image data
+                if ( icon.getUri() == null && icon.getDrawable() != null )
+                {
+                    imageView.setImageDrawable( icon.getDrawable() );
+                }
             }
         }
     }
