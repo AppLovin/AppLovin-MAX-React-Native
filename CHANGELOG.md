@@ -1,5 +1,6 @@
 ## Versions
 
+## 4.1.6
     * Fix `Caused by java.lang.IllegalStateException: The specified child already has a parent. You must call removeView() on the child's parent first.` for Android native ads.
     * Fix `Caused by java.lang.ClassCastException: com.facebook.ads.DefaultMediaViewVideoRenderer cannot be cast to android.widget.ImageView` for Android native ads.
 ## 4.1.5
