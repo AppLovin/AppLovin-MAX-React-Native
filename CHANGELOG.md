@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+    * Depend on Android SDK 11.8.0 and iOS SDK 11.8.0.
 ## 4.1.5
     * Depend on Android SDK 11.7.0 and iOS SDK 11.7.0.
     * Deprecated getConsentDialogState().
