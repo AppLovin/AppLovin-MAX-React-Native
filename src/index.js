@@ -6,7 +6,7 @@ import EventListeners from "./AppLovinMAXEventListeners";
 
 const { AppLovinMAX } = NativeModules;
 
-const VERSION = "4.1.5";
+const VERSION = "4.1.6";
 
 const runIfInitialized = (callingMethodName, callingMethod, ...params) => {
   return AppLovinMAX.isInitialized().then(isInitialized => {
