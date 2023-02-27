@@ -45,8 +45,8 @@ import com.applovin.sdk.AppLovinSdkSettings;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.applovin.sdk.AppLovinUserService;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -79,6 +79,55 @@ public class AppLovinMAXModule
 {
     private static final String SDK_TAG = "AppLovinSdk";
     private static final String TAG     = "AppLovinMAXModule";
+
+    private static final String ON_BANNER_AD_LOADED_EVENT      = "OnBannerAdLoadedEvent";
+    private static final String ON_BANNER_AD_LOAD_FAILED_EVENT = "OnBannerAdLoadFailedEvent";
+    private static final String ON_BANNER_AD_CLICKED_EVENT     = "OnBannerAdClickedEvent";
+    private static final String ON_BANNER_AD_COLLAPSED_EVENT   = "OnBannerAdCollapsedEvent";
+    private static final String ON_BANNER_AD_EXPANDED_EVENT    = "OnBannerAdExpandedEvent";
+    private static final String ON_BANNER_AD_REVENUE_PAID      = "OnBannerAdRevenuePaid";
+
+    private static final String ON_MREC_AD_LOADED_EVENT      = "OnMRecAdLoadedEvent";
+    private static final String ON_MREC_AD_LOAD_FAILED_EVENT = "OnMRecAdLoadFailedEvent";
+    private static final String ON_MREC_AD_CLICKED_EVENT     = "OnMRecAdClickedEvent";
+    private static final String ON_MREC_AD_COLLAPSED_EVENT   = "OnMRecAdCollapsedEvent";
+    private static final String ON_MREC_AD_EXPANDED_EVENT    = "OnMRecAdExpandedEvent";
+    private static final String ON_MREC_AD_REVENUE_PAID      = "OnMRecAdRevenuePaid";
+
+    private static final String ON_INTERSTITIAL_LOADED_EVENT               = "OnInterstitialLoadedEvent";
+    private static final String ON_INTERSTITIAL_LOAD_FAILED_EVENT          = "OnInterstitialLoadFailedEvent";
+    private static final String ON_INTERSTITIAL_CLICKED_EVENT              = "OnInterstitialClickedEvent";
+    private static final String ON_INTERSTITIAL_DISPLAYED_EVENT            = "OnInterstitialDisplayedEvent";
+    private static final String ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT = "OnInterstitialAdFailedToDisplayEvent";
+    private static final String ON_INTERSTITIAL_HIDDEN_EVENT               = "OnInterstitialHiddenEvent";
+    private static final String ON_INTERSTITIAL_AD_REVENUE_PAID            = "OnInterstitialAdRevenuePaid";
+
+    private static final String ON_REWARDED_AD_LOADED_EVENT            = "OnRewardedAdLoadedEvent";
+    private static final String ON_REWARDED_AD_LOAD_FAILED_EVENT       = "OnRewardedAdLoadFailedEvent";
+    private static final String ON_REWARDED_AD_CLICKED_EVENT           = "OnRewardedAdClickedEvent";
+    private static final String ON_REWARDED_AD_DISPLAYED_EVENT         = "OnRewardedAdDisplayedEvent";
+    private static final String ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT = "OnRewardedAdFailedToDisplayEvent";
+    private static final String ON_REWARDED_AD_HIDDEN_EVENT            = "OnRewardedAdHiddenEvent";
+    private static final String ON_REWARDED_AD_RECEIVED_REWARD_EVENT   = "OnRewardedAdReceivedRewardEvent";
+    private static final String ON_REWARDED_AD_REVENUE_PAID            = "OnRewardedAdRevenuePaid";
+
+    private static final String ON_APPOPEN_AD_LOADED_EVENT            = "OnAppOpenAdLoadedEvent";
+    private static final String ON_APPOPEN_AD_LOAD_FAILED_EVENT       = "OnAppOpenAdLoadFailedEvent";
+    private static final String ON_APPOPEN_AD_CLICKED_EVENT           = "OnAppOpenAdClickedEvent";
+    private static final String ON_APPOPEN_AD_DISPLAYED_EVENT         = "OnAppOpenAdDisplayedEvent";
+    private static final String ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT = "OnAppOpenAdFailedToDisplayEvent";
+    private static final String ON_APPOPEN_AD_HIDDEN_EVENT            = "OnAppOpenAdHiddenEvent";
+    private static final String ON_APPOPEN_AD_REVENUE_PAID            = "OnAppOpenAdRevenuePaid";
+
+    private static final String TOP_CENTER    = "top_center";
+    private static final String TOP_LEFT      = "top_left";
+    private static final String TOP_RIGHT     = "top_right";
+    private static final String CENTERED      = "centered";
+    private static final String CENTER_LEFT   = "center_left";
+    private static final String CENTER_RIGHT  = "center_right";
+    private static final String BOTTOM_LEFT   = "bottom_left";
+    private static final String BOTTOM_CENTER = "bottom_center";
+    private static final String BOTTOM_RIGHT  = "bottom_right";
 
     private static final Point DEFAULT_AD_VIEW_OFFSET = new Point( 0, 0 );
 
@@ -167,20 +216,20 @@ public class AppLovinMAXModule
         return sCurrentActivity;
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public boolean isInitialized()
+    @ReactMethod
+    public void isInitialized(final Promise promise)
     {
-        return isPluginInitialized && isSdkInitialized;
+        promise.resolve( isPluginInitialized && isSdkInitialized );
     }
 
     @ReactMethod
-    public void initialize(final String pluginVersion, final String sdkKey, final Callback callback)
+    public void initialize(final String pluginVersion, final String sdkKey, final Promise promise)
     {
         // Check if Activity is available
         Activity currentActivity = maybeGetCurrentActivity();
         if ( currentActivity != null )
         {
-            performInitialization( pluginVersion, sdkKey, currentActivity, callback );
+            performInitialization( pluginVersion, sdkKey, currentActivity, promise );
         }
         else
         {
@@ -198,13 +247,13 @@ public class AppLovinMAXModule
                         contextToUse = getReactApplicationContext();
                     }
 
-                    performInitialization( pluginVersion, sdkKey, contextToUse, callback );
+                    performInitialization( pluginVersion, sdkKey, contextToUse, promise );
                 }
             }, TimeUnit.SECONDS.toMillis( 3 ) );
         }
     }
 
-    private void performInitialization(final String pluginVersion, final String sdkKey, final Context context, final Callback callback)
+    private void performInitialization(final String pluginVersion, final String sdkKey, final Context context, final Promise promise)
     {
         // Guard against running init logic multiple times
         if ( isPluginInitialized ) return;
@@ -233,7 +282,8 @@ public class AppLovinMAXModule
 
             if ( TextUtils.isEmpty( sdkKeyToUse ) )
             {
-                throw new IllegalStateException( "Unable to initialize AppLovin SDK - no SDK key provided and not found in Android Manifest!" );
+                promise.reject( new IllegalStateException( "Unable to initialize AppLovin SDK - no SDK key provided and not found in Android Manifest!" ) );
+                return;
             }
         }
 
@@ -354,20 +404,19 @@ public class AppLovinMAXModule
                 }.enable();
 
                 WritableMap sdkConfiguration = Arguments.createMap();
-                sdkConfiguration.putInt( "consentDialogState", configuration.getConsentDialogState().ordinal() );
                 sdkConfiguration.putString( "countryCode", configuration.getCountryCode() );
-                callback.invoke( sdkConfiguration );
+                promise.resolve( sdkConfiguration );
             }
         } );
     }
 
     // General Public API
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public boolean isTablet()
+    @ReactMethod
+    public void isTablet(final Promise promise)
     {
         Context contextToUse = ( maybeGetCurrentActivity() != null ) ? maybeGetCurrentActivity() : getReactApplicationContext();
-        return AppLovinSdkUtils.isTablet( contextToUse );
+        promise.resolve( AppLovinSdkUtils.isTablet( contextToUse ) );
     }
 
     @ReactMethod
@@ -382,12 +431,12 @@ public class AppLovinMAXModule
         sdk.showMediationDebugger();
     }
 
-    @ReactMethod()
-    public void showConsentDialog(final Callback callback)
+    @ReactMethod
+    public void showConsentDialog(final Promise promise)
     {
         if ( sdk == null )
         {
-            logUninitializedAccessError( "showConsentDialog" );
+            promise.reject( "EUNSPECIFIED", "Failed to execute showConsentDialog() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!" );
             return;
         }
 
@@ -396,56 +445,48 @@ public class AppLovinMAXModule
             @Override
             public void onDismiss()
             {
-                callback.invoke();
+                promise.resolve( null );
             }
         } );
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public int getConsentDialogState()
-    {
-        if ( !isInitialized() ) return AppLovinSdkConfiguration.ConsentDialogState.UNKNOWN.ordinal();
-
-        return sdkConfiguration.getConsentDialogState().ordinal();
-    }
-
-    @ReactMethod()
-    public void setHasUserConsent(boolean hasUserConsent)
+    @ReactMethod
+    public void setHasUserConsent(final boolean hasUserConsent)
     {
         AppLovinPrivacySettings.setHasUserConsent( hasUserConsent, maybeGetCurrentActivity() );
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public boolean hasUserConsent()
+    @ReactMethod
+    public void hasUserConsent(final Promise promise)
     {
-        return AppLovinPrivacySettings.hasUserConsent( maybeGetCurrentActivity() );
+        promise.resolve( AppLovinPrivacySettings.hasUserConsent( maybeGetCurrentActivity() ) );
     }
 
-    @ReactMethod()
-    public void setIsAgeRestrictedUser(boolean isAgeRestrictedUser)
+    @ReactMethod
+    public void setIsAgeRestrictedUser(final boolean isAgeRestrictedUser)
     {
         AppLovinPrivacySettings.setIsAgeRestrictedUser( isAgeRestrictedUser, maybeGetCurrentActivity() );
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public boolean isAgeRestrictedUser()
+    @ReactMethod
+    public void isAgeRestrictedUser(final Promise promise)
     {
-        return AppLovinPrivacySettings.isAgeRestrictedUser( maybeGetCurrentActivity() );
+        promise.resolve( AppLovinPrivacySettings.isAgeRestrictedUser( maybeGetCurrentActivity() ) );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setDoNotSell(final boolean doNotSell)
     {
         AppLovinPrivacySettings.setDoNotSell( doNotSell, maybeGetCurrentActivity() );
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public boolean isDoNotSell()
+    @ReactMethod
+    public void isDoNotSell(final Promise promise)
     {
-        return AppLovinPrivacySettings.isDoNotSell( maybeGetCurrentActivity() );
+        promise.resolve( AppLovinPrivacySettings.isDoNotSell( maybeGetCurrentActivity() ) );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setUserId(String userId)
     {
         if ( isPluginInitialized )
@@ -459,7 +500,7 @@ public class AppLovinMAXModule
         }
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setMuted(final boolean muted)
     {
         if ( !isPluginInitialized ) return;
@@ -467,15 +508,13 @@ public class AppLovinMAXModule
         sdk.getSettings().setMuted( muted );
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public boolean isMuted()
+    @ReactMethod
+    public void isMuted(final Promise promise)
     {
-        if ( !isPluginInitialized ) return false;
-
-        return sdk.getSettings().isMuted();
+        promise.resolve( isPluginInitialized ? sdk.getSettings().isMuted() : false );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setVerboseLogging(final boolean enabled)
     {
         if ( isPluginInitialized )
@@ -489,7 +528,7 @@ public class AppLovinMAXModule
         }
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setCreativeDebuggerEnabled(final boolean enabled)
     {
         if ( isPluginInitialized )
@@ -503,7 +542,7 @@ public class AppLovinMAXModule
         }
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setTestDeviceAdvertisingIds(final ReadableArray rawAdvertisingIds)
     {
         List<String> advertisingIds = new ArrayList<>( rawAdvertisingIds.size() );
@@ -525,7 +564,7 @@ public class AppLovinMAXModule
         }
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setExtraParameter(final String key, @Nullable final String value)
     {
         if ( TextUtils.isEmpty( key ) )
@@ -546,18 +585,18 @@ public class AppLovinMAXModule
         }
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setConsentFlowEnabled(final boolean enabled) { }
 
-    @ReactMethod()
+    @ReactMethod
     public void setPrivacyPolicyUrl(final String urlString) { }
 
-    @ReactMethod()
+    @ReactMethod
     public void setTermsOfServiceUrl(final String urlString) { }
 
     // Data Passing
 
-    @ReactMethod()
+    @ReactMethod
     public void setTargetingDataYearOfBirth(final int yearOfBirth)
     {
         if ( sdk == null )
@@ -569,7 +608,7 @@ public class AppLovinMAXModule
         sdk.getTargetingData().setYearOfBirth( yearOfBirth <= 0 ? null : yearOfBirth );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setTargetingDataGender(@Nullable final String gender)
     {
         if ( sdk == null )
@@ -581,7 +620,7 @@ public class AppLovinMAXModule
         sdk.getTargetingData().setGender( getAppLovinGender( gender ) );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setTargetingDataMaximumAdContentRating(final int maximumAdContentRating)
     {
         if ( sdk == null )
@@ -593,7 +632,7 @@ public class AppLovinMAXModule
         sdk.getTargetingData().setMaximumAdContentRating( getAppLovinAdContentRating( maximumAdContentRating ) );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setTargetingDataEmail(@Nullable final String email)
     {
         if ( sdk == null )
@@ -605,7 +644,7 @@ public class AppLovinMAXModule
         sdk.getTargetingData().setEmail( email );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setTargetingDataPhoneNumber(@Nullable final String phoneNumber)
     {
         if ( sdk == null )
@@ -617,7 +656,7 @@ public class AppLovinMAXModule
         sdk.getTargetingData().setPhoneNumber( phoneNumber );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setTargetingDataKeywords(@Nullable final ReadableArray rawKeywords)
     {
         if ( sdk == null )
@@ -629,7 +668,7 @@ public class AppLovinMAXModule
         sdk.getTargetingData().setKeywords( getStringArrayList( rawKeywords ) );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setTargetingDataInterests(@Nullable final ReadableArray rawInterests)
     {
         if ( sdk == null )
@@ -641,7 +680,7 @@ public class AppLovinMAXModule
         sdk.getTargetingData().setInterests( getStringArrayList( rawInterests ) );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void clearAllTargetingData()
     {
         if ( sdk == null )
@@ -659,7 +698,7 @@ public class AppLovinMAXModule
         sdk.getTargetingData().clearAll();
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setLocationCollectionEnabled(final boolean enabled)
     {
         if ( isPluginInitialized )
@@ -675,7 +714,7 @@ public class AppLovinMAXModule
 
     // EVENT TRACKING
 
-    @ReactMethod()
+    @ReactMethod
     public void trackEvent(final String event, final ReadableMap parameters)
     {
         // Convert Map<String, Object> type of `parameters.toHashMap()` to Map<String, String>
@@ -694,147 +733,147 @@ public class AppLovinMAXModule
 
     // BANNERS
 
-    @ReactMethod()
+    @ReactMethod
     public void createBanner(final String adUnitId, final String bannerPosition)
     {
         createAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), bannerPosition, DEFAULT_AD_VIEW_OFFSET );
     }
 
-    @ReactMethod() // NOTE: No function overloading in JS so we need new method signature
+    @ReactMethod // NOTE: No function overloading in JS so we need new method signature
     public void createBannerWithOffsets(final String adUnitId, final String bannerPosition, final float x, final float y)
     {
         createAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), bannerPosition, getOffsetPixels( x, y, getCurrentActivity() ) );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setBannerBackgroundColor(final String adUnitId, final String hexColorCode)
     {
         setAdViewBackgroundColor( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), hexColorCode );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setBannerPlacement(final String adUnitId, final String placement)
     {
         setAdViewPlacement( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), placement );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setBannerCustomData(final String adUnitId, final String customData)
     {
         setAdViewCustomData( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), customData );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setBannerWidth(final String adUnitId, final int widthDp)
     {
         setAdViewWidth( adUnitId, widthDp, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void updateBannerPosition(final String adUnitId, final String bannerPosition)
     {
         updateAdViewPosition( adUnitId, bannerPosition, DEFAULT_AD_VIEW_OFFSET, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void updateBannerOffsets(final String adUnitId, final float x, final float y)
     {
         updateAdViewPosition( adUnitId, mAdViewPositions.get( adUnitId ), getOffsetPixels( x, y, getCurrentActivity() ), getDeviceSpecificBannerAdViewAdFormat() );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setBannerExtraParameter(final String adUnitId, final String key, final String value)
     {
         setAdViewExtraParameters( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), key, value );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void startBannerAutoRefresh(final String adUnitId)
     {
         startAutoRefresh( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void stopBannerAutoRefresh(final String adUnitId)
     {
         stopAutoRefresh( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void showBanner(final String adUnitId)
     {
         showAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void hideBanner(final String adUnitId)
     {
         hideAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void destroyBanner(final String adUnitId)
     {
         destroyAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public float getAdaptiveBannerHeightForWidth(final float width)
+    @ReactMethod
+    public void getAdaptiveBannerHeightForWidth(final float width, final Promise promise)
     {
-        return getDeviceSpecificBannerAdViewAdFormat().getAdaptiveSize( (int) width, getCurrentActivity() ).getHeight();
+        promise.resolve( getDeviceSpecificBannerAdViewAdFormat().getAdaptiveSize( (int) width, getCurrentActivity() ).getHeight() );
     }
 
     // MRECS
 
-    @ReactMethod()
+    @ReactMethod
     public void createMRec(final String adUnitId, final String mrecPosition)
     {
         createAdView( adUnitId, MaxAdFormat.MREC, mrecPosition, DEFAULT_AD_VIEW_OFFSET );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setMRecPlacement(final String adUnitId, final String placement)
     {
         setAdViewPlacement( adUnitId, MaxAdFormat.MREC, placement );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setMRecCustomData(final String adUnitId, final String customData)
     {
         setAdViewCustomData( adUnitId, MaxAdFormat.MREC, customData );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void updateMRecPosition(final String adUnitId, final String mrecPosition)
     {
         updateAdViewPosition( adUnitId, mrecPosition, DEFAULT_AD_VIEW_OFFSET, MaxAdFormat.MREC );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void startMRecAutoRefresh(final String adUnitId)
     {
         startAutoRefresh( adUnitId, MaxAdFormat.MREC );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void stopMRecAutoRefresh(final String adUnitId)
     {
         stopAutoRefresh( adUnitId, MaxAdFormat.MREC );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void showMRec(final String adUnitId)
     {
         showAdView( adUnitId, MaxAdFormat.MREC );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void hideMRec(final String adUnitId)
     {
         hideAdView( adUnitId, MaxAdFormat.MREC );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void destroyMRec(final String adUnitId)
     {
         destroyAdView( adUnitId, MaxAdFormat.MREC );
@@ -842,34 +881,34 @@ public class AppLovinMAXModule
 
     // INTERSTITIALS
 
-    @ReactMethod()
+    @ReactMethod
     public void loadInterstitial(final String adUnitId)
     {
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
         if ( interstitial == null )
         {
-            sendReactNativeEventForAdLoadFailed( "OnInterstitialLoadFailedEvent", adUnitId, null );
+            sendReactNativeEventForAdLoadFailed( ON_INTERSTITIAL_LOAD_FAILED_EVENT, adUnitId, null );
             return;
         }
 
         interstitial.loadAd();
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public boolean isInterstitialReady(final String adUnitId)
+    @ReactMethod
+    public void isInterstitialReady(final String adUnitId, final Promise promise)
     {
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
-        return interstitial.isReady();
+        promise.resolve( interstitial.isReady() );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void showInterstitial(final String adUnitId, final String placement, final String customData)
     {
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
         interstitial.showAd( placement, customData );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setInterstitialExtraParameter(final String adUnitId, final String key, final String value)
     {
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
@@ -878,34 +917,34 @@ public class AppLovinMAXModule
 
     // REWARDED
 
-    @ReactMethod()
+    @ReactMethod
     public void loadRewardedAd(final String adUnitId)
     {
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
         if ( rewardedAd == null )
         {
-            sendReactNativeEventForAdLoadFailed( "OnRewardedAdLoadFailedEvent", adUnitId, null );
+            sendReactNativeEventForAdLoadFailed( ON_REWARDED_AD_LOAD_FAILED_EVENT, adUnitId, null );
             return;
         }
 
         rewardedAd.loadAd();
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public boolean isRewardedAdReady(final String adUnitId)
+    @ReactMethod
+    public void isRewardedAdReady(final String adUnitId, final Promise promise)
     {
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
-        return rewardedAd.isReady();
+        promise.resolve( rewardedAd.isReady() );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void showRewardedAd(final String adUnitId, final String placement, final String customData)
     {
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
         rewardedAd.showAd( placement, customData );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setRewardedAdExtraParameter(final String adUnitId, final String key, final String value)
     {
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
@@ -914,28 +953,28 @@ public class AppLovinMAXModule
 
     // APP OPEN AD
 
-    @ReactMethod()
+    @ReactMethod
     public void loadAppOpenAd(final String adUnitId)
     {
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
         appOpenAd.loadAd();
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
-    public boolean isAppOpenAdReady(final String adUnitId)
+    @ReactMethod
+    public void isAppOpenAdReady(final String adUnitId, final Promise promise)
     {
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
-        return appOpenAd.isReady();
+        promise.resolve( appOpenAd.isReady() );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void showAppOpenAd(final String adUnitId, @Nullable final String placement, @Nullable final String customData)
     {
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
         appOpenAd.showAd( placement, customData );
     }
 
-    @ReactMethod()
+    @ReactMethod
     public void setAppOpenAdExtraParameter(final String adUnitId, final String key, final String value)
     {
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
@@ -951,7 +990,7 @@ public class AppLovinMAXModule
         MaxAdFormat adFormat = ad.getFormat();
         if ( MaxAdFormat.BANNER == adFormat || MaxAdFormat.LEADER == adFormat || MaxAdFormat.MREC == adFormat )
         {
-            name = ( MaxAdFormat.MREC == adFormat ) ? "OnMRecAdLoadedEvent" : "OnBannerAdLoadedEvent";
+            name = ( MaxAdFormat.MREC == adFormat ) ? ON_MREC_AD_LOADED_EVENT : ON_BANNER_AD_LOADED_EVENT;
 
             String adViewPosition = mAdViewPositions.get( ad.getAdUnitId() );
             if ( !TextUtils.isEmpty( adViewPosition ) )
@@ -970,19 +1009,15 @@ public class AppLovinMAXModule
         }
         else if ( MaxAdFormat.INTERSTITIAL == adFormat )
         {
-            name = "OnInterstitialLoadedEvent";
+            name = ON_INTERSTITIAL_LOADED_EVENT;
         }
         else if ( MaxAdFormat.REWARDED == adFormat )
         {
-            name = "OnRewardedAdLoadedEvent";
-        }
-        else if ( MaxAdFormat.NATIVE == adFormat )
-        {
-            name = "OnNativeAdLoadedEvent";
+            name = ON_REWARDED_AD_LOADED_EVENT;
         }
         else if ( MaxAdFormat.APP_OPEN == adFormat )
         {
-            name = "OnAppOpenAdLoadedEvent";
+            name = ON_APPOPEN_AD_LOADED_EVENT;
         }
         else
         {
@@ -1005,19 +1040,19 @@ public class AppLovinMAXModule
         String name;
         if ( mAdViews.containsKey( adUnitId ) )
         {
-            name = ( MaxAdFormat.MREC == mAdViewAdFormats.get( adUnitId ) ) ? "OnMRecAdLoadFailedEvent" : "OnBannerAdLoadFailedEvent";
+            name = ( MaxAdFormat.MREC == mAdViewAdFormats.get( adUnitId ) ) ? ON_MREC_AD_LOAD_FAILED_EVENT : ON_BANNER_AD_LOAD_FAILED_EVENT;
         }
         else if ( mInterstitials.containsKey( adUnitId ) )
         {
-            name = "OnInterstitialLoadFailedEvent";
+            name = ON_INTERSTITIAL_LOAD_FAILED_EVENT;
         }
         else if ( mRewardedAds.containsKey( adUnitId ) )
         {
-            name = "OnRewardedAdLoadFailedEvent";
+            name = ON_REWARDED_AD_LOAD_FAILED_EVENT;
         }
         else if ( mAppOpenAds.containsKey( adUnitId ) )
         {
-            name = "OnAppOpenAdLoadFailedEvent";
+            name = ON_APPOPEN_AD_LOAD_FAILED_EVENT;
         }
         else
         {
@@ -1028,24 +1063,9 @@ public class AppLovinMAXModule
         sendReactNativeEventForAdLoadFailed( name, adUnitId, error );
     }
 
-    public void sendReactNativeEventForAdLoadFailed(final String name, final String adUnitId, final @Nullable MaxError error)
+    void sendReactNativeEventForAdLoadFailed(final String name, final String adUnitId, @Nullable final MaxError error)
     {
-        WritableMap params = Arguments.createMap();
-        params.putString( "adUnitId", adUnitId );
-
-        if ( error != null )
-        {
-            params.putInt( "code", error.getCode() );
-            params.putString( "message", error.getMessage() );
-            params.putString( "adLoadFailureInfo", error.getAdLoadFailureInfo() );
-            params.putMap( "waterfall", createAdWaterfallInfo( error.getWaterfall() ) );
-        }
-        else
-        {
-            params.putInt( "code", MaxErrorCode.UNSPECIFIED );
-        }
-
-        sendReactNativeEvent( name, params );
+        sendReactNativeEvent( name, getAdLoadFailedInfo( adUnitId, error ) );
     }
 
     @Override
@@ -1055,27 +1075,23 @@ public class AppLovinMAXModule
         final String name;
         if ( MaxAdFormat.BANNER == adFormat || MaxAdFormat.LEADER == adFormat )
         {
-            name = "OnBannerAdClickedEvent";
+            name = ON_BANNER_AD_CLICKED_EVENT;
         }
         else if ( MaxAdFormat.MREC == adFormat )
         {
-            name = "OnMRecAdClickedEvent";
+            name = ON_MREC_AD_CLICKED_EVENT;
         }
         else if ( MaxAdFormat.INTERSTITIAL == adFormat )
         {
-            name = "OnInterstitialClickedEvent";
+            name = ON_INTERSTITIAL_CLICKED_EVENT;
         }
         else if ( MaxAdFormat.REWARDED == adFormat )
         {
-            name = "OnRewardedAdClickedEvent";
-        }
-        else if ( MaxAdFormat.NATIVE == adFormat )
-        {
-            name = "OnNativeAdClickedEvent";
+            name = ON_REWARDED_AD_CLICKED_EVENT;
         }
         else if ( MaxAdFormat.APP_OPEN == adFormat )
         {
-            name = "OnAppOpenAdClickedEvent";
+            name = ON_APPOPEN_AD_CLICKED_EVENT;
         }
         else
         {
@@ -1096,15 +1112,15 @@ public class AppLovinMAXModule
         final String name;
         if ( MaxAdFormat.INTERSTITIAL == adFormat )
         {
-            name = "OnInterstitialDisplayedEvent";
+            name = ON_INTERSTITIAL_DISPLAYED_EVENT;
         }
         else if ( MaxAdFormat.REWARDED == adFormat )
         {
-            name = "OnRewardedAdDisplayedEvent";
+            name = ON_REWARDED_AD_DISPLAYED_EVENT;
         }
         else // APP OPEN
         {
-            name = "OnAppOpenAdDisplayedEvent";
+            name = ON_APPOPEN_AD_DISPLAYED_EVENT;
         }
 
         sendReactNativeEvent( name, getAdInfo( ad ) );
@@ -1120,22 +1136,18 @@ public class AppLovinMAXModule
         final String name;
         if ( MaxAdFormat.INTERSTITIAL == adFormat )
         {
-            name = "OnInterstitialAdFailedToDisplayEvent";
+            name = ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT;
         }
         else if ( MaxAdFormat.REWARDED == adFormat )
         {
-            name = "OnRewardedAdFailedToDisplayEvent";
+            name = ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT;
         }
         else // APP OPEN
         {
-            name = "OnAppOpenAdFailedToDisplayEvent";
+            name = ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT;
         }
 
-        WritableMap params = getAdInfo( ad );
-        params.putInt( "code", error.getCode() );
-        params.putString( "message", error.getMessage() );
-
-        sendReactNativeEvent( name, params );
+        sendReactNativeEvent( name, getAdDisplayFailedInfo( ad, error ) );
     }
 
     @Override
@@ -1148,15 +1160,15 @@ public class AppLovinMAXModule
         String name;
         if ( MaxAdFormat.INTERSTITIAL == adFormat )
         {
-            name = "OnInterstitialHiddenEvent";
+            name = ON_INTERSTITIAL_HIDDEN_EVENT;
         }
         else if ( MaxAdFormat.REWARDED == adFormat )
         {
-            name = "OnRewardedAdHiddenEvent";
+            name = ON_REWARDED_AD_HIDDEN_EVENT;
         }
         else // APP OPEN
         {
-            name = "OnAppOpenAdHiddenEvent";
+            name = ON_APPOPEN_AD_HIDDEN_EVENT;
         }
 
         sendReactNativeEvent( name, getAdInfo( ad ) );
@@ -1172,7 +1184,7 @@ public class AppLovinMAXModule
             return;
         }
 
-        sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? "OnMRecAdExpandedEvent" : "OnBannerAdExpandedEvent", getAdInfo( ad ) );
+        sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? ON_MREC_AD_EXPANDED_EVENT : ON_BANNER_AD_EXPANDED_EVENT, getAdInfo( ad ) );
     }
 
     @Override
@@ -1185,7 +1197,7 @@ public class AppLovinMAXModule
             return;
         }
 
-        sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? "OnMRecAdCollapsedEvent" : "OnBannerAdCollapsedEvent", getAdInfo( ad ) );
+        sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? ON_MREC_AD_COLLAPSED_EVENT : ON_BANNER_AD_COLLAPSED_EVENT, getAdInfo( ad ) );
     }
 
     @Override
@@ -1195,27 +1207,23 @@ public class AppLovinMAXModule
         final String name;
         if ( MaxAdFormat.BANNER == adFormat || MaxAdFormat.LEADER == adFormat )
         {
-            name = "OnBannerAdRevenuePaid";
+            name = ON_BANNER_AD_REVENUE_PAID;
         }
         else if ( MaxAdFormat.MREC == adFormat )
         {
-            name = "OnMRecAdRevenuePaid";
+            name = ON_MREC_AD_REVENUE_PAID;
         }
         else if ( MaxAdFormat.INTERSTITIAL == adFormat )
         {
-            name = "OnInterstitialAdRevenuePaid";
+            name = ON_INTERSTITIAL_AD_REVENUE_PAID;
         }
         else if ( MaxAdFormat.REWARDED == adFormat )
         {
-            name = "OnRewardedAdRevenuePaid";
-        }
-        else if ( MaxAdFormat.NATIVE == adFormat )
-        {
-            name = "OnNativeAdRevenuePaid";
+            name = ON_REWARDED_AD_REVENUE_PAID;
         }
         else if ( MaxAdFormat.APP_OPEN == adFormat )
         {
-            name = "OnAppOpenAdRevenuePaid";
+            name = ON_APPOPEN_AD_REVENUE_PAID;
         }
         else
         {
@@ -1223,12 +1231,7 @@ public class AppLovinMAXModule
             return;
         }
 
-        WritableMap adInfo = getAdInfo( ad );
-        adInfo.putString( "networkPlacement", ad.getNetworkPlacement() );
-        adInfo.putString( "revenuePrecision", ad.getRevenuePrecision() );
-        adInfo.putString( "countryCode", sdkConfiguration.getCountryCode() );
-
-        sendReactNativeEvent( name, adInfo );
+        sendReactNativeEvent( name, getAdRevenueInfo( ad ) );
     }
 
     @Override
@@ -1712,7 +1715,7 @@ public class AppLovinMAXModule
             adViewWidthDp = mAdViewWidths.get( adUnitId );
         }
         // Top center / bottom center stretches full screen
-        else if ( "top_center".equalsIgnoreCase( adViewPosition ) || "bottom_center".equalsIgnoreCase( adViewPosition ) )
+        else if ( TOP_CENTER.equalsIgnoreCase( adViewPosition ) || BOTTOM_CENTER.equalsIgnoreCase( adViewPosition ) )
         {
             int adViewWidthPx = windowRect.width();
             adViewWidthDp = AppLovinSdkUtils.pxToDp( getCurrentActivity(), adViewWidthPx );
@@ -1752,7 +1755,7 @@ public class AppLovinMAXModule
         adView.setTranslationX( 0 );
         params.setMargins( 0, 0, 0, 0 );
 
-        if ( "centered".equalsIgnoreCase( adViewPosition ) )
+        if ( CENTERED.equalsIgnoreCase( adViewPosition ) )
         {
             gravity = Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL;
 
@@ -1959,7 +1962,7 @@ public class AppLovinMAXModule
 
     // AD INFO
 
-    private WritableMap getAdInfo(final MaxAd ad)
+    public WritableMap getAdInfo(final MaxAd ad)
     {
         WritableMap adInfo = Arguments.createMap();
         adInfo.putString( "adUnitId", ad.getAdUnitId() );
@@ -1970,6 +1973,43 @@ public class AppLovinMAXModule
         adInfo.putMap( "waterfall", createAdWaterfallInfo( ad.getWaterfall() ) );
         adInfo.putString( "dspName", !TextUtils.isEmpty( ad.getDspName() ) ? ad.getDspName() : "" );
 
+        return adInfo;
+    }
+
+    public WritableMap getAdLoadFailedInfo(final String adUnitId, @Nullable final MaxError error)
+    {
+        WritableMap errInfo = Arguments.createMap();
+        errInfo.putString( "adUnitId", adUnitId );
+
+        if ( error != null )
+        {
+            errInfo.putInt( "code", error.getCode() );
+            errInfo.putString( "message", error.getMessage() );
+            errInfo.putString( "adLoadFailureInfo", error.getAdLoadFailureInfo() );
+            errInfo.putMap( "waterfall", createAdWaterfallInfo( error.getWaterfall() ) );
+        }
+        else
+        {
+            errInfo.putInt( "code", MaxErrorCode.UNSPECIFIED );
+        }
+
+        return errInfo;
+    }
+
+    public WritableMap getAdDisplayFailedInfo(final MaxAd ad, final MaxError error)
+    {
+        WritableMap params = getAdInfo( ad );
+        params.putInt( "code", error.getCode() );
+        params.putString( "message", error.getMessage() );
+        return params;
+    }
+
+    public WritableMap getAdRevenueInfo(final MaxAd ad)
+    {
+        WritableMap adInfo = getAdInfo( ad );
+        adInfo.putString( "networkPlacement", ad.getNetworkPlacement() );
+        adInfo.putString( "revenuePrecision", ad.getRevenuePrecision() );
+        adInfo.putString( "countryCode", sdkConfiguration.getCountryCode() );
         return adInfo;
     }
 
@@ -2096,6 +2136,60 @@ public class AppLovinMAXModule
     @Nullable
     public Map<String, Object> getConstants()
     {
-        return super.getConstants();
+        final Map<String, Object> constants = new HashMap<>();
+
+        constants.put( "ON_MREC_AD_LOADED_EVENT", ON_MREC_AD_LOADED_EVENT );
+        constants.put( "ON_MREC_AD_LOAD_FAILED_EVENT", ON_MREC_AD_LOAD_FAILED_EVENT );
+        constants.put( "ON_MREC_AD_CLICKED_EVENT", ON_MREC_AD_CLICKED_EVENT );
+        constants.put( "ON_MREC_AD_COLLAPSED_EVENT", ON_MREC_AD_COLLAPSED_EVENT );
+        constants.put( "ON_MREC_AD_EXPANDED_EVENT", ON_MREC_AD_EXPANDED_EVENT );
+        constants.put( "ON_MREC_AD_REVENUE_PAID", ON_MREC_AD_REVENUE_PAID );
+
+        constants.put( "ON_BANNER_AD_LOADED_EVENT", ON_BANNER_AD_LOADED_EVENT );
+        constants.put( "ON_BANNER_AD_LOAD_FAILED_EVENT", ON_BANNER_AD_LOAD_FAILED_EVENT );
+        constants.put( "ON_BANNER_AD_CLICKED_EVENT", ON_BANNER_AD_CLICKED_EVENT );
+        constants.put( "ON_BANNER_AD_COLLAPSED_EVENT", ON_BANNER_AD_COLLAPSED_EVENT );
+        constants.put( "ON_BANNER_AD_EXPANDED_EVENT", ON_BANNER_AD_EXPANDED_EVENT );
+        constants.put( "ON_BANNER_AD_REVENUE_PAID", ON_BANNER_AD_REVENUE_PAID );
+
+        constants.put( "ON_INTERSTITIAL_LOADED_EVENT", ON_INTERSTITIAL_LOADED_EVENT );
+        constants.put( "ON_INTERSTITIAL_LOAD_FAILED_EVENT", ON_INTERSTITIAL_LOAD_FAILED_EVENT );
+        constants.put( "ON_INTERSTITIAL_CLICKED_EVENT", ON_INTERSTITIAL_CLICKED_EVENT );
+        constants.put( "ON_INTERSTITIAL_DISPLAYED_EVENT", ON_INTERSTITIAL_DISPLAYED_EVENT );
+        constants.put( "ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT", ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT );
+        constants.put( "ON_INTERSTITIAL_HIDDEN_EVENT", ON_INTERSTITIAL_HIDDEN_EVENT );
+        constants.put( "ON_INTERSTITIAL_AD_REVENUE_PAID", ON_INTERSTITIAL_AD_REVENUE_PAID );
+
+        constants.put( "ON_REWARDED_AD_LOADED_EVENT", ON_REWARDED_AD_LOADED_EVENT );
+        constants.put( "ON_REWARDED_AD_LOAD_FAILED_EVENT", ON_REWARDED_AD_LOAD_FAILED_EVENT );
+        constants.put( "ON_REWARDED_AD_CLICKED_EVENT", ON_REWARDED_AD_CLICKED_EVENT );
+        constants.put( "ON_REWARDED_AD_DISPLAYED_EVENT", ON_REWARDED_AD_DISPLAYED_EVENT );
+        constants.put( "ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT", ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT );
+        constants.put( "ON_REWARDED_AD_HIDDEN_EVENT", ON_REWARDED_AD_HIDDEN_EVENT );
+        constants.put( "ON_REWARDED_AD_RECEIVED_REWARD_EVENT", ON_REWARDED_AD_RECEIVED_REWARD_EVENT );
+        constants.put( "ON_REWARDED_AD_REVENUE_PAID", ON_REWARDED_AD_REVENUE_PAID );
+
+        constants.put( "ON_APPOPEN_AD_LOADED_EVENT", ON_APPOPEN_AD_LOADED_EVENT );
+        constants.put( "ON_APPOPEN_AD_LOAD_FAILED_EVENT", ON_APPOPEN_AD_LOAD_FAILED_EVENT );
+        constants.put( "ON_APPOPEN_AD_CLICKED_EVENT", ON_APPOPEN_AD_CLICKED_EVENT );
+        constants.put( "ON_APPOPEN_AD_DISPLAYED_EVENT", ON_APPOPEN_AD_DISPLAYED_EVENT );
+        constants.put( "ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT", ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT );
+        constants.put( "ON_APPOPEN_AD_HIDDEN_EVENT", ON_APPOPEN_AD_HIDDEN_EVENT );
+        constants.put( "ON_APPOPEN_AD_REVENUE_PAID", ON_APPOPEN_AD_REVENUE_PAID );
+
+        constants.put( "TOP_CENTER_POSITION", TOP_CENTER );
+        constants.put( "TOP_LEFT_POSITION", TOP_LEFT );
+        constants.put( "TOP_RIGHT_POSITION", TOP_RIGHT );
+        constants.put( "CENTERED_POSITION", CENTERED );
+        constants.put( "CENTER_LEFT_POSITION", CENTER_LEFT );
+        constants.put( "CENTER_RIGHT_POSITION", CENTER_RIGHT );
+        constants.put( "BOTTOM_LEFT_POSITION", BOTTOM_LEFT );
+        constants.put( "BOTTOM_CENTER_POSITION", BOTTOM_CENTER );
+        constants.put( "BOTTOM_RIGHT_POSITION", BOTTOM_RIGHT );
+
+        constants.put( "BANNER_AD_FORMAT_LABEL", MaxAdFormat.BANNER.getLabel() );
+        constants.put( "MREC_AD_FORMAT_LABEL", MaxAdFormat.MREC.getLabel() );
+
+        return constants;
     }
 }

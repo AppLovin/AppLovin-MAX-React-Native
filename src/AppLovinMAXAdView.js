@@ -1,85 +1,140 @@
-import { NativeModules, requireNativeComponent, UIManager, findNodeHandle, View, Text, StyleSheet } from "react-native";
+import { NativeModules, requireNativeComponent } from "react-native";
 import PropTypes from "prop-types";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const { AppLovinMAX } = NativeModules;
 
+const {
+  TOP_CENTER_POSITION,
+  TOP_LEFT_POSITION,
+  TOP_RIGHT_POSITION,
+  CENTERED_POSITION,
+  CENTER_LEFT_POSITION,
+  CENTER_RIGHT_POSITION,
+  BOTTOM_LEFT_POSITION,
+  BOTTOM_CENTER_POSITION,
+  BOTTOM_RIGHT_POSITION,
+
+  BANNER_AD_FORMAT_LABEL,
+  MREC_AD_FORMAT_LABEL,      
+} = AppLovinMAX.getConstants();
+
 export const AdFormat = {
-  BANNER: "banner",
-  MREC: "mrec",
+  BANNER: BANNER_AD_FORMAT_LABEL,
+  MREC: MREC_AD_FORMAT_LABEL,
 };
 
 export const AdViewPosition = {
-  TOP_CENTER: "top_center",
-  TOP_LEFT: "top_left",
-  TOP_RIGHT: "top_right",
-  CENTERED: "centered",
-  CENTER_LEFT: "center_left",
-  CENTER_RIGHT: "center_right",
-  BOTTOM_LEFT: "bottom_left",
-  BOTTOM_CENTER: "bottom_center",
-  BOTTOM_RIGHT: "bottom_right",
+  TOP_CENTER : TOP_CENTER_POSITION,
+  TOP_LEFT : TOP_LEFT_POSITION,
+  TOP_RIGHT : TOP_RIGHT_POSITION,
+  CENTERED : CENTERED_POSITION,
+  CENTER_LEFT : CENTER_LEFT_POSITION,
+  CENTER_RIGHT : CENTER_RIGHT_POSITION,
+  BOTTOM_LEFT : BOTTOM_LEFT_POSITION,
+  BOTTOM_CENTER : BOTTOM_CENTER_POSITION,
+  BOTTOM_RIGHT : BOTTOM_RIGHT_POSITION,
 };
-
-/**
- * Returns AdView when AppLovinMax has been initialized or returns a black empty View as 
- * a placeholder of AdView when AppLovinMax has not been initialized.  
- *
- * The purpose of this AdView wrapper is for the application not to access AdView 
- * before the completion of the AppLovinMax initialization. 
- *
- * Note: this does not re-render itself when the status of the AppLovinMax initialization
- * has changed so that the black view may stay even after the completion of 
- * the AppLovinMax initialization.
- */
-const AdViewWrapper = (props) => {
-  const {style, ...rest} = props;
-  return (
-    AppLovinMAX.isInitialized() ?
-      <AdView {...style} {...rest}/>
-    :
-      <View style={[styles.container, style]} {...rest}>
-        {
-          console.warn('[AppLovinSdk] [AppLovinMAX] <AdView/> has been mounted before AppLovin initialization')
-        } 
-      </View>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    backgroundColor: 'black',
-    borderColor: 'whitesmoke',
-    borderWidth: 1,
-  },
-});
 
 const AdView = (props) => {
   const {style, ...otherProps} = props;
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [dimensions, setDimensions] = useState({});
 
-  const sizeForAdFormat = () => {
-    if (props.adFormat === AdFormat.BANNER) {
-      let width = AppLovinMAX.isTablet() ? 728 : 320;
-      let height;
-
-      if (props.adaptiveBannerEnabled) {
-        height = AppLovinMAX.getAdaptiveBannerHeightForWidth(-1);
-      } else {
-        height = AppLovinMAX.isTablet() ? 90 : 50;
+  useEffect(() => {
+    // check that AppLovinMAX has been initialized
+    AppLovinMAX.isInitialized().then(result => {
+      setIsInitialized(result);
+      if (!result) {
+        console.warn("ERROR: AppLovinMAX.AdView is mounted before the initialization of the AppLovin MAX React Native module");
       }
+    });
+  }, []);
 
-      return { width: width, height: height }
-    } else {
-      return { width: 300, height: 250 }
+  useEffect(() => {
+    if (!isInitialized) {
+      return;
     }
+
+    const sizeForBannerFormat = async () => {
+      const isTablet = await AppLovinMAX.isTablet();
+      const width = isTablet ? 728 : 320;
+      let height;
+      if (props.adaptiveBannerEnabled) {
+        height = await AppLovinMAX.getAdaptiveBannerHeightForWidth(-1);
+      } else {
+        height = isTablet ? 90 : 50;
+      }
+      setDimensions({width: (style.width && style.width !== 'auto') ? style.width : width,
+                     height: (style.height && style.height !== 'auto') ? style.height : height});
+    }
+
+    // Check whether or not app specifies both width and height but not with 'auto'
+    const isSizeSpecified = ((style.width && style.width !== 'auto') &&
+                             (style.height && style.height !== 'auto'));
+
+    if (!isSizeSpecified) {
+      if (props.adFormat === AdFormat.BANNER) {
+        sizeForBannerFormat();
+      } else {
+        setDimensions({width: (style.width && style.width !== 'auto') ? style.width : 300,
+                       height: (style.height && style.height !== 'auto') ? style.height : 250});
+      }
+    }
+  }, [isInitialized]);
+
+  const onAdLoadedEvent = (event) => {
+    if (props.onAdLoaded) props.onAdLoaded(event.nativeEvent);
   };
+
+  const onAdLoadFailedEvent = (event) => {
+    if (props.onAdLoadFailed) props.onAdLoadFailed(event.nativeEvent);
+  };
+
+  const onAdDisplayFailedEvent = (event) => {
+    if (props.onAdDisplayFailed) props.onAdDisplayFailed(event.nativeEvent);
+  };
+
+  const onAdClickedEvent = (event) => {
+    if (props.onAdClicked) props.onAdClicked(event.nativeEvent);
+  };
+
+  const onAdExpandedEvent = (event) => {
+    if (props.onAdExpanded) props.onAdExpanded(event.nativeEvent);
+  };
+
+  const onAdCollapsedEvent = (event) => {
+    if (props.onAdCollapsed) props.onAdCollapsed(event.nativeEvent);
+  };
+
+  const onAdRevenuePaidEvent = (event) => {
+    if (props.onAdRevenuePaid) props.onAdRevenuePaid(event.nativeEvent);
+  };
+
+  // Not initialized
+  if (!isInitialized) {
+    return null;
+  } else {
+    const isSizeSpecified = ((style.width && style.width !== 'auto') &&
+                             (style.height && style.height !== 'auto'));
+    const isDimensionsSet = (Object.keys(dimensions).length > 0);
+
+    // Not sized yet
+    if (!(isSizeSpecified || isDimensionsSet)) {
+      return null;
+    }
+  }
 
   return (
     <AppLovinMAXAdView
-      style={[sizeForAdFormat(), style]}
+      style={{...style, ...dimensions}}
+      onAdLoadedEvent={onAdLoadedEvent}
+      onAdLoadFailedEvent={onAdLoadFailedEvent}
+      onAdDisplayFailedEvent={onAdDisplayFailedEvent}
+      onAdClickedEvent={onAdClickedEvent}
+      onAdExpandedEvent={onAdExpandedEvent}
+      onAdCollapsedEvent={onAdCollapsedEvent}
+      onAdRevenuePaidEvent={onAdRevenuePaidEvent}
       {...otherProps}
     />
   );
@@ -115,6 +170,41 @@ AdView.propTypes = {
    * A boolean value representing whether or not to enable auto-refresh. Note that auto-refresh is enabled by default.
    */
   autoRefresh: PropTypes.bool,
+
+  /**
+   * A callback fuction to be fired when a new ad has been loaded.
+   */
+  onAdLoaded: PropTypes.func,
+
+  /**
+   * A callback fuction to be fired when an ad could not be retrieved.
+   */
+  onAdLoadFailed: PropTypes.func,
+
+  /**
+   * A callback fuction to be fired when the ad failed to display.
+   */
+  onAdDisplayFailed: PropTypes.func,
+
+  /**
+   * A callback fuction to be fired when ad is clicked.
+   */
+  onAdClicked: PropTypes.func,
+
+  /**
+   * A callback fuction to be fired when the ad view is expanded.
+   */
+  onAdExpanded: PropTypes.func,
+
+  /**
+   * A callback fuction to be fired when the ad view is collapsed.
+   */
+  onAdCollapsed: PropTypes.func,
+
+  /**
+   * A callback fuction to be fired when the revenue event is detected.
+   */
+  onAdRevenuePaid: PropTypes.func,
 };
 
 // Defiens default values for the props.
@@ -123,8 +213,7 @@ AdView.defaultProps = {
   autoRefresh: true,
 };
 
-
 // requireNativeComponent automatically resolves 'AppLovinMAXAdView' to 'AppLovinMAXAdViewManager'
 const AppLovinMAXAdView = requireNativeComponent("AppLovinMAXAdView", AdView);
 
-export default AdViewWrapper;
+export default AdView;

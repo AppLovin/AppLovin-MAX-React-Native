@@ -20,6 +20,14 @@ RCT_EXPORT_VIEW_PROPERTY(customData, NSString)
 RCT_EXPORT_VIEW_PROPERTY(adaptiveBannerEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(autoRefresh, BOOL)
 
+RCT_EXPORT_VIEW_PROPERTY(onAdLoadedEvent, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onAdLoadFailedEvent, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onAdDisplayFailedEvent, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onAdClickedEvent, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onAdExpandedEvent, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onAdCollapsedEvent, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onAdRevenuePaidEvent, RCTDirectEventBlock)
+
 + (BOOL)requiresMainQueueSetup
 {
     return YES;
