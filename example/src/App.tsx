@@ -42,6 +42,7 @@ const App = () => {
   });
 
   // Create states
+  const [isInitialized, setIsInitialized] = useState(false);
   const [interstitialAdLoadState, setInterstitialAdLoadState] = useState(adLoadState.notLoaded);
   const [interstitialRetryAttempt, setInterstitialRetryAttempt] = useState(0);
   const [rewardedAdLoadState, setRewardedAdLoadState] = useState(adLoadState.notLoaded);
@@ -69,35 +70,23 @@ const App = () => {
   }, [statusText]);
 
   const initAppLovinMax = () => {
-    if (AppLovinMAX.isInitialized()) return;
+    if (isInitialized) return;
 
     AppLovinMAX.setTestDeviceAdvertisingIds([]);
-    AppLovinMAX.initialize(SDK_KEY, (configuration) => {
+    AppLovinMAX.initialize(SDK_KEY).then(configuration => {
+      setIsInitialized(true);
       setStatusText('SDK Initialized');
-
-      if (Platform.OS === 'android') {
-        if (configuration.consentDialogState == AppLovinMAX.ConsentDialogState.APPLIES) {
-          // Show user consent dialog
-          AppLovinMAX.showConsentDialog(() => {
-            setStatusText('Consent dialog closed');
-          });
-        } else if (configuration.consentDialogState == AppLovinMAX.ConsentDialogState.DOES_NOT_APPLY) {
-          // No need to show consent dialog, proceed with initialization
-        } else {
-          // Consent dialog state is unknown. Proceed with initialization, but check if the consent
-          // dialog should be shown on the next application initialization
-          // No need to show consent dialog, proceed with initialization
-        }
-      }
 
       // Attach ad listeners for interstitial ads, rewarded ads, and banner ads
       attachAdListeners();
+    }).catch(error => {
+      setStatusText(error.toString());
     });
   }
 
   const attachAdListeners = () => {
     // Interstitial Listeners
-    AppLovinMAX.addEventListener('OnInterstitialLoadedEvent', (adInfo) => {
+    AppLovinMAX.addInterstitialLoadedEventListener((adInfo) => {
       setInterstitialAdLoadState(adLoadState.loaded);
 
       // Interstitial ad is ready to be shown. AppLovinMAX.isInterstitialReady(INTERSTITIAL_AD_UNIT_ID) will now return 'true'
@@ -106,7 +95,7 @@ const App = () => {
       // Reset retry attempt
       setInterstitialRetryAttempt(0)
     });
-    AppLovinMAX.addEventListener('OnInterstitialLoadFailedEvent', (errorInfo) => {
+    AppLovinMAX.addInterstitialLoadFailedEventListener((errorInfo) => {
       // Interstitial ad failed to load
       // We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds)
       setInterstitialRetryAttempt(interstitialRetryAttempt + 1);
@@ -118,26 +107,26 @@ const App = () => {
         AppLovinMAX.loadInterstitial(INTERSTITIAL_AD_UNIT_ID);
       }, retryDelay * 1000);
     });
-    AppLovinMAX.addEventListener('OnInterstitialClickedEvent', (adInfo) => {
+    AppLovinMAX.addInterstitialClickedEventListener((adInfo) => {
       setStatusText('Interstitial ad clicked');
     });
-    AppLovinMAX.addEventListener('OnInterstitialDisplayedEvent', (adInfo) => {
+    AppLovinMAX.addInterstitialDisplayedEventListener((adInfo) => {
       setStatusText('Interstitial ad displayed');
     });
-    AppLovinMAX.addEventListener('OnInterstitialAdFailedToDisplayEvent', (adInfo) => {
+    AppLovinMAX.addInterstitialAdFailedToDisplayEventListener((adInfo) => {
       setInterstitialAdLoadState(adLoadState.notLoaded);
       setStatusText('Interstitial ad failed to display');
     });
-    AppLovinMAX.addEventListener('OnInterstitialHiddenEvent', (adInfo) => {
+    AppLovinMAX.addInterstitialHiddenEventListener((adInfo) => {
       setInterstitialAdLoadState(adLoadState.notLoaded);
       setStatusText('Interstitial ad hidden');
     });
-    AppLovinMAX.addEventListener('OnInterstitialAdRevenuePaid', (adInfo) => {
+    AppLovinMAX.addInterstitialAdRevenuePaidListener((adInfo) => {
       setStatusText('Interstitial ad revenue paid: ' + adInfo.revenue);
     });
 
     // Rewarded Ad Listeners
-    AppLovinMAX.addEventListener('OnRewardedAdLoadedEvent', (adInfo) => {
+    AppLovinMAX.addRewardedAdLoadedEventListener((adInfo) => {
       setRewardedAdLoadState(adLoadState.loaded);
 
       // Rewarded ad is ready to be shown. AppLovinMAX.isRewardedAdReady(REWARDED_AD_UNIT_ID) will now return 'true'
@@ -146,7 +135,7 @@ const App = () => {
       // Reset retry attempt
       setRewardedAdRetryAttempt(0);
     });
-    AppLovinMAX.addEventListener('OnRewardedAdLoadFailedEvent', (errorInfo) => {
+    AppLovinMAX.addRewardedAdLoadFailedEventListener((errorInfo) => {
       setRewardedAdLoadState(adLoadState.notLoaded);
 
       // Rewarded ad failed to load
@@ -160,79 +149,65 @@ const App = () => {
         AppLovinMAX.loadRewardedAd(REWARDED_AD_UNIT_ID);
       }, retryDelay * 1000);
     });
-    AppLovinMAX.addEventListener('OnRewardedAdClickedEvent', (adInfo) => {
+    AppLovinMAX.addRewardedAdClickedEventListener((adInfo) => {
       setStatusText('Rewarded ad clicked');
     });
-    AppLovinMAX.addEventListener('OnRewardedAdDisplayedEvent', (adInfo) => {
+    AppLovinMAX.addRewardedAdDisplayedEventListener((adInfo) => {
       setStatusText('Rewarded ad displayed');
     });
-    AppLovinMAX.addEventListener('OnRewardedAdFailedToDisplayEvent', (adInfo) => {
+    AppLovinMAX.addRewardedAdFailedToDisplayEventListener((adInfo) => {
       setRewardedAdLoadState(adLoadState.notLoaded);
       setStatusText('Rewarded ad failed to display');
     });
-    AppLovinMAX.addEventListener('OnRewardedAdHiddenEvent', (adInfo) => {
+    AppLovinMAX.addRewardedAdHiddenEventListener((adInfo) => {
       setRewardedAdLoadState(adLoadState.notLoaded);
       setStatusText('Rewarded ad hidden');
     });
-    AppLovinMAX.addEventListener('OnRewardedAdReceivedRewardEvent', (adInfo) => {
+    AppLovinMAX.addRewardedAdReceivedRewardEventListener((adInfo) => {
       setStatusText('Rewarded ad granted reward');
     });
-    AppLovinMAX.addEventListener('OnRewardedAdRevenuePaid', (adInfo) => {
+    AppLovinMAX.addRewardedAdRevenuePaidListener((adInfo) => {
       setStatusText('Rewarded ad revenue paid: ' + adInfo.revenue);
     });
 
     // Banner Ad Listeners
-    AppLovinMAX.addEventListener('OnBannerAdLoadedEvent', (adInfo) => {
+    AppLovinMAX.addBannerAdLoadedEventListener((adInfo) => {
       setStatusText('Banner ad loaded from ' + adInfo.networkName);
     });
-    AppLovinMAX.addEventListener('OnBannerAdLoadFailedEvent', (errorInfo) => {
+    AppLovinMAX.addBannerAdLoadFailedEventListener((errorInfo) => {
       setStatusText('Banner ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
     });
-    AppLovinMAX.addEventListener('OnBannerAdClickedEvent', (adInfo) => {
+    AppLovinMAX.addBannerAdClickedEventListener((adInfo) => {
       setStatusText('Banner ad clicked');
     });
-    AppLovinMAX.addEventListener('OnBannerAdExpandedEvent', (adInfo) => {
+    AppLovinMAX.addBannerAdExpandedEventListener((adInfo) => {
       setStatusText('Banner ad expanded')
     });
-    AppLovinMAX.addEventListener('OnBannerAdCollapsedEvent', (adInfo) => {
+    AppLovinMAX.addBannerAdCollapsedEventListener((adInfo) => {
       setStatusText('Banner ad collapsed')
     });
-    AppLovinMAX.addEventListener('OnBannerAdRevenuePaid', (adInfo) => {
+    AppLovinMAX.addBannerAdRevenuePaidListener((adInfo) => {
       setStatusText('Banner ad revenue paid: ' + adInfo.revenue);
     });
 
     // MREC Ad Listeners
-    AppLovinMAX.addEventListener('OnMRecAdLoadedEvent', (adInfo) => {
+    AppLovinMAX.addMRecAdLoadedEventListener((adInfo) => {
       setStatusText('MREC ad loaded from ' + adInfo.networkName);
     });
-    AppLovinMAX.addEventListener('OnMRecAdLoadFailedEvent', (errorInfo) => {
+    AppLovinMAX.addMRecAdLoadFailedEventListener((errorInfo) => {
       setStatusText('MREC ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
     });
-    AppLovinMAX.addEventListener('OnMRecAdClickedEvent', (adInfo) => {
+    AppLovinMAX.addMRecAdClickedEventListener((adInfo) => {
       setStatusText('MREC ad clicked');
     });
-    AppLovinMAX.addEventListener('OnMRecAdExpandedEvent', (adInfo) => {
+    AppLovinMAX.addMRecAdExpandedEventListener((adInfo) => {
       setStatusText('MREC ad expanded')
     });
-    AppLovinMAX.addEventListener('OnMRecAdCollapsedEvent', (adInfo) => {
+    AppLovinMAX.addMRecAdCollapsedEventListener((adInfo) => {
       setStatusText('MREC ad collapsed')
     });
-    AppLovinMAX.addEventListener('OnMRecAdRevenuePaid', (adInfo) => {
+    AppLovinMAX.addMRecAdRevenuePaidListener((adInfo) => {
       setStatusText('MREC ad revenue paid: ' + adInfo.revenue);
-    });
-
-    // Native Ad Listeners
-    AppLovinMAX.addEventListener('OnNativeAdLoadedEvent', (adInfo) => {
-      setStatusText('Native ad loaded from: ' + adInfo.networkName);
-    });
-    AppLovinMAX.addEventListener('OnNativeAdLoadFailedEvent', (errorInfo) => {
-      setStatusText('Native ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
-    });
-    AppLovinMAX.addEventListener('OnNativeAdClickedEvent', (adInfo) => {
-      setStatusText('Native ad clicked');
-    });
-    AppLovinMAX.addEventListener('OnNativeAdRevenuePaid', (adInfo) => {
-      setStatusText('Native ad revenue paid: ' + adInfo.revenue);
     });
   }
 
@@ -265,7 +240,7 @@ const App = () => {
         </Text>
         <AppButton
           title="Mediation Debugger"
-          enabled={AppLovinMAX.isInitialized()}
+          enabled={isInitialized}
           onPress={() => {
             AppLovinMAX.showMediationDebugger();
           }}
@@ -273,34 +248,42 @@ const App = () => {
         <AppButton
           title={getInterstitialButtonTitle()}
           enabled={
-            AppLovinMAX.isInitialized() && interstitialAdLoadState !== adLoadState.loading
+            isInitialized && interstitialAdLoadState !== adLoadState.loading
           }
           onPress={() => {
-            if (AppLovinMAX.isInterstitialReady(INTERSTITIAL_AD_UNIT_ID)) {
-              AppLovinMAX.showInterstitial(INTERSTITIAL_AD_UNIT_ID);
-            } else {
-              setStatusText('Loading interstitial ad...');
-              setInterstitialAdLoadState(adLoadState.loading);
-              AppLovinMAX.loadInterstitial(INTERSTITIAL_AD_UNIT_ID);
-            }
+            AppLovinMAX.isInterstitialReady(INTERSTITIAL_AD_UNIT_ID).then(isInterstitialReady => {
+              if (isInterstitialReady) {
+                AppLovinMAX.showInterstitial(INTERSTITIAL_AD_UNIT_ID);
+              } else {
+                setStatusText('Loading interstitial ad...');
+                setInterstitialAdLoadState(adLoadState.loading);
+                AppLovinMAX.loadInterstitial(INTERSTITIAL_AD_UNIT_ID);
+              }
+            }).catch(error => {
+              setStatusText(error.toString());
+            });
           }}
         />
         <AppButton
           title={getRewardedButtonTitle()}
-          enabled={AppLovinMAX.isInitialized() && rewardedAdLoadState !== adLoadState.loading}
+          enabled={isInitialized && rewardedAdLoadState !== adLoadState.loading}
           onPress={() => {
-            if (AppLovinMAX.isRewardedAdReady(REWARDED_AD_UNIT_ID)) {
-              AppLovinMAX.showRewardedAd(REWARDED_AD_UNIT_ID);
-            } else {
-              setStatusText('Loading rewarded ad...');
-              setRewardedAdLoadState(adLoadState.loading);
-              AppLovinMAX.loadRewardedAd(REWARDED_AD_UNIT_ID);
-            }
+            AppLovinMAX.isRewardedAdReady(REWARDED_AD_UNIT_ID).then(isRewardedAdReady => {
+              if (isRewardedAdReady) {
+                AppLovinMAX.showRewardedAd(REWARDED_AD_UNIT_ID);
+              } else {
+                setStatusText('Loading rewarded ad...');
+                setRewardedAdLoadState(adLoadState.loading);
+                AppLovinMAX.loadRewardedAd(REWARDED_AD_UNIT_ID);
+              }
+            }).catch(error => {
+              setStatusText(error.toString());
+            });
           }}
         />
         <AppButton
           title={isProgrammaticBannerShowing ? 'Hide Programmatic Banner' : 'Show Programmatic Banner'}
-          enabled={AppLovinMAX.isInitialized() && !isNativeUIBannerShowing}
+          enabled={isInitialized && !isNativeUIBannerShowing}
           onPress={() => {
             if (isProgrammaticBannerShowing) {
               AppLovinMAX.hideBanner(BANNER_AD_UNIT_ID);
@@ -331,7 +314,7 @@ const App = () => {
         />
         <AppButton
           title={isNativeUIBannerShowing ? 'Hide Native UI Banner' : 'Show Native UI Banner'}
-          enabled={AppLovinMAX.isInitialized() && !isProgrammaticBannerShowing}
+          enabled={isInitialized && !isProgrammaticBannerShowing}
           onPress={() => {
             setIsNativeUIBannerShowing(!isNativeUIBannerShowing);
           }}
@@ -340,11 +323,30 @@ const App = () => {
           isNativeUIBannerShowing &&
             <AppLovinMAX.AdView adUnitId={BANNER_AD_UNIT_ID}
                                 adFormat={AppLovinMAX.AdFormat.BANNER}
-                                style={styles.banner}/>
+                                style={styles.banner}
+                                onAdLoaded={(adInfo) => {
+                                  setStatusText('Banner ad loaded from ' + adInfo.networkName);
+                                }}
+                                onAdLoadFailed={(errorInfo) => {
+                                  setStatusText('Banner ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+                                }}
+                                onAdClicked={(adInfo) => {
+                                  setStatusText('Banner ad clicked');
+                                }}
+                                onAdExpanded={(adInfo) => {
+                                  setStatusText('Banner ad expanded')
+                                }}
+                                onAdCollapsed={(adInfo) => {
+                                  setStatusText('Banner ad collapsed')
+                                }}
+                                onAdRevenuePaid={(adInfo) => {
+                                  setStatusText('Banner ad revenue paid: ' + adInfo.revenue);
+                                }}
+            />
         }
         <AppButton
           title={isNativeUIMRecShowing ? 'Hide Native UI MREC' : 'Show Native UI MREC'}
-          enabled={AppLovinMAX.isInitialized() && !isProgrammaticMRecShowing}
+          enabled={isInitialized && !isProgrammaticMRecShowing}
           onPress={() => {
             setIsNativeUIMRecShowing(!isNativeUIMRecShowing);
           }}
@@ -353,11 +355,30 @@ const App = () => {
           isNativeUIMRecShowing &&
             <AppLovinMAX.AdView adUnitId={MREC_AD_UNIT_ID}
                                 adFormat={AppLovinMAX.AdFormat.MREC}
-                                style={styles.mrec}/>
-        }
+                                style={styles.mrec}
+                                onAdLoaded={(adInfo) => {
+                                  setStatusText('MREC ad loaded from ' + adInfo.networkName);
+                                }}
+                                onAdLoadFailed={(errorInfo) => {
+                                  setStatusText('MREC ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+                                }}
+                                onAdClicked={(adInfo) => {
+                                  setStatusText('MREC ad clicked');
+                                }}
+                                onAdExpanded={(adInfo) => {
+                                  setStatusText('MREC ad expanded')
+                                }}
+                                onAdCollapsed={(adInfo) => {
+                                  setStatusText('MREC ad collapsed')
+                                }}
+                                onAdRevenuePaid={(adInfo) => {
+                                  setStatusText('MREC ad revenue paid: ' + adInfo.revenue);
+                                }}
+            />
+       }
         <AppButton
           title={isProgrammaticMRecShowing ? 'Hide Programmatic MREC' : 'Show Programmatic MREC'}
-          enabled={AppLovinMAX.isInitialized() && !isNativeUIMRecShowing}
+          enabled={isInitialized && !isNativeUIMRecShowing}
           onPress={() => {
             if (isProgrammaticMRecShowing) {
               AppLovinMAX.hideMRec(MREC_AD_UNIT_ID);
@@ -380,14 +401,14 @@ const App = () => {
         />
         <AppButton
           title={isNativeAdShowing ? 'Hide Native Ad' : 'Show Native Ad'}
-          enabled={AppLovinMAX.isInitialized()}
+          enabled={isInitialized}
           onPress={() => {
             setIsNativeAdShowing(!isNativeAdShowing);
           }}
         />
         <AppButton
           title={'Load Native Ad'}
-          enabled={AppLovinMAX.isInitialized() && isNativeAdShowing}
+          enabled={isInitialized && isNativeAdShowing}
           onPress={() => {
             nativeAdViewRef.current?.loadAd();
           }}
@@ -395,7 +416,13 @@ const App = () => {
         {
           isNativeAdShowing &&
             <View style={{ position: 'absolute', top: '12%', width: '100%' }}>
-              <NativeAdViewExample adUnitId={NATIVE_AD_UNIT_ID} ref={nativeAdViewRef}/>
+              <NativeAdViewExample
+                adUnitId={NATIVE_AD_UNIT_ID}
+                ref={nativeAdViewRef}
+                onStatusText={(text) => {
+                  setStatusText(text);
+                }}
+              />
             </View>
         }
       </View>
@@ -422,7 +449,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
     position: 'absolute',
     width: '100%',
-    height: AppLovinMAX.getAdaptiveBannerHeightForWidth(-1),
+    // Automatically sized to 50 on phones and 90 on tablets. When adaptiveBannerEnabled is on,
+    // sized to AppLovinMAX.getAdaptiveBannerHeightForWidth().
+    height: 'auto',
     bottom: Platform.select({
       ios: 36, // For bottom safe area
       android: 0,

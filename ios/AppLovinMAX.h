@@ -37,9 +37,24 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)log:(NSString *)format, ...;
 
 /**
- * Convenience method for invoking an ad load failure event.
+ * Returns a dictionay value of adInfo for the specified ad.
  */
-- (void)sendReactNativeEventForAdLoadFailed:(NSString *)name forAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(nullable MAError *)error;
+- (NSDictionary<NSString *, id> *)adInfoForAd:(MAAd *)ad;
+
+/**
+ * Returns a dictionay value of adLoadFailedInfo for the specified error.
+ */
+- (NSDictionary<NSString *, id> *)adLoadFailedInfoForAd:(NSString *)adUnitIdentifier withError:(MAError *)error;
+
+/**
+ * Returns a dictionay value of adDisplayFailedInfo for the specified ad and error.
+ */
+- (NSDictionary<NSString *, id> *)adDisplayFailedInfoForAd:(MAAd *)ad withError:(MAError *)error;
+
+/**
+ * Returns a dictionay value of adRevenuInfo for the specified ad.
+ */
+- (NSDictionary<NSString *, id> *)adRevenueInfoForAd:(MAAd *)ad;
 
 @end
 

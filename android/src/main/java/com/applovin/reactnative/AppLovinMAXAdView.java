@@ -7,10 +7,13 @@ import android.text.TextUtils;
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxAdViewAdListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxAdView;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.view.ReactViewGroup;
 
 import androidx.annotation.Nullable;
@@ -20,7 +23,7 @@ import androidx.annotation.Nullable;
  */
 class AppLovinMAXAdView
         extends ReactViewGroup
-        implements MaxAdListener, MaxAdViewAdListener
+        implements MaxAdListener, MaxAdViewAdListener, MaxAdRevenueListener
 {
     private final ThemedReactContext reactContext;
 
@@ -36,7 +39,7 @@ class AppLovinMAXAdView
     public AppLovinMAXAdView(final Context context)
     {
         super( context );
-        this.reactContext = (ThemedReactContext) context;
+        reactContext = (ThemedReactContext) context;
     }
 
     public void setAdUnitId(final String value)
@@ -62,11 +65,11 @@ class AppLovinMAXAdView
             return;
         }
 
-        if ( "banner".equals( value ) )
+        if ( MaxAdFormat.BANNER.getLabel().equals( value ) )
         {
             adFormat = AppLovinMAXModule.getDeviceSpecificBannerAdViewAdFormat( reactContext );
         }
-        else if ( "mrec".equals( value ) )
+        else if ( MaxAdFormat.MREC.getLabel().equals( value ) )
         {
             adFormat = MaxAdFormat.MREC;
         }
@@ -206,7 +209,7 @@ class AppLovinMAXAdView
 
             adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
             adView.setListener( this );
-            adView.setRevenueListener( AppLovinMAXModule.getInstance() );
+            adView.setRevenueListener( this );
             adView.setPlacement( placement );
             adView.setCustomData( customData );
             adView.setExtraParameter( "adaptive_banner", Boolean.toString( adaptiveBannerEnabled ) );
@@ -247,46 +250,57 @@ class AppLovinMAXAdView
     @Override
     public void onAdLoaded(final MaxAd ad)
     {
-        AppLovinMAXModule.getInstance().onAdLoaded( ad );
+        WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdLoadedEvent", adInfo );
     }
 
     @Override
     public void onAdLoadFailed(final String adUnitId, final MaxError error)
     {
-        String name = ( adFormat == MaxAdFormat.MREC ) ? "OnMRecAdLoadFailedEvent" : "OnBannerAdLoadFailedEvent";
-        
-        AppLovinMAXModule.getInstance().sendReactNativeEventForAdLoadFailed( name, adUnitId, error );
+        WritableMap adLoadFailedInfo = AppLovinMAXModule.getInstance().getAdLoadFailedInfo( adUnitId, error );
+        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdLoadFailedEvent", adLoadFailedInfo );
     }
 
     @Override
     public void onAdDisplayFailed(final MaxAd ad, final MaxError error)
     {
-        AppLovinMAXModule.getInstance().onAdDisplayFailed( ad, error );
+        WritableMap adDisplayFailedInfo = AppLovinMAXModule.getInstance().getAdDisplayFailedInfo( ad, error );
+        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdDisplayFailedEvent", adDisplayFailedInfo );
     }
 
     @Override
     public void onAdClicked(final MaxAd ad)
     {
-        AppLovinMAXModule.getInstance().onAdClicked( ad );
+        WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdClickedEvent", adInfo );
     }
 
     @Override
     public void onAdExpanded(final MaxAd ad)
     {
-        AppLovinMAXModule.getInstance().onAdExpanded( ad );
+        WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdExpandedEvent", adInfo );
     }
 
     @Override
     public void onAdCollapsed(final MaxAd ad)
     {
-        AppLovinMAXModule.getInstance().onAdCollapsed( ad );
+        WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdCollapsedEvent", adInfo );
+    }
+
+    @Override
+    public void onAdRevenuePaid(final MaxAd ad)
+    {
+        WritableMap adRevenueInfo = AppLovinMAXModule.getInstance().getAdRevenueInfo( ad );
+        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdRevenuePaidEvent", adRevenueInfo );
     }
 
     /// Deprecated Callbacks
 
     @Override
-    public void onAdDisplayed(final MaxAd ad) {}
+    public void onAdDisplayed(final MaxAd ad) { }
 
     @Override
-    public void onAdHidden(final MaxAd ad) {}
+    public void onAdHidden(final MaxAd ad) { }
 }

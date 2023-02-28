@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.nativeAds.MaxNativeAd;
 import com.applovin.mediation.nativeAds.MaxNativeAd.MaxNativeAdImage;
@@ -31,7 +32,7 @@ import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThreadDelayed;
 
 public class AppLovinMAXNativeAdView
         extends ReactViewGroup
-        implements View.OnLayoutChangeListener
+        implements MaxAdRevenueListener, View.OnLayoutChangeListener
 {
     private final ReactContext      reactContext;
     @Nullable
@@ -111,7 +112,7 @@ public class AppLovinMAXNativeAdView
             if ( adLoader == null || !adUnitId.equals( adLoader.getAdUnitId() ) )
             {
                 adLoader = new MaxNativeAdLoader( adUnitId, AppLovinMAXModule.getInstance().getSdk(), reactContext );
-                adLoader.setRevenueListener( AppLovinMAXModule.getInstance() );
+                adLoader.setRevenueListener( this );
                 adLoader.setNativeAdListener( new NativeAdListener() );
             }
 
@@ -264,8 +265,14 @@ public class AppLovinMAXNativeAdView
     @Override
     public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom)
     {
-        sizeToFit( mediaView, view );
-        sizeToFit( optionsView, view );
+        if ( view == mediaView.getParent() )
+        {
+            sizeToFit( mediaView, view );
+        }
+        else if ( view == optionsView.getParent() )
+        {
+            sizeToFit( optionsView, view );
+        }
     }
 
     private void sizeToFit(final @Nullable View view, final View parentView)
@@ -276,6 +283,15 @@ public class AppLovinMAXNativeAdView
                           MeasureSpec.makeMeasureSpec( parentView.getHeight(), MeasureSpec.EXACTLY ) );
             view.layout( 0, 0, parentView.getWidth(), parentView.getHeight() );
         }
+    }
+
+    /// Ad Revenue Callback
+
+    @Override
+    public void onAdRevenuePaid(final MaxAd ad)
+    {
+        WritableMap adRevenueInfo = AppLovinMAXModule.getInstance().getAdRevenueInfo( ad );
+        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdRevenuePaidEvent", adRevenueInfo );
     }
 
     /// Ad Loader Callback
@@ -294,7 +310,8 @@ public class AppLovinMAXNativeAdView
                 isLoading.set( false );
 
                 AppLovinMAXModule.e( "Native ad is of template type, failing ad load..." );
-                AppLovinMAXModule.getInstance().sendReactNativeEventForAdLoadFailed( "OnNativeAdLoadFailedEvent", adUnitId, null );
+                WritableMap loadFailedInfo = AppLovinMAXModule.getInstance().getAdLoadFailedInfo( adUnitId, null );
+                reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdLoadFailedEvent", loadFailedInfo );
 
                 return;
             }
@@ -308,8 +325,6 @@ public class AppLovinMAXNativeAdView
 
             // After notifying the RN layer - have slight delay to let views bind to this layer in `clickableViews` before registering
             runOnUiThreadDelayed( () -> {
-                // Notify publisher
-                AppLovinMAXModule.getInstance().onAdLoaded( ad );
 
                 // Loader can be null when the user hides before the properties are fully set
                 if ( adLoader != null )
@@ -330,18 +345,46 @@ public class AppLovinMAXNativeAdView
             AppLovinMAXModule.e( "Failed to load native ad for Ad Unit ID " + adUnitId + " with error: " + error );
 
             // Notify publisher
-            AppLovinMAXModule.getInstance().sendReactNativeEventForAdLoadFailed( "OnNativeAdLoadFailedEvent", adUnitId, error );
+            WritableMap loadFailedInfo = AppLovinMAXModule.getInstance().getAdLoadFailedInfo( adUnitId, error );
+            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdLoadFailedEvent", loadFailedInfo );
         }
 
         @Override
         public void onNativeAdClicked(final MaxAd ad)
         {
-            AppLovinMAXModule.getInstance().onAdClicked( ad );
+            WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdClickedEvent", adInfo );
         }
     }
 
     private void sendAdLoadedReactNativeEventForAd(final MaxNativeAd ad)
     {
+        // 1. AdInfo for publisher to be notified via `onAdLoaded`
+
+        WritableMap nativeAdInfo = Arguments.createMap();
+        float aspectRatio = ad.getMediaContentAspectRatio();
+        if ( !Float.isNaN( aspectRatio ) )
+        {
+            // The aspect ratio can be 0.0f when it is not provided by the network.
+            if ( Math.signum( aspectRatio )  == 0 )
+            {
+                nativeAdInfo.putDouble( "mediaContentAspectRatio", 1.0 );
+            }
+            else
+            {
+                nativeAdInfo.putDouble( "mediaContentAspectRatio", aspectRatio );
+            }
+        }
+        else
+        {
+            nativeAdInfo.putDouble( "mediaContentAspectRatio", 1.0 );
+        }
+
+        WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( nativeAd );
+        adInfo.putMap( "nativeAd", nativeAdInfo );
+
+        // 2. NativeAd for `AppLovinNativeAdView.js` to render the views
+
         WritableMap jsNativeAd = Arguments.createMap();
 
         jsNativeAd.putString( "title", ad.getTitle() );
@@ -371,14 +414,15 @@ public class AppLovinMAXNativeAdView
             }
         }
 
-        float aspectRatio = ad.getMediaContentAspectRatio();
-        if ( !Float.isNaN( aspectRatio ) )
-        {
-            jsNativeAd.putDouble( "mediaContentAspectRatio", aspectRatio );
-        }
+        jsNativeAd.putBoolean( "isOptionsViewAvailable", ( ad.getOptionsView() != null ) );
+        jsNativeAd.putBoolean( "isMediaViewAvailable", ( ad.getMediaView() != null ) );
 
-        // Send to `AppLovinNativeAdView.js` to render the views
-        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdLoaded", jsNativeAd );
+        WritableMap arg = Arguments.createMap();
+        arg.putMap( "adInfo", adInfo );
+        arg.putMap( "nativeAd", jsNativeAd );
+
+        // Send to `AppLovinNativeAdView.js`
+        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdLoadedEvent", arg );
     }
 
     private void maybeDestroyCurrentAd()

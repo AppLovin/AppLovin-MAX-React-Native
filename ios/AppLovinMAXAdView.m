@@ -9,7 +9,7 @@
 #import "AppLovinMAX.h"
 #import "AppLovinMAXAdView.h"
 
-@interface AppLovinMAXAdView()<MAAdViewAdDelegate>
+@interface AppLovinMAXAdView()<MAAdViewAdDelegate, MAAdRevenueDelegate>
 
 @property (nonatomic, strong, nullable) MAAdView *adView; // nil when unmounted
 
@@ -20,6 +20,14 @@
 @property (nonatomic, copy, nullable) NSString *customData;
 @property (nonatomic, assign, readonly, getter=isAdaptiveBannerEnabled) BOOL adaptiveBannerEnabled;
 @property (nonatomic, assign, readonly, getter=isAutoRefresh) BOOL autoRefresh;
+
+@property (nonatomic, copy) RCTDirectEventBlock onAdLoadedEvent;
+@property (nonatomic, copy) RCTDirectEventBlock onAdLoadFailedEvent;
+@property (nonatomic, copy) RCTDirectEventBlock onAdDisplayFailedEvent;
+@property (nonatomic, copy) RCTDirectEventBlock onAdClickedEvent;
+@property (nonatomic, copy) RCTDirectEventBlock onAdExpandedEvent;
+@property (nonatomic, copy) RCTDirectEventBlock onAdCollapsedEvent;
+@property (nonatomic, copy) RCTDirectEventBlock onAdRevenuePaidEvent;
 
 @end
 
@@ -48,11 +56,11 @@
         return;
     }
     
-    if ( [@"banner" isEqualToString: adFormat] )
+    if ( [MAAdFormat.banner.label isEqualToString: adFormat] )
     {
         _adFormat = DEVICE_SPECIFIC_ADVIEW_AD_FORMAT;
     }
-    else if ( [@"mrec" isEqualToString: adFormat] )
+    else if ( [MAAdFormat.mrec.label isEqualToString: adFormat] )
     {
         _adFormat = MAAdFormat.mrec;
     }
@@ -146,7 +154,7 @@
                                                              sdk: [AppLovinMAX shared].sdk];
         self.adView.frame = (CGRect) { CGPointZero, self.frame.size };
         self.adView.delegate = self;
-        self.adView.revenueDelegate = [AppLovinMAX shared];
+        self.adView.revenueDelegate = self;
         self.adView.placement = self.placement;
         self.adView.customData = self.customData;
         [self.adView setExtraParameterForKey: @"adaptive_banner" value: [self isAdaptiveBannerEnabled] ? @"true" : @"false"];
@@ -198,36 +206,41 @@
 
 - (void)didLoadAd:(MAAd *)ad
 {
-    [[AppLovinMAX shared] didLoadAd: ad];
+    self.onAdLoadedEvent([[AppLovinMAX shared] adInfoForAd: ad]);
 }
 
 - (void)didFailToLoadAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(MAError *)error
 {
-    NSString *name = ( MAAdFormat.mrec == self.adFormat ) ? @"OnMRecAdLoadFailedEvent" : @"OnBannerAdLoadFailedEvent";
-    
-    [[AppLovinMAX shared] sendReactNativeEventForAdLoadFailed: name forAdUnitIdentifier: adUnitIdentifier withError: error];
+    self.onAdLoadFailedEvent([[AppLovinMAX shared] adLoadFailedInfoForAd: adUnitIdentifier withError: error]);
 }
 
 - (void)didFailToDisplayAd:(MAAd *)ad withError:(MAError *)error
 {
-    [[AppLovinMAX shared] didFailToDisplayAd: ad withError: error];
+    self.onAdDisplayFailedEvent([[AppLovinMAX shared] adDisplayFailedInfoForAd: ad withError: error]);
 }
 
 - (void)didClickAd:(MAAd *)ad
 {
-    [[AppLovinMAX shared] didClickAd: ad];
+    self.onAdClickedEvent([[AppLovinMAX shared] adInfoForAd: ad]);
 }
 
 #pragma mark - MAAdViewAdDelegate Protocol
 
 - (void)didExpandAd:(MAAd *)ad
 {
-    [[AppLovinMAX shared] didExpandAd: ad];
+    self.onAdExpandedEvent([[AppLovinMAX shared] adInfoForAd: ad]);
 }
 
 - (void)didCollapseAd:(MAAd *)ad
 {
-    [[AppLovinMAX shared] didCollapseAd: ad];
+    self.onAdCollapsedEvent([[AppLovinMAX shared] adInfoForAd: ad]);
+}
+
+#pragma mark - MAAdRevenueDelegate Protocol
+
+- (void)didPayRevenueForAd:(MAAd *)ad
+{
+    self.onAdRevenuePaidEvent([[AppLovinMAX shared] adRevenueInfoForAd: ad]);
 }
 
 #pragma mark - Deprecated Callbacks
