@@ -4,6 +4,8 @@
 * Remove kotlin dependency from build.
 * Add support for callback functions to  `AppLovinAdView` and `AppLovinNativeAdView` native UI components.
 * Update synchronous APIs to use `Promise`s.
+## 4.1.7
+* Fix compilation errors in v4.1.6.
 ## 4.1.6
 * Depend on Android SDK 11.8.0 and iOS SDK 11.8.0.
 ## 4.1.5

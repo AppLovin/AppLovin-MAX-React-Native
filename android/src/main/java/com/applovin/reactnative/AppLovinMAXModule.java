@@ -43,7 +43,6 @@ import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkSettings;
 import com.applovin.sdk.AppLovinSdkUtils;
-import com.applovin.sdk.AppLovinUserService;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
@@ -429,25 +428,6 @@ public class AppLovinMAXModule
         }
 
         sdk.showMediationDebugger();
-    }
-
-    @ReactMethod
-    public void showConsentDialog(final Promise promise)
-    {
-        if ( sdk == null )
-        {
-            promise.reject( "EUNSPECIFIED", "Failed to execute showConsentDialog() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!" );
-            return;
-        }
-
-        sdk.getUserService().showConsentDialog( maybeGetCurrentActivity(), new AppLovinUserService.OnConsentDialogDismissListener()
-        {
-            @Override
-            public void onDismiss()
-            {
-                promise.resolve( null );
-            }
-        } );
     }
 
     @ReactMethod
