@@ -5,6 +5,9 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 target 'AppLovinMAXExample' do
   
+  # Pull in the native module via its podspec
+  pod 'react-native-applovin-max', :path => '../..'
+
   use_react_native!
 
   use_native_modules!

@@ -210,6 +210,9 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    // Pull in the native module
+    implementation project(':reactnativeapplovinmax')
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
