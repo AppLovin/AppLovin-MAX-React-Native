@@ -43,7 +43,6 @@ import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkSettings;
 import com.applovin.sdk.AppLovinSdkUtils;
-import com.applovin.sdk.AppLovinUserService;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -380,25 +379,6 @@ public class AppLovinMAXModule
         }
 
         sdk.showMediationDebugger();
-    }
-
-    @ReactMethod()
-    public void showConsentDialog(final Callback callback)
-    {
-        if ( sdk == null )
-        {
-            logUninitializedAccessError( "showConsentDialog" );
-            return;
-        }
-
-        sdk.getUserService().showConsentDialog( maybeGetCurrentActivity(), new AppLovinUserService.OnConsentDialogDismissListener()
-        {
-            @Override
-            public void onDismiss()
-            {
-                callback.invoke();
-            }
-        } );
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
