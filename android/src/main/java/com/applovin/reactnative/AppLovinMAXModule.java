@@ -589,6 +589,19 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod
+    public void getTargetingDataYearOfBirth(final Promise promise)
+    {
+        if ( sdk == null )
+        {
+            promise.resolve( targetingYearOfBirthToSet != null ? targetingYearOfBirthToSet : 0 );
+            return;
+        }
+
+        Integer yearOfBirth = sdk.getTargetingData().getYearOfBirth();
+        promise.resolve( yearOfBirth != null ? yearOfBirth : 0 );
+    }
+
+    @ReactMethod
     public void setTargetingDataGender(@Nullable final String gender)
     {
         if ( sdk == null )
@@ -598,6 +611,18 @@ public class AppLovinMAXModule
         }
 
         sdk.getTargetingData().setGender( getAppLovinGender( gender ) );
+    }
+
+    @ReactMethod
+    public void getTargetingDataGender(final Promise promise)
+    {
+        if ( sdk == null )
+        {
+            promise.resolve( targetingGenderToSet != null ? targetingGenderToSet : "U" );
+            return;
+        }
+
+        promise.resolve( getRawAppLovinGender( sdk.getTargetingData().getGender() ) );
     }
 
     @ReactMethod
@@ -613,6 +638,18 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod
+    public void getTargetingDataMaximumAdContentRating(final Promise promise)
+    {
+        if ( sdk == null )
+        {
+            promise.resolve( targetingMaximumAdContentRatingToSet != null ? targetingMaximumAdContentRatingToSet : 0 );
+            return;
+        }
+
+        promise.resolve( getRawAppLovinAdContentRating( sdk.getTargetingData().getMaximumAdContentRating() ) );
+    }
+
+    @ReactMethod
     public void setTargetingDataEmail(@Nullable final String email)
     {
         if ( sdk == null )
@@ -622,6 +659,18 @@ public class AppLovinMAXModule
         }
 
         sdk.getTargetingData().setEmail( email );
+    }
+
+    @ReactMethod
+    public void getTargetingDataEmail(final Promise promise)
+    {
+        if ( sdk == null )
+        {
+            promise.resolve( targetingEmailToSet );
+            return;
+        }
+
+        promise.resolve( sdk.getTargetingData().getEmail() );
     }
 
     @ReactMethod
@@ -637,6 +686,18 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod
+    public void getTargetingDataPhoneNumber(final Promise promise)
+    {
+        if ( sdk == null )
+        {
+            promise.resolve( targetingPhoneNumberToSet );
+            return;
+        }
+
+        promise.resolve( sdk.getTargetingData().getPhoneNumber() );
+    }
+
+    @ReactMethod
     public void setTargetingDataKeywords(@Nullable final ReadableArray rawKeywords)
     {
         if ( sdk == null )
@@ -649,6 +710,18 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod
+    public void getTargetingDataKeywords(final Promise promise)
+    {
+        if ( sdk == null )
+        {
+            promise.resolve( convertReadableToWritableArray( targetingKeywordsToSet ) );
+            return;
+        }
+
+        promise.resolve( getWritableArray( sdk.getTargetingData().getKeywords() ) );
+    }
+
+    @ReactMethod
     public void setTargetingDataInterests(@Nullable final ReadableArray rawInterests)
     {
         if ( sdk == null )
@@ -658,6 +731,18 @@ public class AppLovinMAXModule
         }
 
         sdk.getTargetingData().setInterests( getStringArrayList( rawInterests ) );
+    }
+
+    @ReactMethod
+    public void getTargetingDataInterests(final Promise promise)
+    {
+        if ( sdk == null )
+        {
+            promise.resolve( convertReadableToWritableArray( targetingInterestsToSet ) );
+            return;
+        }
+
+        promise.resolve( getWritableArray( sdk.getTargetingData().getInterests() ) );
     }
 
     @ReactMethod
@@ -1908,6 +1993,23 @@ public class AppLovinMAXModule
         return AppLovinGender.UNKNOWN;
     }
 
+    private static String getRawAppLovinGender(final AppLovinGender gender)
+    {
+        switch ( gender )
+        {
+            case UNKNOWN:
+                return "U";
+            case FEMALE:
+                return "F";
+            case MALE:
+                return "M";
+            case OTHER:
+                return "O";
+        }
+
+        return "U";
+    }
+
     private static AppLovinAdContentRating getAppLovinAdContentRating(int maximumAdContentRating)
     {
         if ( maximumAdContentRating == 1 )
@@ -1926,6 +2028,23 @@ public class AppLovinMAXModule
         return AppLovinAdContentRating.NONE;
     }
 
+    private static int getRawAppLovinAdContentRating(AppLovinAdContentRating maximumAdContentRating)
+    {
+        switch ( maximumAdContentRating )
+        {
+            case NONE:
+                return 0;
+            case ALL_AUDIENCES:
+                return 1;
+            case EVERYONE_OVER_TWELVE:
+                return 2;
+            case MATURE_AUDIENCES:
+                return 3;
+        }
+
+        return 0;
+    }
+
     private List<String> getStringArrayList(@Nullable ReadableArray readableArray)
     {
         if ( readableArray == null ) return null;
@@ -1938,6 +2057,34 @@ public class AppLovinMAXModule
         }
 
         return list;
+    }
+
+    private WritableArray getWritableArray(@Nullable List<String> list)
+    {
+        if ( list == null ) return null;
+
+        WritableArray array = Arguments.createArray();
+
+        for ( String item : list )
+        {
+            array.pushString( item );
+        }
+
+        return array;
+    }
+
+    private WritableArray convertReadableToWritableArray(@Nullable ReadableArray readableArray)
+    {
+        if ( readableArray == null ) return null;
+
+        WritableArray array = Arguments.createArray();
+
+        for ( Object item : readableArray.toArrayList() )
+        {
+            array.pushString( (String) item );
+        }
+
+        return array;
     }
 
     // AD INFO
