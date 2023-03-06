@@ -1,11 +1,11 @@
 package com.applovin.reactnative;
 
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
-
 
 import java.util.Map;
 
@@ -82,6 +82,18 @@ class AppLovinMAXAdViewManager
     public void setAdFormat(final AppLovinMAXAdView view, final String adFormatStr)
     {
         view.setAdFormat( adFormatStr );
+    }
+
+    @ReactProp(name = "extraParameters")
+    public void setExtraParameters(final AppLovinMAXAdView view, @Nullable final ReadableMap value)
+    {
+        view.setExtraParameters( value );
+    }
+
+    @ReactProp(name = "localExtraParameters")
+    public void setLocalExtraParameters(final AppLovinMAXAdView view, @Nullable final ReadableMap value)
+    {
+        view.setLocalExtraParameters( value );
     }
 
     @Override

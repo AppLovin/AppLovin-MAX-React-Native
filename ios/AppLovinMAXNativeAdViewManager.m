@@ -18,6 +18,7 @@ RCT_EXPORT_VIEW_PROPERTY(adUnitId, NSString)
 RCT_EXPORT_VIEW_PROPERTY(placement, NSString)
 RCT_EXPORT_VIEW_PROPERTY(customData, NSString)
 RCT_EXPORT_VIEW_PROPERTY(extraParameters, NSDictionary)
+RCT_EXPORT_VIEW_PROPERTY(localExtraParameters, NSDictionary)
 
 // Callback
 RCT_EXPORT_VIEW_PROPERTY(onAdLoadedEvent, RCTDirectEventBlock)

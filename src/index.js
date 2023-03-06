@@ -65,8 +65,22 @@ const updateBannerOffsets = (adUnitId, xOffset, yOffset) => {
 }
 
 const setBannerExtraParameter = (adUnitId, key, value) => {
+  if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
+    console.warn(setBannerExtraParameter.name + " supports only string values: " + key);
+    return;
+  }
   return runIfInitialized(setBannerExtraParameter.name,
                           AppLovinMAX.setBannerExtraParameter,
+                          adUnitId, key, value);
+}
+
+const setBannerLocalExtraParameter = (adUnitId, key, value) => {
+  if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
+    console.warn(setBannerLocalExtraParameter.name + " supports only string values: " + key);
+    return;
+  }
+  return runIfInitialized(setBannerLocalExtraParameter.name,
+                          AppLovinMAX.setBannerLocalExtraParameter,
                           adUnitId, key, value);
 }
 
@@ -110,12 +124,6 @@ const createMRec = (adUnitId, mrecPosition) => {
                           adUnitId, mrecPosition);
 }
 
-const setMRecBackgroundColor = (adUnitId, hexColorCode) => {
-  return runIfInitialized(setMRecBackgroundColor.name,
-                          AppLovinMAX.setMRecBackgroundColor,
-                          adUnitId, hexColorCode);
-}
-
 const setMRecPlacement = (adUnitId, placement) => {
   return runIfInitialized(setMRecPlacement.name,
                           AppLovinMAX.setMRecPlacement,
@@ -135,8 +143,22 @@ const updateMRecPosition = (adUnitId, mrecPosition) => {
 }
 
 const setMRecExtraParameter = (adUnitId, key, value) => {
+  if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
+    console.warn(setMRecExtraParameter.name + " supports only string values: " + key);
+    return;
+  }
   return runIfInitialized(setMRecExtraParameter.name,
                           AppLovinMAX.setMRecExtraParameter,
+                          adUnitId, key, value);
+}
+
+const setMRecLocalExtraParameter = (adUnitId, key, value) => {
+  if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
+    console.warn(setMRecLocalExtraParameter.name + " supports only string values: " + key);
+    return;
+  }
+  return runIfInitialized(setMRecLocalExtraParameter.name,
+                          AppLovinMAX.setMRecLocalExtraParameter,
                           adUnitId, key, value);
 }
 
@@ -193,8 +215,21 @@ const showInterstitial = (adUnitId, ...params) => {
 };
 
 const setInterstitialExtraParameter = (adUnitId, key, value) => {
+  if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
+    console.warn(setInterstitialExtraParameter.name + " supports only string values: " + key);
+    return;
+  }
   return runIfInitialized(setInterstitialExtraParameter.name,
                           AppLovinMAX.setInterstitialExtraParameter,
+                          adUnitId, key, value);
+}
+const setInterstitialLocalExtraParameter = (adUnitId, key, value) => {
+  if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
+    console.warn(setInterstitialLocalExtraParameter.name + " supports only string values: " + key);
+    return;
+  }
+  return runIfInitialized(setInterstitialLocalExtraParameter.name,
+                          AppLovinMAX.setInterstitialLocalExtraParameter,
                           adUnitId, key, value);
 }
 
@@ -221,8 +256,22 @@ const showRewardedAd = (adUnitId, ...params) => {
 };
 
 const setRewardedAdExtraParameter = (adUnitId, key, value) => {
+  if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
+    console.warn(setRewardedAdExtraParameter.name + " supports only string values: " + key);
+    return;
+  }
   return runIfInitialized(setRewardedAdExtraParameter.name,
                           AppLovinMAX.setRewardedAdExtraParameter,
+                          adUnitId, key, value);
+}
+
+const setRewardedAdLocalExtraParameter = (adUnitId, key, value) => {
+  if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
+    console.warn(setRewardedAdLocalExtraParameter.name + " supports only string values: " + key);
+    return;
+  }
+  return runIfInitialized(setRewardedAdLocalExtraParameter.name,
+                          AppLovinMAX.setRewardedAdLocalExtraParameter,
                           adUnitId, key, value);
 }
 
@@ -249,8 +298,22 @@ const showAppOpenAd = (adUnitId, ...params) => {
 };
 
 const setAppOpenAdExtraParameter = (adUnitId, key, value) => {
+  if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
+    console.warn(setAppOpenAdExtraParameter.name + " supports only string values: " + key);
+    return;
+  }
   return runIfInitialized(setAppOpenAdExtraParameter.name,
                           AppLovinMAX.setAppOpenAdExtraParameter,
+                          adUnitId, key, value);
+}
+
+const setAppOpenAdLocalExtraParameter = (adUnitId, key, value) => {
+  if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
+    console.warn(setAppOpenAdLocalExtraParameter.name + " supports only string values: " + key);
+    return;
+  }
+  return runIfInitialized(setAppOpenAdLocalExtraParameter.name,
+                          AppLovinMAX.setAppOpenAdLocalExtraParameter,
                           adUnitId, key, value);
 }
 
@@ -281,6 +344,7 @@ export default {
   updateBannerPosition,
   updateBannerOffsets,
   setBannerExtraParameter,
+  setBannerLocalExtraParameter,
   startBannerAutoRefresh,
   stopBannerAutoRefresh,
   showBanner,
@@ -291,11 +355,11 @@ export default {
   /* MRECS */
   /*-------*/
   createMRec,
-  setMRecBackgroundColor,
   setMRecPlacement,
   setMRecCustomData,
   updateMRecPosition,
   setMRecExtraParameter,
+  setMRecLocalExtraParameter,
   startMRecAutoRefresh,
   stopMRecAutoRefresh,
   showMRec,
@@ -309,6 +373,7 @@ export default {
   isInterstitialReady,
   showInterstitial,
   setInterstitialExtraParameter,
+  setInterstitialLocalExtraParameter,
 
   /*----------*/
   /* REWARDED */
@@ -317,6 +382,7 @@ export default {
   isRewardedAdReady,
   showRewardedAd,
   setRewardedAdExtraParameter,
+  setRewardedAdLocalExtraParameter,
 
   /*----------*/
   /* APP OPEN */
@@ -325,6 +391,7 @@ export default {
   isAppOpenAdReady,
   showAppOpenAd,
   setAppOpenAdExtraParameter,
+  setAppOpenAdLocalExtraParameter,
 
   /*----------------------*/
   /** AUTO-DECLARED APIs **/

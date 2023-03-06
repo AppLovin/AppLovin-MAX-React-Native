@@ -37,7 +37,7 @@ export const AdViewPosition = {
 };
 
 const AdView = (props) => {
-  const {style, ...otherProps} = props;
+  const {style, extraParameters, localExtraParameters, ...otherProps} = props;
   const [isInitialized, setIsInitialized] = useState(false);
   const [dimensions, setDimensions] = useState({});
 
@@ -111,6 +111,19 @@ const AdView = (props) => {
     if (props.onAdRevenuePaid) props.onAdRevenuePaid(event.nativeEvent);
   };
 
+  const checkExtraParameters = (name, params) => {
+    if (params) {
+      for (const key in params) {
+        const value = params[key];
+        if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
+          console.warn(name + " in AdView supports only string values: " + key);
+          delete params[key];
+        }
+      }
+    }
+    return params;
+  };
+
   // Not initialized
   if (!isInitialized) {
     return null;
@@ -128,6 +141,8 @@ const AdView = (props) => {
   return (
     <AppLovinMAXAdView
       style={{...style, ...dimensions}}
+      extraParameters={checkExtraParameters('extraParameters', extraParameters)}
+      localExtraParameters={checkExtraParameters('localExtraParameters', localExtraParameters)}
       onAdLoadedEvent={onAdLoadedEvent}
       onAdLoadFailedEvent={onAdLoadFailedEvent}
       onAdDisplayFailedEvent={onAdDisplayFailedEvent}
@@ -170,6 +185,16 @@ AdView.propTypes = {
    * A boolean value representing whether or not to enable auto-refresh. Note that auto-refresh is enabled by default.
    */
   autoRefresh: PropTypes.bool,
+
+  /**
+   * A dictionary value representing the extra parameters to set a list of key-value string pairs.
+   */
+  extraParameters: PropTypes.object,
+
+  /**
+   * A dictionary value representing the local extra parameters to set a list of key-value string pairs.
+   */
+  localExtraParameters: PropTypes.object,
 
   /**
    * A callback fuction to be fired when a new ad has been loaded.

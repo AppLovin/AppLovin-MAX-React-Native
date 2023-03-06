@@ -30,6 +30,7 @@
 @property (nonatomic, copy, nullable) NSString *placement;
 @property (nonatomic, copy, nullable) NSString *customData;
 @property (nonatomic, copy, nullable) NSDictionary *extraParameters;
+@property (nonatomic, copy, nullable) NSDictionary *localExtraParameters;
 
 // Callback to `AppLovinNativeAdView.js`
 @property (nonatomic, copy) RCTDirectEventBlock onAdLoadedEvent;
@@ -106,6 +107,11 @@
         for ( NSString *key in self.extraParameters )
         {
             [self.adLoader setExtraParameterForKey: key value: self.extraParameters[key]];
+        }
+        
+        for ( NSString *key in self.localExtraParameters )
+        {
+            [self.adLoader setLocalExtraParameterForKey: key value: self.localExtraParameters[key]];
         }
         
         [self.adLoader loadAd];

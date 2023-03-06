@@ -768,6 +768,12 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod
+    public void setBannerLocalExtraParameter(final String adUnitId, final String key, final String value)
+    {
+        setAdViewLocalExtraParameters( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), key, value );
+    }
+
+    @ReactMethod
     public void startBannerAutoRefresh(final String adUnitId)
     {
         startAutoRefresh( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
@@ -827,6 +833,18 @@ public class AppLovinMAXModule
     public void updateMRecPosition(final String adUnitId, final String mrecPosition)
     {
         updateAdViewPosition( adUnitId, mrecPosition, DEFAULT_AD_VIEW_OFFSET, MaxAdFormat.MREC );
+    }
+
+    @ReactMethod
+    public void setMRecExtraParameter(final String adUnitId, final String key, final String value)
+    {
+        setAdViewExtraParameters( adUnitId, MaxAdFormat.MREC, key, value );
+    }
+
+    @ReactMethod
+    public void setMRecLocalExtraParameter(final String adUnitId, final String key, final String value)
+    {
+        setAdViewLocalExtraParameters( adUnitId, MaxAdFormat.MREC, key, value );
     }
 
     @ReactMethod
@@ -895,6 +913,13 @@ public class AppLovinMAXModule
         interstitial.setExtraParameter( key, value );
     }
 
+    @ReactMethod
+    public void setInterstitialLocalExtraParameter(final String adUnitId, final String key, final String value)
+    {
+        MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
+        interstitial.setLocalExtraParameter( key, value );
+    }
+
     // REWARDED
 
     @ReactMethod
@@ -931,6 +956,13 @@ public class AppLovinMAXModule
         rewardedAd.setExtraParameter( key, value );
     }
 
+    @ReactMethod
+    public void setRewardedAdLocalExtraParameter(final String adUnitId, final String key, final String value)
+    {
+        MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
+        rewardedAd.setLocalExtraParameter( key, value );
+    }
+
     // APP OPEN AD
 
     @ReactMethod
@@ -959,6 +991,13 @@ public class AppLovinMAXModule
     {
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
         appOpenAd.setExtraParameter( key, value );
+    }
+
+    @ReactMethod
+    public void setAppOpenAdLocalExtraParameter(final String adUnitId, final String key, final String value)
+    {
+        MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
+        appOpenAd.setLocalExtraParameter( key, value );
     }
 
     // AD CALLBACKS
@@ -1534,6 +1573,28 @@ public class AppLovinMAXModule
 
                     positionAdView( adUnitId, adFormat );
                 }
+            }
+        } );
+    }
+
+    private void setAdViewLocalExtraParameters(final String adUnitId, final MaxAdFormat adFormat, final String key, final String value)
+    {
+        getReactApplicationContext().runOnUiQueueThread( new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                d( "Setting " + adFormat.getLabel() + " local extra with key: \"" + key + "\" value: " + value );
+
+                // Retrieve ad view from the map
+                final MaxAdView adView = retrieveAdView( adUnitId, adFormat );
+                if ( adView == null )
+                {
+                    e( adFormat.getLabel() + " does not exist" );
+                    return;
+                }
+
+                adView.setLocalExtraParameter( key, value );
             }
         } );
     }

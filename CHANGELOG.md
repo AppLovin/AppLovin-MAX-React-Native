@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+* Add APIs for setting SDK local extra parameters.
 * Remove kotlin dependency from build.
 * Add support for callback functions to  `AppLovinAdView` and `AppLovinNativeAdView` native UI components.
 * Update synchronous APIs to use `Promise`s.
