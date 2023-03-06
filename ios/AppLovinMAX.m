@@ -499,7 +499,7 @@ RCT_EXPORT_METHOD(getTargetingDataMaximumAdContentRating:(RCTPromiseResolveBlock
         return;
     }
     
-    resolve([self fromAppLovinAdContentRating: self.sdk.targetingData.maximumAdContentRating]);
+    resolve(@(self.sdk.targetingData.maximumAdContentRating));
 }
 
 RCT_EXPORT_METHOD(setTargetingDataEmail:(nullable NSString *)email)
@@ -1644,17 +1644,16 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
 {
     switch (gender)
     {
+        case ALGenderOther:
+        default:
+            return @"O";
         case ALGenderUnknown:
             return @"U";
         case ALGenderFemale:
             return @"F";
         case ALGenderMale:
             return @"M";
-        case ALGenderOther:
-            return @"O";
     }
-    
-    return @"U";
 }
 
 - (ALAdContentRating)toAppLovinAdContentRating:(nullable NSNumber *)maximumAdContentRating
@@ -1678,23 +1677,6 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
     }
     
     return ALAdContentRatingNone;
-}
-
-- (NSNumber *)fromAppLovinAdContentRating:(ALAdContentRating)maximumAdContentRating
-{
-    switch (maximumAdContentRating)
-    {
-        case ALAdContentRatingNone:
-            return @0;
-        case ALAdContentRatingAllAudiences:
-            return @1;
-        case ALAdContentRatingEveryoneOverTwelve:
-            return @2;
-        case ALAdContentRatingMatureAudiences:
-            return @3;
-    }
-    
-    return @0;
 }
 
 #pragma mark - Ad Info

@@ -646,7 +646,7 @@ public class AppLovinMAXModule
             return;
         }
 
-        promise.resolve( getRawAppLovinAdContentRating( sdk.getTargetingData().getMaximumAdContentRating() ) );
+        promise.resolve( sdk.getTargetingData().getMaximumAdContentRating().ordinal() );
     }
 
     @ReactMethod
@@ -1998,6 +1998,7 @@ public class AppLovinMAXModule
         switch ( gender )
         {
             case UNKNOWN:
+            default: 
                 return "U";
             case FEMALE:
                 return "F";
@@ -2007,7 +2008,6 @@ public class AppLovinMAXModule
                 return "O";
         }
 
-        return "U";
     }
 
     private static AppLovinAdContentRating getAppLovinAdContentRating(int maximumAdContentRating)
@@ -2033,6 +2033,7 @@ public class AppLovinMAXModule
         switch ( maximumAdContentRating )
         {
             case NONE:
+            default:
                 return 0;
             case ALL_AUDIENCES:
                 return 1;
@@ -2041,8 +2042,6 @@ public class AppLovinMAXModule
             case MATURE_AUDIENCES:
                 return 3;
         }
-
-        return 0;
     }
 
     private List<String> getStringArrayList(@Nullable ReadableArray readableArray)
