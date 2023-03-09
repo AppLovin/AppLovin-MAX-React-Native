@@ -714,11 +714,27 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            promise.resolve( convertReadableToWritableArray( targetingKeywordsToSet ) );
+            if ( targetingKeywordsToSet != null && targetingKeywordsToSet.size() > 0 )
+            {
+                promise.resolve( Arguments.fromList( Arguments.toList( targetingKeywordsToSet ) ) );
+            }
+            else
+            {
+                promise.resolve( null );
+            }
             return;
         }
 
-        promise.resolve( getWritableArray( sdk.getTargetingData().getKeywords() ) );
+        List<String> keywords = sdk.getTargetingData().getKeywords();
+
+        if ( keywords != null && keywords.size() > 0 )
+        {
+            promise.resolve( Arguments.makeNativeArray( keywords.toArray( new String[0] ) ) );
+        }
+        else
+        {
+            promise.resolve( null );
+        }
     }
 
     @ReactMethod
@@ -738,11 +754,27 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            promise.resolve( convertReadableToWritableArray( targetingInterestsToSet ) );
+            if ( targetingInterestsToSet != null && targetingInterestsToSet.size() > 0 )
+            {
+                promise.resolve( Arguments.fromList( Arguments.toList( targetingInterestsToSet ) ) );
+            }
+            else
+            {
+                promise.resolve( null );
+            }
             return;
         }
 
-        promise.resolve( getWritableArray( sdk.getTargetingData().getInterests() ) );
+        List<String> interests = sdk.getTargetingData().getInterests();
+
+        if ( interests != null && interests.size() > 0 )
+        {
+            promise.resolve( Arguments.makeNativeArray( interests.toArray( new String[0] ) ) );
+        }
+        else
+        {
+            promise.resolve( null );
+        }
     }
 
     @ReactMethod
@@ -1972,7 +2004,7 @@ public class AppLovinMAXModule
         return new Point( AppLovinSdkUtils.dpToPx( context, (int) xDp ), AppLovinSdkUtils.dpToPx( context, (int) yDp ) );
     }
 
-    private static AppLovinGender getAppLovinGender(@Nullable String gender)
+    private static AppLovinGender getAppLovinGender(@Nullable final String gender)
     {
         if ( gender != null )
         {
@@ -1998,7 +2030,6 @@ public class AppLovinMAXModule
         switch ( gender )
         {
             case UNKNOWN:
-            default: 
                 return "U";
             case FEMALE:
                 return "F";
@@ -2006,11 +2037,12 @@ public class AppLovinMAXModule
                 return "M";
             case OTHER:
                 return "O";
+            default:
+                return "U";
         }
-
     }
 
-    private static AppLovinAdContentRating getAppLovinAdContentRating(int maximumAdContentRating)
+    private static AppLovinAdContentRating getAppLovinAdContentRating(final int maximumAdContentRating)
     {
         if ( maximumAdContentRating == 1 )
         {
@@ -2028,12 +2060,11 @@ public class AppLovinMAXModule
         return AppLovinAdContentRating.NONE;
     }
 
-    private static int getRawAppLovinAdContentRating(AppLovinAdContentRating maximumAdContentRating)
+    private static int getRawAppLovinAdContentRating(final AppLovinAdContentRating maximumAdContentRating)
     {
         switch ( maximumAdContentRating )
         {
             case NONE:
-            default:
                 return 0;
             case ALL_AUDIENCES:
                 return 1;
@@ -2041,49 +2072,27 @@ public class AppLovinMAXModule
                 return 2;
             case MATURE_AUDIENCES:
                 return 3;
+            default:
+                return 0;
         }
     }
 
-    private List<String> getStringArrayList(@Nullable ReadableArray readableArray)
+    @Nullable
+    private List<String> getStringArrayList(@Nullable final ReadableArray readableArray)
     {
         if ( readableArray == null ) return null;
 
         List<String> list = new ArrayList<>( readableArray.size() );
 
-        for ( Object item : readableArray.toArrayList() )
+        for ( int i = 0; i < readableArray.size(); i++ )
         {
-            list.add( (String) item );
+            if ( readableArray.getType(i) == String )
+            {
+                list.add( readableArray.getString( i ) );
+            }
         }
 
         return list;
-    }
-
-    private WritableArray getWritableArray(@Nullable List<String> list)
-    {
-        if ( list == null ) return null;
-
-        WritableArray array = Arguments.createArray();
-
-        for ( String item : list )
-        {
-            array.pushString( item );
-        }
-
-        return array;
-    }
-
-    private WritableArray convertReadableToWritableArray(@Nullable ReadableArray readableArray)
-    {
-        if ( readableArray == null ) return null;
-
-        WritableArray array = Arguments.createArray();
-
-        for ( Object item : readableArray.toArrayList() )
-        {
-            array.pushString( (String) item );
-        }
-
-        return array;
     }
 
     // AD INFO

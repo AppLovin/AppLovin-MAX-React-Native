@@ -1645,7 +1645,6 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
     switch (gender)
     {
         case ALGenderOther:
-        default:
             return @"O";
         case ALGenderUnknown:
             return @"U";
@@ -1653,6 +1652,8 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
             return @"F";
         case ALGenderMale:
             return @"M";
+        default:
+            return @"O";
     }
 }
 
