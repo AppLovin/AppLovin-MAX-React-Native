@@ -20,8 +20,8 @@
 @property (nonatomic, copy, nullable) NSString *customData;
 @property (nonatomic, assign, readonly, getter=isAdaptiveBannerEnabled) BOOL adaptiveBannerEnabled;
 @property (nonatomic, assign, readonly, getter=isAutoRefresh) BOOL autoRefresh;
-@property (nonatomic, copy, nullable) NSDictionary *extraParameters;
-@property (nonatomic, copy, nullable) NSDictionary *localExtraParameters;
+@property (nonatomic, copy, nullable) NSDictionary *extraParameter;
+@property (nonatomic, copy, nullable) NSDictionary *localExtraParameter;
 
 @property (nonatomic, copy) RCTDirectEventBlock onAdLoadedEvent;
 @property (nonatomic, copy) RCTDirectEventBlock onAdLoadFailedEvent;
@@ -163,14 +163,14 @@
         // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
         [self.adView setExtraParameterForKey: @"allow_pause_auto_refresh_immediately" value: @"true"];
         
-        for ( NSString *key in self.extraParameters )
+        for ( NSString *key in self.extraParameter )
         {
-            [self.adView setExtraParameterForKey: key value: self.extraParameters[key]];
+            [self.adView setExtraParameterForKey: key value: self.extraParameter[key]];
         }
         
-        for ( NSString *key in self.localExtraParameters )
+        for ( NSString *key in self.localExtraParameter )
         {
-            [self.adView setLocalExtraParameterForKey: key value: self.localExtraParameters[key]];
+            [self.adView setLocalExtraParameterForKey: key value: self.localExtraParameter[key]];
         }
         
         if ( [self isAutoRefresh] )

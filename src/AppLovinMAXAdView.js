@@ -37,7 +37,7 @@ export const AdViewPosition = {
 };
 
 const AdView = (props) => {
-  const {style, extraParameters, localExtraParameters, ...otherProps} = props;
+  const {style, extraParameter, localExtraParameter, ...otherProps} = props;
   const [isInitialized, setIsInitialized] = useState(false);
   const [dimensions, setDimensions] = useState({});
 
@@ -111,7 +111,7 @@ const AdView = (props) => {
     if (props.onAdRevenuePaid) props.onAdRevenuePaid(event.nativeEvent);
   };
 
-  const checkExtraParameters = (name, params) => {
+  const checkExtraParameter = (name, params) => {
     if (params) {
       for (const key in params) {
         const value = params[key];
@@ -141,8 +141,8 @@ const AdView = (props) => {
   return (
     <AppLovinMAXAdView
       style={{...style, ...dimensions}}
-      extraParameters={checkExtraParameters('extraParameters', extraParameters)}
-      localExtraParameters={checkExtraParameters('localExtraParameters', localExtraParameters)}
+      extraParameter={checkExtraParameter('extraParameter', extraParameter)}
+      localExtraParameter={checkExtraParameter('localExtraParameter', localExtraParameter)}
       onAdLoadedEvent={onAdLoadedEvent}
       onAdLoadFailedEvent={onAdLoadFailedEvent}
       onAdDisplayFailedEvent={onAdDisplayFailedEvent}
@@ -187,14 +187,14 @@ AdView.propTypes = {
   autoRefresh: PropTypes.bool,
 
   /**
-   * A dictionary value representing the extra parameters to set a list of key-value string pairs.
+   * A dictionary value representing the extra parameter to set a list of key-value string pairs.
    */
-  extraParameters: PropTypes.object,
+  extraParameter: PropTypes.object,
 
   /**
-   * A dictionary value representing the local extra parameters to set a list of key-value string pairs.
+   * A dictionary value representing the local extra parameter to set a list of key-value string pairs.
    */
-  localExtraParameters: PropTypes.object,
+  localExtraParameter: PropTypes.object,
 
   /**
    * A callback fuction to be fired when a new ad has been loaded.

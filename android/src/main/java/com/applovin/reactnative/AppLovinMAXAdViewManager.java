@@ -48,6 +48,18 @@ class AppLovinMAXAdViewManager
         return new AppLovinMAXAdView( reactContext );
     }
 
+    @ReactProp(name = "adUnitId")
+    public void setAdUnitId(final AppLovinMAXAdView view, final String adUnitId)
+    {
+        view.setAdUnitId( adUnitId );
+    }
+
+    @ReactProp(name = "adFormat")
+    public void setAdFormat(final AppLovinMAXAdView view, final String adFormatStr)
+    {
+        view.setAdFormat( adFormatStr );
+    }
+
     @ReactProp(name = "placement")
     public void setPlacement(final AppLovinMAXAdView view, @Nullable final String placement)
     {
@@ -72,28 +84,16 @@ class AppLovinMAXAdViewManager
         view.setAutoRefresh( enabled );
     }
 
-    @ReactProp(name = "adUnitId")
-    public void setAdUnitId(final AppLovinMAXAdView view, final String adUnitId)
-    {
-        view.setAdUnitId( adUnitId );
-    }
-
-    @ReactProp(name = "adFormat")
-    public void setAdFormat(final AppLovinMAXAdView view, final String adFormatStr)
-    {
-        view.setAdFormat( adFormatStr );
-    }
-
-    @ReactProp(name = "extraParameters")
+    @ReactProp(name = "extraParameter")
     public void setExtraParameters(final AppLovinMAXAdView view, @Nullable final ReadableMap value)
     {
-        view.setExtraParameters( value );
+        view.setExtraParameter( value );
     }
 
-    @ReactProp(name = "localExtraParameters")
+    @ReactProp(name = "localExtraParameter")
     public void setLocalExtraParameters(final AppLovinMAXAdView view, @Nullable final ReadableMap value)
     {
-        view.setLocalExtraParameters( value );
+        view.setLocalExtraParameter( value );
     }
 
     @Override

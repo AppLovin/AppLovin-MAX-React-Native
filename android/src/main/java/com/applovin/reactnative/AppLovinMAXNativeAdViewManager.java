@@ -94,16 +94,16 @@ public class AppLovinMAXNativeAdViewManager
         view.setCustomData( value );
     }
 
-    @ReactProp(name = "extraParameters")
+    @ReactProp(name = "extraParameter")
     public void setExtraParameters(final AppLovinMAXNativeAdView view, @Nullable final ReadableMap value)
     {
-        view.setExtraParameters( value );
+        view.setExtraParameter( value );
     }
 
-    @ReactProp(name = "localExtraParameters")
+    @ReactProp(name = "localExtraParameter")
     public void setLocalExtraParameters(final AppLovinMAXNativeAdView view, @Nullable final ReadableMap value)
     {
-        view.setLocalExtraParameters( value );
+        view.setLocalExtraParameter( value );
     }
 
     @ReactProp(name = "titleView")
@@ -130,10 +130,10 @@ public class AppLovinMAXNativeAdViewManager
         view.setCallToActionView( value );
     }
 
-    @ReactProp(name = "mediaView")
-    public void setMediaView(final AppLovinMAXNativeAdView view, final int value)
+    @ReactProp(name = "iconView")
+    public void setIconView(final AppLovinMAXNativeAdView view, final int value)
     {
-        view.setMediaView( value );
+        view.setIconView( value );
     }
 
     @ReactProp(name = "optionsView")
@@ -142,10 +142,10 @@ public class AppLovinMAXNativeAdViewManager
         view.setOptionsView( value );
     }
 
-    @ReactProp(name = "iconView")
-    public void setIconView(final AppLovinMAXNativeAdView view, final int value)
+    @ReactProp(name = "mediaView")
+    public void setMediaView(final AppLovinMAXNativeAdView view, final int value)
     {
-        view.setIconView( value );
+        view.setMediaView( value );
     }
 
     @Override

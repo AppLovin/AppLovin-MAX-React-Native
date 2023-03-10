@@ -53,9 +53,9 @@ public class AppLovinMAXNativeAdView
     @Nullable
     private String              customData;
     @Nullable
-    private Map<String, Object> extraParameters;
+    private Map<String, Object> extraParameter;
     @Nullable
-    private Map<String, Object> localExtraParameters;
+    private Map<String, Object> localExtraParameter;
 
     // TODO: Allow publisher to select which views are clickable and which isn't via prop
     private final List<View> clickableViews = new ArrayList<>();
@@ -97,19 +97,19 @@ public class AppLovinMAXNativeAdView
         customData = value;
     }
 
-    public void setExtraParameters(@Nullable final ReadableMap readableMap)
+    public void setExtraParameter(@Nullable final ReadableMap readableMap)
     {
         if ( readableMap != null )
         {
-            extraParameters = readableMap.toHashMap();
+            extraParameter = readableMap.toHashMap();
         }
     }
 
-    public void setLocalExtraParameters(@Nullable final ReadableMap readableMap)
+    public void setLocalExtraParameter(@Nullable final ReadableMap readableMap)
     {
         if ( readableMap != null )
         {
-            localExtraParameters = readableMap.toHashMap();
+            localExtraParameter = readableMap.toHashMap();
         }
     }
 
@@ -129,17 +129,17 @@ public class AppLovinMAXNativeAdView
             adLoader.setPlacement( placement );
             adLoader.setCustomData( customData );
 
-            if ( extraParameters != null )
+            if ( extraParameter != null )
             {
-                for ( Map.Entry<String, Object> entry : extraParameters.entrySet() )
+                for ( Map.Entry<String, Object> entry : extraParameter.entrySet() )
                 {
                     adLoader.setExtraParameter( entry.getKey(), (String) entry.getValue() );
                 }
             }
 
-            if ( localExtraParameters != null )
+            if ( localExtraParameter != null )
             {
-                for ( Map.Entry<String, Object> entry : localExtraParameters.entrySet() )
+                for ( Map.Entry<String, Object> entry : localExtraParameter.entrySet() )
                 {
                     adLoader.setLocalExtraParameter( entry.getKey(), (String) entry.getValue() );
                 }
@@ -219,44 +219,6 @@ public class AppLovinMAXNativeAdView
         clickableViews.add( view );
     }
 
-    public void setMediaView(final int tag)
-    {
-        mediaView = nativeAd.getNativeAd().getMediaView();
-        if ( mediaView == null ) return;
-
-        ViewGroup view = findViewById( tag );
-        if ( view == null )
-        {
-            AppLovinMAXModule.e( "Cannot find a media view with tag \"" + tag + "\" for " + adUnitId );
-            return;
-        }
-
-        clickableViews.add( view );
-
-        view.addOnLayoutChangeListener( this );
-        view.addView( mediaView );
-
-        sizeToFit( mediaView, view );
-    }
-
-    public void setOptionsView(final int tag)
-    {
-        optionsView = nativeAd.getNativeAd().getOptionsView();
-        if ( optionsView == null ) return;
-
-        ViewGroup view = findViewById( tag );
-        if ( view == null )
-        {
-            AppLovinMAXModule.e( "Cannot find an options view with tag \"" + tag + "\" for " + adUnitId );
-            return;
-        }
-
-        view.addOnLayoutChangeListener( this );
-        view.addView( optionsView );
-
-        sizeToFit( optionsView, view );
-    }
-
     public void setIconView(final int tag)
     {
         ImageView view = findViewById( tag );
@@ -278,6 +240,44 @@ public class AppLovinMAXNativeAdView
                 view.setImageDrawable( icon.getDrawable() );
             }
         }
+    }
+
+    public void setOptionsView(final int tag)
+    {
+        optionsView = nativeAd.getNativeAd().getOptionsView();
+        if ( optionsView == null ) return;
+
+        ViewGroup view = findViewById( tag );
+        if ( view == null )
+        {
+            AppLovinMAXModule.e( "Cannot find an options view with tag \"" + tag + "\" for " + adUnitId );
+            return;
+        }
+
+        view.addOnLayoutChangeListener( this );
+        view.addView( optionsView );
+
+        sizeToFit( optionsView, view );
+    }
+
+    public void setMediaView(final int tag)
+    {
+        mediaView = nativeAd.getNativeAd().getMediaView();
+        if ( mediaView == null ) return;
+
+        ViewGroup view = findViewById( tag );
+        if ( view == null )
+        {
+            AppLovinMAXModule.e( "Cannot find a media view with tag \"" + tag + "\" for " + adUnitId );
+            return;
+        }
+
+        clickableViews.add( view );
+
+        view.addOnLayoutChangeListener( this );
+        view.addView( mediaView );
+
+        sizeToFit( mediaView, view );
     }
 
     @Override

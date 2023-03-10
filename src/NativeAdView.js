@@ -40,7 +40,7 @@ const AppLovinMAXNativeAdView = requireNativeComponent('AppLovinMAXNativeAdView'
 // 3. update of the nativeAd context by onNativeAdLoaded, which renders the ad components with nativeAd
 const NativeAdView = forwardRef((props, ref) => {
 
-  const {extraParameters, localExtraParameters, ...otherProps} = props;
+  const {extraParameter, localExtraParameter, ...otherProps} = props;
 
   // context from NativeAdViewProvider
   const {nativeAd, nativeAdView, setNativeAd, setNativeAdView} = useContext(NativeAdViewContext);
@@ -87,7 +87,7 @@ const NativeAdView = forwardRef((props, ref) => {
     if (props.onAdRevenuePaid) props.onAdRevenuePaid(event.nativeEvent);
   };
 
-  const checkExtraParameters = (name, params) => {
+  const checkExtraParameter = (name, params) => {
     if (params) {
       for (const key in params) {
         const value = params[key];
@@ -103,8 +103,8 @@ const NativeAdView = forwardRef((props, ref) => {
   return (
     <AppLovinMAXNativeAdView
       ref={saveElement}
-      extraParameters={checkExtraParameters('extraParameters', extraParameters)}
-      localExtraParameters={checkExtraParameters('localExtraParameters', localExtraParameters)}
+      extraParameter={checkExtraParameter('extraParameter', extraParameter)}
+      localExtraParameter={checkExtraParameter('localExtraParameter', localExtraParameter)}
       onAdLoadedEvent={onAdLoadedEvent}
       onAdLoadFailedEvent={onAdLoadFailedEvent}
       onAdClickedEvent={onAdClickedEvent}
@@ -133,14 +133,14 @@ NativeAdView.propTypes = {
   customData: PropTypes.string,
 
   /**
-   * A dictionary value representing the extra parameters to set a list of key-value string pairs.
+   * A dictionary value representing the extra parameter to set a list of key-value string pairs.
    */
-  extraParameters: PropTypes.object,
+  extraParameter: PropTypes.object,
 
   /**
-   * A dictionary value representing the local extra parameters to set a list of key-value string pairs.
+   * A dictionary value representing the local extra parameter to set a list of key-value string pairs.
    */
-  localExtraParameters: PropTypes.object,
+  localExtraParameter: PropTypes.object,
 
   /**
    * A callback fuction to be fired when a new ad has been loaded.

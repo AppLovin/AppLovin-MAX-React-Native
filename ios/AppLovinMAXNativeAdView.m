@@ -29,8 +29,8 @@
 @property (nonatomic, copy) NSString *adUnitId;
 @property (nonatomic, copy, nullable) NSString *placement;
 @property (nonatomic, copy, nullable) NSString *customData;
-@property (nonatomic, copy, nullable) NSDictionary *extraParameters;
-@property (nonatomic, copy, nullable) NSDictionary *localExtraParameters;
+@property (nonatomic, copy, nullable) NSDictionary *extraParameter;
+@property (nonatomic, copy, nullable) NSDictionary *localExtraParameter;
 
 // Callback to `AppLovinNativeAdView.js`
 @property (nonatomic, copy) RCTDirectEventBlock onAdLoadedEvent;
@@ -104,14 +104,14 @@
         self.adLoader.placement = self.placement;
         self.adLoader.customData = self.customData;
         
-        for ( NSString *key in self.extraParameters )
+        for ( NSString *key in self.extraParameter )
         {
-            [self.adLoader setExtraParameterForKey: key value: self.extraParameters[key]];
+            [self.adLoader setExtraParameterForKey: key value: self.extraParameter[key]];
         }
         
-        for ( NSString *key in self.localExtraParameters )
+        for ( NSString *key in self.localExtraParameter )
         {
-            [self.adLoader setLocalExtraParameterForKey: key value: self.localExtraParameters[key]];
+            [self.adLoader setLocalExtraParameterForKey: key value: self.localExtraParameter[key]];
         }
         
         [self.adLoader loadAd];
@@ -180,38 +180,6 @@
     [self.clickableViews addObject: view];
 }
 
-- (void)setMediaView:(NSNumber *)tag
-{
-    if ( !self.nativeAd.nativeAd.mediaView ) return;
-    
-    UIView *view = [self.bridge.uiManager viewForReactTag: tag];
-    if ( !view )
-    {
-        [[AppLovinMAX shared] log: @"Cannot find a media view with tag \"%@\" for %@", tag, self.adUnitId];
-        return;
-    }
-
-    [self.clickableViews addObject: view];
-  
-    [view addSubview: self.nativeAd.nativeAd.mediaView];
-    [self.nativeAd.nativeAd.mediaView al_pinToSuperview];
-}
-
-- (void)setOptionsView:(NSNumber *)tag
-{
-    if ( !self.nativeAd.nativeAd.optionsView ) return;
-       
-    UIView *view = [self.bridge.uiManager viewForReactTag: tag];
-    if ( !view )
-    {
-        [[AppLovinMAX shared] log: @"Cannot find an option view with tag \"%@\" for %@", tag, self.adUnitId];
-        return;
-    }
-  
-    [view addSubview: self.nativeAd.nativeAd.optionsView];
-    [self.nativeAd.nativeAd.optionsView al_pinToSuperview];
-}
-
 - (void)setIconView:(NSNumber *)tag
 {
     UIView *view = [self.bridge.uiManager viewForReactTag: tag];
@@ -233,6 +201,38 @@
             iconImageView.defaultImage = icon.image;
         }
     }
+}
+
+- (void)setOptionsView:(NSNumber *)tag
+{
+    if ( !self.nativeAd.nativeAd.optionsView ) return;
+       
+    UIView *view = [self.bridge.uiManager viewForReactTag: tag];
+    if ( !view )
+    {
+        [[AppLovinMAX shared] log: @"Cannot find an option view with tag \"%@\" for %@", tag, self.adUnitId];
+        return;
+    }
+  
+    [view addSubview: self.nativeAd.nativeAd.optionsView];
+    [self.nativeAd.nativeAd.optionsView al_pinToSuperview];
+}
+
+- (void)setMediaView:(NSNumber *)tag
+{
+    if ( !self.nativeAd.nativeAd.mediaView ) return;
+    
+    UIView *view = [self.bridge.uiManager viewForReactTag: tag];
+    if ( !view )
+    {
+        [[AppLovinMAX shared] log: @"Cannot find a media view with tag \"%@\" for %@", tag, self.adUnitId];
+        return;
+    }
+
+    [self.clickableViews addObject: view];
+  
+    [view addSubview: self.nativeAd.nativeAd.mediaView];
+    [self.nativeAd.nativeAd.mediaView al_pinToSuperview];
 }
 
 #pragma mark - Ad Loader Delegate
