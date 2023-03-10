@@ -716,84 +716,168 @@ public class AppLovinMAXModule
     @ReactMethod
     public void createBanner(final String adUnitId, final String bannerPosition)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "createBanner" );
+            return;
+        }
+
         createAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), bannerPosition, DEFAULT_AD_VIEW_OFFSET );
     }
 
     @ReactMethod // NOTE: No function overloading in JS so we need new method signature
     public void createBannerWithOffsets(final String adUnitId, final String bannerPosition, final float x, final float y)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "createBannerWithOffsets" );
+            return;
+        }
+
         createAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), bannerPosition, getOffsetPixels( x, y, getCurrentActivity() ) );
     }
 
     @ReactMethod
     public void setBannerBackgroundColor(final String adUnitId, final String hexColorCode)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setBannerBackgroundColor" );
+            return;
+        }
+
         setAdViewBackgroundColor( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), hexColorCode );
     }
 
     @ReactMethod
     public void setBannerPlacement(final String adUnitId, final String placement)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setBannerPlacement" );
+            return;
+        }
+
         setAdViewPlacement( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), placement );
     }
 
     @ReactMethod
     public void setBannerCustomData(final String adUnitId, final String customData)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setBannerCustomData" );
+            return;
+        }
+
         setAdViewCustomData( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), customData );
     }
 
     @ReactMethod
     public void setBannerWidth(final String adUnitId, final int widthDp)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setBannerWidth" );
+            return;
+        }
+
         setAdViewWidth( adUnitId, widthDp, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
     @ReactMethod
     public void updateBannerPosition(final String adUnitId, final String bannerPosition)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "updateBannerPosition" );
+            return;
+        }
+
         updateAdViewPosition( adUnitId, bannerPosition, DEFAULT_AD_VIEW_OFFSET, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
     @ReactMethod
     public void updateBannerOffsets(final String adUnitId, final float x, final float y)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "updateBannerOffsets" );
+            return;
+        }
+
         updateAdViewPosition( adUnitId, mAdViewPositions.get( adUnitId ), getOffsetPixels( x, y, getCurrentActivity() ), getDeviceSpecificBannerAdViewAdFormat() );
     }
 
     @ReactMethod
     public void setBannerExtraParameter(final String adUnitId, final String key, final String value)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setBannerExtraParameter" );
+            return;
+        }
+
         setAdViewExtraParameters( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), key, value );
     }
 
     @ReactMethod
     public void startBannerAutoRefresh(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "startBannerAutoRefresh" );
+            return;
+        }
+
         startAutoRefresh( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
     @ReactMethod
     public void stopBannerAutoRefresh(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "stopBannerAutoRefresh" );
+            return;
+        }
+
         stopAutoRefresh( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
     @ReactMethod
     public void showBanner(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "showBanner" );
+            return;
+        }
+
         showAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
     @ReactMethod
     public void hideBanner(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "hideBanner" );
+            return;
+        }
+
         hideAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
     @ReactMethod
     public void destroyBanner(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "destroyBanner" );
+            return;
+        }
+
         destroyAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
@@ -808,54 +892,108 @@ public class AppLovinMAXModule
     @ReactMethod
     public void createMRec(final String adUnitId, final String mrecPosition)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "createMRec" );
+            return;
+        }
+
         createAdView( adUnitId, MaxAdFormat.MREC, mrecPosition, DEFAULT_AD_VIEW_OFFSET );
     }
 
     @ReactMethod
     public void setMRecPlacement(final String adUnitId, final String placement)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setMRecPlacement" );
+            return;
+        }
+
         setAdViewPlacement( adUnitId, MaxAdFormat.MREC, placement );
     }
 
     @ReactMethod
     public void setMRecCustomData(final String adUnitId, final String customData)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setMRecCustomData" );
+            return;
+        }
+
         setAdViewCustomData( adUnitId, MaxAdFormat.MREC, customData );
     }
 
     @ReactMethod
     public void updateMRecPosition(final String adUnitId, final String mrecPosition)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "updateMRecPosition" );
+            return;
+        }
+
         updateAdViewPosition( adUnitId, mrecPosition, DEFAULT_AD_VIEW_OFFSET, MaxAdFormat.MREC );
     }
 
     @ReactMethod
     public void startMRecAutoRefresh(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "startMRecAutoRefresh" );
+            return;
+        }
+
         startAutoRefresh( adUnitId, MaxAdFormat.MREC );
     }
 
     @ReactMethod
     public void stopMRecAutoRefresh(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "stopMRecAutoRefresh" );
+            return;
+        }
+
         stopAutoRefresh( adUnitId, MaxAdFormat.MREC );
     }
 
     @ReactMethod
     public void showMRec(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "showMRec" );
+            return;
+        }
+
         showAdView( adUnitId, MaxAdFormat.MREC );
     }
 
     @ReactMethod
     public void hideMRec(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "hideMRec" );
+            return;
+        }
+
         hideAdView( adUnitId, MaxAdFormat.MREC );
     }
 
     @ReactMethod
     public void destroyMRec(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "destroyMRec" );
+            return;
+        }
+
         destroyAdView( adUnitId, MaxAdFormat.MREC );
     }
 
@@ -1892,7 +2030,7 @@ public class AppLovinMAXModule
         e( Log.getStackTraceString( e ) );
     }
 
-    private static void logUninitializedAccessError(final String callingMethod)
+    public static void logUninitializedAccessError(final String callingMethod)
     {
         e( "ERROR: Failed to execute " + callingMethod + "() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!" );
     }

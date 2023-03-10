@@ -38,24 +38,9 @@ export const AdViewPosition = {
 
 const AdView = (props) => {
   const {style, ...otherProps} = props;
-  const [isInitialized, setIsInitialized] = useState(false);
   const [dimensions, setDimensions] = useState({});
 
   useEffect(() => {
-    // check that AppLovinMAX has been initialized
-    AppLovinMAX.isInitialized().then(result => {
-      setIsInitialized(result);
-      if (!result) {
-        console.warn("ERROR: AppLovinMAX.AdView is mounted before the initialization of the AppLovin MAX React Native module");
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    if (!isInitialized) {
-      return;
-    }
-
     const sizeForBannerFormat = async () => {
       const isTablet = await AppLovinMAX.isTablet();
       const width = isTablet ? 728 : 320;
@@ -81,7 +66,7 @@ const AdView = (props) => {
                        height: (style.height && style.height !== 'auto') ? style.height : 250});
       }
     }
-  }, [isInitialized]);
+  }, []);
 
   const onAdLoadedEvent = (event) => {
     if (props.onAdLoaded) props.onAdLoaded(event.nativeEvent);
@@ -111,10 +96,7 @@ const AdView = (props) => {
     if (props.onAdRevenuePaid) props.onAdRevenuePaid(event.nativeEvent);
   };
 
-  // Not initialized
-  if (!isInitialized) {
-    return null;
-  } else {
+  {
     const isSizeSpecified = ((style.width && style.width !== 'auto') &&
                              (style.height && style.height !== 'auto'));
     const isDimensionsSet = (Object.keys(dimensions).length > 0);

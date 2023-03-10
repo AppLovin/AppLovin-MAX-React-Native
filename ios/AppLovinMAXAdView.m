@@ -129,6 +129,12 @@
     // Run after 0.25 sec delay to allow all properties to set
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         
+        if ( ![AppLovinMAX shared].sdk )
+        {
+            [[AppLovinMAX shared] logUninitializedAccessError: @"AppLovinMAXAdview.attachAdViewIfNeeded"];
+            return;
+        }
+
         if ( ![adUnitId al_isValidString] )
         {
             [[AppLovinMAX shared] log: @"Attempting to attach MAAdView without Ad Unit ID"];

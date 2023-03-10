@@ -7,23 +7,6 @@ import { TitleView, AdvertiserView, BodyView, CallToActionView, IconView, Option
 const { AppLovinMAX } = NativeModules;
 
 const NativeAdViewWrapper = forwardRef((props, ref) => {
-  const [isInitialized, setIsInitialized] = useState(false);
-
-  useEffect(() => {
-    // check that AppLovinMAX has been initialized
-    AppLovinMAX.isInitialized().then(result => {
-      setIsInitialized(result);
-      if (!result) {
-        console.warn("ERROR: AppLovinMAX.NativeAdView is mounted before the initialization of the AppLovin MAX React Native module");
-      }
-    });
-  }, []);
-
-  // Not ready to render NativeAdView
-  if (!isInitialized) {
-    return null;
-  }
-
   return (
     <NativeAdViewProvider>
       <NativeAdView {...props} ref={ref}/>
