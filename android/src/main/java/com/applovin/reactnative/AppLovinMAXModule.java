@@ -864,6 +864,12 @@ public class AppLovinMAXModule
     @ReactMethod
     public void loadInterstitial(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "loadInterstitial" );
+            return;
+        }
+
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
         if ( interstitial == null )
         {
@@ -877,6 +883,13 @@ public class AppLovinMAXModule
     @ReactMethod
     public void isInterstitialReady(final String adUnitId, final Promise promise)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "isInterstitialReady" );
+            promise.resolve( false );
+            return;
+        }
+
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
         promise.resolve( interstitial.isReady() );
     }
@@ -884,6 +897,12 @@ public class AppLovinMAXModule
     @ReactMethod
     public void showInterstitial(final String adUnitId, final String placement, final String customData)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "showInterstitial" );
+            return;
+        }
+
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
         interstitial.showAd( placement, customData );
     }
@@ -891,6 +910,12 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setInterstitialExtraParameter(final String adUnitId, final String key, final String value)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setInterstitialExtraParameter" );
+            return;
+        }
+
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
         interstitial.setExtraParameter( key, value );
     }
@@ -900,6 +925,12 @@ public class AppLovinMAXModule
     @ReactMethod
     public void loadRewardedAd(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "loadRewardedAd" );
+            return;
+        }
+
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
         if ( rewardedAd == null )
         {
@@ -913,6 +944,13 @@ public class AppLovinMAXModule
     @ReactMethod
     public void isRewardedAdReady(final String adUnitId, final Promise promise)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "isRewardedAdReady" );
+            promise.resolve( false );
+            return;
+        }
+
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
         promise.resolve( rewardedAd.isReady() );
     }
@@ -920,6 +958,12 @@ public class AppLovinMAXModule
     @ReactMethod
     public void showRewardedAd(final String adUnitId, final String placement, final String customData)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "showRewardedAd" );
+            return;
+        }
+
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
         rewardedAd.showAd( placement, customData );
     }
@@ -927,6 +971,12 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setRewardedAdExtraParameter(final String adUnitId, final String key, final String value)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setRewardedAdExtraParameter" );
+            return;
+        }
+
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
         rewardedAd.setExtraParameter( key, value );
     }
@@ -936,6 +986,12 @@ public class AppLovinMAXModule
     @ReactMethod
     public void loadAppOpenAd(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "loadAppOpenAd" );
+            return;
+        }
+
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
         appOpenAd.loadAd();
     }
@@ -943,6 +999,13 @@ public class AppLovinMAXModule
     @ReactMethod
     public void isAppOpenAdReady(final String adUnitId, final Promise promise)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "isAppOpenAdReady" );
+            promise.resolve( false );
+            return;
+        }
+
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
         promise.resolve( appOpenAd.isReady() );
     }
@@ -950,6 +1013,12 @@ public class AppLovinMAXModule
     @ReactMethod
     public void showAppOpenAd(final String adUnitId, @Nullable final String placement, @Nullable final String customData)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "showAppOpenAd" );
+            return;
+        }
+
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
         appOpenAd.showAd( placement, customData );
     }
@@ -957,6 +1026,12 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setAppOpenAdExtraParameter(final String adUnitId, final String key, final String value)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setAppOpenAdExtraParameter" );
+            return;
+        }
+
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
         appOpenAd.setExtraParameter( key, value );
     }

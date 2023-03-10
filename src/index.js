@@ -174,85 +174,65 @@ const destroyMRec = (adUnitId) => {
 /* INTERSTITIALS */
 /*---------------*/
 
-const loadInterstitial = (adUnitId) => {
-  return runIfInitialized(loadInterstitial.name,
-                          AppLovinMAX.loadInterstitial,
-                          adUnitId);
-}
-
-const isInterstitialReady = (adUnitId) => {
-  return runIfInitialized(isInterstitialReady.name,
-                          AppLovinMAX.isInterstitialReady,
-                          adUnitId);
-}
-
-const showInterstitial = (adUnitId, ...params) => {
-  return runIfInitialized(showInterstitial.name,
-                          AppLovinMAX.showInterstitial,
-                          adUnitId, params[0], params[1]);
+const showInterstitial = (adUnitId, ...args) => {
+  switch (args.length) {
+  case 0:
+    AppLovinMAX.showInterstitial(adUnitId, null, null);
+    break;
+  case 1:
+    AppLovinMAX.showInterstitial(adUnitId, args[0], null);
+    break;
+  case 2:
+    AppLovinMAX.showInterstitial(adUnitId, args[0], args[1]);
+    break;
+  default:
+    // do nothing - unexpected number of arguments
+    break;
+  }
 };
 
-const setInterstitialExtraParameter = (adUnitId, key, value) => {
-  return runIfInitialized(setInterstitialExtraParameter.name,
-                          AppLovinMAX.setInterstitialExtraParameter,
-                          adUnitId, key, value);
-}
 
 /*----------*/
 /* REWARDED */
 /*----------*/
 
-const loadRewardedAd = (adUnitId) => {
-  return runIfInitialized(loadRewardedAd.name,
-                          AppLovinMAX.loadRewardedAd,
-                          adUnitId);
-}
-
-const isRewardedAdReady = (adUnitId) => {
-  return runIfInitialized(isRewardedAdReady.name,
-                          AppLovinMAX.isRewardedAdReady,
-                          adUnitId);
-}
-
-const showRewardedAd = (adUnitId, ...params) => {
-  return runIfInitialized(showRewardedAd.name,
-                          AppLovinMAX.showRewardedAd,
-                          adUnitId, params[0], params[1]);
+const showRewardedAd = (adUnitId, ...args) => {
+  switch (args.length) {
+  case 0:
+    AppLovinMAX.showRewardedAd(adUnitId, null, null);
+    break;
+  case 1:
+    AppLovinMAX.showRewardedAd(adUnitId, args[0], null);
+    break;
+  case 2:
+    AppLovinMAX.showRewardedAd(adUnitId, args[0], args[1]);
+    break;
+  default:
+    // do nothing - unexpected number of arguments
+    break;
+  }
 };
-
-const setRewardedAdExtraParameter = (adUnitId, key, value) => {
-  return runIfInitialized(setRewardedAdExtraParameter.name,
-                          AppLovinMAX.setRewardedAdExtraParameter,
-                          adUnitId, key, value);
-}
 
 /*----------*/
 /* APP OPEN */
 /*----------*/
 
-const loadAppOpenAd = (adUnitId) => {
-  return runIfInitialized(loadAppOpenAd.name,
-                          AppLovinMAX.loadAppOpenAd,
-                          adUnitId);
-}
-
-const isAppOpenAdReady = (adUnitId) => {
-  return runIfInitialized(isAppOpenAdReady.name,
-                          AppLovinMAX.isAppOpenAdReady,
-                          adUnitId);
-}
-
-const showAppOpenAd = (adUnitId, ...params) => {
-  return runIfInitialized(showAppOpenAd.name,
-                          AppLovinMAX.showAppOpenAd,
-                          adUnitId, params[0], params[1]);
+const showAppOpenAd = (adUnitId, ...args) => {
+  switch (args.length) {
+  case 0:
+    AppLovinMAX.showAppOpenAd(adUnitId, null, null);
+    break;
+  case 1:
+    AppLovinMAX.showAppOpenAd(adUnitId, args[0], null);
+    break;
+  case 2:
+    AppLovinMAX.showAppOpenAd(adUnitId, args[0], args[1]);
+    break;
+  default:
+    // do nothing - unexpected number of arguments
+    break;
+  }
 };
-
-const setAppOpenAdExtraParameter = (adUnitId, key, value) => {
-  return runIfInitialized(setAppOpenAdExtraParameter.name,
-                          AppLovinMAX.setAppOpenAdExtraParameter,
-                          adUnitId, key, value);
-}
 
 export default {
   ...AppLovinMAX,
@@ -305,26 +285,17 @@ export default {
   /*---------------*/
   /* INTERSTITIALS */
   /*---------------*/
-  loadInterstitial,
-  isInterstitialReady,
   showInterstitial,
-  setInterstitialExtraParameter,
 
   /*----------*/
   /* REWARDED */
   /*----------*/
-  loadRewardedAd,
-  isRewardedAdReady,
   showRewardedAd,
-  setRewardedAdExtraParameter,
 
   /*----------*/
   /* APP OPEN */
   /*----------*/
-  loadAppOpenAd,
-  isAppOpenAdReady,
   showAppOpenAd,
-  setAppOpenAdExtraParameter,
 
   /*----------------------*/
   /** AUTO-DECLARED APIs **/
