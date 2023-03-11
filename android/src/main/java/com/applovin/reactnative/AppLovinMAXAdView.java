@@ -187,6 +187,12 @@ class AppLovinMAXAdView
         // Run after 0.25 sec delay to allow all properties to set
         postDelayed( () -> {
 
+            if ( AppLovinMAXModule.getInstance().getSdk() == null )
+            {
+                AppLovinMAXModule.logUninitializedAccessError( "AppLovinMAXAdView.maybeAttachAdView" );
+                return;
+            }
+
             if ( TextUtils.isEmpty( adUnitId ) )
             {
                 AppLovinMAXModule.e( "Attempting to attach MaxAdView without Ad Unit ID" );
