@@ -1642,19 +1642,20 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
 
 - (NSString *)fromAppLovinGender:(ALGender)gender
 {
-    switch (gender)
+    if ( gender  == ALGenderFemale)
     {
-        case ALGenderOther:
-            return @"O";
-        case ALGenderUnknown:
-            return @"U";
-        case ALGenderFemale:
-            return @"F";
-        case ALGenderMale:
-            return @"M";
-        default:
-            return @"O";
+        return @"F";
     }
+    else if ( gender  == ALGenderMale)
+    {
+        return @"M";
+    }
+    else if ( gender  == ALGenderOther)
+    {
+        return @"O";
+    }
+
+    return @"U";
 }
 
 - (ALAdContentRating)toAppLovinAdContentRating:(nullable NSNumber *)maximumAdContentRating

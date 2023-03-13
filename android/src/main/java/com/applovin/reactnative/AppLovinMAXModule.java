@@ -51,6 +51,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
@@ -593,7 +594,7 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            promise.resolve( targetingYearOfBirthToSet != null ? targetingYearOfBirthToSet : 0 );
+            promise.resolve( targetingYearOfBirthToSet == null ? 0 : targetingYearOfBirthToSet );
             return;
         }
 
@@ -618,11 +619,18 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            promise.resolve( targetingGenderToSet != null ? targetingGenderToSet : "U" );
+            promise.resolve( targetingGenderToSet == null ? "U" : targetingGenderToSet );
             return;
         }
 
-        promise.resolve( getRawAppLovinGender( sdk.getTargetingData().getGender() ) );
+        if ( sdk.getTargetingData().getGender() == null )
+        {
+            promise.resolve( "U" );
+        }
+        else
+        {
+            promise.resolve( getRawAppLovinGender( sdk.getTargetingData().getGender() ) );
+        }
     }
 
     @ReactMethod
@@ -642,11 +650,18 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            promise.resolve( targetingMaximumAdContentRatingToSet != null ? targetingMaximumAdContentRatingToSet : 0 );
+            promise.resolve( targetingMaximumAdContentRatingToSet == null ? 0 : targetingMaximumAdContentRatingToSet );
             return;
         }
 
-        promise.resolve( sdk.getTargetingData().getMaximumAdContentRating().ordinal() );
+        if ( sdk.getTargetingData().getMaximumAdContentRating() == null )
+        {
+            promise.resolve( 0 );
+        }
+        else
+        {
+            promise.resolve( sdk.getTargetingData().getMaximumAdContentRating().ordinal() );
+        }
     }
 
     @ReactMethod
@@ -714,26 +729,26 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            if ( targetingKeywordsToSet != null && targetingKeywordsToSet.size() > 0 )
+            if ( targetingKeywordsToSet == null || targetingKeywordsToSet.size() == 0 )
             {
-                promise.resolve( Arguments.fromList( Arguments.toList( targetingKeywordsToSet ) ) );
+                promise.resolve( null );
             }
             else
             {
-                promise.resolve( null );
+                promise.resolve( targetingKeywordsToSet );
             }
             return;
         }
 
         List<String> keywords = sdk.getTargetingData().getKeywords();
 
-        if ( keywords != null && keywords.size() > 0 )
+        if ( keywords == null || keywords.size() == 0 )
         {
-            promise.resolve( Arguments.makeNativeArray( keywords.toArray( new String[0] ) ) );
+            promise.resolve( null );
         }
         else
         {
-            promise.resolve( null );
+            promise.resolve( Arguments.makeNativeArray( keywords ) );
         }
     }
 
@@ -754,26 +769,26 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            if ( targetingInterestsToSet != null && targetingInterestsToSet.size() > 0 )
+            if ( targetingInterestsToSet == null || targetingInterestsToSet.size() == 0 )
             {
-                promise.resolve( Arguments.fromList( Arguments.toList( targetingInterestsToSet ) ) );
+                promise.resolve( null );
             }
             else
             {
-                promise.resolve( null );
+                promise.resolve( targetingInterestsToSet );
             }
             return;
         }
 
         List<String> interests = sdk.getTargetingData().getInterests();
 
-        if ( interests != null && interests.size() > 0 )
+        if ( interests == null || interests.size() == 0 )
         {
-            promise.resolve( Arguments.makeNativeArray( interests.toArray( new String[0] ) ) );
+            promise.resolve( null );
         }
         else
         {
-            promise.resolve( null );
+            promise.resolve( Arguments.makeNativeArray( interests ) );
         }
     }
 
@@ -2027,19 +2042,20 @@ public class AppLovinMAXModule
 
     private static String getRawAppLovinGender(final AppLovinGender gender)
     {
-        switch ( gender )
+        if ( gender == AppLovinGender.FEMALE )
         {
-            case UNKNOWN:
-                return "U";
-            case FEMALE:
-                return "F";
-            case MALE:
-                return "M";
-            case OTHER:
-                return "O";
-            default:
-                return "U";
+            return "F";
         }
+        else if ( gender == AppLovinGender.MALE )
+        {
+            return "M";
+        }
+        else if ( gender == AppLovinGender.OTHER )
+        {
+            return "O";
+        }
+
+        return "U";
     }
 
     private static AppLovinAdContentRating getAppLovinAdContentRating(final int maximumAdContentRating)
@@ -2060,23 +2076,6 @@ public class AppLovinMAXModule
         return AppLovinAdContentRating.NONE;
     }
 
-    private static int getRawAppLovinAdContentRating(final AppLovinAdContentRating maximumAdContentRating)
-    {
-        switch ( maximumAdContentRating )
-        {
-            case NONE:
-                return 0;
-            case ALL_AUDIENCES:
-                return 1;
-            case EVERYONE_OVER_TWELVE:
-                return 2;
-            case MATURE_AUDIENCES:
-                return 3;
-            default:
-                return 0;
-        }
-    }
-
     @Nullable
     private List<String> getStringArrayList(@Nullable final ReadableArray readableArray)
     {
@@ -2086,7 +2085,7 @@ public class AppLovinMAXModule
 
         for ( int i = 0; i < readableArray.size(); i++ )
         {
-            if ( readableArray.getType(i) == String )
+            if ( readableArray.getType( i ) == ReadableType.String )
             {
                 list.add( readableArray.getString( i ) );
             }
