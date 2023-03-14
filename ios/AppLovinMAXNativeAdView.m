@@ -284,6 +284,7 @@
     nativeAdInfo[@"advertiser"] = ad.advertiser;
     nativeAdInfo[@"body"] = ad.body;
     nativeAdInfo[@"callToAction"] = ad.callToAction;
+    nativeAdInfo[@"starRating"] = ad.starRating;
 
     if ( !isnan(ad.mediaContentAspectRatio) )
     {
@@ -316,6 +317,7 @@
     jsNativeAd[@"advertiser"] = ad.advertiser;
     jsNativeAd[@"body"] = ad.body;
     jsNativeAd[@"callToAction"] = ad.callToAction;
+    jsNativeAd[@"starRating"] = ad.starRating;
 
     if ( ad.icon )
     {

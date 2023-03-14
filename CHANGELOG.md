@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Add Star Rating support for native ads with `AppLovinMAX.NativeAdView.StarRatingView` and `adInfo.nativeAd.starRating` via `onAdLoaded(adInfo)`.
 ## 5.1.0
 * Add back Terms flow.
 * Add `title`, `advertiser`, `body`, `callToAction`, `isIconImageAvailable`, `isOptionsViewAvailable`, and `isMediaViewAvailable`  to ad object of native ad UI callbacks.

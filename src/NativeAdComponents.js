@@ -1,4 +1,4 @@
-import React, {useContext, useRef, useEffect} from "react";
+import React, {useContext, useRef, useEffect, useCallback} from "react";
 import {findNodeHandle, Text, Image, View, TouchableOpacity} from "react-native";
 import {NativeAdViewContext} from "./NativeAdViewProvider";
 
@@ -126,7 +126,7 @@ export const OptionsView = (props) => {
   if (!nativeAdView) return null;
 
   return (
-    <View {...props} ref={viewRef}/>
+    <View {...props} ref={viewRef} />
   );
 };
 
@@ -146,6 +146,61 @@ export const MediaView = (props) => {
   if (!nativeAdView) return null;
 
   return (
-    <View {...props} ref={viewRef}/>
+    <View {...props} ref={viewRef} />
+  );
+};
+
+export const StarRatingView = (props) => {
+  const {style, ...otherProps} = props;
+
+  const maxStarCount = 5;
+  const starColor = style.color ?? "#ffe234";
+  const starSize = style.fontSize ?? 10;
+
+  const {nativeAd, nativeAdView} = useContext(NativeAdViewContext);
+
+  const FilledStar = useCallback(({size,color}) => {
+    return (
+      // black star in unicode
+      <Text style={{fontSize: size, color: color}}>{String.fromCodePoint(0x2605)}</Text>
+    );
+  });
+
+  const EmptyStar = useCallback(({size,color}) => {
+    return (
+      // white star in unicode
+      <Text style={{fontSize: size, color: color}}>{String.fromCodePoint(0x2606)}</Text>
+    );
+  });
+
+  const StarView = useCallback(({index, rating, size, color}) => {
+    const width = (rating - index) * size;
+    return (
+      <View>
+        <EmptyStar size={size} color={color} />
+        {
+          (rating > index) &&
+            <View style={{ width: width, overflow: 'hidden', position: 'absolute'}}>
+              <FilledStar style={{top:0, left:0}} size={size} color={color} />
+            </View>
+        }
+      </View>
+    );
+  });
+
+  if (!nativeAdView) return null;
+
+  return (
+    <View style={[style, {flexDirection: 'row', alignItems: 'center'}]}>
+    {
+      Array(maxStarCount).fill().map((j, i) => {
+        if (nativeAd.starRating) {
+          return (<StarView key={i} index={i} rating={nativeAd.starRating} size={starSize} color={starColor} />);
+        } else {
+          return (<Text key={i} style={{fontSize: starSize}}> </Text>);
+        }
+      })
+    }
+    </View>
   );
 };
