@@ -51,7 +51,6 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
@@ -151,13 +150,13 @@ public class AppLovinMAXModule
     private       Boolean             locationCollectionEnabledToSet;
     private final Map<String, String> extraParametersToSet = new HashMap<>( 8 );
 
-    private Integer       targetingYearOfBirthToSet;
-    private String        targetingGenderToSet;
-    private Integer       targetingMaximumAdContentRatingToSet;
-    private String        targetingEmailToSet;
-    private String        targetingPhoneNumberToSet;
-    private ReadableArray targetingKeywordsToSet;
-    private ReadableArray targetingInterestsToSet;
+    private Integer targetingYearOfBirthToSet;
+    private String  targetingGenderToSet;
+    private Integer targetingMaximumAdContentRatingToSet;
+    private String  targetingEmailToSet;
+    private String  targetingPhoneNumberToSet;
+    private List    targetingKeywordsToSet;
+    private List    targetingInterestsToSet;
 
     // Fullscreen Ad Fields
     private final Map<String, MaxInterstitialAd> mInterstitials = new HashMap<>( 2 );
@@ -359,13 +358,13 @@ public class AppLovinMAXModule
 
         if ( targetingKeywordsToSet != null )
         {
-            sdk.getTargetingData().setKeywords( getStringArrayList( targetingKeywordsToSet ) );
+            sdk.getTargetingData().setKeywords( targetingKeywordsToSet );
             targetingKeywordsToSet = null;
         }
 
         if ( targetingInterestsToSet != null )
         {
-            sdk.getTargetingData().setInterests( getStringArrayList( targetingInterestsToSet ) );
+            sdk.getTargetingData().setInterests( targetingInterestsToSet );
             targetingInterestsToSet = null;
         }
 
@@ -717,11 +716,11 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            targetingKeywordsToSet = rawKeywords;
+            targetingKeywordsToSet = Arguments.toList( rawKeywords );
             return;
         }
 
-        sdk.getTargetingData().setKeywords( getStringArrayList( rawKeywords ) );
+        sdk.getTargetingData().setKeywords( Arguments.toList( rawKeywords ) );
     }
 
     @ReactMethod
@@ -735,7 +734,7 @@ public class AppLovinMAXModule
             }
             else
             {
-                promise.resolve( targetingKeywordsToSet );
+                promise.resolve( Arguments.fromList( targetingKeywordsToSet ) );
             }
             return;
         }
@@ -757,11 +756,11 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            targetingInterestsToSet = rawInterests;
+            targetingKeywordsToSet = Arguments.toList( rawInterests );
             return;
         }
 
-        sdk.getTargetingData().setInterests( getStringArrayList( rawInterests ) );
+        sdk.getTargetingData().setInterests( Arguments.toList( rawInterests ) );
     }
 
     @ReactMethod
@@ -775,7 +774,7 @@ public class AppLovinMAXModule
             }
             else
             {
-                promise.resolve( targetingInterestsToSet );
+                promise.resolve( Arguments.fromList( targetingInterestsToSet ) );
             }
             return;
         }
@@ -806,6 +805,14 @@ public class AppLovinMAXModule
             targetingInterestsToSet = null;
             return;
         }
+
+        sdk.getTargetingData().setYearOfBirth(  null );
+        sdk.getTargetingData().setGender( AppLovinGender.UNKNOWN );
+        sdk.getTargetingData().setMaximumAdContentRating( AppLovinAdContentRating.NONE );
+        sdk.getTargetingData().setEmail( null );
+        sdk.getTargetingData().setPhoneNumber( null );
+        sdk.getTargetingData().setKeywords( null );
+        sdk.getTargetingData().setInterests( null );
 
         sdk.getTargetingData().clearAll();
     }
@@ -2074,24 +2081,6 @@ public class AppLovinMAXModule
         }
 
         return AppLovinAdContentRating.NONE;
-    }
-
-    @Nullable
-    private List<String> getStringArrayList(@Nullable final ReadableArray readableArray)
-    {
-        if ( readableArray == null ) return null;
-
-        List<String> list = new ArrayList<>( readableArray.size() );
-
-        for ( int i = 0; i < readableArray.size(); i++ )
-        {
-            if ( readableArray.getType( i ) == ReadableType.String )
-            {
-                list.add( readableArray.getString( i ) );
-            }
-        }
-
-        return list;
     }
 
     // AD INFO

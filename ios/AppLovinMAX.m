@@ -604,6 +604,14 @@ RCT_EXPORT_METHOD(clearAllTargetingData)
         return;
     }
     
+    self.sdk.targetingData.yearOfBirth = nil;
+    self.sdk.targetingData.gender = ALGenderUnknown;
+    self.sdk.targetingData.maximumAdContentRating = ALAdContentRatingNone;
+    self.sdk.targetingData.email = nil;
+    self.sdk.targetingData.phoneNumber = nil;
+    self.sdk.targetingData.keywords = nil;
+    self.sdk.targetingData.interests = nil;
+
     [self.sdk.targetingData clearAll];
 }
 
