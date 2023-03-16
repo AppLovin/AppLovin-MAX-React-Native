@@ -66,7 +66,7 @@ const updateBannerOffsets = (adUnitId, xOffset, yOffset) => {
 
 const setBannerExtraParameter = (adUnitId, key, value) => {
   if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
-    console.warn(setBannerExtraParameter.name + " supports only string values: " + key);
+    console.warn(setBannerExtraParameter.name + " supports only string values: " + value);
     return;
   }
   return runIfInitialized(setBannerExtraParameter.name,
@@ -76,7 +76,7 @@ const setBannerExtraParameter = (adUnitId, key, value) => {
 
 const setBannerLocalExtraParameter = (adUnitId, key, value) => {
   if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
-    console.warn(setBannerLocalExtraParameter.name + " supports only string values: " + key);
+    console.warn(setBannerLocalExtraParameter.name + " supports only string values: " + value);
     return;
   }
   return runIfInitialized(setBannerLocalExtraParameter.name,
@@ -144,7 +144,7 @@ const updateMRecPosition = (adUnitId, mrecPosition) => {
 
 const setMRecExtraParameter = (adUnitId, key, value) => {
   if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
-    console.warn(setMRecExtraParameter.name + " supports only string values: " + key);
+    console.warn(setMRecExtraParameter.name + " supports only string values: " + value);
     return;
   }
   return runIfInitialized(setMRecExtraParameter.name,
@@ -154,7 +154,7 @@ const setMRecExtraParameter = (adUnitId, key, value) => {
 
 const setMRecLocalExtraParameter = (adUnitId, key, value) => {
   if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
-    console.warn(setMRecLocalExtraParameter.name + " supports only string values: " + key);
+    console.warn(setMRecLocalExtraParameter.name + " supports only string values: " + value);
     return;
   }
   return runIfInitialized(setMRecLocalExtraParameter.name,
@@ -216,7 +216,7 @@ const showInterstitial = (adUnitId, ...params) => {
 
 const setInterstitialExtraParameter = (adUnitId, key, value) => {
   if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
-    console.warn(setInterstitialExtraParameter.name + " supports only string values: " + key);
+    console.warn(setInterstitialExtraParameter.name + " supports only string values: " + value);
     return;
   }
   return runIfInitialized(setInterstitialExtraParameter.name,
@@ -225,7 +225,7 @@ const setInterstitialExtraParameter = (adUnitId, key, value) => {
 }
 const setInterstitialLocalExtraParameter = (adUnitId, key, value) => {
   if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
-    console.warn(setInterstitialLocalExtraParameter.name + " supports only string values: " + key);
+    console.warn(setInterstitialLocalExtraParameter.name + " supports only string values: " + value);
     return;
   }
   return runIfInitialized(setInterstitialLocalExtraParameter.name,
@@ -257,7 +257,7 @@ const showRewardedAd = (adUnitId, ...params) => {
 
 const setRewardedAdExtraParameter = (adUnitId, key, value) => {
   if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
-    console.warn(setRewardedAdExtraParameter.name + " supports only string values: " + key);
+    console.warn(setRewardedAdExtraParameter.name + " supports only string values: " + value);
     return;
   }
   return runIfInitialized(setRewardedAdExtraParameter.name,
@@ -267,7 +267,7 @@ const setRewardedAdExtraParameter = (adUnitId, key, value) => {
 
 const setRewardedAdLocalExtraParameter = (adUnitId, key, value) => {
   if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
-    console.warn(setRewardedAdLocalExtraParameter.name + " supports only string values: " + key);
+    console.warn(setRewardedAdLocalExtraParameter.name + " supports only string values: " + value);
     return;
   }
   return runIfInitialized(setRewardedAdLocalExtraParameter.name,
@@ -299,7 +299,7 @@ const showAppOpenAd = (adUnitId, ...params) => {
 
 const setAppOpenAdExtraParameter = (adUnitId, key, value) => {
   if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
-    console.warn(setAppOpenAdExtraParameter.name + " supports only string values: " + key);
+    console.warn(setAppOpenAdExtraParameter.name + " supports only string values: " + value);
     return;
   }
   return runIfInitialized(setAppOpenAdExtraParameter.name,
@@ -309,7 +309,7 @@ const setAppOpenAdExtraParameter = (adUnitId, key, value) => {
 
 const setAppOpenAdLocalExtraParameter = (adUnitId, key, value) => {
   if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
-    console.warn(setAppOpenAdLocalExtraParameter.name + " supports only string values: " + key);
+    console.warn(setAppOpenAdLocalExtraParameter.name + " supports only string values: " + value);
     return;
   }
   return runIfInitialized(setAppOpenAdLocalExtraParameter.name,
