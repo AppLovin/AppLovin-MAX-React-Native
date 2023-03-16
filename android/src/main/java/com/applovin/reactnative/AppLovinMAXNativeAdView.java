@@ -53,9 +53,9 @@ public class AppLovinMAXNativeAdView
     @Nullable
     private String              customData;
     @Nullable
-    private Map<String, Object> extraParameter;
+    private Map<String, Object> extraParameters;
     @Nullable
-    private Map<String, Object> localExtraParameter;
+    private Map<String, Object> localExtraParameters;
 
     // TODO: Allow publisher to select which views are clickable and which isn't via prop
     private final List<View> clickableViews = new ArrayList<>();
@@ -97,19 +97,19 @@ public class AppLovinMAXNativeAdView
         customData = value;
     }
 
-    public void setExtraParameter(@Nullable final ReadableMap readableMap)
+    public void setExtraParameters(@Nullable final ReadableMap readableMap)
     {
         if ( readableMap != null )
         {
-            extraParameter = readableMap.toHashMap();
+            extraParameters = readableMap.toHashMap();
         }
     }
 
-    public void setLocalExtraParameter(@Nullable final ReadableMap readableMap)
+    public void setLocalExtraParameters(@Nullable final ReadableMap readableMap)
     {
         if ( readableMap != null )
         {
-            localExtraParameter = readableMap.toHashMap();
+            localExtraParameters = readableMap.toHashMap();
         }
     }
 
@@ -129,17 +129,17 @@ public class AppLovinMAXNativeAdView
             adLoader.setPlacement( placement );
             adLoader.setCustomData( customData );
 
-            if ( extraParameter != null )
+            if ( extraParameters != null )
             {
-                for ( Map.Entry<String, Object> entry : extraParameter.entrySet() )
+                for ( Map.Entry<String, Object> entry : extraParameters.entrySet() )
                 {
                     adLoader.setExtraParameter( entry.getKey(), (String) entry.getValue() );
                 }
             }
 
-            if ( localExtraParameter != null )
+            if ( localExtraParameters != null )
             {
-                for ( Map.Entry<String, Object> entry : localExtraParameter.entrySet() )
+                for ( Map.Entry<String, Object> entry : localExtraParameters.entrySet() )
                 {
                     adLoader.setLocalExtraParameter( entry.getKey(), (String) entry.getValue() );
                 }

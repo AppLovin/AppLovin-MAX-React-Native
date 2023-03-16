@@ -42,9 +42,9 @@ class AppLovinMAXAdView
     private boolean             adaptiveBannerEnabled;
     private boolean             autoRefresh;
     @Nullable
-    private Map<String, Object> extraParameter;
+    private Map<String, Object> extraParameters;
     @Nullable
-    private Map<String, Object> localExtraParameter;
+    private Map<String, Object> localExtraParameters;
 
     public AppLovinMAXAdView(final Context context)
     {
@@ -139,19 +139,19 @@ class AppLovinMAXAdView
         }
     }
 
-    public void setExtraParameter(@Nullable final ReadableMap readableMap)
+    public void setExtraParameters(@Nullable final ReadableMap readableMap)
     {
         if ( readableMap != null )
         {
-            extraParameter = readableMap.toHashMap();
+            extraParameters = readableMap.toHashMap();
         }
     }
 
-    public void setLocalExtraParameter(@Nullable final ReadableMap readableMap)
+    public void setLocalExtraParameters(@Nullable final ReadableMap readableMap)
     {
         if ( readableMap != null )
         {
-            localExtraParameter = readableMap.toHashMap();
+            localExtraParameters = readableMap.toHashMap();
         }
     }
 
@@ -242,17 +242,17 @@ class AppLovinMAXAdView
             // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
             adView.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
 
-            if ( extraParameter != null )
+            if ( extraParameters != null )
             {
-                for ( Map.Entry<String, Object> entry : extraParameter.entrySet() )
+                for ( Map.Entry<String, Object> entry : extraParameters.entrySet() )
                 {
                     adView.setExtraParameter( entry.getKey(), (String) entry.getValue() );
                 }
             }
 
-            if ( localExtraParameter != null )
+            if ( localExtraParameters != null )
             {
-                for ( Map.Entry<String, Object> entry : localExtraParameter.entrySet() )
+                for ( Map.Entry<String, Object> entry : localExtraParameters.entrySet() )
                 {
                     adView.setLocalExtraParameter( entry.getKey(), (String) entry.getValue() );
                 }

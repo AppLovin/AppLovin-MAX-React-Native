@@ -84,16 +84,16 @@ class AppLovinMAXAdViewManager
         view.setAutoRefresh( enabled );
     }
 
-    @ReactProp(name = "extraParameter")
+    @ReactProp(name = "extraParameters")
     public void setExtraParameters(final AppLovinMAXAdView view, @Nullable final ReadableMap value)
     {
-        view.setExtraParameter( value );
+        view.setExtraParameters( value );
     }
 
-    @ReactProp(name = "localExtraParameter")
+    @ReactProp(name = "localExtraParameters")
     public void setLocalExtraParameters(final AppLovinMAXAdView view, @Nullable final ReadableMap value)
     {
-        view.setLocalExtraParameter( value );
+        view.setLocalExtraParameters( value );
     }
 
     @Override

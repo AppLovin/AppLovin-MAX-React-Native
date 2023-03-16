@@ -37,7 +37,7 @@ export const AdViewPosition = {
 };
 
 const AdView = (props) => {
-  const {style, extraParameter, localExtraParameter, ...otherProps} = props;
+  const {style, extraParameters, localExtraParameters, ...otherProps} = props;
   const [isInitialized, setIsInitialized] = useState(false);
   const [dimensions, setDimensions] = useState({});
 
@@ -111,12 +111,12 @@ const AdView = (props) => {
     if (props.onAdRevenuePaid) props.onAdRevenuePaid(event.nativeEvent);
   };
 
-  const checkExtraParameter = (name, params) => {
+  const sanitizeExtraParameters = (name, params) => {
     if (params) {
       for (const key in params) {
         const value = params[key];
         if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
-          console.warn(name + " in AdView supports only string values: " + key);
+          console.warn("AppLovinMAXAdView only support string values: " + value + ", deleting value for key: " + key);
           delete params[key];
         }
       }
@@ -141,8 +141,8 @@ const AdView = (props) => {
   return (
     <AppLovinMAXAdView
       style={{...style, ...dimensions}}
-      extraParameter={checkExtraParameter('extraParameter', extraParameter)}
-      localExtraParameter={checkExtraParameter('localExtraParameter', localExtraParameter)}
+      extraParameters={sanitizeExtraParameters('extraParameters', extraParameters)}
+      localExtraParameters={sanitizeExtraParameters('localExtraParameters', localExtraParameters)}
       onAdLoadedEvent={onAdLoadedEvent}
       onAdLoadFailedEvent={onAdLoadFailedEvent}
       onAdDisplayFailedEvent={onAdDisplayFailedEvent}
@@ -187,14 +187,14 @@ AdView.propTypes = {
   autoRefresh: PropTypes.bool,
 
   /**
-   * A dictionary value representing the extra parameter to set a list of key-value string pairs.
+   * A dictionary of extra parameters consisting of key-value string pairs.
    */
-  extraParameter: PropTypes.object,
+  extraParameters: PropTypes.object,
 
   /**
-   * A dictionary value representing the local extra parameter to set a list of key-value string pairs.
+   * A dictionary of local extra parameters consisting of key-value string pairs.
    */
-  localExtraParameter: PropTypes.object,
+  localExtraParameters: PropTypes.object,
 
   /**
    * A callback fuction to be fired when a new ad has been loaded.

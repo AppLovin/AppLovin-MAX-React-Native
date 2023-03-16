@@ -94,16 +94,16 @@ public class AppLovinMAXNativeAdViewManager
         view.setCustomData( value );
     }
 
-    @ReactProp(name = "extraParameter")
+    @ReactProp(name = "extraParameters")
     public void setExtraParameters(final AppLovinMAXNativeAdView view, @Nullable final ReadableMap value)
     {
-        view.setExtraParameter( value );
+        view.setExtraParameters( value );
     }
 
-    @ReactProp(name = "localExtraParameter")
+    @ReactProp(name = "localExtraParameters")
     public void setLocalExtraParameters(final AppLovinMAXNativeAdView view, @Nullable final ReadableMap value)
     {
-        view.setLocalExtraParameter( value );
+        view.setLocalExtraParameters( value );
     }
 
     @ReactProp(name = "titleView")

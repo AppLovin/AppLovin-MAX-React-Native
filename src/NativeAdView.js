@@ -40,7 +40,7 @@ const AppLovinMAXNativeAdView = requireNativeComponent('AppLovinMAXNativeAdView'
 // 3. update of the nativeAd context by onNativeAdLoaded, which renders the ad components with nativeAd
 const NativeAdView = forwardRef((props, ref) => {
 
-  const {extraParameter, localExtraParameter, ...otherProps} = props;
+  const {extraParameters, localExtraParameters, ...otherProps} = props;
 
   // context from NativeAdViewProvider
   const {nativeAd, nativeAdView, setNativeAd, setNativeAdView} = useContext(NativeAdViewContext);
@@ -87,12 +87,12 @@ const NativeAdView = forwardRef((props, ref) => {
     if (props.onAdRevenuePaid) props.onAdRevenuePaid(event.nativeEvent);
   };
 
-  const checkExtraParameter = (name, params) => {
+  const sanitizeExtraParameters = (name, params) => {
     if (params) {
       for (const key in params) {
         const value = params[key];
         if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
-          console.warn(name + " in NativeAdView supports only string values: " + key);
+          console.warn("AppLovinMAXNativeAdView only support string values: " + value + ", deleting value for key: " + key);
           delete params[key];
         }
       }
@@ -103,8 +103,8 @@ const NativeAdView = forwardRef((props, ref) => {
   return (
     <AppLovinMAXNativeAdView
       ref={saveElement}
-      extraParameter={checkExtraParameter('extraParameter', extraParameter)}
-      localExtraParameter={checkExtraParameter('localExtraParameter', localExtraParameter)}
+      extraParameters={sanitizeExtraParameters('extraParameters', extraParameters)}
+      localExtraParameters={sanitizeExtraParameters('localExtraParameters', localExtraParameters)}
       onAdLoadedEvent={onAdLoadedEvent}
       onAdLoadFailedEvent={onAdLoadFailedEvent}
       onAdClickedEvent={onAdClickedEvent}
@@ -133,14 +133,14 @@ NativeAdView.propTypes = {
   customData: PropTypes.string,
 
   /**
-   * A dictionary value representing the extra parameter to set a list of key-value string pairs.
+   * A dictionary of extra parameters consisting of key-value string pairs.
    */
-  extraParameter: PropTypes.object,
+  extraParameters: PropTypes.object,
 
   /**
-   * A dictionary value representing the local extra parameter to set a list of key-value string pairs.
+   * A dictionary of local extra parameters consisting of key-value string pairs.
    */
-  localExtraParameter: PropTypes.object,
+  localExtraParameters: PropTypes.object,
 
   /**
    * A callback fuction to be fired when a new ad has been loaded.
