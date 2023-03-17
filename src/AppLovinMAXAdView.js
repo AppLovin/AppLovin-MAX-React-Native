@@ -97,15 +97,20 @@ const AdView = (props) => {
   };
 
   const sanitizeExtraParameters = (name, params) => {
-    if (params) {
-      for (const key in params) {
-        const value = params[key];
-        if ((value != null) && (value != undefined) && (typeof value !== 'string')) {
-          console.warn("AppLovinMAXAdView only support string values: " + value + ", deleting value for key: " + key);
-          delete params[key];
-        }
+    if (!params) return params;
+
+    for (const key in params) {
+      const value = params[key];
+      
+      // `null` and `undefined` are valid values (e.g. for clearing previously-set values)
+      if (value == null || value == undefined) continue;
+
+      if (typeof value !== 'string') {
+        console.warn("AppLovinMAXAdView only support string values: " + value + ", deleting value for key: " + key);
+        delete params[key];
       }
     }
+
     return params;
   };
 
