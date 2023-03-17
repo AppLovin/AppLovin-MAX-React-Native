@@ -37,6 +37,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)log:(NSString *)format, ...;
 
 /**
+ * Convenience method for logging of access to the calling method before initialization.
+ */
+- (void)logUninitializedAccessError:(NSString *)callingMethod;
+
+/**
  * Returns a dictionay value of adInfo for the specified ad.
  */
 - (NSDictionary<NSString *, id> *)adInfoForAd:(MAAd *)ad;
