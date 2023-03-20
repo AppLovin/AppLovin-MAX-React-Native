@@ -8,6 +8,10 @@ const { AppLovinMAX } = NativeModules;
 
 const VERSION = "4.1.7";
 
+/*---------*/
+/* BANNERS */
+/*---------*/
+
 const setBannerExtraParameter = (adUnitId, key, value) => {
   if ((value !== null) && (value !== undefined) && (typeof value !== 'string')) {
     console.warn("setBannerExtraParameter() supports only string values: " + value);
