@@ -11,10 +11,13 @@ import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxAdViewAdListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxAdView;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.view.ReactViewGroup;
+
+import java.util.Map;
 
 import androidx.annotation.Nullable;
 
@@ -27,14 +30,21 @@ class AppLovinMAXAdView
 {
     private final ThemedReactContext reactContext;
 
-    private @Nullable MaxAdView adView;
+    @Nullable
+    private MaxAdView adView;
 
-    private           String      adUnitId;
-    private           MaxAdFormat adFormat;
-    private @Nullable String      placement;
-    private @Nullable String      customData;
-    private           boolean     adaptiveBannerEnabled;
-    private           boolean     autoRefresh;
+    private String              adUnitId;
+    private MaxAdFormat         adFormat;
+    @Nullable
+    private String              placement;
+    @Nullable
+    private String              customData;
+    private boolean             adaptiveBannerEnabled;
+    private boolean             autoRefresh;
+    @Nullable
+    private Map<String, Object> extraParameters;
+    @Nullable
+    private Map<String, Object> localExtraParameters;
 
     public AppLovinMAXAdView(final Context context)
     {
@@ -126,6 +136,22 @@ class AppLovinMAXAdView
             {
                 adView.stopAutoRefresh();
             }
+        }
+    }
+
+    public void setExtraParameters(@Nullable final ReadableMap readableMap)
+    {
+        if ( readableMap != null )
+        {
+            extraParameters = readableMap.toHashMap();
+        }
+    }
+
+    public void setLocalExtraParameters(@Nullable final ReadableMap readableMap)
+    {
+        if ( readableMap != null )
+        {
+            localExtraParameters = readableMap.toHashMap();
         }
     }
 
@@ -221,6 +247,22 @@ class AppLovinMAXAdView
             adView.setExtraParameter( "adaptive_banner", Boolean.toString( adaptiveBannerEnabled ) );
             // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
             adView.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
+
+            if ( extraParameters != null )
+            {
+                for ( Map.Entry<String, Object> entry : extraParameters.entrySet() )
+                {
+                    adView.setExtraParameter( entry.getKey(), (String) entry.getValue() );
+                }
+            }
+
+            if ( localExtraParameters != null )
+            {
+                for ( Map.Entry<String, Object> entry : localExtraParameters.entrySet() )
+                {
+                    adView.setLocalExtraParameter( entry.getKey(), (String) entry.getValue() );
+                }
+            }
 
             if ( autoRefresh )
             {

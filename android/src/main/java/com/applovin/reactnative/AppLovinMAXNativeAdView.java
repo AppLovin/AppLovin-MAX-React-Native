@@ -54,6 +54,8 @@ public class AppLovinMAXNativeAdView
     private String              customData;
     @Nullable
     private Map<String, Object> extraParameters;
+    @Nullable
+    private Map<String, Object> localExtraParameters;
 
     // TODO: Allow publisher to select which views are clickable and which isn't via prop
     private final List<View> clickableViews = new ArrayList<>();
@@ -103,6 +105,14 @@ public class AppLovinMAXNativeAdView
         }
     }
 
+    public void setLocalExtraParameters(@Nullable final ReadableMap readableMap)
+    {
+        if ( readableMap != null )
+        {
+            localExtraParameters = readableMap.toHashMap();
+        }
+    }
+
     public void loadAd()
     {
         if ( AppLovinMAXModule.getInstance().getSdk() == null )
@@ -130,6 +140,14 @@ public class AppLovinMAXNativeAdView
                 for ( Map.Entry<String, Object> entry : extraParameters.entrySet() )
                 {
                     adLoader.setExtraParameter( entry.getKey(), (String) entry.getValue() );
+                }
+            }
+
+            if ( localExtraParameters != null )
+            {
+                for ( Map.Entry<String, Object> entry : localExtraParameters.entrySet() )
+                {
+                    adLoader.setLocalExtraParameter( entry.getKey(), (String) entry.getValue() );
                 }
             }
 
@@ -207,44 +225,6 @@ public class AppLovinMAXNativeAdView
         clickableViews.add( view );
     }
 
-    public void setMediaView(final int tag)
-    {
-        mediaView = nativeAd.getNativeAd().getMediaView();
-        if ( mediaView == null ) return;
-
-        ViewGroup view = findViewById( tag );
-        if ( view == null )
-        {
-            AppLovinMAXModule.e( "Cannot find a media view with tag \"" + tag + "\" for " + adUnitId );
-            return;
-        }
-
-        clickableViews.add( view );
-
-        view.addOnLayoutChangeListener( this );
-        view.addView( mediaView );
-
-        sizeToFit( mediaView, view );
-    }
-
-    public void setOptionsView(final int tag)
-    {
-        optionsView = nativeAd.getNativeAd().getOptionsView();
-        if ( optionsView == null ) return;
-
-        ViewGroup view = findViewById( tag );
-        if ( view == null )
-        {
-            AppLovinMAXModule.e( "Cannot find an options view with tag \"" + tag + "\" for " + adUnitId );
-            return;
-        }
-
-        view.addOnLayoutChangeListener( this );
-        view.addView( optionsView );
-
-        sizeToFit( optionsView, view );
-    }
-
     public void setIconView(final int tag)
     {
         ImageView view = findViewById( tag );
@@ -266,6 +246,44 @@ public class AppLovinMAXNativeAdView
                 view.setImageDrawable( icon.getDrawable() );
             }
         }
+    }
+
+    public void setOptionsView(final int tag)
+    {
+        optionsView = nativeAd.getNativeAd().getOptionsView();
+        if ( optionsView == null ) return;
+
+        ViewGroup view = findViewById( tag );
+        if ( view == null )
+        {
+            AppLovinMAXModule.e( "Cannot find an options view with tag \"" + tag + "\" for " + adUnitId );
+            return;
+        }
+
+        view.addOnLayoutChangeListener( this );
+        view.addView( optionsView );
+
+        sizeToFit( optionsView, view );
+    }
+
+    public void setMediaView(final int tag)
+    {
+        mediaView = nativeAd.getNativeAd().getMediaView();
+        if ( mediaView == null ) return;
+
+        ViewGroup view = findViewById( tag );
+        if ( view == null )
+        {
+            AppLovinMAXModule.e( "Cannot find a media view with tag \"" + tag + "\" for " + adUnitId );
+            return;
+        }
+
+        clickableViews.add( view );
+
+        view.addOnLayoutChangeListener( this );
+        view.addView( mediaView );
+
+        sizeToFit( mediaView, view );
     }
 
     @Override
@@ -372,7 +390,7 @@ public class AppLovinMAXNativeAdView
         if ( !Float.isNaN( aspectRatio ) )
         {
             // The aspect ratio can be 0.0f when it is not provided by the network.
-            if ( Math.signum( aspectRatio )  == 0 )
+            if ( Math.signum( aspectRatio ) == 0 )
             {
                 nativeAdInfo.putDouble( "mediaContentAspectRatio", 1.0 );
             }

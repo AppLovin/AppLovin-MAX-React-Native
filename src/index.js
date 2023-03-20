@@ -8,6 +8,50 @@ const { AppLovinMAX } = NativeModules;
 
 const VERSION = "4.1.7";
 
+/*---------*/
+/* BANNERS */
+/*---------*/
+
+const setBannerExtraParameter = (adUnitId, key, value) => {
+  if ((value !== null) && (value !== undefined) && (typeof value !== 'string')) {
+    console.warn("setBannerExtraParameter() supports only string values: " + value);
+    return;
+  }
+
+  AppLovinMAX.setBannerExtraParameter(adUnitId, key, value);
+}
+
+const setBannerLocalExtraParameter = (adUnitId, key, value) => {
+  if ((value !== null) && (value !== undefined) && (typeof value !== 'string')) {
+    console.warn("setBannerLocalExtraParameter() supports only string values: " + value);
+    return;
+  }
+
+  AppLovinMAX.setBannerLocalExtraParameter(adUnitId, key, value);
+}
+
+/*-------*/
+/* MRECS */
+/*-------*/
+
+const setMRecExtraParameter = (adUnitId, key, value) => {
+  if ((value !== null) && (value !== undefined) && (typeof value !== 'string')) {
+    console.warn("setMRecExtraParameter() supports only string values: " + value);
+    return;
+  }
+
+  AppLovinMAX.setMRecExtraParameter(adUnitId, key, value);
+}
+
+const setMRecLocalExtraParameter = (adUnitId, key, value) => {
+  if ((value !== null) && (value !== undefined) && (typeof value !== 'string')) {
+    console.warn("setMRecLocalExtraParameter() supports only string values: " + value);
+    return;
+  }
+
+  AppLovinMAX.setMRecLocalExtraParameter(adUnitId, key, value);
+}
+
 /*---------------*/
 /* INTERSTITIALS */
 /*---------------*/
@@ -28,6 +72,24 @@ const showInterstitial = (adUnitId, ...args) => {
     break;
   }
 };
+
+const setInterstitialExtraParameter = (adUnitId, key, value) => {
+  if ((value !== null) && (value !== undefined) && (typeof value !== 'string')) {
+    console.warn("setInterstitialExtraParameter() supports only string values: " + value);
+    return;
+  }
+
+  AppLovinMAX.setInterstitialExtraParameter(adUnitId, key, value);
+}
+
+const setInterstitialLocalExtraParameter = (adUnitId, key, value) => {
+  if ((value !== null) && (value !== undefined) && (typeof value !== 'string')) {
+    console.warn("setInterstitialLocalExtraParameter() supports only string values: " + value);
+    return;
+  }
+
+  AppLovinMAX.setInterstitialLocalExtraParameter(adUnitId, key, value);
+}
 
 /*----------*/
 /* REWARDED */
@@ -50,6 +112,24 @@ const showRewardedAd = (adUnitId, ...args) => {
   }
 };
 
+const setRewardedAdExtraParameter = (adUnitId, key, value) => {
+  if ((value !== null) && (value !== undefined) && (typeof value !== 'string')) {
+    console.warn("setRewardedAdExtraParameter() supports only string values: " + value);
+    return;
+  }
+
+  AppLovinMAX.setRewardedAdExtraParameter(adUnitId, key, value);
+}
+
+const setRewardedAdLocalExtraParameter = (adUnitId, key, value) => {
+  if ((value !== null) && (value !== undefined) && (typeof value !== 'string')) {
+    console.warn("setRewardedAdLocalExtraParameter() supports only string values: " + value);
+    return;
+  }
+
+  AppLovinMAX.setRewardedAdLocalExtraParameter(adUnitId, key, value);
+}
+
 /*----------*/
 /* APP OPEN */
 /*----------*/
@@ -71,6 +151,24 @@ const showAppOpenAd = (adUnitId, ...args) => {
   }
 };
 
+const setAppOpenAdExtraParameter = (adUnitId, key, value) => {
+  if ((value !== null) && (value !== undefined) && (typeof value !== 'string')) {
+    console.warn("setAppOpenAdExtraParameter() supports only string values: " + value);
+    return;
+  }
+
+  AppLovinMAX.setAppOpenAdExtraParameter(adUnitId, key, value);
+}
+
+const setAppOpenAdLocalExtraParameter = (adUnitId, key, value) => {
+  if ((value !== null) && (value !== undefined) && (typeof value !== 'string')) {
+    console.warn("setAppOpenAdLocalExtraParameter() supports only string values: " + value);
+    return;
+  }
+
+  AppLovinMAX.setAppOpenAdLocalExtraParameter(adUnitId, key, value);
+}
+
 export default {
   ...AppLovinMAX,
   ...EventListeners,
@@ -87,20 +185,38 @@ export default {
     return AppLovinMAX.initialize(VERSION, sdkKey);
   },
 
+  /*---------*/
+  /* BANNERS */
+  /*---------*/
+  setBannerExtraParameter,
+  setBannerLocalExtraParameter,
+
+  /*-------*/
+  /* MRECS */
+  /*-------*/
+  setMRecExtraParameter,
+  setMRecLocalExtraParameter,
+
   /*---------------*/
   /* INTERSTITIALS */
   /*---------------*/
   showInterstitial,
+  setInterstitialExtraParameter,
+  setInterstitialLocalExtraParameter,
 
   /*----------*/
   /* REWARDED */
   /*----------*/
   showRewardedAd,
+  setRewardedAdExtraParameter,
+  setRewardedAdLocalExtraParameter,
 
   /*----------*/
   /* APP OPEN */
   /*----------*/
   showAppOpenAd,
+  setAppOpenAdExtraParameter,
+  setAppOpenAdLocalExtraParameter,
 
   /*----------------------*/
   /** AUTO-DECLARED APIs **/
@@ -150,7 +266,6 @@ export default {
   /* setBannerWidth */
   /* updateBannerPosition */
   /* updateBannerOffsets */
-  /* setBannerExtraParameter */
   /* startBannerAutoRefresh */
   /* stopBannerAutoRefresh */
   /* showBanner */
@@ -165,7 +280,6 @@ export default {
   /* setMRecPlacement */
   /* setMRecCustomData */
   /* updateMRecPosition */
-  /* setMRecExtraParameter */
   /* startMRecAutoRefresh */
   /* stopMRecAutoRefresh */
   /* showMRec */
@@ -177,21 +291,18 @@ export default {
   /*---------------*/
   /* loadInterstitial */
   /* isInterstitialReady */
-  /* setInterstitialExtraParameter */
 
   /*----------*/
   /* REWARDED */
   /*----------*/
   /* loadRewardedAd */
   /* isRewardedAdReady */
-  /* setRewardedAdExtraParameter */
 
   /*----------*/
   /* APP OPEN */
   /*----------*/
   /* loadAppOpenAd */
   /* isAppOpenAdReady */
-  /* setAppOpenAdExtraParameter */
 
   /*----------------*/
   /* EVENT TRACKING */

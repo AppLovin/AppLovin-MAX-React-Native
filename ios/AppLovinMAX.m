@@ -652,6 +652,11 @@ RCT_EXPORT_METHOD(setBannerExtraParameter:(NSString *)adUnitIdentifier :(NSStrin
     [self setAdViewExtraParameterForAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT key: key value: value];
 }
 
+RCT_EXPORT_METHOD(setBannerLocalExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
+{
+    [self setAdViewLocalExtraParameterForAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT key: key value: value];
+}
+
 RCT_EXPORT_METHOD(startBannerAutoRefresh:(NSString *)adUnitIdentifier)
 {
     if ( !self.sdk )
@@ -756,6 +761,16 @@ RCT_EXPORT_METHOD(updateMRecPosition:(NSString *)mrecPosition :(NSString *)adUni
     }
 
     [self updateAdViewPosition: mrecPosition withOffset: CGPointZero forAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
+}
+
+RCT_EXPORT_METHOD(setMRecExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
+{
+    [self setAdViewExtraParameterForAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec key: key value: value];
+}
+
+RCT_EXPORT_METHOD(setMRecLocalExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
+{
+    [self setAdViewLocalExtraParameterForAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec key: key value: value];
 }
 
 RCT_EXPORT_METHOD(startMRecAutoRefresh:(NSString *)adUnitIdentifier)
@@ -864,6 +879,12 @@ RCT_EXPORT_METHOD(setInterstitialExtraParameter:(NSString *)adUnitIdentifier :(N
     [interstitial setExtraParameterForKey: key value: value];
 }
 
+RCT_EXPORT_METHOD(setInterstitialLocalExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
+{
+    MAInterstitialAd *interstitial = [self retrieveInterstitialForAdUnitIdentifier: adUnitIdentifier];
+    [interstitial setLocalExtraParameterForKey: key value: value];
+}
+
 #pragma mark - Rewarded
 
 RCT_EXPORT_METHOD(loadRewardedAd:(NSString *)adUnitIdentifier)
@@ -915,6 +936,12 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     [rewardedAd setExtraParameterForKey: key value: value];
 }
 
+RCT_EXPORT_METHOD(setRewardedAdLocalExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
+{
+    MARewardedAd *rewardedAd = [self retrieveRewardedAdForAdUnitIdentifier: adUnitIdentifier];
+    [rewardedAd setLocalExtraParameterForKey: key value: value];
+}
+
 #pragma mark - App Open Ad
 
 RCT_EXPORT_METHOD(loadAppOpenAd:(NSString *)adUnitIdentifier)
@@ -964,6 +991,12 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
 
     MAAppOpenAd *appOpenAd = [self retrieveAppOpenAdForAdUnitIdentifier: adUnitIdentifier];
     [appOpenAd setExtraParameterForKey: key value: value];
+}
+
+RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier key:(NSString *)key value:(nullable NSString *)value)
+{
+    MAAppOpenAd *appOpenAd = [self retrieveAppOpenAdForAdUnitIdentifier: adUnitIdentifier];
+    [appOpenAd setLocalExtraParameterForKey: key value: value];
 }
 
 #pragma mark - Ad Callbacks
@@ -1373,6 +1406,17 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
             
             [self positionAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
         }
+    });
+}
+
+- (void)setAdViewLocalExtraParameterForAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat key:(NSString *)key value:(nullable NSString *)value
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        [self log: @"Setting %@ local extra with key: \"%@\" value: \"%@\"", adFormat, key, value];
+        
+        MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
+        [adView setLocalExtraParameterForKey: key value: value];
     });
 }
 
