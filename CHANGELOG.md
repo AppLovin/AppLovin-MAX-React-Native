@@ -2,6 +2,8 @@
 
 ## x.x.x
 * Add getter APIs for retrieving current values for targeting data.
+* Add APIs for setting SDK local extra parameters.
+* Allow API calls even before plugin had finished initialization. Previously, this would result in an error thrown or in older plugins, a no-op.
 * Remove kotlin dependency from build.
 * Add support for callback functions to  `AppLovinAdView` and `AppLovinNativeAdView` native UI components.
 * Update synchronous APIs to use `Promise`s.

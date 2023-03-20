@@ -855,84 +855,174 @@ public class AppLovinMAXModule
     @ReactMethod
     public void createBanner(final String adUnitId, final String bannerPosition)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "createBanner" );
+            return;
+        }
+
         createAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), bannerPosition, DEFAULT_AD_VIEW_OFFSET );
     }
 
     @ReactMethod // NOTE: No function overloading in JS so we need new method signature
     public void createBannerWithOffsets(final String adUnitId, final String bannerPosition, final float x, final float y)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "createBannerWithOffsets" );
+            return;
+        }
+
         createAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), bannerPosition, getOffsetPixels( x, y, getCurrentActivity() ) );
     }
 
     @ReactMethod
     public void setBannerBackgroundColor(final String adUnitId, final String hexColorCode)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setBannerBackgroundColor" );
+            return;
+        }
+
         setAdViewBackgroundColor( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), hexColorCode );
     }
 
     @ReactMethod
     public void setBannerPlacement(final String adUnitId, final String placement)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setBannerPlacement" );
+            return;
+        }
+
         setAdViewPlacement( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), placement );
     }
 
     @ReactMethod
     public void setBannerCustomData(final String adUnitId, final String customData)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setBannerCustomData" );
+            return;
+        }
+
         setAdViewCustomData( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), customData );
     }
 
     @ReactMethod
     public void setBannerWidth(final String adUnitId, final int widthDp)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setBannerWidth" );
+            return;
+        }
+
         setAdViewWidth( adUnitId, widthDp, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
     @ReactMethod
     public void updateBannerPosition(final String adUnitId, final String bannerPosition)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "updateBannerPosition" );
+            return;
+        }
+
         updateAdViewPosition( adUnitId, bannerPosition, DEFAULT_AD_VIEW_OFFSET, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
     @ReactMethod
     public void updateBannerOffsets(final String adUnitId, final float x, final float y)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "updateBannerOffsets" );
+            return;
+        }
+
         updateAdViewPosition( adUnitId, mAdViewPositions.get( adUnitId ), getOffsetPixels( x, y, getCurrentActivity() ), getDeviceSpecificBannerAdViewAdFormat() );
     }
 
     @ReactMethod
     public void setBannerExtraParameter(final String adUnitId, final String key, final String value)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setBannerExtraParameter" );
+            return;
+        }
+
         setAdViewExtraParameters( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), key, value );
+    }
+
+    @ReactMethod
+    public void setBannerLocalExtraParameter(final String adUnitId, final String key, final String value)
+    {
+        setAdViewLocalExtraParameters( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), key, value );
     }
 
     @ReactMethod
     public void startBannerAutoRefresh(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "startBannerAutoRefresh" );
+            return;
+        }
+
         startAutoRefresh( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
     @ReactMethod
     public void stopBannerAutoRefresh(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "stopBannerAutoRefresh" );
+            return;
+        }
+
         stopAutoRefresh( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
     @ReactMethod
     public void showBanner(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "showBanner" );
+            return;
+        }
+
         showAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
     @ReactMethod
     public void hideBanner(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "hideBanner" );
+            return;
+        }
+
         hideAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
     @ReactMethod
     public void destroyBanner(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "destroyBanner" );
+            return;
+        }
+
         destroyAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat() );
     }
 
@@ -947,54 +1037,120 @@ public class AppLovinMAXModule
     @ReactMethod
     public void createMRec(final String adUnitId, final String mrecPosition)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "createMRec" );
+            return;
+        }
+
         createAdView( adUnitId, MaxAdFormat.MREC, mrecPosition, DEFAULT_AD_VIEW_OFFSET );
     }
 
     @ReactMethod
     public void setMRecPlacement(final String adUnitId, final String placement)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setMRecPlacement" );
+            return;
+        }
+
         setAdViewPlacement( adUnitId, MaxAdFormat.MREC, placement );
     }
 
     @ReactMethod
     public void setMRecCustomData(final String adUnitId, final String customData)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setMRecCustomData" );
+            return;
+        }
+
         setAdViewCustomData( adUnitId, MaxAdFormat.MREC, customData );
     }
 
     @ReactMethod
     public void updateMRecPosition(final String adUnitId, final String mrecPosition)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "updateMRecPosition" );
+            return;
+        }
+
         updateAdViewPosition( adUnitId, mrecPosition, DEFAULT_AD_VIEW_OFFSET, MaxAdFormat.MREC );
+    }
+
+    @ReactMethod
+    public void setMRecExtraParameter(final String adUnitId, final String key, final String value)
+    {
+        setAdViewExtraParameters( adUnitId, MaxAdFormat.MREC, key, value );
+    }
+
+    @ReactMethod
+    public void setMRecLocalExtraParameter(final String adUnitId, final String key, final String value)
+    {
+        setAdViewLocalExtraParameters( adUnitId, MaxAdFormat.MREC, key, value );
     }
 
     @ReactMethod
     public void startMRecAutoRefresh(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "startMRecAutoRefresh" );
+            return;
+        }
+
         startAutoRefresh( adUnitId, MaxAdFormat.MREC );
     }
 
     @ReactMethod
     public void stopMRecAutoRefresh(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "stopMRecAutoRefresh" );
+            return;
+        }
+
         stopAutoRefresh( adUnitId, MaxAdFormat.MREC );
     }
 
     @ReactMethod
     public void showMRec(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "showMRec" );
+            return;
+        }
+
         showAdView( adUnitId, MaxAdFormat.MREC );
     }
 
     @ReactMethod
     public void hideMRec(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "hideMRec" );
+            return;
+        }
+
         hideAdView( adUnitId, MaxAdFormat.MREC );
     }
 
     @ReactMethod
     public void destroyMRec(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "destroyMRec" );
+            return;
+        }
+
         destroyAdView( adUnitId, MaxAdFormat.MREC );
     }
 
@@ -1003,6 +1159,12 @@ public class AppLovinMAXModule
     @ReactMethod
     public void loadInterstitial(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "loadInterstitial" );
+            return;
+        }
+
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
         if ( interstitial == null )
         {
@@ -1016,6 +1178,13 @@ public class AppLovinMAXModule
     @ReactMethod
     public void isInterstitialReady(final String adUnitId, final Promise promise)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "isInterstitialReady" );
+            promise.resolve( false );
+            return;
+        }
+
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
         promise.resolve( interstitial.isReady() );
     }
@@ -1023,6 +1192,12 @@ public class AppLovinMAXModule
     @ReactMethod
     public void showInterstitial(final String adUnitId, final String placement, final String customData)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "showInterstitial" );
+            return;
+        }
+
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
         interstitial.showAd( placement, customData );
     }
@@ -1030,8 +1205,21 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setInterstitialExtraParameter(final String adUnitId, final String key, final String value)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setInterstitialExtraParameter" );
+            return;
+        }
+
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
         interstitial.setExtraParameter( key, value );
+    }
+
+    @ReactMethod
+    public void setInterstitialLocalExtraParameter(final String adUnitId, final String key, final String value)
+    {
+        MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
+        interstitial.setLocalExtraParameter( key, value );
     }
 
     // REWARDED
@@ -1039,6 +1227,12 @@ public class AppLovinMAXModule
     @ReactMethod
     public void loadRewardedAd(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "loadRewardedAd" );
+            return;
+        }
+
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
         if ( rewardedAd == null )
         {
@@ -1052,6 +1246,13 @@ public class AppLovinMAXModule
     @ReactMethod
     public void isRewardedAdReady(final String adUnitId, final Promise promise)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "isRewardedAdReady" );
+            promise.resolve( false );
+            return;
+        }
+
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
         promise.resolve( rewardedAd.isReady() );
     }
@@ -1059,6 +1260,12 @@ public class AppLovinMAXModule
     @ReactMethod
     public void showRewardedAd(final String adUnitId, final String placement, final String customData)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "showRewardedAd" );
+            return;
+        }
+
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
         rewardedAd.showAd( placement, customData );
     }
@@ -1066,8 +1273,21 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setRewardedAdExtraParameter(final String adUnitId, final String key, final String value)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setRewardedAdExtraParameter" );
+            return;
+        }
+
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
         rewardedAd.setExtraParameter( key, value );
+    }
+
+    @ReactMethod
+    public void setRewardedAdLocalExtraParameter(final String adUnitId, final String key, final String value)
+    {
+        MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
+        rewardedAd.setLocalExtraParameter( key, value );
     }
 
     // APP OPEN AD
@@ -1075,6 +1295,12 @@ public class AppLovinMAXModule
     @ReactMethod
     public void loadAppOpenAd(final String adUnitId)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "loadAppOpenAd" );
+            return;
+        }
+
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
         appOpenAd.loadAd();
     }
@@ -1082,6 +1308,13 @@ public class AppLovinMAXModule
     @ReactMethod
     public void isAppOpenAdReady(final String adUnitId, final Promise promise)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "isAppOpenAdReady" );
+            promise.resolve( false );
+            return;
+        }
+
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
         promise.resolve( appOpenAd.isReady() );
     }
@@ -1089,6 +1322,12 @@ public class AppLovinMAXModule
     @ReactMethod
     public void showAppOpenAd(final String adUnitId, @Nullable final String placement, @Nullable final String customData)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "showAppOpenAd" );
+            return;
+        }
+
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
         appOpenAd.showAd( placement, customData );
     }
@@ -1096,8 +1335,21 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setAppOpenAdExtraParameter(final String adUnitId, final String key, final String value)
     {
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setAppOpenAdExtraParameter" );
+            return;
+        }
+
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
         appOpenAd.setExtraParameter( key, value );
+    }
+
+    @ReactMethod
+    public void setAppOpenAdLocalExtraParameter(final String adUnitId, final String key, final String value)
+    {
+        MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
+        appOpenAd.setLocalExtraParameter( key, value );
     }
 
     // AD CALLBACKS
@@ -1677,6 +1929,28 @@ public class AppLovinMAXModule
         } );
     }
 
+    private void setAdViewLocalExtraParameters(final String adUnitId, final MaxAdFormat adFormat, final String key, final String value)
+    {
+        getReactApplicationContext().runOnUiQueueThread( new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                d( "Setting " + adFormat.getLabel() + " local extra with key: \"" + key + "\" value: " + value );
+
+                // Retrieve ad view from the map
+                final MaxAdView adView = retrieveAdView( adUnitId, adFormat );
+                if ( adView == null )
+                {
+                    e( adFormat.getLabel() + " does not exist" );
+                    return;
+                }
+
+                adView.setLocalExtraParameter( key, value );
+            }
+        } );
+    }
+
     private void startAutoRefresh(final String adUnitId, final MaxAdFormat adFormat)
     {
         getReactApplicationContext().runOnUiQueueThread( new Runnable()
@@ -1956,7 +2230,7 @@ public class AppLovinMAXModule
         e( Log.getStackTraceString( e ) );
     }
 
-    private static void logUninitializedAccessError(final String callingMethod)
+    public static void logUninitializedAccessError(final String callingMethod)
     {
         e( "ERROR: Failed to execute " + callingMethod + "() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!" );
     }

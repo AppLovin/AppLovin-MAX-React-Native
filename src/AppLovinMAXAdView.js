@@ -37,25 +37,10 @@ export const AdViewPosition = {
 };
 
 const AdView = (props) => {
-  const {style, ...otherProps} = props;
-  const [isInitialized, setIsInitialized] = useState(false);
+  const {style, extraParameters, localExtraParameters, ...otherProps} = props;
   const [dimensions, setDimensions] = useState({});
 
   useEffect(() => {
-    // check that AppLovinMAX has been initialized
-    AppLovinMAX.isInitialized().then(result => {
-      setIsInitialized(result);
-      if (!result) {
-        console.warn("ERROR: AppLovinMAX.AdView is mounted before the initialization of the AppLovin MAX React Native module");
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    if (!isInitialized) {
-      return;
-    }
-
     const sizeForBannerFormat = async () => {
       const isTablet = await AppLovinMAX.isTablet();
       const width = isTablet ? 728 : 320;
@@ -81,7 +66,7 @@ const AdView = (props) => {
                        height: (style.height && style.height !== 'auto') ? style.height : 250});
       }
     }
-  }, [isInitialized]);
+  }, []);
 
   const onAdLoadedEvent = (event) => {
     if (props.onAdLoaded) props.onAdLoaded(event.nativeEvent);
@@ -111,10 +96,25 @@ const AdView = (props) => {
     if (props.onAdRevenuePaid) props.onAdRevenuePaid(event.nativeEvent);
   };
 
-  // Not initialized
-  if (!isInitialized) {
-    return null;
-  } else {
+  const sanitizeExtraParameters = (name, params) => {
+    if (!params) return params;
+
+    for (const key in params) {
+      const value = params[key];
+      
+      // `null` and `undefined` are valid values (e.g. for clearing previously-set values)
+      if (value == null || value == undefined) continue;
+
+      if (typeof value !== 'string') {
+        console.warn("AppLovinMAXAdView only support string values: " + value + ", deleting value for key: " + key);
+        delete params[key];
+      }
+    }
+
+    return params;
+  };
+
+  {
     const isSizeSpecified = ((style.width && style.width !== 'auto') &&
                              (style.height && style.height !== 'auto'));
     const isDimensionsSet = (Object.keys(dimensions).length > 0);
@@ -128,6 +128,8 @@ const AdView = (props) => {
   return (
     <AppLovinMAXAdView
       style={{...style, ...dimensions}}
+      extraParameters={sanitizeExtraParameters('extraParameters', extraParameters)}
+      localExtraParameters={sanitizeExtraParameters('localExtraParameters', localExtraParameters)}
       onAdLoadedEvent={onAdLoadedEvent}
       onAdLoadFailedEvent={onAdLoadFailedEvent}
       onAdDisplayFailedEvent={onAdDisplayFailedEvent}
@@ -170,6 +172,16 @@ AdView.propTypes = {
    * A boolean value representing whether or not to enable auto-refresh. Note that auto-refresh is enabled by default.
    */
   autoRefresh: PropTypes.bool,
+
+  /**
+   * A dictionary of extra parameters consisting of key-value string pairs.
+   */
+  extraParameters: PropTypes.object,
+
+  /**
+   * A dictionary of local extra parameters consisting of key-value string pairs.
+   */
+  localExtraParameters: PropTypes.object,
 
   /**
    * A callback fuction to be fired when a new ad has been loaded.

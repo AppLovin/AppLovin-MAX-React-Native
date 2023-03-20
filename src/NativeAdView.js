@@ -7,23 +7,6 @@ import { TitleView, AdvertiserView, BodyView, CallToActionView, IconView, Option
 const { AppLovinMAX } = NativeModules;
 
 const NativeAdViewWrapper = forwardRef((props, ref) => {
-  const [isInitialized, setIsInitialized] = useState(false);
-
-  useEffect(() => {
-    // check that AppLovinMAX has been initialized
-    AppLovinMAX.isInitialized().then(result => {
-      setIsInitialized(result);
-      if (!result) {
-        console.warn("ERROR: AppLovinMAX.NativeAdView is mounted before the initialization of the AppLovin MAX React Native module");
-      }
-    });
-  }, []);
-
-  // Not ready to render NativeAdView
-  if (!isInitialized) {
-    return null;
-  }
-
   return (
     <NativeAdViewProvider>
       <NativeAdView {...props} ref={ref}/>
@@ -39,6 +22,8 @@ const AppLovinMAXNativeAdView = requireNativeComponent('AppLovinMAXNativeAdView'
 //    components including the user's components without nativeAd
 // 3. update of the nativeAd context by onNativeAdLoaded, which renders the ad components with nativeAd
 const NativeAdView = forwardRef((props, ref) => {
+
+  const {extraParameters, localExtraParameters, ...otherProps} = props;
 
   // context from NativeAdViewProvider
   const {nativeAd, nativeAdView, setNativeAd, setNativeAdView} = useContext(NativeAdViewContext);
@@ -85,14 +70,34 @@ const NativeAdView = forwardRef((props, ref) => {
     if (props.onAdRevenuePaid) props.onAdRevenuePaid(event.nativeEvent);
   };
 
+  const sanitizeExtraParameters = (name, params) => {
+    if (!params) return params;
+
+    for (const key in params) {
+      const value = params[key];
+      
+      // `null` and `undefined` are valid values (e.g. for clearing previously-set values)
+      if (value == null || value == undefined) continue;
+
+      if (typeof value !== 'string') {
+        console.warn("AppLovinMAXNativeAdView only support string values: " + value + ", deleting value for key: " + key);
+        delete params[key];
+      }
+    }
+
+    return params;
+  };
+
   return (
     <AppLovinMAXNativeAdView
       ref={saveElement}
+      extraParameters={sanitizeExtraParameters('extraParameters', extraParameters)}
+      localExtraParameters={sanitizeExtraParameters('localExtraParameters', localExtraParameters)}
       onAdLoadedEvent={onAdLoadedEvent}
       onAdLoadFailedEvent={onAdLoadFailedEvent}
       onAdClickedEvent={onAdClickedEvent}
       onAdRevenuePaidEvent={onAdRevenuePaidEvent}
-      {...props}
+      {...otherProps}
     >
       {props.children}
     </AppLovinMAXNativeAdView>
@@ -116,9 +121,14 @@ NativeAdView.propTypes = {
   customData: PropTypes.string,
 
   /**
-   * A dictionary value representing the extra parameters to set a list of key-value string pairs.
+   * A dictionary of extra parameters consisting of key-value string pairs.
    */
   extraParameters: PropTypes.object,
+
+  /**
+   * A dictionary of local extra parameters consisting of key-value string pairs.
+   */
+  localExtraParameters: PropTypes.object,
 
   /**
    * A callback fuction to be fired when a new ad has been loaded.

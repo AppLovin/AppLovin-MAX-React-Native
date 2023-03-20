@@ -20,6 +20,8 @@
 @property (nonatomic, copy, nullable) NSString *customData;
 @property (nonatomic, assign, readonly, getter=isAdaptiveBannerEnabled) BOOL adaptiveBannerEnabled;
 @property (nonatomic, assign, readonly, getter=isAutoRefresh) BOOL autoRefresh;
+@property (nonatomic, copy, nullable) NSDictionary *extraParameters;
+@property (nonatomic, copy, nullable) NSDictionary *localExtraParameters;
 
 @property (nonatomic, copy) RCTDirectEventBlock onAdLoadedEvent;
 @property (nonatomic, copy) RCTDirectEventBlock onAdLoadFailedEvent;
@@ -129,6 +131,12 @@
     // Run after 0.25 sec delay to allow all properties to set
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         
+        if ( ![AppLovinMAX shared].sdk )
+        {
+            [[AppLovinMAX shared] logUninitializedAccessError: @"AppLovinMAXAdview.attachAdViewIfNeeded"];
+            return;
+        }
+
         if ( ![adUnitId al_isValidString] )
         {
             [[AppLovinMAX shared] log: @"Attempting to attach MAAdView without Ad Unit ID"];
@@ -160,6 +168,16 @@
         [self.adView setExtraParameterForKey: @"adaptive_banner" value: [self isAdaptiveBannerEnabled] ? @"true" : @"false"];
         // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
         [self.adView setExtraParameterForKey: @"allow_pause_auto_refresh_immediately" value: @"true"];
+        
+        for ( NSString *key in self.extraParameters )
+        {
+            [self.adView setExtraParameterForKey: key value: self.extraParameters[key]];
+        }
+        
+        for ( NSString *key in self.localExtraParameters )
+        {
+            [self.adView setLocalExtraParameterForKey: key value: self.localExtraParameters[key]];
+        }
         
         if ( [self isAutoRefresh] )
         {

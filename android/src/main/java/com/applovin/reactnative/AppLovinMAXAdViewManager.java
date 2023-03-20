@@ -1,11 +1,11 @@
 package com.applovin.reactnative;
 
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
-
 
 import java.util.Map;
 
@@ -48,6 +48,18 @@ class AppLovinMAXAdViewManager
         return new AppLovinMAXAdView( reactContext );
     }
 
+    @ReactProp(name = "adUnitId")
+    public void setAdUnitId(final AppLovinMAXAdView view, final String adUnitId)
+    {
+        view.setAdUnitId( adUnitId );
+    }
+
+    @ReactProp(name = "adFormat")
+    public void setAdFormat(final AppLovinMAXAdView view, final String adFormatStr)
+    {
+        view.setAdFormat( adFormatStr );
+    }
+
     @ReactProp(name = "placement")
     public void setPlacement(final AppLovinMAXAdView view, @Nullable final String placement)
     {
@@ -72,16 +84,16 @@ class AppLovinMAXAdViewManager
         view.setAutoRefresh( enabled );
     }
 
-    @ReactProp(name = "adUnitId")
-    public void setAdUnitId(final AppLovinMAXAdView view, final String adUnitId)
+    @ReactProp(name = "extraParameters")
+    public void setExtraParameters(final AppLovinMAXAdView view, @Nullable final ReadableMap value)
     {
-        view.setAdUnitId( adUnitId );
+        view.setExtraParameters( value );
     }
 
-    @ReactProp(name = "adFormat")
-    public void setAdFormat(final AppLovinMAXAdView view, final String adFormatStr)
+    @ReactProp(name = "localExtraParameters")
+    public void setLocalExtraParameters(final AppLovinMAXAdView view, @Nullable final ReadableMap value)
     {
-        view.setAdFormat( adFormatStr );
+        view.setLocalExtraParameters( value );
     }
 
     @Override
