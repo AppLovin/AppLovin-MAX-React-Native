@@ -1,12 +1,12 @@
 ## Versions
 
-## x.x.x
-* Add getter APIs for retrieving current values for targeting data.
-* Add APIs for setting SDK local extra parameters.
+## 5.0.0
+* Update synchronous APIs to use the `Promise` pattern.
 * Allow API calls even before plugin had finished initialization. Previously, this would result in an error thrown or in older plugins, a no-op.
+* Add APIs for retrieving current targeting data values.
+* Add APIs for setting local extra parameters.
 * Remove kotlin dependency from build.
-* Add support for callback functions to  `AppLovinAdView` and `AppLovinNativeAdView` native UI components.
-* Update synchronous APIs to use `Promise`s.
+* Add support for `AppLovinAdView` and `AppLovinNativeAdView` native UI component callbacks.
 ## 4.1.7
 * Fix compilation errors in v4.1.6.
 ## 4.1.6

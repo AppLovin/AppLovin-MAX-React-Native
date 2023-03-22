@@ -1,7 +1,7 @@
 {
   "name": "react-native-applovin-max",
   "author": "AppLovin Corporation",
-  "version": "4.1.7",
+  "version": "5.0.0",
   "description": "AppLovin MAX React Native Plugin for Android and iOS",
   "homepage": "https://github.com/AppLovin/AppLovin-MAX-React-Native",
   "license": "MIT",
