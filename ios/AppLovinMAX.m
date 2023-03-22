@@ -447,6 +447,17 @@ RCT_EXPORT_METHOD(setTargetingDataYearOfBirth:(nonnull NSNumber *)yearOfBirth)
     self.sdk.targetingData.yearOfBirth = yearOfBirth.intValue <= 0 ? nil : yearOfBirth;
 }
 
+RCT_EXPORT_METHOD(getTargetingDataYearOfBirth:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+{
+    if ( !self.sdk )
+    {
+        resolve(self.targetingYearOfBirthToSet ? self.targetingYearOfBirthToSet : @0);
+        return;
+    }
+    
+    resolve(self.sdk.targetingData.yearOfBirth ? self.sdk.targetingData.yearOfBirth : @0);
+}
+
 RCT_EXPORT_METHOD(setTargetingDataGender:(nullable NSString *)gender)
 {
     if ( !self.sdk )
@@ -456,6 +467,17 @@ RCT_EXPORT_METHOD(setTargetingDataGender:(nullable NSString *)gender)
     }
     
     self.sdk.targetingData.gender = [self toAppLovinGender: gender];
+}
+
+RCT_EXPORT_METHOD(getTargetingDataGender:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+{
+    if ( !self.sdk )
+    {
+        resolve(self.targetingGenderToSet ? self.targetingGenderToSet : @"U");
+        return;
+    }
+    
+    resolve([self fromAppLovinGender: self.sdk.targetingData.gender]);
 }
 
 RCT_EXPORT_METHOD(setTargetingDataMaximumAdContentRating:(nonnull NSNumber *)maximumAdContentRating)
@@ -469,6 +491,17 @@ RCT_EXPORT_METHOD(setTargetingDataMaximumAdContentRating:(nonnull NSNumber *)max
     self.sdk.targetingData.maximumAdContentRating = [self toAppLovinAdContentRating: maximumAdContentRating];
 }
 
+RCT_EXPORT_METHOD(getTargetingDataMaximumAdContentRating:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+{
+    if ( !self.sdk )
+    {
+        resolve(self.targetingMaximumAdContentRatingToSet ? self.targetingMaximumAdContentRatingToSet : @0);
+        return;
+    }
+    
+    resolve(@(self.sdk.targetingData.maximumAdContentRating));
+}
+
 RCT_EXPORT_METHOD(setTargetingDataEmail:(nullable NSString *)email)
 {
     if ( !self.sdk )
@@ -478,6 +511,17 @@ RCT_EXPORT_METHOD(setTargetingDataEmail:(nullable NSString *)email)
     }
     
     self.sdk.targetingData.email = email;
+}
+
+RCT_EXPORT_METHOD(getTargetingDataEmail:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+{
+    if ( !self.sdk )
+    {
+        resolve(self.targetingEmailToSet);
+        return;
+    }
+    
+    resolve(self.sdk.targetingData.email);
 }
 
 RCT_EXPORT_METHOD(setTargetingDataPhoneNumber:(nullable NSString *)phoneNumber)
@@ -491,6 +535,17 @@ RCT_EXPORT_METHOD(setTargetingDataPhoneNumber:(nullable NSString *)phoneNumber)
     self.sdk.targetingData.phoneNumber = phoneNumber;
 }
 
+RCT_EXPORT_METHOD(getTargetingDataPhoneNumber:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+{
+    if ( !self.sdk )
+    {
+        resolve(self.targetingPhoneNumberToSet);
+        return;
+    }
+    
+    resolve(self.sdk.targetingData.phoneNumber);
+}
+
 RCT_EXPORT_METHOD(setTargetingDataKeywords:(nullable NSArray<NSString *> *)keywords)
 {
     if ( !self.sdk )
@@ -502,6 +557,17 @@ RCT_EXPORT_METHOD(setTargetingDataKeywords:(nullable NSArray<NSString *> *)keywo
     self.sdk.targetingData.keywords = keywords;
 }
 
+RCT_EXPORT_METHOD(getTargetingDataKeywords:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+{
+    if ( !self.sdk )
+    {
+        resolve(self.targetingKeywordsToSet);
+        return;
+    }
+    
+    resolve(self.sdk.targetingData.keywords);
+}
+
 RCT_EXPORT_METHOD(setTargetingDataInterests:(nullable NSArray<NSString *> *)interests)
 {
     if ( !self.sdk )
@@ -511,6 +577,17 @@ RCT_EXPORT_METHOD(setTargetingDataInterests:(nullable NSArray<NSString *> *)inte
     }
     
     self.sdk.targetingData.interests = interests;
+}
+
+RCT_EXPORT_METHOD(getTargetingDataInterests:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+{
+    if ( !self.sdk )
+    {
+        resolve(self.targetingInterestsToSet);
+        return;
+    }
+    
+    resolve(self.sdk.targetingData.interests);
 }
 
 RCT_EXPORT_METHOD(clearAllTargetingData)
@@ -1818,6 +1895,24 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier k
     }
     
     return ALGenderUnknown;
+}
+
+- (NSString *)fromAppLovinGender:(ALGender)gender
+{
+    if ( gender == ALGenderFemale )
+    {
+        return @"F";
+    }
+    else if ( gender == ALGenderMale )
+    {
+        return @"M";
+    }
+    else if ( gender == ALGenderOther )
+    {
+        return @"O";
+    }
+
+    return @"U";
 }
 
 - (ALAdContentRating)toAppLovinAdContentRating:(nullable NSNumber *)maximumAdContentRating

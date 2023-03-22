@@ -150,13 +150,13 @@ public class AppLovinMAXModule
     private       Boolean             locationCollectionEnabledToSet;
     private final Map<String, String> extraParametersToSet = new HashMap<>( 8 );
 
-    private Integer       targetingYearOfBirthToSet;
-    private String        targetingGenderToSet;
-    private Integer       targetingMaximumAdContentRatingToSet;
-    private String        targetingEmailToSet;
-    private String        targetingPhoneNumberToSet;
-    private ReadableArray targetingKeywordsToSet;
-    private ReadableArray targetingInterestsToSet;
+    private Integer targetingYearOfBirthToSet;
+    private String  targetingGenderToSet;
+    private Integer targetingMaximumAdContentRatingToSet;
+    private String  targetingEmailToSet;
+    private String  targetingPhoneNumberToSet;
+    private List    targetingKeywordsToSet;
+    private List    targetingInterestsToSet;
 
     // Fullscreen Ad Fields
     private final Map<String, MaxInterstitialAd> mInterstitials = new HashMap<>( 2 );
@@ -358,13 +358,13 @@ public class AppLovinMAXModule
 
         if ( targetingKeywordsToSet != null )
         {
-            sdk.getTargetingData().setKeywords( getStringArrayList( targetingKeywordsToSet ) );
+            sdk.getTargetingData().setKeywords( targetingKeywordsToSet );
             targetingKeywordsToSet = null;
         }
 
         if ( targetingInterestsToSet != null )
         {
-            sdk.getTargetingData().setInterests( getStringArrayList( targetingInterestsToSet ) );
+            sdk.getTargetingData().setInterests( targetingInterestsToSet );
             targetingInterestsToSet = null;
         }
 
@@ -589,6 +589,19 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod
+    public void getTargetingDataYearOfBirth(final Promise promise)
+    {
+        if ( sdk == null )
+        {
+            promise.resolve( targetingYearOfBirthToSet == null ? 0 : targetingYearOfBirthToSet );
+            return;
+        }
+
+        Integer yearOfBirth = sdk.getTargetingData().getYearOfBirth();
+        promise.resolve( yearOfBirth != null ? yearOfBirth : 0 );
+    }
+
+    @ReactMethod
     public void setTargetingDataGender(@Nullable final String gender)
     {
         if ( sdk == null )
@@ -598,6 +611,25 @@ public class AppLovinMAXModule
         }
 
         sdk.getTargetingData().setGender( getAppLovinGender( gender ) );
+    }
+
+    @ReactMethod
+    public void getTargetingDataGender(final Promise promise)
+    {
+        if ( sdk == null )
+        {
+            promise.resolve( targetingGenderToSet == null ? "U" : targetingGenderToSet );
+            return;
+        }
+
+        if ( sdk.getTargetingData().getGender() == null )
+        {
+            promise.resolve( "U" );
+        }
+        else
+        {
+            promise.resolve( getRawAppLovinGender( sdk.getTargetingData().getGender() ) );
+        }
     }
 
     @ReactMethod
@@ -613,6 +645,25 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod
+    public void getTargetingDataMaximumAdContentRating(final Promise promise)
+    {
+        if ( sdk == null )
+        {
+            promise.resolve( targetingMaximumAdContentRatingToSet == null ? 0 : targetingMaximumAdContentRatingToSet );
+            return;
+        }
+
+        if ( sdk.getTargetingData().getMaximumAdContentRating() == null )
+        {
+            promise.resolve( 0 );
+        }
+        else
+        {
+            promise.resolve( sdk.getTargetingData().getMaximumAdContentRating().ordinal() );
+        }
+    }
+
+    @ReactMethod
     public void setTargetingDataEmail(@Nullable final String email)
     {
         if ( sdk == null )
@@ -622,6 +673,18 @@ public class AppLovinMAXModule
         }
 
         sdk.getTargetingData().setEmail( email );
+    }
+
+    @ReactMethod
+    public void getTargetingDataEmail(final Promise promise)
+    {
+        if ( sdk == null )
+        {
+            promise.resolve( targetingEmailToSet );
+            return;
+        }
+
+        promise.resolve( sdk.getTargetingData().getEmail() );
     }
 
     @ReactMethod
@@ -637,15 +700,55 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod
+    public void getTargetingDataPhoneNumber(final Promise promise)
+    {
+        if ( sdk == null )
+        {
+            promise.resolve( targetingPhoneNumberToSet );
+            return;
+        }
+
+        promise.resolve( sdk.getTargetingData().getPhoneNumber() );
+    }
+
+    @ReactMethod
     public void setTargetingDataKeywords(@Nullable final ReadableArray rawKeywords)
     {
         if ( sdk == null )
         {
-            targetingKeywordsToSet = rawKeywords;
+            targetingKeywordsToSet = Arguments.toList( rawKeywords );
             return;
         }
 
-        sdk.getTargetingData().setKeywords( getStringArrayList( rawKeywords ) );
+        sdk.getTargetingData().setKeywords( Arguments.toList( rawKeywords ) );
+    }
+
+    @ReactMethod
+    public void getTargetingDataKeywords(final Promise promise)
+    {
+        if ( sdk == null )
+        {
+            if ( targetingKeywordsToSet == null || targetingKeywordsToSet.size() == 0 )
+            {
+                promise.resolve( null );
+            }
+            else
+            {
+                promise.resolve( Arguments.fromList( targetingKeywordsToSet ) );
+            }
+            return;
+        }
+
+        List<String> keywords = sdk.getTargetingData().getKeywords();
+
+        if ( keywords == null || keywords.size() == 0 )
+        {
+            promise.resolve( null );
+        }
+        else
+        {
+            promise.resolve( Arguments.makeNativeArray( keywords ) );
+        }
     }
 
     @ReactMethod
@@ -653,11 +756,39 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            targetingInterestsToSet = rawInterests;
+            targetingKeywordsToSet = Arguments.toList( rawInterests );
             return;
         }
 
-        sdk.getTargetingData().setInterests( getStringArrayList( rawInterests ) );
+        sdk.getTargetingData().setInterests( Arguments.toList( rawInterests ) );
+    }
+
+    @ReactMethod
+    public void getTargetingDataInterests(final Promise promise)
+    {
+        if ( sdk == null )
+        {
+            if ( targetingInterestsToSet == null || targetingInterestsToSet.size() == 0 )
+            {
+                promise.resolve( null );
+            }
+            else
+            {
+                promise.resolve( Arguments.fromList( targetingInterestsToSet ) );
+            }
+            return;
+        }
+
+        List<String> interests = sdk.getTargetingData().getInterests();
+
+        if ( interests == null || interests.size() == 0 )
+        {
+            promise.resolve( null );
+        }
+        else
+        {
+            promise.resolve( Arguments.makeNativeArray( interests ) );
+        }
     }
 
     @ReactMethod
@@ -2161,7 +2292,7 @@ public class AppLovinMAXModule
         return new Point( AppLovinSdkUtils.dpToPx( context, (int) xDp ), AppLovinSdkUtils.dpToPx( context, (int) yDp ) );
     }
 
-    private static AppLovinGender getAppLovinGender(@Nullable String gender)
+    private static AppLovinGender getAppLovinGender(@Nullable final String gender)
     {
         if ( gender != null )
         {
@@ -2182,7 +2313,25 @@ public class AppLovinMAXModule
         return AppLovinGender.UNKNOWN;
     }
 
-    private static AppLovinAdContentRating getAppLovinAdContentRating(int maximumAdContentRating)
+    private static String getRawAppLovinGender(final AppLovinGender gender)
+    {
+        if ( gender == AppLovinGender.FEMALE )
+        {
+            return "F";
+        }
+        else if ( gender == AppLovinGender.MALE )
+        {
+            return "M";
+        }
+        else if ( gender == AppLovinGender.OTHER )
+        {
+            return "O";
+        }
+
+        return "U";
+    }
+
+    private static AppLovinAdContentRating getAppLovinAdContentRating(final int maximumAdContentRating)
     {
         if ( maximumAdContentRating == 1 )
         {
@@ -2198,20 +2347,6 @@ public class AppLovinMAXModule
         }
 
         return AppLovinAdContentRating.NONE;
-    }
-
-    private List<String> getStringArrayList(@Nullable ReadableArray readableArray)
-    {
-        if ( readableArray == null ) return null;
-
-        List<String> list = new ArrayList<>( readableArray.size() );
-
-        for ( Object item : readableArray.toArrayList() )
-        {
-            list.add( (String) item );
-        }
-
-        return list;
     }
 
     // AD INFO

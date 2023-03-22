@@ -19,11 +19,17 @@ const UserGender = {
 const TargetingData = {
 
   set yearOfBirth(value) {
-    AppLovinMAX.setTargetingDataYearOfBirth(value);
+    AppLovinMAX.setTargetingDataYearOfBirth(value ? value : 0);
+  },
+
+  get yearOfBirth() {
+    return AppLovinMAX.getTargetingDataYearOfBirth();
   },
 
   set gender(value) {
-    if ( value === UserGender.Unknown ||
+    if ( !value ) {
+      AppLovinMAX.setTargetingDataGender(UserGender.Unknown);
+    } else if ( value === UserGender.Unknown ||
          value === UserGender.Female ||
          value === UserGender.Male ||
          value === UserGender.Other ) {
@@ -31,8 +37,14 @@ const TargetingData = {
     }
   },
 
+  get gender() {
+    return AppLovinMAX.getTargetingDataGender();
+  },
+
   set maximumAdContentRating(value) {
-    if ( value === AdContentRating.None ||
+    if ( !value ) {
+      AppLovinMAX.setTargetingDataMaximumAdContentRating(AdContentRating.None);
+    } else if ( value === AdContentRating.None ||
          value === AdContentRating.AllAudiences ||
          value === AdContentRating.EveryoneOverTwelve ||
          value === AdContentRating.MatureAudiences ) {
@@ -40,20 +52,40 @@ const TargetingData = {
     }
   },
 
+  get maximumAdContentRating() {
+    return AppLovinMAX.getTargetingDataMaximumAdContentRating();
+  },
+
   set email(value) {
     AppLovinMAX.setTargetingDataEmail(value);
+  },
+
+  get email() {
+    return AppLovinMAX.getTargetingDataEmail();
   },
 
   set phoneNumber(value) {
     AppLovinMAX.setTargetingDataPhoneNumber(value);
   },
 
+  get phoneNumber() {
+    return AppLovinMAX.getTargetingDataPhoneNumber();
+  },
+
   set keywords(value) {
     AppLovinMAX.setTargetingDataKeywords(value);
   },
 
+  get keywords() {
+    return AppLovinMAX.getTargetingDataKeywords();
+  },
+
   set interests(value) {
     AppLovinMAX.setTargetingDataInterests(value);
+  },
+
+  get interests() {
+    return AppLovinMAX.getTargetingDataInterests();
   },
 
   clearAll() {
