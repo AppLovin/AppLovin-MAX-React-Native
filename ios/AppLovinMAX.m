@@ -604,14 +604,6 @@ RCT_EXPORT_METHOD(clearAllTargetingData)
         return;
     }
     
-    self.sdk.targetingData.yearOfBirth = nil;
-    self.sdk.targetingData.gender = ALGenderUnknown;
-    self.sdk.targetingData.maximumAdContentRating = ALAdContentRatingNone;
-    self.sdk.targetingData.email = nil;
-    self.sdk.targetingData.phoneNumber = nil;
-    self.sdk.targetingData.keywords = nil;
-    self.sdk.targetingData.interests = nil;
-
     [self.sdk.targetingData clearAll];
 }
 
@@ -1907,15 +1899,15 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier k
 
 - (NSString *)fromAppLovinGender:(ALGender)gender
 {
-    if ( gender  == ALGenderFemale)
+    if ( gender == ALGenderFemale )
     {
         return @"F";
     }
-    else if ( gender  == ALGenderMale)
+    else if ( gender == ALGenderMale )
     {
         return @"M";
     }
-    else if ( gender  == ALGenderOther)
+    else if ( gender == ALGenderOther )
     {
         return @"O";
     }

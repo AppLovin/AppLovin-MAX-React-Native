@@ -806,14 +806,6 @@ public class AppLovinMAXModule
             return;
         }
 
-        sdk.getTargetingData().setYearOfBirth(  null );
-        sdk.getTargetingData().setGender( AppLovinGender.UNKNOWN );
-        sdk.getTargetingData().setMaximumAdContentRating( AppLovinAdContentRating.NONE );
-        sdk.getTargetingData().setEmail( null );
-        sdk.getTargetingData().setPhoneNumber( null );
-        sdk.getTargetingData().setKeywords( null );
-        sdk.getTargetingData().setInterests( null );
-
         sdk.getTargetingData().clearAll();
     }
 
