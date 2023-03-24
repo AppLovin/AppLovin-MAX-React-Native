@@ -929,6 +929,11 @@ RCT_EXPORT_METHOD(isInterstitialReady:(NSString *)adUnitIdentifier :(RCTPromiseR
     }
 
     MAInterstitialAd *interstitial = [self retrieveInterstitialForAdUnitIdentifier: adUnitIdentifier];
+    if ( !interstitial ) 
+    {
+        resolve(@(NO));
+        return;
+    }
     resolve(@([interstitial isReady]));
 }
 
@@ -986,6 +991,11 @@ RCT_EXPORT_METHOD(isRewardedAdReady:(NSString *)adUnitIdentifier :(RCTPromiseRes
     }
 
     MARewardedAd *rewardedAd = [self retrieveRewardedAdForAdUnitIdentifier: adUnitIdentifier];
+    if ( !rewardedAd ) 
+    {
+        resolve(@(NO));
+        return;
+    }
     resolve(@([rewardedAd isReady]));
 }
 
@@ -1043,6 +1053,11 @@ RCT_EXPORT_METHOD(isAppOpenAdReady:(NSString *)adUnitIdentifier :(RCTPromiseReso
     }
 
     MAAppOpenAd *appOpenAd = [self retrieveAppOpenAdForAdUnitIdentifier: adUnitIdentifier];
+    if ( !appOpenAd ) 
+    {
+        resolve(@(NO));
+        return;
+    }
     resolve(@([appOpenAd isReady]));
 }
 

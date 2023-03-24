@@ -1178,6 +1178,11 @@ public class AppLovinMAXModule
         }
 
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
+        if ( interstitial == null )
+        {
+            promise.resolve( false );
+            return;
+        }
         promise.resolve( interstitial.isReady() );
     }
 
@@ -1246,6 +1251,11 @@ public class AppLovinMAXModule
         }
 
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
+        if ( rewardedAd == null )
+        {
+            promise.resolve( false );
+            return;
+        }
         promise.resolve( rewardedAd.isReady() );
     }
 
@@ -1308,6 +1318,11 @@ public class AppLovinMAXModule
         }
 
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
+        if ( appOpenAd == null )
+        {
+            promise.resolve( false );
+            return;
+        }
         promise.resolve( appOpenAd.isReady() );
     }
 
