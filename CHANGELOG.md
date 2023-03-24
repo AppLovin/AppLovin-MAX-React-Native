@@ -1,5 +1,8 @@
 ## Versions
 
+## x.x.x
+* Depend on Android SDK 11.8.2 and iOS SDK 11.8.2.
+
 ## 5.0.0
 * Update synchronous APIs to use the `Promise` pattern.
 * Allow API calls even before plugin had finished initialization. Previously, this would result in an error thrown or in older plugins, a no-op.
