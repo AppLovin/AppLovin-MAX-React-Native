@@ -35,8 +35,8 @@ android {
   defaultConfig {
     minSdkVersion 16
     targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
-    versionCode 5000000
-    versionName "5.0.0"
+    versionCode 5000100
+    versionName "5.0.1"
   }
 
   flavorDimensions("default")
@@ -140,5 +140,5 @@ dependencies {
   // noinspection GradleDynamicVersion
   api 'com.facebook.react:react-native:+'
 
-  implementation 'com.applovin:applovin-sdk:11.8.0'
+  implementation 'com.applovin:applovin-sdk:11.8.2'
 }
