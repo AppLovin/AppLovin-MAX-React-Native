@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 5.0.2
 * Gracefully handle inter and rewarded ad calls when current `Activity` is null.
 ## 5.0.1
 * Depend on Android SDK 11.8.2 and iOS SDK 11.8.2.
