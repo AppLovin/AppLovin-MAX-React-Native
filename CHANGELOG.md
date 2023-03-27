@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Add `title`, `advertiser`, `body`, and `callToAction` to ad object of native ad UI callbacks.
 ## 5.0.2
 * Gracefully handle inter and rewarded ad calls when current `Activity` is null.
 ## 5.0.1

@@ -386,6 +386,21 @@ public class AppLovinMAXNativeAdView
         // 1. AdInfo for publisher to be notified via `onAdLoaded`
 
         WritableMap nativeAdInfo = Arguments.createMap();
+
+        nativeAdInfo.putString( "title", ad.getTitle() );
+        if ( ad.getAdvertiser() != null )
+        {
+            nativeAdInfo.putString( "advertiser", ad.getAdvertiser() );
+        }
+        if ( ad.getBody() != null )
+        {
+            nativeAdInfo.putString( "body", ad.getBody() );
+        }
+        if ( ad.getCallToAction() != null )
+        {
+            nativeAdInfo.putString( "callToAction", ad.getCallToAction() );
+        }
+
         float aspectRatio = ad.getMediaContentAspectRatio();
         if ( !Float.isNaN( aspectRatio ) )
         {

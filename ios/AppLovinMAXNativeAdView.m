@@ -279,7 +279,23 @@
 {
     // 1. AdInfo for publisher to be notified via `onAdLoaded`
     
-    NSMutableDictionary<NSString *, id> *nativeAdInfo = [NSMutableDictionary dictionaryWithCapacity: 2];
+    NSMutableDictionary<NSString *, id> *nativeAdInfo = [NSMutableDictionary dictionaryWithCapacity: 5];
+    if ( ad.title )
+    {
+        nativeAdInfo[@"title"] = ad.title;
+    }
+    if ( ad.advertiser )
+    {
+        nativeAdInfo[@"advertiser"] = ad.advertiser;
+    }
+    if ( ad.body )
+    {
+        nativeAdInfo[@"body"] = ad.body;
+    }
+    if ( ad.callToAction )
+    {
+        nativeAdInfo[@"callToAction"] = ad.callToAction;
+    }
     if ( !isnan(ad.mediaContentAspectRatio) )
     {
         // The aspect ratio can be 0.0f when it is not provided by the network.
