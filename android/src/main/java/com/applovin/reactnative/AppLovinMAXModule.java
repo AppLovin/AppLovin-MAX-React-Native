@@ -414,7 +414,8 @@ public class AppLovinMAXModule
     @ReactMethod
     public void isTablet(final Promise promise)
     {
-        Context contextToUse = ( maybeGetCurrentActivity() != null ) ? maybeGetCurrentActivity() : getReactApplicationContext();
+        Activity currentActivity = maybeGetCurrentActivity();
+        Context contextToUse = ( currentActivity != null ) ? currentActivity : getReactApplicationContext();
         promise.resolve( AppLovinSdkUtils.isTablet( contextToUse ) );
     }
 
@@ -467,7 +468,7 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod
-    public void setUserId(String userId)
+    public void setUserId(final String userId)
     {
         if ( isPluginInitialized )
         {
@@ -491,7 +492,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void isMuted(final Promise promise)
     {
-        promise.resolve( isPluginInitialized ? sdk.getSettings().isMuted() : false );
+        promise.resolve( isPluginInitialized && sdk.getSettings().isMuted() );
     }
 
     @ReactMethod
@@ -1157,7 +1158,7 @@ public class AppLovinMAXModule
             return;
         }
 
-        MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
+        MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId, "loadInterstitial" );
         if ( interstitial == null )
         {
             sendReactNativeEventForAdLoadFailed( ON_INTERSTITIAL_LOAD_FAILED_EVENT, adUnitId, null );
@@ -1177,7 +1178,13 @@ public class AppLovinMAXModule
             return;
         }
 
-        MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
+        MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId, "isInterstitialReady" );
+        if ( interstitial == null )
+        {
+            promise.resolve( false );
+            return;
+        }
+
         promise.resolve( interstitial.isReady() );
     }
 
@@ -1190,7 +1197,13 @@ public class AppLovinMAXModule
             return;
         }
 
-        MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
+        MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId, "showInterstitial" );
+        if ( interstitial == null )
+        {
+            sendReactNativeEvent( ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT, getAdUnitInfo( adUnitId ) );
+            return;
+        }
+
         interstitial.showAd( placement, customData );
     }
 
@@ -1203,14 +1216,24 @@ public class AppLovinMAXModule
             return;
         }
 
-        MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
+        MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId, "setInterstitialExtraParameter" );
+        if ( interstitial == null ) return;
+
         interstitial.setExtraParameter( key, value );
     }
 
     @ReactMethod
     public void setInterstitialLocalExtraParameter(final String adUnitId, final String key, final String value)
     {
-        MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId );
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setInterstitialLocalExtraParameter" );
+            return;
+        }
+
+        MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId, "setInterstitialLocalExtraParameter" );
+        if ( interstitial == null ) return;
+
         interstitial.setLocalExtraParameter( key, value );
     }
 
@@ -1225,7 +1248,7 @@ public class AppLovinMAXModule
             return;
         }
 
-        MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
+        MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId, "loadRewardedAd" );
         if ( rewardedAd == null )
         {
             sendReactNativeEventForAdLoadFailed( ON_REWARDED_AD_LOAD_FAILED_EVENT, adUnitId, null );
@@ -1245,7 +1268,13 @@ public class AppLovinMAXModule
             return;
         }
 
-        MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
+        MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId, "isRewardedAdReady" );
+        if ( rewardedAd == null )
+        {
+            promise.resolve( false );
+            return;
+        }
+        
         promise.resolve( rewardedAd.isReady() );
     }
 
@@ -1258,7 +1287,13 @@ public class AppLovinMAXModule
             return;
         }
 
-        MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
+        MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId, "showRewardedAd" );
+        if ( rewardedAd == null )
+        {
+            sendReactNativeEvent( ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT, getAdUnitInfo( adUnitId ) );
+            return;
+        }
+
         rewardedAd.showAd( placement, customData );
     }
 
@@ -1271,14 +1306,24 @@ public class AppLovinMAXModule
             return;
         }
 
-        MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
+        MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId, "setRewardedAdExtraParameter" );
+        if ( rewardedAd == null ) return;
+
         rewardedAd.setExtraParameter( key, value );
     }
 
     @ReactMethod
     public void setRewardedAdLocalExtraParameter(final String adUnitId, final String key, final String value)
     {
-        MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId );
+        if ( sdk == null )
+        {
+            logUninitializedAccessError( "setRewardedAdLocalExtraParameter" );
+            return;
+        }
+
+        MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId, "setRewardedAdLocalExtraParameter" );
+        if ( rewardedAd == null ) return;
+
         rewardedAd.setLocalExtraParameter( key, value );
     }
 
@@ -1426,7 +1471,7 @@ public class AppLovinMAXModule
         sendReactNativeEventForAdLoadFailed( name, adUnitId, error );
     }
 
-    void sendReactNativeEventForAdLoadFailed(final String name, final String adUnitId, @Nullable final MaxError error)
+    private void sendReactNativeEventForAdLoadFailed(final String name, final String adUnitId, @Nullable final MaxError error)
     {
         sendReactNativeEvent( name, getAdLoadFailedInfo( adUnitId, error ) );
     }
@@ -1986,10 +2031,14 @@ public class AppLovinMAXModule
     }
 
     @Nullable
-    private MaxInterstitialAd retrieveInterstitial(String adUnitId)
+    private MaxInterstitialAd retrieveInterstitial(final String adUnitId, final String callingMethod)
     {
         Activity currentActivity = maybeGetCurrentActivity();
-        if ( currentActivity == null ) return null;
+        if ( currentActivity == null )
+        {
+            e( "Unable to get current Activity, returning null interstitial for " + callingMethod + "()" );
+            return null;
+        }
 
         MaxInterstitialAd result = mInterstitials.get( adUnitId );
         if ( result == null )
@@ -2005,10 +2054,14 @@ public class AppLovinMAXModule
     }
 
     @Nullable
-    private MaxRewardedAd retrieveRewardedAd(String adUnitId)
+    private MaxRewardedAd retrieveRewardedAd(final String adUnitId, final String callingMethod)
     {
         Activity currentActivity = maybeGetCurrentActivity();
-        if ( currentActivity == null ) return null;
+        if ( currentActivity == null )
+        {
+            e( "Unable to get current Activity, returning null rewarded ad for " + callingMethod + "()" );
+            return null;
+        }
 
         MaxRewardedAd result = mRewardedAds.get( adUnitId );
         if ( result == null )
@@ -2023,7 +2076,7 @@ public class AppLovinMAXModule
         return result;
     }
 
-    private MaxAppOpenAd retrieveAppOpenAd(String adUnitId)
+    private MaxAppOpenAd retrieveAppOpenAd(final String adUnitId)
     {
         MaxAppOpenAd result = mAppOpenAds.get( adUnitId );
         if ( result == null )
@@ -2387,10 +2440,10 @@ public class AppLovinMAXModule
 
     public WritableMap getAdDisplayFailedInfo(final MaxAd ad, final MaxError error)
     {
-        WritableMap params = getAdInfo( ad );
-        params.putInt( "code", error.getCode() );
-        params.putString( "message", error.getMessage() );
-        return params;
+        WritableMap info = getAdInfo( ad );
+        info.putInt( "code", error.getCode() );
+        info.putString( "message", error.getMessage() );
+        return info;
     }
 
     public WritableMap getAdRevenueInfo(final MaxAd ad)
@@ -2400,6 +2453,13 @@ public class AppLovinMAXModule
         adInfo.putString( "revenuePrecision", ad.getRevenuePrecision() );
         adInfo.putString( "countryCode", sdkConfiguration.getCountryCode() );
         return adInfo;
+    }
+
+    private WritableMap getAdUnitInfo(final String adUnitId)
+    {
+        WritableMap info = Arguments.createMap();
+        info.putString( "adUnitId", adUnitId );
+        return info;
     }
 
     // AD WATERFALL INFO
