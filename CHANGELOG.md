@@ -2,6 +2,7 @@
 
 ## x.x.x
 * Add `title`, `advertiser`, `body`, and `callToAction` to ad object of native ad UI callbacks.
+* Fix a warning of `image source of null` with `AppLovinMAX.NativeAdView.IconView`.
 ## 5.0.2
 * Gracefully handle inter and rewarded ad calls when current `Activity` is null.
 ## 5.0.1
