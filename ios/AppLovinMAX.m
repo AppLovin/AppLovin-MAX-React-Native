@@ -44,6 +44,10 @@
 @property (nonatomic, strong, nullable) NSNumber *locationCollectionEnabledToSet;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSString *> *extraParametersToSet;
 
+@property (nonatomic, strong, nullable) NSNumber *consentFlowEnabledToSet;
+@property (nonatomic, strong, nullable) NSURL *privacyPolicyURLToSet;
+@property (nonatomic, strong, nullable) NSURL *termsOfServiceURLToSet;
+
 @property (nonatomic, strong, nullable) NSNumber *targetingYearOfBirthToSet;
 @property (nonatomic,   copy, nullable) NSString *targetingGenderToSet;
 @property (nonatomic, strong, nullable) NSNumber *targetingMaximumAdContentRatingToSet;
@@ -207,8 +211,17 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         }
     }
     
+    ALSdkSettings *settings = [[ALSdkSettings alloc] init];
+    settings.consentFlowSettings.enabled = self.consentFlowEnabledToSet.boolValue;
+    settings.consentFlowSettings.privacyPolicyURL = self.privacyPolicyURLToSet;
+    settings.consentFlowSettings.termsOfServiceURL = self.termsOfServiceURLToSet;
+    
+    self.consentFlowEnabledToSet = nil;
+    self.privacyPolicyURLToSet = nil;
+    self.termsOfServiceURLToSet = nil;
+
     // Initialize SDK
-    self.sdk = [ALSdk sharedWithKey: sdkKey];
+    self.sdk = [ALSdk sharedWithKey: sdkKey settings: settings];
     [self.sdk setPluginVersion: [@"React-Native-" stringByAppendingString: pluginVersion]];
     [self.sdk setMediationProvider: ALMediationProviderMAX];
     
@@ -432,6 +445,19 @@ RCT_EXPORT_METHOD(setExtraParameter:(NSString *)key :(nullable NSString *)value)
     {
         self.extraParametersToSet[key] = value;
     }
+}
+
+RCT_EXPORT_METHOD(setConsentFlowEnabled:(BOOL)enabled)
+{
+    self.consentFlowEnabledToSet = @(enabled);
+}
+RCT_EXPORT_METHOD(setPrivacyPolicyUrl:(NSString *)urlString)
+{
+    self.privacyPolicyURLToSet = [NSURL URLWithString: urlString];
+}
+RCT_EXPORT_METHOD(setTermsOfServiceUrl:(NSString *)urlString)
+{
+    self.termsOfServiceURLToSet = [NSURL URLWithString: urlString];
 }
 
 #pragma mark - Data Passing
