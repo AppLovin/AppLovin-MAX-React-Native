@@ -279,7 +279,12 @@
 {
     // 1. AdInfo for publisher to be notified via `onAdLoaded`
     
-    NSMutableDictionary<NSString *, id> *nativeAdInfo = [NSMutableDictionary dictionaryWithCapacity: 2];
+    NSMutableDictionary<NSString *, id> *nativeAdInfo = [NSMutableDictionary dictionaryWithCapacity: 5];
+    nativeAdInfo[@"title"] = ad.title;
+    nativeAdInfo[@"advertiser"] = ad.advertiser;
+    nativeAdInfo[@"body"] = ad.body;
+    nativeAdInfo[@"callToAction"] = ad.callToAction;
+
     if ( !isnan(ad.mediaContentAspectRatio) )
     {
         // The aspect ratio can be 0.0f when it is not provided by the network.
@@ -303,22 +308,11 @@
     // 2. NativeAd for `AppLovinNativeAdView.js` to render the views
     
     NSMutableDictionary<NSString *, id> *jsNativeAd = [NSMutableDictionary dictionaryWithCapacity: 5];
-    if ( ad.title )
-    {
-        jsNativeAd[@"title"] = ad.title;
-    }
-    if ( ad.advertiser )
-    {
-        jsNativeAd[@"advertiser"] = ad.advertiser;
-    }
-    if ( ad.body )
-    {
-        jsNativeAd[@"body"] = ad.body;
-    }
-    if ( ad.callToAction )
-    {
-        jsNativeAd[@"callToAction"] = ad.callToAction;
-    }
+    jsNativeAd[@"title"] = ad.title;
+    jsNativeAd[@"advertiser"] = ad.advertiser;
+    jsNativeAd[@"body"] = ad.body;
+    jsNativeAd[@"callToAction"] = ad.callToAction;
+
     if ( ad.icon )
     {
         if ( ad.icon.URL )
@@ -330,6 +324,7 @@
             jsNativeAd[@"image"] = @(YES);
         }
     }
+
     jsNativeAd[@"isOptionsViewAvailable"] = ad.optionsView ? @(YES) : @(NO);
     jsNativeAd[@"isMediaViewAvailable"] = ad.mediaView ? @(YES) : @(NO);
     
