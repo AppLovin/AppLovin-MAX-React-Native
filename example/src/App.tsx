@@ -72,6 +72,14 @@ const App = () => {
   const initAppLovinMax = () => {
     if (isInitialized) return;
 
+    // MAX Consent Flow for iOS 14.5+
+    if (Platform.OS === 'ios' && parseFloat(Platform.Version) >= 14.5) {
+      // Enable the iOS consent flow programmatically - NSUserTrackingUsageDescription must be added to the Info.plist
+      AppLovinMAX.setConsentFlowEnabled(true);
+      AppLovinMAX.setPrivacyPolicyUrl('https://your_company_name.com/privacy/'); // mandatory
+      AppLovinMAX.setTermsOfServiceUrl('https://your_company_name.com/terms/'); // optional
+    }
+
     AppLovinMAX.setTestDeviceAdvertisingIds([]);
     AppLovinMAX.initialize(SDK_KEY).then(configuration => {
       setIsInitialized(true);
