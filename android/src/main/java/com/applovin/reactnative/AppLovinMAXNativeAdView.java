@@ -383,13 +383,28 @@ public class AppLovinMAXNativeAdView
 
     private void sendAdLoadedReactNativeEventForAd(final MaxNativeAd ad)
     {
-        // 1. AdInfo for publisher to be notified via `onAdLoaded`
-
         WritableMap nativeAdInfo = Arguments.createMap();
         nativeAdInfo.putString( "title", ad.getTitle() );
         nativeAdInfo.putString( "advertiser", ad.getAdvertiser() );
         nativeAdInfo.putString( "body", ad.getBody() );
         nativeAdInfo.putString( "callToAction", ad.getCallToAction() );
+
+        MaxNativeAdImage icon = ad.getIcon();
+        if ( icon != null )
+        {
+            WritableMap iconObj = Arguments.createMap();
+
+            if ( icon.getUri() != null )
+            {
+                iconObj.putString( "url", icon.getUri().toString() );
+            }
+            else if ( icon.getDrawable() != null )
+            {
+                iconObj.putBoolean( "image", true );
+            }
+
+            nativeAdInfo.putMap( "icon", iconObj );
+        }
 
         float aspectRatio = ad.getMediaContentAspectRatio();
         if ( !Float.isNaN( aspectRatio ) )
@@ -409,36 +424,14 @@ public class AppLovinMAXNativeAdView
             nativeAdInfo.putDouble( "mediaContentAspectRatio", 1.0 );
         }
 
+        nativeAdInfo.putBoolean( "isOptionsViewAvailable", ( ad.getOptionsView() != null ) );
+        nativeAdInfo.putBoolean( "isMediaViewAvailable", ( ad.getMediaView() != null ) );
+
         WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( nativeAd );
         adInfo.putMap( "nativeAd", nativeAdInfo );
 
-        // 2. NativeAd for `AppLovinNativeAdView.js` to render the views
-
-        WritableMap jsNativeAd = Arguments.createMap();
-        jsNativeAd.putString( "title", ad.getTitle() );
-        jsNativeAd.putString( "advertiser", ad.getAdvertiser() );
-        jsNativeAd.putString( "body", ad.getBody() );
-        jsNativeAd.putString( "callToAction", ad.getCallToAction() );
-
-        MaxNativeAdImage icon = ad.getIcon();
-        if ( icon != null )
-        {
-            if ( icon.getUri() != null )
-            {
-                jsNativeAd.putString( "url", icon.getUri().toString() );
-            }
-            else if ( icon.getDrawable() != null )
-            {
-                jsNativeAd.putBoolean( "image", true );
-            }
-        }
-
-        jsNativeAd.putBoolean( "isOptionsViewAvailable", ( ad.getOptionsView() != null ) );
-        jsNativeAd.putBoolean( "isMediaViewAvailable", ( ad.getMediaView() != null ) );
-
         WritableMap arg = Arguments.createMap();
         arg.putMap( "adInfo", adInfo );
-        arg.putMap( "nativeAd", jsNativeAd );
 
         // Send to `AppLovinNativeAdView.js`
         reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdLoadedEvent", arg );

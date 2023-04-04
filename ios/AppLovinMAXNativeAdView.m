@@ -277,13 +277,27 @@
 
 - (void)sendAdLoadedReactNativeEventForAd:(MANativeAd *)ad
 {
-    // 1. AdInfo for publisher to be notified via `onAdLoaded`
-    
-    NSMutableDictionary<NSString *, id> *nativeAdInfo = [NSMutableDictionary dictionaryWithCapacity: 5];
+    NSMutableDictionary<NSString *, id> *nativeAdInfo = [NSMutableDictionary dictionaryWithCapacity: 8];
     nativeAdInfo[@"title"] = ad.title;
     nativeAdInfo[@"advertiser"] = ad.advertiser;
     nativeAdInfo[@"body"] = ad.body;
     nativeAdInfo[@"callToAction"] = ad.callToAction;
+
+    if ( ad.icon )
+    {
+        NSDictionary<NSString *, id> *iconObj;
+
+        if ( ad.icon.URL )
+        {
+            iconObj = @{@"url": ad.icon.URL.absoluteString};
+        }
+        else if ( ad.icon.image )
+        {
+            iconObj = @{@"image": @(YES)};
+        }
+
+        nativeAdInfo[@"icon"] = iconObj;
+    }
 
     if ( !isnan(ad.mediaContentAspectRatio) )
     {
@@ -302,38 +316,14 @@
         nativeAdInfo[@"mediaContentAspectRatio"] = @(1.0);
     }
 
+    nativeAdInfo[@"isOptionsViewAvailable"] = ad.optionsView ? @(YES) : @(NO);
+    nativeAdInfo[@"isMediaViewAvailable"] = ad.mediaView ? @(YES) : @(NO);
+
     NSMutableDictionary *adInfo = [[AppLovinMAX shared] adInfoForAd: self.nativeAd].mutableCopy;
     adInfo[@"nativeAd"] = nativeAdInfo;
     
-    // 2. NativeAd for `AppLovinNativeAdView.js` to render the views
-    
-    NSMutableDictionary<NSString *, id> *jsNativeAd = [NSMutableDictionary dictionaryWithCapacity: 5];
-    jsNativeAd[@"title"] = ad.title;
-    jsNativeAd[@"advertiser"] = ad.advertiser;
-    jsNativeAd[@"body"] = ad.body;
-    jsNativeAd[@"callToAction"] = ad.callToAction;
-
-    if ( ad.icon )
-    {
-        if ( ad.icon.URL )
-        {
-            jsNativeAd[@"url"] = ad.icon.URL.absoluteString;
-        }
-        else if ( ad.icon.image )
-        {
-            jsNativeAd[@"image"] = @(YES);
-        }
-    }
-
-    jsNativeAd[@"isOptionsViewAvailable"] = ad.optionsView ? @(YES) : @(NO);
-    jsNativeAd[@"isMediaViewAvailable"] = ad.mediaView ? @(YES) : @(NO);
-    
-    NSMutableDictionary<NSString *, id> *arg = [NSMutableDictionary dictionaryWithCapacity: 2];
-    arg[@"adInfo"] = adInfo;
-    arg[@"nativeAd"] = jsNativeAd;
-    
     // Send to `AppLovinNativeAdView.js`
-    self.onAdLoadedEvent(arg);
+    self.onAdLoadedEvent(@{@"adInfo": adInfo});
 }
 
 - (void)didFailToLoadNativeAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(MAError *)error

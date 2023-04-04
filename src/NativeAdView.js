@@ -54,7 +54,7 @@ const NativeAdView = forwardRef((props, ref) => {
   };
 
   const onAdLoadedEvent = (event) => {
-    setNativeAd(event.nativeEvent.nativeAd);
+    setNativeAd(event.nativeEvent.adInfo.nativeAd);
     if (props.onAdLoaded) props.onAdLoaded(event.nativeEvent.adInfo);
   };
 

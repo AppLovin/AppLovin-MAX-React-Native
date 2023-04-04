@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+* Add `icon`, `isOptionsViewAvailable`, and `isMediaViewAvailable` to ad object of native ad UI callbacks.
 * Add back Terms flow.
 * Add `title`, `advertiser`, `body`, and `callToAction` to ad object of native ad UI callbacks.
 * Fix a warning of `image source of null` with `AppLovinMAX.NativeAdView.IconView`.
