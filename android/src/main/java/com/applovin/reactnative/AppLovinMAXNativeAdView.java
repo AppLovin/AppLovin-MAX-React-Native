@@ -409,6 +409,10 @@ public class AppLovinMAXNativeAdView
             nativeAdInfo.putDouble( "mediaContentAspectRatio", 1.0 );
         }
 
+        nativeAdInfo.putBoolean( "isIconImageAvailable", ( ad.getIcon() != null ) );
+        nativeAdInfo.putBoolean( "isOptionsViewAvailable", ( ad.getOptionsView() != null ) );
+        nativeAdInfo.putBoolean( "isMediaViewAvailable", ( ad.getMediaView() != null ) );
+
         WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( nativeAd );
         adInfo.putMap( "nativeAd", nativeAdInfo );
 

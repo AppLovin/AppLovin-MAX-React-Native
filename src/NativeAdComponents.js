@@ -104,8 +104,8 @@ export const IconView = (props) => {
   if (!nativeAdView) return null;
 
   return (
-    nativeAd?.url ? <Image {...props} source={{uri: nativeAd.url}} /> :
-      nativeAd?.image ? <Image {...props} ref={imageRef} /> : 
+    nativeAd.url ? <Image {...props} source={{uri: nativeAd.url}} /> :
+      nativeAd.image ? <Image {...props} ref={imageRef} /> : 
       <Image {...props} />
   );
 };
