@@ -1,4 +1,4 @@
-import React, {useContext, useRef, useEffect, useCallback} from "react";
+import React, {useContext, useRef, useEffect} from "react";
 import {findNodeHandle, Text, Image, View, TouchableOpacity} from "react-native";
 import {NativeAdViewContext} from "./NativeAdViewProvider";
 
@@ -159,21 +159,21 @@ export const StarRatingView = (props) => {
 
   const {nativeAd, nativeAdView} = useContext(NativeAdViewContext);
 
-  const FilledStar = useCallback(({size,color}) => {
+  const FilledStar = ({size,color}) => {
     return (
       // black star in unicode
       <Text style={{fontSize: size, color: color}}>{String.fromCodePoint(0x2605)}</Text>
     );
-  });
+  };
 
-  const EmptyStar = useCallback(({size,color}) => {
+  const EmptyStar = ({size,color}) => {
     return (
       // white star in unicode
       <Text style={{fontSize: size, color: color}}>{String.fromCodePoint(0x2606)}</Text>
     );
-  });
+  };
 
-  const StarView = useCallback(({index, rating, size, color}) => {
+  const StarView = ({index, rating, size, color}) => {
     const width = (rating - index) * size;
     return (
       <View>
@@ -186,21 +186,23 @@ export const StarRatingView = (props) => {
         }
       </View>
     );
-  });
+  };
 
   if (!nativeAdView) return null;
 
   return (
     <View style={[style, {flexDirection: 'row', alignItems: 'center'}]}>
-    {
-      Array(maxStarCount).fill().map((j, i) => {
-        if (nativeAd.starRating) {
-          return (<StarView key={i} index={i} rating={nativeAd.starRating} size={starSize} color={starColor} />);
-        } else {
-          return (<Text key={i} style={{fontSize: starSize}}> </Text>);
+      {(() => {
+        let stars = [];
+        for (let index = 0; index < maxStarCount; index++) {
+          if (nativeAd.starRating) {
+            stars.push(<StarView key={index} index={index} rating={nativeAd.starRating} size={starSize} color={starColor} />);
+          } else {
+            stars.push(<Text key={index} style={{fontSize: starSize}}> </Text>);
+          }
         }
-      })
-    }
+        return stars;
+      })()}
     </View>
   );
 };
