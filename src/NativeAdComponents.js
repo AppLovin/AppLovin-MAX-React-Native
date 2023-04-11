@@ -126,7 +126,7 @@ export const OptionsView = (props) => {
   if (!nativeAdView) return null;
 
   return (
-    <View {...props} ref={viewRef}/>
+    <View {...props} ref={viewRef} />
   );
 };
 
@@ -146,6 +146,63 @@ export const MediaView = (props) => {
   if (!nativeAdView) return null;
 
   return (
-    <View {...props} ref={viewRef}/>
+    <View {...props} ref={viewRef} />
+  );
+};
+
+export const StarRatingView = (props) => {
+  const {style, ...otherProps} = props;
+
+  const maxStarCount = 5;
+  const starColor = style.color ?? "#ffe234";
+  const starSize = style.fontSize ?? 10;
+
+  const {nativeAd, nativeAdView} = useContext(NativeAdViewContext);
+
+  const FilledStar = ({size,color}) => {
+    return (
+      // black star in unicode
+      <Text style={{fontSize: size, color: color}}>{String.fromCodePoint(0x2605)}</Text>
+    );
+  };
+
+  const EmptyStar = ({size,color}) => {
+    return (
+      // white star in unicode
+      <Text style={{fontSize: size, color: color}}>{String.fromCodePoint(0x2606)}</Text>
+    );
+  };
+
+  const StarView = ({index, rating, size, color}) => {
+    const width = (rating - index) * size;
+    return (
+      <View>
+        <EmptyStar size={size} color={color} />
+        {
+          (rating > index) &&
+            <View style={{ width: width, overflow: 'hidden', position: 'absolute'}}>
+              <FilledStar style={{top:0, left:0}} size={size} color={color} />
+            </View>
+        }
+      </View>
+    );
+  };
+
+  if (!nativeAdView) return null;
+
+  return (
+    <View style={[style, {flexDirection: 'row', alignItems: 'center'}]}>
+      {(() => {
+        let stars = [];
+        for (let index = 0; index < maxStarCount; index++) {
+          if (nativeAd.starRating) {
+            stars.push(<StarView key={index} index={index} rating={nativeAd.starRating} size={starSize} color={starColor} />);
+          } else {
+            stars.push(<Text key={index} style={{fontSize: starSize}}> </Text>);
+          }
+        }
+        return stars;
+      })()}
+    </View>
   );
 };

@@ -2,7 +2,7 @@ import React, { forwardRef, useContext, useImperativeHandle, useRef, useState, u
 import PropTypes from "prop-types";
 import { NativeModules, requireNativeComponent, UIManager, findNodeHandle } from "react-native";
 import { NativeAdViewContext, NativeAdViewProvider } from "./NativeAdViewProvider";
-import { TitleView, AdvertiserView, BodyView, CallToActionView, IconView, OptionsView, MediaView } from "./NativeAdComponents";
+import { TitleView, AdvertiserView, BodyView, CallToActionView, IconView, OptionsView, MediaView, StarRatingView } from "./NativeAdComponents";
 
 const { AppLovinMAX } = NativeModules;
 
@@ -159,5 +159,6 @@ NativeAdViewWrapper.CallToActionView = CallToActionView;
 NativeAdViewWrapper.IconView = IconView;
 NativeAdViewWrapper.OptionsView = OptionsView;
 NativeAdViewWrapper.MediaView = MediaView;
+NativeAdViewWrapper.StarRatingView = StarRatingView;
 
 export default NativeAdViewWrapper;
