@@ -390,7 +390,11 @@ public class AppLovinMAXNativeAdView
         nativeAdInfo.putString( "advertiser", ad.getAdvertiser() );
         nativeAdInfo.putString( "body", ad.getBody() );
         nativeAdInfo.putString( "callToAction", ad.getCallToAction() );
-        nativeAdInfo.putDouble( "starRating", ad.getStarRating() );
+
+        if ( ad.getStarRating() != null )
+        {
+            nativeAdInfo.putDouble( "starRating", ad.getStarRating().doubleValue() );
+        }
 
         float aspectRatio = ad.getMediaContentAspectRatio();
         if ( !Float.isNaN( aspectRatio ) )
@@ -424,7 +428,11 @@ public class AppLovinMAXNativeAdView
         jsNativeAd.putString( "advertiser", ad.getAdvertiser() );
         jsNativeAd.putString( "body", ad.getBody() );
         jsNativeAd.putString( "callToAction", ad.getCallToAction() );
-        jsNativeAd.putDouble( "starRating", ad.getStarRating() );
+
+        if ( ad.getStarRating() != null )
+        {
+            jsNativeAd.putDouble( "starRating", ad.getStarRating().doubleValue() );
+        }
 
         MaxNativeAdImage icon = ad.getIcon();
         if ( icon != null )
