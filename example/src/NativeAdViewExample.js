@@ -44,6 +44,7 @@ export const NativeAdViewExample = forwardRef((props, ref) => {
                     <AppLovinMAX.NativeAdView.IconView style={styles.icon}/>
                     <View style={{flexDirection: 'column', flexGrow: 1}}>
                         <AppLovinMAX.NativeAdView.TitleView style={styles.title}/>
+                        <AppLovinMAX.NativeAdView.StarRatingView style={styles.starRatingView}/>
                         <AppLovinMAX.NativeAdView.AdvertiserView style={styles.advertiser}/>
                     </View>
                     <AppLovinMAX.NativeAdView.OptionsView style={styles.optionsView}/>
@@ -63,7 +64,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#EFEFEF',
     },
     title: {
-        fontSize: 20,
+        fontSize: 16,
         marginTop: 4,
         marginHorizontal: 5,
         textAlign: 'left',
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
     },
     icon: {
         margin: 5,
-        height: 40,
+        height: 48,
         aspectRatio: 1,
         borderRadius: 5,
     },
@@ -81,17 +82,22 @@ const styles = StyleSheet.create({
         width: 20,
         backgroundColor: '#EFEFEF',
     },
+    starRatingView: {
+        marginHorizontal: 5,
+        fontSize: 10, // size of each star as unicode symbol
+        color: '#ffe234',
+        backgroundColor: '#EFEFEF',
+    },
     advertiser: {
         marginHorizontal: 5,
-        marginTop: 2,
         textAlign: 'left',
-        fontSize: 16,
+        fontSize: 12,
         fontWeight: '400',
         color: 'gray',
     },
     body: {
         fontSize: 14,
-        marginVertical: 8,
+        marginVertical: 4,
     },
     mediaView: {
         alignSelf: 'center',

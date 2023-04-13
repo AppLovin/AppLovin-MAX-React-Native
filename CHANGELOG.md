@@ -2,6 +2,8 @@
 
 ## x.x.x
 * Fix NPE in `onLayoutChange()` for accessing a null options/media view of the native ads.
+* Add support for Star Ratings in native ads through `AppLovinMAX.NativeAdView.StarRatingView` and `adInfo.nativeAd.starRating` accessible via `onAdLoaded(adInfo)`.
+## 5.1.0
 * Add back Terms flow.
 * Add `title`, `advertiser`, `body`, `callToAction`, `isIconImageAvailable`, `isOptionsViewAvailable`, and `isMediaViewAvailable`  to ad object of native ad UI callbacks.
 * Fix a warning of `image source of null` with `AppLovinMAX.NativeAdView.IconView`.
