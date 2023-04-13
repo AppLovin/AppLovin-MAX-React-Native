@@ -289,11 +289,11 @@ public class AppLovinMAXNativeAdView
     @Override
     public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom)
     {
-        if ( view == mediaView.getParent() )
+        if ( mediaView != null && view == mediaView.getParent() )
         {
             sizeToFit( mediaView, view );
         }
-        else if ( view == optionsView.getParent() )
+        else if ( optionsView != null && view == optionsView.getParent() )
         {
             sizeToFit( optionsView, view );
         }
