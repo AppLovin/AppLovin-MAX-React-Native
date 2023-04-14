@@ -16,7 +16,6 @@
 #define ICON_VIEW_TAG           3
 #define BODY_VIEW_TAG           4
 #define CALL_TO_ACTION_VIEW_TAG 5
-#define STAR_RATING_VIEW_TAG    6
 #define ADVERTISER_VIEW_TAG     8
 
 @interface MANativeAdLoader()
