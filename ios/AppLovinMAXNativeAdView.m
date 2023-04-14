@@ -11,6 +11,14 @@
 #import "AppLovinMAX.h"
 #import "AppLovinMAXNativeAdView.h"
 
+#define TITLE_LABEL_TAG         1
+#define MEDIA_VIEW_TAG          2
+#define ICON_VIEW_TAG           3
+#define BODY_VIEW_TAG           4
+#define CALL_TO_ACTION_VIEW_TAG 5
+#define STAR_RATING_VIEW_TAG    6
+#define ADVERTISER_VIEW_TAG     8
+
 @interface MANativeAdLoader()
 - (void)registerClickableViews:(NSArray<UIView *> *)clickableViews
                  withContainer:(UIView *)container
@@ -85,7 +93,7 @@
 - (void)setAdUnitId:(NSString *)adUnitId
 {
     if ( ![adUnitId al_isValidString] ) return;
-        
+    
     _adUnitId = adUnitId;
     
     // Explicitly invoke ad load now that Ad Unit ID is set, but do so after 0.25s to allow other props to set
@@ -102,7 +110,7 @@
         [[AppLovinMAX shared] logUninitializedAccessError: @"AppLovinMAXNativeAdview.loadAd"];
         return;
     }
-
+    
     if ( [self.isLoading compareAndSet: NO update: YES] )
     {
         [[AppLovinMAX shared] log: @"Loading a native ad for Ad Unit ID: %@...", self.adUnitId];
@@ -133,7 +141,7 @@
 - (void)setTitleView:(NSNumber *)tag
 {
     if ( !self.nativeAd.nativeAd.title ) return;
-  
+    
     UIView *view = [self.bridge.uiManager viewForReactTag: tag];
     if ( !view )
     {
@@ -141,48 +149,56 @@
         return;
     }
     
+    view.tag = TITLE_LABEL_TAG;
+    
     [self.clickableViews addObject: view];
 }
 
 - (void)setAdvertiserView:(NSNumber *)tag
 {
     if ( !self.nativeAd.nativeAd.advertiser ) return;
-  
+    
     UIView *view = [self.bridge.uiManager viewForReactTag: tag];
     if ( !view )
     {
         [[AppLovinMAX shared] log: @"Cannot find an advertiser view with tag \"%@\" for %@", tag, self.adUnitId];
         return;
     }
-
+    
+    view.tag = ADVERTISER_VIEW_TAG;
+    
     [self.clickableViews addObject: view];
 }
 
 - (void)setBodyView:(NSNumber *)tag
 {
     if ( !self.nativeAd.nativeAd.body ) return;
-  
+    
     UIView *view = [self.bridge.uiManager viewForReactTag: tag];
     if ( !view )
     {
         [[AppLovinMAX shared] log: @"Cannot find a body view with tag \"%@\" for %@", tag, self.adUnitId];
         return;
     }
-
+    
+    view.tag = BODY_VIEW_TAG;
+    
     [self.clickableViews addObject: view];
 }
 
 - (void)setCallToActionView:(NSNumber *)tag
 {
     if ( !self.nativeAd.nativeAd.callToAction ) return;
-  
+    
     UIView *view = [self.bridge.uiManager viewForReactTag: tag];
     if ( !view )
     {
         [[AppLovinMAX shared] log: @"Cannot find a callToAction view with tag \"%@\" for %@", tag, self.adUnitId];
         return;
     }
-
+    
+    view.tag = CALL_TO_ACTION_VIEW_TAG;
+    
     [self.clickableViews addObject: view];
 }
 
@@ -194,6 +210,8 @@
         [[AppLovinMAX shared] log: @"Cannot find an icon image view with tag \"%@\" for %@", tag, self.adUnitId];
         return;
     }
+    
+    view.tag = ICON_VIEW_TAG;
     
     [self.clickableViews addObject: view];
     
@@ -212,14 +230,14 @@
 - (void)setOptionsView:(NSNumber *)tag
 {
     if ( !self.nativeAd.nativeAd.optionsView ) return;
-       
+    
     UIView *view = [self.bridge.uiManager viewForReactTag: tag];
     if ( !view )
     {
         [[AppLovinMAX shared] log: @"Cannot find an option view with tag \"%@\" for %@", tag, self.adUnitId];
         return;
     }
-  
+    
     [view addSubview: self.nativeAd.nativeAd.optionsView];
     [self.nativeAd.nativeAd.optionsView al_pinToSuperview];
 }
@@ -234,9 +252,11 @@
         [[AppLovinMAX shared] log: @"Cannot find a media view with tag \"%@\" for %@", tag, self.adUnitId];
         return;
     }
-
+    
+    view.tag = MEDIA_VIEW_TAG;
+    
     [self.clickableViews addObject: view];
-  
+    
     [view addSubview: self.nativeAd.nativeAd.mediaView];
     [self.nativeAd.nativeAd.mediaView al_pinToSuperview];
 }
@@ -246,7 +266,7 @@
 - (void)didLoadNativeAd:(nullable MANativeAdView *)nativeAdView forAd:(MAAd *)ad
 {
     [[AppLovinMAX shared] log: @"Native ad loaded: %@", ad];
- 
+    
     // Log a warning if it is a template native ad returned - as our plugin will be responsible for re-rendering the native ad's assets
     if ( nativeAdView )
     {
@@ -270,7 +290,7 @@
         
         [self.adLoader registerClickableViews: self.clickableViews withContainer: self forAd: ad];
         [self.adLoader handleNativeAdViewRenderedForAd: ad];
-      
+        
         [self.isLoading set: NO];
     });
 }
@@ -285,7 +305,7 @@
     nativeAdInfo[@"body"] = ad.body;
     nativeAdInfo[@"callToAction"] = ad.callToAction;
     nativeAdInfo[@"starRating"] = ad.starRating;
-
+    
     if ( !isnan(ad.mediaContentAspectRatio) )
     {
         // The aspect ratio can be 0.0f when it is not provided by the network.
@@ -302,11 +322,11 @@
     {
         nativeAdInfo[@"mediaContentAspectRatio"] = @(1.0);
     }
-
+    
     nativeAdInfo[@"isIconImageAvailable"] = @(ad.icon != nil);
     nativeAdInfo[@"isOptionsViewAvailable"] = @(ad.optionsView != nil);
     nativeAdInfo[@"isMediaViewAvailable"] = @(ad.mediaView != nil);
-
+    
     NSMutableDictionary *adInfo = [[AppLovinMAX shared] adInfoForAd: self.nativeAd].mutableCopy;
     adInfo[@"nativeAd"] = nativeAdInfo;
     
@@ -318,7 +338,7 @@
     jsNativeAd[@"body"] = ad.body;
     jsNativeAd[@"callToAction"] = ad.callToAction;
     jsNativeAd[@"starRating"] = ad.starRating;
-
+    
     if ( ad.icon )
     {
         if ( ad.icon.URL )
@@ -330,7 +350,7 @@
             jsNativeAd[@"image"] = @(YES);
         }
     }
-
+    
     jsNativeAd[@"isOptionsViewAvailable"] = ad.optionsView ? @(YES) : @(NO);
     jsNativeAd[@"isMediaViewAvailable"] = ad.mediaView ? @(YES) : @(NO);
     
@@ -384,7 +404,7 @@
         
         self.nativeAd = nil;
     }
-  
+    
     [self.clickableViews removeAllObjects];
 }
 
