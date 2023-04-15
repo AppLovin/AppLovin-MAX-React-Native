@@ -12,7 +12,7 @@
 #import "AppLovinMAXNativeAdView.h"
 
 #define TITLE_LABEL_TAG         1
-#define MEDIA_VIEW_TAG          2
+#define MEDIA_VIEW_CONTAINER_TAG          2
 #define ICON_VIEW_TAG           3
 #define BODY_VIEW_TAG           4
 #define CALL_TO_ACTION_VIEW_TAG 5
@@ -252,7 +252,7 @@
         return;
     }
     
-    view.tag = MEDIA_VIEW_TAG;
+    view.tag = MEDIA_VIEW_CONTAINER_TAG;
     
     [self.clickableViews addObject: view];
     
