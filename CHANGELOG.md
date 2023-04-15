@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+* Add support for AdMob and Google Ad Manager native ads on iOS.
 * Fix NPE in `onLayoutChange()` for accessing a null options/media view of the native ads.
 * Add support for Star Ratings in native ads through `AppLovinMAX.NativeAdView.StarRatingView` and `adInfo.nativeAd.starRating` accessible via `onAdLoaded(adInfo)`.
 ## 5.1.0
