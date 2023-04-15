@@ -1,10 +1,10 @@
 ## Versions
 
-## x.x.x
+## 5.2.0
 * Depend on Android SDK 11.9.0 and iOS SDK 11.9.0.
+* Add support for Star Ratings in native ads through `AppLovinMAX.NativeAdView.StarRatingView` and `adInfo.nativeAd.starRating` accessible via `onAdLoaded(adInfo)`.
 * Add support for AdMob and Google Ad Manager native ads on iOS.
 * Fix NPE in `onLayoutChange()` for accessing a null options/media view of the native ads.
-* Add support for Star Ratings in native ads through `AppLovinMAX.NativeAdView.StarRatingView` and `adInfo.nativeAd.starRating` accessible via `onAdLoaded(adInfo)`.
 ## 5.1.0
 * Add back Terms flow.
 * Add `title`, `advertiser`, `body`, `callToAction`, `isIconImageAvailable`, `isOptionsViewAvailable`, and `isMediaViewAvailable`  to ad object of native ad UI callbacks.
