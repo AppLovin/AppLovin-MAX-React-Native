@@ -11,12 +11,12 @@
 #import "AppLovinMAX.h"
 #import "AppLovinMAXNativeAdView.h"
 
-#define TITLE_LABEL_TAG         1
-#define MEDIA_VIEW_CONTAINER_TAG          2
-#define ICON_VIEW_TAG           3
-#define BODY_VIEW_TAG           4
-#define CALL_TO_ACTION_VIEW_TAG 5
-#define ADVERTISER_VIEW_TAG     8
+#define TITLE_LABEL_TAG          1
+#define MEDIA_VIEW_CONTAINER_TAG 2
+#define ICON_VIEW_TAG            3
+#define BODY_VIEW_TAG            4
+#define CALL_TO_ACTION_VIEW_TAG  5
+#define ADVERTISER_VIEW_TAG      8
 
 @interface MANativeAdLoader()
 - (void)registerClickableViews:(NSArray<UIView *> *)clickableViews
