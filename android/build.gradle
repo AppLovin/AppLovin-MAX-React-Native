@@ -1,6 +1,6 @@
 buildscript {
   ext.versions = [
-          'minSdk'                : 16,
+          'minSdk'                : 21,
           'compileSdk'            : 29,
           'targetSdk'             : 29,
           'playServicesIdentifier': "16.0.0",
@@ -33,7 +33,7 @@ android {
   compileSdkVersion getExtOrIntegerDefault('compileSdkVersion')
   buildToolsVersion getExtOrDefault('buildToolsVersion')
   defaultConfig {
-    minSdkVersion 16
+    minSdkVersion 21
     targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
     versionCode 5020000
     versionName "5.2.0"

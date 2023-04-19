@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Increase minSDKversion in Android from 16 to 21 to support `gradlew build`.
 ## 5.2.0
 * Depend on Android SDK 11.9.0 and iOS SDK 11.9.0.
 * Add support for Star Ratings in native ads through `AppLovinMAX.NativeAdView.StarRatingView` and `adInfo.nativeAd.starRating` accessible via `onAdLoaded(adInfo)`.
