@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 5.2.1
 * Increase the `minSdk` required to build the project's build script (e.g. `./gradlew build`) from 16 to 21.
 ## 5.2.0
 * Depend on Android SDK 11.9.0 and iOS SDK 11.9.0.
