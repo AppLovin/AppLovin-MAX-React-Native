@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Fix NPE when loading banners/MRECs.
 ## 5.2.1
 * Increase the `minSdk` required to build the project's build script (e.g. `./gradlew build`) from 16 to 21.
 ## 5.2.0
