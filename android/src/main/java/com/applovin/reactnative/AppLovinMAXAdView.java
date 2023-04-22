@@ -1,6 +1,5 @@
 package com.applovin.reactnative;
 
-import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 
@@ -199,13 +198,6 @@ class AppLovinMAXAdView
 
     private void maybeAttachAdView()
     {
-        final Activity currentActivity = reactContext.getCurrentActivity();
-        if ( currentActivity == null )
-        {
-            AppLovinMAXModule.e( "Unable to attach AdView - no current Activity found" );
-            return;
-        }
-
         // Re-assign in case of race condition
         final String adUnitId = this.adUnitId;
         final MaxAdFormat adFormat = this.adFormat;
@@ -239,7 +231,7 @@ class AppLovinMAXAdView
 
             AppLovinMAXModule.d( "Attaching MaxAdView for " + adUnitId );
 
-            adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), currentActivity );
+            adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), reactContext );
             adView.setListener( this );
             adView.setRevenueListener( this );
             adView.setPlacement( placement );

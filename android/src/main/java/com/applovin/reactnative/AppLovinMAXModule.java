@@ -1274,7 +1274,7 @@ public class AppLovinMAXModule
             promise.resolve( false );
             return;
         }
-        
+
         promise.resolve( rewardedAd.isReady() );
     }
 
@@ -2101,7 +2101,7 @@ public class AppLovinMAXModule
         MaxAdView result = mAdViews.get( adUnitId );
         if ( result == null && adViewPosition != null && adViewOffsetPixels != null )
         {
-            result = new MaxAdView( adUnitId, adFormat, sdk, maybeGetCurrentActivity() );
+            result = new MaxAdView( adUnitId, adFormat, sdk, getReactApplicationContext() );
             result.setListener( this );
             result.setRevenueListener( this );
 
