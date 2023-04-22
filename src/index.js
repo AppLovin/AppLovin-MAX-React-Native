@@ -6,7 +6,7 @@ import EventListeners from "./AppLovinMAXEventListeners";
 
 const { AppLovinMAX } = NativeModules;
 
-const VERSION = "5.2.1";
+const VERSION = "5.2.2";
 
 /*---------*/
 /* BANNERS */
