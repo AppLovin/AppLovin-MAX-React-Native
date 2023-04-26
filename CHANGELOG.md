@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Fix banner/MREC crashes related to previous release.
 ## 5.2.2
 * Fix NPE when loading banners/MRECs.
 ## 5.2.1
