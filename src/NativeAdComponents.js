@@ -94,12 +94,12 @@ export const IconView = (props) => {
   const {nativeAd, nativeAdView} = useContext(NativeAdViewContext);
 
   useEffect(() => {
-    if (!nativeAdView || !nativeAd.image) return;
+    if (!nativeAdView || !nativeAd.image || !imageRef.current) return;
 
     nativeAdView.setNativeProps({
       iconView: findNodeHandle(imageRef.current),
     });
-  }, [nativeAd, nativeAdView]);
+  }, [nativeAd, nativeAdView, imageRef.current]);
 
   if (!nativeAdView) return null;
 
