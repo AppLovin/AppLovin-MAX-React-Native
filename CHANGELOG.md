@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Fix privacy states potentially not setting if called without an active `Activity`.
 ## 5.2.2
 * Fix NPE when loading banners/MRECs.
 ## 5.2.1
