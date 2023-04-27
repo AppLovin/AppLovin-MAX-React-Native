@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 5.2.3
 * Fix banner/MREC crashes related to previous release.
 * Fix privacy states potentially not setting if called without an active `Activity`.
 ## 5.2.2
