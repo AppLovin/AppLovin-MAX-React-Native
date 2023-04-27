@@ -1697,11 +1697,7 @@ public class AppLovinMAXModule
 
                 if ( adView.getParent() == null )
                 {
-                    final Activity currentActivity = maybeGetCurrentActivity();
-                    final RelativeLayout relativeLayout = new RelativeLayout( currentActivity );
-                    currentActivity.addContentView( relativeLayout, new LinearLayout.LayoutParams( LinearLayout.LayoutParams.MATCH_PARENT,
-                                                                                                   LinearLayout.LayoutParams.MATCH_PARENT ) );
-                    relativeLayout.addView( adView );
+                    maybeAttachToCurrentActivity( adView );
 
                     // Position ad view immediately so if publisher sets color before ad loads, it will not be the size of the screen
                     mAdViewAdFormats.put( adUnitId, adFormat );
@@ -1825,6 +1821,8 @@ public class AppLovinMAXModule
                     mAdUnitIdsToShowAfterCreate.add( adUnitId );
                     return;
                 }
+
+                maybeAttachToCurrentActivity( adView );
 
                 adView.setVisibility( View.VISIBLE );
                 adView.startAutoRefresh();
@@ -2028,6 +2026,22 @@ public class AppLovinMAXModule
                 adView.stopAutoRefresh();
             }
         } );
+    }
+
+    private void maybeAttachToCurrentActivity(final MaxAdView adView)
+    {
+        if ( adView.getParent() == null )
+        {
+            final Activity currentActivity = maybeGetCurrentActivity();
+            if ( currentActivity != null )
+            {
+                final RelativeLayout relativeLayout = new RelativeLayout( getReactApplicationContext() );
+                relativeLayout.addView( adView );
+
+                currentActivity.addContentView( relativeLayout, new LinearLayout.LayoutParams( LinearLayout.LayoutParams.MATCH_PARENT,
+                                                                                               LinearLayout.LayoutParams.MATCH_PARENT ) );
+            }
+        }
     }
 
     @Nullable
