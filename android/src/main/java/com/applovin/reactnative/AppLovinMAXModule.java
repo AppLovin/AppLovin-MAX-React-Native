@@ -434,37 +434,37 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setHasUserConsent(final boolean hasUserConsent)
     {
-        AppLovinPrivacySettings.setHasUserConsent( hasUserConsent, maybeGetCurrentActivity() );
+        AppLovinPrivacySettings.setHasUserConsent( hasUserConsent, getReactApplicationContext() );
     }
 
     @ReactMethod
     public void hasUserConsent(final Promise promise)
     {
-        promise.resolve( AppLovinPrivacySettings.hasUserConsent( maybeGetCurrentActivity() ) );
+        promise.resolve( AppLovinPrivacySettings.hasUserConsent( getReactApplicationContext() ) );
     }
 
     @ReactMethod
     public void setIsAgeRestrictedUser(final boolean isAgeRestrictedUser)
     {
-        AppLovinPrivacySettings.setIsAgeRestrictedUser( isAgeRestrictedUser, maybeGetCurrentActivity() );
+        AppLovinPrivacySettings.setIsAgeRestrictedUser( isAgeRestrictedUser, getReactApplicationContext() );
     }
 
     @ReactMethod
     public void isAgeRestrictedUser(final Promise promise)
     {
-        promise.resolve( AppLovinPrivacySettings.isAgeRestrictedUser( maybeGetCurrentActivity() ) );
+        promise.resolve( AppLovinPrivacySettings.isAgeRestrictedUser( getReactApplicationContext() ) );
     }
 
     @ReactMethod
     public void setDoNotSell(final boolean doNotSell)
     {
-        AppLovinPrivacySettings.setDoNotSell( doNotSell, maybeGetCurrentActivity() );
+        AppLovinPrivacySettings.setDoNotSell( doNotSell, getReactApplicationContext() );
     }
 
     @ReactMethod
     public void isDoNotSell(final Promise promise)
     {
-        promise.resolve( AppLovinPrivacySettings.isDoNotSell( maybeGetCurrentActivity() ) );
+        promise.resolve( AppLovinPrivacySettings.isDoNotSell( getReactApplicationContext() ) );
     }
 
     @ReactMethod
