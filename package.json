@@ -14,7 +14,9 @@
     "android",
     "ios",
     "react-native-applovin-max.podspec",
-    "package.json"
+    "package.json",
+    "app.plugin.js",
+    "plugin"
   ],
   "scripts": {},
   "keywords": [

@@ -113,3 +113,6 @@ package-lock.json
 .vscode/settings.json
 .gitattributes
 .editorconfig
+
+# Expo Plugin
+!plugin/build
