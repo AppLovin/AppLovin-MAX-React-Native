@@ -284,6 +284,33 @@ public class AppLovinMAXNativeAdView
         view.addView( mediaView );
 
         sizeToFit( mediaView, view );
+
+        // Resize the child of `mediaView` for the networks, especially for InMobi, where the actual
+        // media view is added in `MaxNativeAdLoader.b()` after `mediaView` is sized so that it has
+        // to be resized when the network's media view is added.
+        if ( mediaView instanceof ViewGroup )
+        {
+            ( (ViewGroup) mediaView ).setOnHierarchyChangeListener( new OnHierarchyChangeListener()
+            {
+                @Override
+                public void onChildViewAdded(final View parent, final View child)
+                {
+                    mediaView.post( new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            sizeToFit( child, parent );
+                        }
+                    } );
+                }
+
+                @Override
+                public void onChildViewRemoved(final View parent, final View child)
+                {
+                }
+            } );
+        }
     }
 
     @Override
