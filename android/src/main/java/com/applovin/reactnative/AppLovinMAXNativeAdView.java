@@ -357,6 +357,13 @@ public class AppLovinMAXNativeAdView
                     adLoader.b( ad );
                 }
 
+                // Reassure the size of `mediaView` and its children for the networks, such as
+                // LINE, where the actual ad contents are loaded after `mediaView` is sized.
+                if ( mediaView != null )
+                {
+                    sizeToFit( mediaView, (ReactViewGroup) mediaView.getParent() );
+                }
+
                 isLoading.set( false );
             }, 500L );
         }
