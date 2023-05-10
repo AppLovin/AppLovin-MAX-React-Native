@@ -26,7 +26,9 @@ export const NativeAdViewExample = forwardRef((props, ref) => {
             ref={ref}
             style={styles.nativead}
             onAdLoaded={(adInfo) => {
-                setAspectRatio(adInfo.nativeAd.mediaContentAspectRatio);
+                if (adInfo.nativeAd.mediaContentAspectRatio) {
+                    setAspectRatio(adInfo.nativeAd.mediaContentAspectRatio);
+                }
                 props.onStatusText('Native ad loaded from ' + adInfo.networkName);
             }}
             onAdLoadFailed={(errorInfo) => {
@@ -101,7 +103,7 @@ const styles = StyleSheet.create({
     },
     mediaView: {
         alignSelf: 'center',
-        aspectRatio: 1,
+        aspectRatio: 1.77,
     },
     callToAction: {
         padding: 5,

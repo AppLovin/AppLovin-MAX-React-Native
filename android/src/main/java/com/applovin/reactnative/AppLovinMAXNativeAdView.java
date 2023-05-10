@@ -400,18 +400,10 @@ public class AppLovinMAXNativeAdView
         if ( !Float.isNaN( aspectRatio ) )
         {
             // The aspect ratio can be 0.0f when it is not provided by the network.
-            if ( Math.signum( aspectRatio ) == 0 )
-            {
-                nativeAdInfo.putDouble( "mediaContentAspectRatio", 1.0 );
-            }
-            else
+            if ( Math.signum( aspectRatio ) != 0 )
             {
                 nativeAdInfo.putDouble( "mediaContentAspectRatio", aspectRatio );
             }
-        }
-        else
-        {
-            nativeAdInfo.putDouble( "mediaContentAspectRatio", 1.0 );
         }
 
         nativeAdInfo.putBoolean( "isIconImageAvailable", ( ad.getIcon() != null ) );

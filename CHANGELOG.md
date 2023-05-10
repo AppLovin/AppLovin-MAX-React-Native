@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+* Remove the default aspect ratio of a media view from the native ad properties.
 * Fix IconView not being displayed when setting it up with an empty DOM node.
 ## 5.2.3
 * Fix banner/MREC crashes related to previous release.
