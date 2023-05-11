@@ -396,14 +396,11 @@ public class AppLovinMAXNativeAdView
             nativeAdInfo.putDouble( "starRating", ad.getStarRating().doubleValue() );
         }
 
+        // The aspect ratio can be 0.0f when it is not provided by the network.
         float aspectRatio = ad.getMediaContentAspectRatio();
-        if ( !Float.isNaN( aspectRatio ) )
+        if ( !Float.isNaN( aspectRatio ) && Math.signum( aspectRatio ) > 0 )
         {
-            // The aspect ratio can be 0.0f when it is not provided by the network.
-            if ( Math.signum( aspectRatio ) != 0 )
-            {
-                nativeAdInfo.putDouble( "mediaContentAspectRatio", aspectRatio );
-            }
+            nativeAdInfo.putDouble( "mediaContentAspectRatio", aspectRatio );
         }
 
         nativeAdInfo.putBoolean( "isIconImageAvailable", ( ad.getIcon() != null ) );
