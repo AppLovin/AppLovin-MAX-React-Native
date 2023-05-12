@@ -3,6 +3,7 @@ import {StyleSheet, Text, View} from 'react-native';
 import AppLovinMAX from '../../src/index';
 
 export const NativeAdViewExample = forwardRef((props, ref) => {
+    const DEFAULT_ASPECT_RATIO = (16/9);
     const {adUnitId} = props;
     const [aspectRatio, setAspectRatio] = useState(1.0);
     const [mediaViewSize, setMediaViewSize] = useState({});
@@ -28,6 +29,8 @@ export const NativeAdViewExample = forwardRef((props, ref) => {
             onAdLoaded={(adInfo) => {
                 if (adInfo.nativeAd.mediaContentAspectRatio) {
                     setAspectRatio(adInfo.nativeAd.mediaContentAspectRatio);
+                } else {
+                    setAspectRatio(DEFAULT_ASPECT_RATIO);
                 }
                 props.onStatusText('Native ad loaded from ' + adInfo.networkName);
             }}
@@ -103,7 +106,6 @@ const styles = StyleSheet.create({
     },
     mediaView: {
         alignSelf: 'center',
-        aspectRatio: 1.77,
     },
     callToAction: {
         padding: 5,

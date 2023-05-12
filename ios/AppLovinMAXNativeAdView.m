@@ -306,7 +306,7 @@
     nativeAdInfo[@"starRating"] = ad.starRating;
     
     // The aspect ratio can be 0.0f when it is not provided by the network.
-    if ( !isnan(ad.mediaContentAspectRatio) && ad.mediaContentAspectRatio > FLT_EPSILON )
+    if ( ad.mediaContentAspectRatio > 0 )
     {
         nativeAdInfo[@"mediaContentAspectRatio"] = @(ad.mediaContentAspectRatio);
     }
