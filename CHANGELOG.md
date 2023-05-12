@@ -2,6 +2,7 @@
 
 ## x.x.x
 * Remove the default media view aspect ratio of `1.0` when a mediated network does not provide it.
+* Fix LINE media view not showing.
 * Fix IconView not being displayed when setting it up with an empty DOM node.
 ## 5.2.3
 * Fix banner/MREC crashes related to previous release.
