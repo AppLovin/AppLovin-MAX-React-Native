@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.applovin.mediation.MaxAd;
@@ -222,7 +223,20 @@ public class AppLovinMAXNativeAdView
 
         view.setClickable( true );
 
-        clickableViews.add( view );
+        // Some adapters, like Google, expect a Button widget for CTA to be clickable
+        if ( view instanceof ViewGroup )
+        {
+            Button button = new Button( reactContext );
+            button.setAlpha( 0 );
+            ( (ViewGroup) view ).addView( button );
+            sizeToFit( button, view );
+
+            clickableViews.add( button );
+        }
+        else
+        {
+            clickableViews.add( view );
+        }
     }
 
     public void setIconView(final int tag)
@@ -361,7 +375,7 @@ public class AppLovinMAXNativeAdView
                 // LINE, where the actual ad contents are loaded after `mediaView` is sized.
                 if ( mediaView != null )
                 {
-                    sizeToFit( mediaView, (ReactViewGroup) mediaView.getParent() );
+                    sizeToFit( mediaView, (View) mediaView.getParent() );
                 }
 
                 isLoading.set( false );

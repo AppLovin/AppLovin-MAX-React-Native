@@ -80,8 +80,8 @@ export const CallToActionView = (props) => {
   if (!nativeAdView) return null;
 
   return (
-    <TouchableOpacity {...props}>
-      <Text {...props} ref={callToActionRef}>
+    <TouchableOpacity {...props} ref={callToActionRef}>
+      <Text {...props}>
         {nativeAd.callToAction || null}
       </Text>
     </TouchableOpacity>
