@@ -32,7 +32,7 @@ import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThreadDelayed;
 
 public class AppLovinMAXNativeAdView
         extends ReactViewGroup
-        implements MaxAdRevenueListener, View.OnLayoutChangeListener
+        implements MaxAdRevenueListener, View.OnLayoutChangeListener, ViewGroup.OnHierarchyChangeListener
 {
     private final ReactContext      reactContext;
     @Nullable
@@ -60,13 +60,10 @@ public class AppLovinMAXNativeAdView
     // TODO: Allow publisher to select which views are clickable and which isn't via prop
     private final List<View> clickableViews = new ArrayList<>();
 
-    private OnHierarchyChangeListener onHierarchyChangeListener;
-
     public AppLovinMAXNativeAdView(final Context context)
     {
         super( context );
         reactContext = (ReactContext) context;
-        onHierarchyChangeListener = new HierarchyChangeListener();
     }
 
     public void destroy()
@@ -150,7 +147,7 @@ public class AppLovinMAXNativeAdView
             {
                 for ( Map.Entry<String, Object> entry : localExtraParameters.entrySet() )
                 {
-                    adLoader.setLocalExtraParameter( entry.getKey(), (String) entry.getValue() );
+                    adLoader.setLocalExtraParameter( entry.getKey(), entry.getValue() );
                 }
             }
 
@@ -293,29 +290,7 @@ public class AppLovinMAXNativeAdView
         // to be resized when the network's media view is added.
         if ( mediaView instanceof ViewGroup )
         {
-            ( (ViewGroup) mediaView ).setOnHierarchyChangeListener( onHierarchyChangeListener );
-        }
-    }
-
-    private static class HierarchyChangeListener
-            implements OnHierarchyChangeListener
-    {
-        @Override
-        public void onChildViewAdded(final View parent, final View child)
-        {
-            parent.post( new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    sizeToFit( child, parent );
-                }
-            } );
-        }
-
-        @Override
-        public void onChildViewRemoved(final View parent, final View child)
-        {
+            ( (ViewGroup) mediaView ).setOnHierarchyChangeListener( this );
         }
     }
 
@@ -331,6 +306,15 @@ public class AppLovinMAXNativeAdView
             sizeToFit( optionsView, view );
         }
     }
+
+    @Override
+    public void onChildViewAdded(final View parent, final View child)
+    {
+        parent.post( () -> sizeToFit( child, parent ) );
+    }
+
+    @Override
+    public void onChildViewRemoved(final View parent, final View child) { }
 
     private static void sizeToFit(final @Nullable View view, final View parentView)
     {
