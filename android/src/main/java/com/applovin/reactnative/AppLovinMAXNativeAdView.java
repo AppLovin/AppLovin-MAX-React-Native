@@ -35,6 +35,13 @@ public class AppLovinMAXNativeAdView
         extends ReactViewGroup
         implements MaxAdRevenueListener, View.OnLayoutChangeListener
 {
+    private static final int TITLE_LABEL_TAG          = 1;
+    private static final int MEDIA_VIEW_CONTAINER_TAG = 2;
+    private static final int ICON_VIEW_TAG            = 3;
+    private static final int BODY_VIEW_TAG            = 4;
+    private static final int CALL_TO_ACTION_VIEW_TAG  = 5;
+    private static final int ADVERTISER_VIEW_TAG      = 8;
+
     private final ReactContext      reactContext;
     @Nullable
     private       MaxNativeAdLoader adLoader;
@@ -174,7 +181,7 @@ public class AppLovinMAXNativeAdView
         }
 
         view.setClickable( true );
-
+        view.setTag( TITLE_LABEL_TAG );
         clickableViews.add( view );
     }
 
@@ -190,7 +197,7 @@ public class AppLovinMAXNativeAdView
         }
 
         view.setClickable( true );
-
+        view.setTag( ADVERTISER_VIEW_TAG );
         clickableViews.add( view );
     }
 
@@ -206,7 +213,7 @@ public class AppLovinMAXNativeAdView
         }
 
         view.setClickable( true );
-
+        view.setTag( BODY_VIEW_TAG );
         clickableViews.add( view );
     }
 
@@ -231,10 +238,12 @@ public class AppLovinMAXNativeAdView
             ( (ViewGroup) view ).addView( button );
             sizeToFit( button, view );
 
+            button.setTag( CALL_TO_ACTION_VIEW_TAG );
             clickableViews.add( button );
         }
         else
         {
+            view.setTag( CALL_TO_ACTION_VIEW_TAG );
             clickableViews.add( view );
         }
     }
@@ -249,6 +258,7 @@ public class AppLovinMAXNativeAdView
         }
 
         view.setClickable( true );
+        view.setTag( ICON_VIEW_TAG );
         clickableViews.add( view );
 
         MaxNativeAdImage icon = nativeAd.getNativeAd().getIcon();
@@ -292,6 +302,7 @@ public class AppLovinMAXNativeAdView
             return;
         }
 
+        view.setTag( MEDIA_VIEW_CONTAINER_TAG );
         clickableViews.add( view );
 
         view.addOnLayoutChangeListener( this );
