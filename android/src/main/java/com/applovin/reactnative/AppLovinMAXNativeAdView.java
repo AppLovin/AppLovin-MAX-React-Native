@@ -374,6 +374,13 @@ public class AppLovinMAXNativeAdView
                     adLoader.b( ad );
                 }
 
+                // Reassure the size of `mediaView` and its children for the networks, such as
+                // LINE, where the actual ad contents are loaded after `mediaView` is sized.
+                if ( mediaView != null )
+                {
+                    sizeToFit( mediaView, (ReactViewGroup) mediaView.getParent() );
+                }
+
                 isLoading.set( false );
             }, 500L );
         }
@@ -413,22 +420,11 @@ public class AppLovinMAXNativeAdView
             nativeAdInfo.putDouble( "starRating", ad.getStarRating().doubleValue() );
         }
 
+        // The aspect ratio can be 0.0f when it is not provided by the network.
         float aspectRatio = ad.getMediaContentAspectRatio();
-        if ( !Float.isNaN( aspectRatio ) )
+        if ( aspectRatio > 0 )
         {
-            // The aspect ratio can be 0.0f when it is not provided by the network.
-            if ( Math.signum( aspectRatio ) == 0 )
-            {
-                nativeAdInfo.putDouble( "mediaContentAspectRatio", 1.0 );
-            }
-            else
-            {
-                nativeAdInfo.putDouble( "mediaContentAspectRatio", aspectRatio );
-            }
-        }
-        else
-        {
-            nativeAdInfo.putDouble( "mediaContentAspectRatio", 1.0 );
+            nativeAdInfo.putDouble( "mediaContentAspectRatio", aspectRatio );
         }
 
         nativeAdInfo.putBoolean( "isIconImageAvailable", ( ad.getIcon() != null ) );
