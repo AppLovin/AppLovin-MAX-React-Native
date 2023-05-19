@@ -32,7 +32,7 @@ import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThreadDelayed;
 
 public class AppLovinMAXNativeAdView
         extends ReactViewGroup
-        implements MaxAdRevenueListener, View.OnLayoutChangeListener
+        implements MaxAdRevenueListener, View.OnLayoutChangeListener, ViewGroup.OnHierarchyChangeListener
 {
     private final ReactContext      reactContext;
     @Nullable
@@ -147,7 +147,7 @@ public class AppLovinMAXNativeAdView
             {
                 for ( Map.Entry<String, Object> entry : localExtraParameters.entrySet() )
                 {
-                    adLoader.setLocalExtraParameter( entry.getKey(), (String) entry.getValue() );
+                    adLoader.setLocalExtraParameter( entry.getKey(), entry.getValue() );
                 }
             }
 
@@ -284,6 +284,14 @@ public class AppLovinMAXNativeAdView
         view.addView( mediaView );
 
         sizeToFit( mediaView, view );
+
+        // Resize the child of `mediaView` for the networks, especially for InMobi, where the actual
+        // media view is added in `MaxNativeAdLoader.b()` after `mediaView` is sized so that it has
+        // to be resized when the network's media view is added.
+        if ( mediaView instanceof ViewGroup )
+        {
+            ( (ViewGroup) mediaView ).setOnHierarchyChangeListener( this );
+        }
     }
 
     @Override
@@ -299,7 +307,16 @@ public class AppLovinMAXNativeAdView
         }
     }
 
-    private void sizeToFit(final @Nullable View view, final View parentView)
+    @Override
+    public void onChildViewAdded(final View parent, final View child)
+    {
+        parent.post( () -> sizeToFit( child, parent ) );
+    }
+
+    @Override
+    public void onChildViewRemoved(final View parent, final View child) { }
+
+    private static void sizeToFit(final @Nullable View view, final View parentView)
     {
         if ( view != null )
         {

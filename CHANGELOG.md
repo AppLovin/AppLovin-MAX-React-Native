@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Fix InMobi media view not showing due to lack of sizing.
 ## 5.3.0
 * Remove the default media view aspect ratio of `1.0` when a mediated network does not provide it.
 * Fix LINE media view not showing.
