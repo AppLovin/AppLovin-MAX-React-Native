@@ -60,10 +60,13 @@ public class AppLovinMAXNativeAdView
     // TODO: Allow publisher to select which views are clickable and which isn't via prop
     private final List<View> clickableViews = new ArrayList<>();
 
+    private OnHierarchyChangeListener onHierarchyChangeListener;
+
     public AppLovinMAXNativeAdView(final Context context)
     {
         super( context );
         reactContext = (ReactContext) context;
+        onHierarchyChangeListener = new HierarchyChangeListener();
     }
 
     public void destroy()
@@ -290,26 +293,29 @@ public class AppLovinMAXNativeAdView
         // to be resized when the network's media view is added.
         if ( mediaView instanceof ViewGroup )
         {
-            ( (ViewGroup) mediaView ).setOnHierarchyChangeListener( new OnHierarchyChangeListener()
+            ( (ViewGroup) mediaView ).setOnHierarchyChangeListener( onHierarchyChangeListener );
+        }
+    }
+
+    private static class HierarchyChangeListener
+            implements OnHierarchyChangeListener
+    {
+        @Override
+        public void onChildViewAdded(final View parent, final View child)
+        {
+            parent.post( new Runnable()
             {
                 @Override
-                public void onChildViewAdded(final View parent, final View child)
+                public void run()
                 {
-                    mediaView.post( new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            sizeToFit( child, parent );
-                        }
-                    } );
-                }
-
-                @Override
-                public void onChildViewRemoved(final View parent, final View child)
-                {
+                    sizeToFit( child, parent );
                 }
             } );
+        }
+
+        @Override
+        public void onChildViewRemoved(final View parent, final View child)
+        {
         }
     }
 
@@ -326,7 +332,7 @@ public class AppLovinMAXNativeAdView
         }
     }
 
-    private void sizeToFit(final @Nullable View view, final View parentView)
+    private static void sizeToFit(final @Nullable View view, final View parentView)
     {
         if ( view != null )
         {
