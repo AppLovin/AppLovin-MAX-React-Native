@@ -186,7 +186,7 @@ PODS:
     - React-cxxreact (= 0.63.5)
     - React-jsi (= 0.63.5)
   - React-jsinspector (0.63.5)
-  - react-native-applovin-max (5.3.0):
+  - react-native-applovin-max (5.4.0):
     - AppLovinSDK (= 11.9.0)
     - React
   - React-RCTActionSheet (0.63.5):
@@ -361,7 +361,7 @@ SPEC CHECKSUMS:
   React-jsi: 7d908b17758178b076a05a254523f1a4227b53d2
   React-jsiexecutor: e06a32e42affb2bd89e4c8369349b5fcf787710c
   React-jsinspector: fdbc08866b34ae8e1b788ea1cbd9f9d1ca2aa3d6
-  react-native-applovin-max: f57a9500900263c6f95c06d3df32881ca892037c
+  react-native-applovin-max: c989005b92d46cc4ba2d9f9f0fb11439fde6d4f1
   React-RCTActionSheet: e911b99f0d6fa7711ffc2f62d236b12a32771835
   React-RCTAnimation: ad8b853170a059faf31d6add34f67d22391bbe01
   React-RCTBlob: 134c7270b6672c9c05383b2e0f7f044ba39d7dda

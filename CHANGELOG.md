@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 5.4.0
 * Add support for Google native ads on Android, starting with adapter version v22.1.0.1 and up.
 * Fix InMobi media view not showing due to lack of sizing.
 ## 5.3.0
