@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 5.5.0
 * Depend on Android SDK 11.10.0 and iOS SDK 11.10.0.
 ## 5.4.0
 * Add support for Google native ads on Android, starting with adapter version v22.1.0.1 and up.
