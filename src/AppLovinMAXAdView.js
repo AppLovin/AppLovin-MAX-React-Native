@@ -50,20 +50,20 @@ const AdView = (props) => {
       } else {
         height = isTablet ? 90 : 50;
       }
-      setDimensions({width: (style.width && style.width !== 'auto') ? style.width : width,
-                     height: (style.height && style.height !== 'auto') ? style.height : height});
+      setDimensions({width: (style?.width && style.width !== 'auto') ? style.width : width,
+                     height: (style?.height && style.height !== 'auto') ? style.height : height});
     }
 
     // Check whether or not app specifies both width and height but not with 'auto'
-    const isSizeSpecified = ((style.width && style.width !== 'auto') &&
-                             (style.height && style.height !== 'auto'));
+    const isSizeSpecified = ((style?.width && style.width !== 'auto') &&
+                             (style?.height && style.height !== 'auto'));
 
     if (!isSizeSpecified) {
       if (props.adFormat === AdFormat.BANNER) {
         sizeForBannerFormat();
       } else {
-        setDimensions({width: (style.width && style.width !== 'auto') ? style.width : 300,
-                       height: (style.height && style.height !== 'auto') ? style.height : 250});
+        setDimensions({width: (style?.width && style.width !== 'auto') ? style.width : 300,
+                       height: (style?.height && style.height !== 'auto') ? style.height : 250});
       }
     }
   }, []);
@@ -115,8 +115,8 @@ const AdView = (props) => {
   };
 
   {
-    const isSizeSpecified = ((style.width && style.width !== 'auto') &&
-                             (style.height && style.height !== 'auto'));
+    const isSizeSpecified = ((style?.width && style.width !== 'auto') &&
+                             (style?.height && style.height !== 'auto'));
     const isDimensionsSet = (Object.keys(dimensions).length > 0);
 
     // Not sized yet
