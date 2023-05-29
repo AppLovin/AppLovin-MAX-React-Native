@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Depend on Android SDK 11.10.1 and iOS SDK 11.10.1.
 ## 5.5.0
 * Depend on Android SDK 11.10.0 and iOS SDK 11.10.0.
 ## 5.4.0
