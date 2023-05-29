@@ -18,22 +18,22 @@ const ProgrammaticMRecExample = (props) => {
 
   const setupEventListeners = () => {
     AppLovinMAX.addMRecAdLoadedEventListener((adInfo) => {
-      log('MRec ad loaded from ' + adInfo.networkName);
+      log('MREC ad loaded from ' + adInfo.networkName);
     });
     AppLovinMAX.addMRecAdLoadFailedEventListener((errorInfo) => {
-      log('MRec ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+      log('MREC ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
     });
     AppLovinMAX.addMRecAdClickedEventListener((_adInfo) => {
-      log('MRec ad clicked');
+      log('MREC ad clicked');
     });
     AppLovinMAX.addMRecAdExpandedEventListener((_adInfo) => {
-      log('MRec ad expanded')
+      log('MREC ad expanded')
     });
     AppLovinMAX.addMRecAdCollapsedEventListener((_adInfo) => {
-      log('MRec ad collapsed')
+      log('MREC ad collapsed')
     });
     AppLovinMAX.addMRecAdRevenuePaidListener((adInfo) => {
-      log('MRec ad revenue paid: ' + adInfo.revenue);
+      log('MREC ad revenue paid: ' + adInfo.revenue);
     });
   }
 

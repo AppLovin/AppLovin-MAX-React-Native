@@ -27,22 +27,22 @@ const NativeMRecExample = (props) => {
             adFormat={AppLovinMAX.AdFormat.MREC}
             style={styles.mrec}
             onAdLoaded={(adInfo) => {
-              log('MRec ad loaded from ' + adInfo.networkName);
+              log('MREC ad loaded from ' + adInfo.networkName);
             }}
             onAdLoadFailed={(errorInfo) => {
-              log('MRec ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+              log('MREC ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
             }}
             onAdClicked={(_adInfo) => {
-              log('MRec ad clicked');
+              log('MREC ad clicked');
             }}
             onAdExpanded={(_adInfo) => {
-              log('MRec ad expanded')
+              log('MREC ad expanded')
             }}
             onAdCollapsed={(_adInfo) => {
-              log('MRec ad collapsed')
+              log('MREC ad collapsed')
             }}
             onAdRevenuePaid={(adInfo) => {
-              log('MRec ad revenue paid: ' + adInfo.revenue);
+              log('MREC ad revenue paid: ' + adInfo.revenue);
             }}
           />
       }
