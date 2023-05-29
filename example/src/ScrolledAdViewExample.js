@@ -9,7 +9,7 @@ const ScrolledAdViewExample = (props) => {
   const { isInitialized } = props;
   const { isNativeAdShowing } = props;
 
-  const [enableAd, setEnableAd] = useState(true);
+  const [isAdEnabled, setIsAdEnabled] = useState(true);
   const [isScrollViewShowing, setIsScrollViewShowing] = useState(false);
 
   return (
@@ -33,10 +33,10 @@ const ScrolledAdViewExample = (props) => {
                 }}
               />
               <AppButton
-                title={enableAd ? "DISABLE ADS" : "ENABLE ADS"}
+                title={isAdEnabled ? "DISABLE ADS" : "ENABLE ADS"}
                 enabled={true}
                 onPress={() => {
-                  setEnableAd(!enableAd);
+                  setIsAdEnabled(!isAdEnabled);
                 }}
               />
               {[...Array(4)].map((_, i)=> 
@@ -52,7 +52,7 @@ const ScrolledAdViewExample = (props) => {
                    </Text>
 
                    {
-                     enableAd ?
+                     isAdEnabled ?
                        (i % 2 == 0) ? <AppLovinMAX.AdView
                                         adUnitId={bannerAdUnitId}
                                         adFormat={AppLovinMAX.AdFormat.BANNER}
@@ -83,7 +83,7 @@ const ScrolledAdViewExample = (props) => {
               )}
             </ScrollView>
             {
-              enableAd ?
+              isAdEnabled ?
                 <AppLovinMAX.AdView
                   adUnitId={bannerAdUnitId}
                   adFormat={AppLovinMAX.AdFormat.BANNER}
