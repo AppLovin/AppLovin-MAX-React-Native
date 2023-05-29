@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import AppLovinMAX from '../../src/index';
 import AppButton from './components/AppButton';
 
@@ -117,18 +117,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     zIndex: 1,
     elevation: Platform.OS === 'android' ? 1 : 0,
-  },
-  text: {
-    margin: 10,
-    fontSize: 20,
-  },
-  button: {
-    alignItems: 'center',
-    backgroundColor: '#008cba',
-    elevation: 8,
-    borderRadius: 10,
-    marginTop: 5,
-    marginHorizontal: 40,
   },
   nativead: {
     margin: 10,

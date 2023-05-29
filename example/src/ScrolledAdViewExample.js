@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, ScrollView, View, TouchableOpacity, Dimensions } from 'react-native';
+import { StyleSheet, Text, ScrollView, View, Dimensions } from 'react-native';
 import AppLovinMAX from '../../src/index';
 import AppButton from './components/AppButton';
 
@@ -67,7 +67,7 @@ const ScrolledAdViewExample = (props) => {
                                         key={i+'-2'}
                                       />
                      :
-                     <Text style={styles.placeholder} key={i+'-2'}>AD PLACEHOLDER</Text>
+                       <Text style={styles.placeholder} key={i+'-2'}>AD PLACEHOLDER</Text>
                    }
 
                    <Text style={styles.text} key={i+'-3'}>
@@ -87,7 +87,7 @@ const ScrolledAdViewExample = (props) => {
                 <AppLovinMAX.AdView
                   adUnitId={bannerAdUnitId}
                   adFormat={AppLovinMAX.AdFormat.BANNER}
-                  style={styles.adviewBottom}
+                  style={styles.adview}
                 />
               :
                 <Text style={styles.placeholder}>AD PLACEHOLDER</Text>
@@ -117,19 +117,7 @@ const styles = StyleSheet.create({
     margin: 10,
     fontSize: 20,
   },
-  button: {
-    alignItems: 'center',
-    backgroundColor: '#008cba',
-    elevation: 8,
-    borderRadius: 10,
-    marginTop: 5,
-    marginHorizontal: 40,
-  },
   adview: {
-    width: '100%',
-    height: 'auto',
-  },
-  adviewBottom: {
     width: '100%',
     height: 'auto',
   },
