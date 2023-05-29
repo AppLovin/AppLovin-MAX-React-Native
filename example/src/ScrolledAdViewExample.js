@@ -52,23 +52,20 @@ const ScrolledAdViewExample = (props) => {
                    </Text>
 
                    {
-                     isInitialized ?
-                       enableAd ?
-                         (i % 2 == 0) ? <AppLovinMAX.AdView
-                                          adUnitId={bannerAdUnitId}
-                                          adFormat={AppLovinMAX.AdFormat.BANNER}
-                                          style={styles.adview}
-                                          key={i+'-2'}
-                                        />
-                         :
-                                        <AppLovinMAX.AdView
-                                          adUnitId={mrecAdUnitId}
-                                          adFormat={AppLovinMAX.AdFormat.MREC}
-                                          style={styles.adview}
-                                          key={i+'-2'}
-                                        />
+                     enableAd ?
+                       (i % 2 == 0) ? <AppLovinMAX.AdView
+                                        adUnitId={bannerAdUnitId}
+                                        adFormat={AppLovinMAX.AdFormat.BANNER}
+                                        style={styles.adview}
+                                        key={i+'-2'}
+                                      />
                        :
-                       <Text style={styles.placeholder} key={i+'-2'}>AD PLACEHOLDER</Text>
+                                      <AppLovinMAX.AdView
+                                        adUnitId={mrecAdUnitId}
+                                        adFormat={AppLovinMAX.AdFormat.MREC}
+                                        style={styles.adview}
+                                        key={i+'-2'}
+                                      />
                      :
                      <Text style={styles.placeholder} key={i+'-2'}>AD PLACEHOLDER</Text>
                    }
@@ -86,16 +83,14 @@ const ScrolledAdViewExample = (props) => {
               )}
             </ScrollView>
             {
-              isInitialized ?
-                enableAd ? <AppLovinMAX.AdView
-                             adUnitId={bannerAdUnitId}
-                             adFormat={AppLovinMAX.AdFormat.BANNER}
-                             style={styles.adviewBottom}
-                           />
-                :
-                <Text style={styles.placeholder}>AD PLACEHOLDER</Text>
+              enableAd ?
+                <AppLovinMAX.AdView
+                  adUnitId={bannerAdUnitId}
+                  adFormat={AppLovinMAX.AdFormat.BANNER}
+                  style={styles.adviewBottom}
+                />
               :
-              <Text style={styles.placeholder}>AD PLACEHOLDER</Text>
+                <Text style={styles.placeholder}>AD PLACEHOLDER</Text>
             }
           </View>
       }
