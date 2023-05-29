@@ -1,7 +1,7 @@
 ## Versions
 
-## x.x.x
-* Fix NPE in NativeAdView when it's closed before shown.
+## 5.5.2
+* Fix NPE in NativeAdView when it's closed before shown. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/224)
 ## 5.5.1
 * Depend on Android SDK 11.10.1 and iOS SDK 11.10.1.
 ## 5.5.0
