@@ -401,7 +401,7 @@ public class AppLovinMAXNativeAdView
 
                 // Reassure the size of `mediaView` and its children for the networks, such as
                 // LINE, where the actual ad contents are loaded after `mediaView` is sized.
-                if ( mediaView != null )
+                if ( mediaView != null && mediaView.getParent() != null )
                 {
                     sizeToFit( mediaView, (View) mediaView.getParent() );
                 }
