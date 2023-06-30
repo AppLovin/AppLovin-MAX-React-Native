@@ -252,7 +252,7 @@ class AppLovinMAXAdView
             {
                 for ( Map.Entry<String, Object> entry : localExtraParameters.entrySet() )
                 {
-                    adView.setLocalExtraParameter( entry.getKey(), (String) entry.getValue() );
+                    adView.setLocalExtraParameter( entry.getKey(), entry.getValue() );
                 }
             }
 
