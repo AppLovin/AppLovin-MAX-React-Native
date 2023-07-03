@@ -129,7 +129,7 @@ const AdView = (props) => {
     <AppLovinMAXAdView
       style={{...style, ...dimensions}}
       extraParameters={sanitizeExtraParameters('extraParameters', extraParameters)}
-      localExtraParameters={sanitizeExtraParameters('localExtraParameters', localExtraParameters)}
+      localExtraParameters={localExtraParameters}
       onAdLoadedEvent={onAdLoadedEvent}
       onAdLoadFailedEvent={onAdLoadFailedEvent}
       onAdDisplayFailedEvent={onAdDisplayFailedEvent}

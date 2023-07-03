@@ -92,7 +92,7 @@ const NativeAdView = forwardRef((props, ref) => {
     <AppLovinMAXNativeAdView
       ref={saveElement}
       extraParameters={sanitizeExtraParameters('extraParameters', extraParameters)}
-      localExtraParameters={sanitizeExtraParameters('localExtraParameters', localExtraParameters)}
+      localExtraParameters={localExtraParameters}
       onAdLoadedEvent={onAdLoadedEvent}
       onAdLoadFailedEvent={onAdLoadFailedEvent}
       onAdClickedEvent={onAdClickedEvent}
