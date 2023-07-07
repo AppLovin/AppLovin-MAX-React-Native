@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 5.5.3
 * Add support for local extra parameters API with non-String values.
 ## 5.5.2
 * Fix NPE in NativeAdView when it's closed before shown. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/224)
