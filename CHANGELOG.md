@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Depend on Android SDK 11.11.2 and iOS SDK 11.11.2.
 ## 5.5.3
 * Add support for local extra parameters API with non-String values.
 ## 5.5.2
