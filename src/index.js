@@ -22,12 +22,7 @@ const setBannerExtraParameter = (adUnitId, key, value) => {
 }
 
 const setBannerLocalExtraParameter = (adUnitId, key, value) => {
-  if ((value !== null) && (value !== undefined) && (typeof value !== 'string')) {
-    console.warn("setBannerLocalExtraParameter() supports only string values: " + value);
-    return;
-  }
-
-  AppLovinMAX.setBannerLocalExtraParameter(adUnitId, key, value);
+  AppLovinMAX.setBannerLocalExtraParameter(adUnitId, {key:value});
 }
 
 /*-------*/
@@ -44,12 +39,7 @@ const setMRecExtraParameter = (adUnitId, key, value) => {
 }
 
 const setMRecLocalExtraParameter = (adUnitId, key, value) => {
-  if ((value !== null) && (value !== undefined) && (typeof value !== 'string')) {
-    console.warn("setMRecLocalExtraParameter() supports only string values: " + value);
-    return;
-  }
-
-  AppLovinMAX.setMRecLocalExtraParameter(adUnitId, key, value);
+  AppLovinMAX.setMRecLocalExtraParameter(adUnitId, {key:value});
 }
 
 /*---------------*/
@@ -83,12 +73,7 @@ const setInterstitialExtraParameter = (adUnitId, key, value) => {
 }
 
 const setInterstitialLocalExtraParameter = (adUnitId, key, value) => {
-  if ((value !== null) && (value !== undefined) && (typeof value !== 'string')) {
-    console.warn("setInterstitialLocalExtraParameter() supports only string values: " + value);
-    return;
-  }
-
-  AppLovinMAX.setInterstitialLocalExtraParameter(adUnitId, key, value);
+  AppLovinMAX.setInterstitialLocalExtraParameter(adUnitId, {key:value});
 }
 
 /*----------*/
@@ -122,12 +107,7 @@ const setRewardedAdExtraParameter = (adUnitId, key, value) => {
 }
 
 const setRewardedAdLocalExtraParameter = (adUnitId, key, value) => {
-  if ((value !== null) && (value !== undefined) && (typeof value !== 'string')) {
-    console.warn("setRewardedAdLocalExtraParameter() supports only string values: " + value);
-    return;
-  }
-
-  AppLovinMAX.setRewardedAdLocalExtraParameter(adUnitId, key, value);
+  AppLovinMAX.setRewardedAdLocalExtraParameter(adUnitId, {key:value});
 }
 
 /*----------*/
@@ -161,12 +141,7 @@ const setAppOpenAdExtraParameter = (adUnitId, key, value) => {
 }
 
 const setAppOpenAdLocalExtraParameter = (adUnitId, key, value) => {
-  if ((value !== null) && (value !== undefined) && (typeof value !== 'string')) {
-    console.warn("setAppOpenAdLocalExtraParameter() supports only string values: " + value);
-    return;
-  }
-
-  AppLovinMAX.setAppOpenAdLocalExtraParameter(adUnitId, key, value);
+  AppLovinMAX.setAppOpenAdLocalExtraParameter(adUnitId, {key:value});
 }
 
 export default {
