@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Platform, StyleSheet, Text, View, SafeAreaView, Dimensions, AppState } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Platform, StyleSheet, Text, View, SafeAreaView, Dimensions } from 'react-native';
 
 import AppLovinMAX from '../../src/index';
 import AppLogo from './components/AppLogo';
@@ -43,11 +43,6 @@ const App = () => {
     android: 'ENTER_ANDROID_NATIVE_AD_UNIT_ID_HERE',
   });
 
-  const APP_OPEN_AD_UNIT_ID = Platform.select({
-    ios: 'ENTER_IOS_APP_OPEN_AD_UNIT_ID_HERE',
-    android: 'ENTER_ANDROID_APP_OPEN_AD_UNIT_ID_HERE',
-  });
-
   // Create states
   const [isInitialized, setIsInitialized] = useState(false);
   const [isProgrammaticBannerShowing, setIsProgrammaticBannerShowing] = useState(false);
@@ -57,22 +52,9 @@ const App = () => {
   const [isNativeAdShowing, setIsNativeAdShowing] = useState(false);
   const [statusText, setStatusText] = useState('Initializing SDK...');
 
-  const appState = useRef(AppState.currentState);
-
   // Run once after mounting
   useEffect(() => {
     initAppLovinMax();
-
-    const subscription = AppState.addEventListener("change", nextAppState => {
-      if (appState.current.match(/inactive|background/) && nextAppState === "active") {
-        showAppOpenAdIfReady();
-      }
-      appState.current = nextAppState;
-    });
-
-    return () => {
-      subscription.remove();
-    };
   }, []);
 
   // Run when statusText has changed
@@ -92,23 +74,11 @@ const App = () => {
     }
 
     AppLovinMAX.setTestDeviceAdvertisingIds([]);
-    AppLovinMAX.setVerboseLogging(true);
-
     AppLovinMAX.initialize(SDK_KEY).then(configuration => {
       setIsInitialized(true);
       setStatusText('SDK Initialized in ' + configuration?.countryCode);
     }).catch(error => {
       setStatusText(error.toString());
-    });
-  }
-
-  const showAppOpenAdIfReady = () => {
-    AppLovinMAX.isAppOpenAdReady(APP_OPEN_AD_UNIT_ID).then(isAppOpenAdReady => {
-      if (isAppOpenAdReady) {
-        AppLovinMAX.showAppOpenAd(APP_OPEN_AD_UNIT_ID);
-      } else {
-        AppLovinMAX.loadAppOpenAd(APP_OPEN_AD_UNIT_ID);
-      }
     });
   }
 

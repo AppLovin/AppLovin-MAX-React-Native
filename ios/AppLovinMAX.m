@@ -755,16 +755,10 @@ RCT_EXPORT_METHOD(setBannerExtraParameter:(NSString *)adUnitIdentifier :(NSStrin
     [self setAdViewExtraParameterForAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT key: key value: value];
 }
 
-RCT_EXPORT_METHOD(setBannerLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)object)
-{
-    if ( !self.sdk )
-    {
-        [self logUninitializedAccessError: @"setBannerLocalExtraParameter"];
-        return;
-    }
-    
-    NSString *key = [[object allKeys] objectAtIndex: 0];
-    id value = [object objectForKey:key];
+RCT_EXPORT_METHOD(setBannerLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)parameterDict)
+{    
+    NSString *key = parameterDict.allKeys.firstObject;
+    id value = parameterDict.allValues.firstObject;
     
     [self setAdViewLocalExtraParameterForAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT key: key value: value];
 }
@@ -876,26 +870,14 @@ RCT_EXPORT_METHOD(updateMRecPosition:(NSString *)mrecPosition :(NSString *)adUni
 }
 
 RCT_EXPORT_METHOD(setMRecExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
-{
-    if ( !self.sdk )
-    {
-        [self logUninitializedAccessError: @"setMRecExtraParameter"];
-        return;
-    }
-    
+{   
     [self setAdViewExtraParameterForAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec key: key value: value];
 }
 
-RCT_EXPORT_METHOD(setMRecLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)object)
+RCT_EXPORT_METHOD(setMRecLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)parameterDict)
 {
-    if ( !self.sdk )
-    {
-        [self logUninitializedAccessError: @"setMRecLocalExtraParameter"];
-        return;
-    }
-    
-    NSString *key = [[object allKeys] objectAtIndex: 0];
-    id value = [object objectForKey:key];
+    NSString *key = parameterDict.allKeys.firstObject;
+    id value = parameterDict.allValues.firstObject;
     
     [self setAdViewLocalExtraParameterForAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec key: key value: value];
 }
@@ -1006,16 +988,10 @@ RCT_EXPORT_METHOD(setInterstitialExtraParameter:(NSString *)adUnitIdentifier :(N
     [interstitial setExtraParameterForKey: key value: value];
 }
 
-RCT_EXPORT_METHOD(setInterstitialLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)object)
+RCT_EXPORT_METHOD(setInterstitialLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)parameterDict)
 {
-    if ( !self.sdk )
-    {
-        [self logUninitializedAccessError: @"setInterstitialLocalExtraParameter"];
-        return;
-    }
-    
-    NSString *key = [[object allKeys] objectAtIndex: 0];
-    id value = [object objectForKey:key];
+    NSString *key = parameterDict.allKeys.firstObject;
+    id value = parameterDict.allValues.firstObject;
     
     MAInterstitialAd *interstitial = [self retrieveInterstitialForAdUnitIdentifier: adUnitIdentifier];
     [interstitial setLocalExtraParameterForKey: key value: value];
@@ -1072,16 +1048,10 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     [rewardedAd setExtraParameterForKey: key value: value];
 }
 
-RCT_EXPORT_METHOD(setRewardedAdLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)object)
+RCT_EXPORT_METHOD(setRewardedAdLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)parameterDict)
 {
-    if ( !self.sdk )
-    {
-        [self logUninitializedAccessError: @"setRewardedAdLocalExtraParameter"];
-        return;
-    }
-    
-    NSString *key = [[object allKeys] objectAtIndex: 0];
-    id value = [object objectForKey:key];
+    NSString *key = parameterDict.allKeys.firstObject;
+    id value = parameterDict.allValues.firstObject;
     
     MARewardedAd *rewardedAd = [self retrieveRewardedAdForAdUnitIdentifier: adUnitIdentifier];
     [rewardedAd setLocalExtraParameterForKey: key value: value];
@@ -1114,7 +1084,7 @@ RCT_EXPORT_METHOD(isAppOpenAdReady:(NSString *)adUnitIdentifier :(RCTPromiseReso
     resolve(@([appOpenAd isReady]));
 }
 
-RCT_EXPORT_METHOD(showAppOpenAd:(NSString *)adUnitIdentifier :(nullable NSString *)placement :(nullable NSString *)customData)
+RCT_EXPORT_METHOD(showAppOpenAd:(NSString *)adUnitIdentifier placement:(nullable NSString *)placement customData:(nullable NSString *)customData)
 {
     if ( !self.sdk )
     {
@@ -1126,7 +1096,7 @@ RCT_EXPORT_METHOD(showAppOpenAd:(NSString *)adUnitIdentifier :(nullable NSString
     [appOpenAd showAdForPlacement: placement customData: customData];
 }
 
-RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
+RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(NSString *)key value:(nullable NSString *)value)
 {
     if ( !self.sdk )
     {
@@ -1138,16 +1108,10 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier :(NSSt
     [appOpenAd setExtraParameterForKey: key value: value];
 }
 
-RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)object)
+RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)parameterDict)
 {
-    if ( !self.sdk )
-    {
-        [self logUninitializedAccessError: @"setAppOpenAdLocalExtraParameter"];
-        return;
-    }
-    
-    NSString *key = [[object allKeys] objectAtIndex: 0];
-    id value = [object objectForKey:key];
+    NSString *key = parameterDict.allKeys.firstObject;
+    id value = parameterDict.allValues.firstObject;
     
     MAAppOpenAd *appOpenAd = [self retrieveAppOpenAdForAdUnitIdentifier: adUnitIdentifier];
     [appOpenAd setLocalExtraParameterForKey: key value: value];

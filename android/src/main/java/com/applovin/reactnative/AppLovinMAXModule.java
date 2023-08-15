@@ -954,15 +954,9 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod
-    public void setBannerLocalExtraParameter(final String adUnitId, final ReadableMap object)
+    public void setBannerLocalExtraParameter(final String adUnitId, final ReadableMap parameterMap)
     {
-        if ( sdk == null )
-        {
-            logUninitializedAccessError( "setBannerLocalExtraParameter" );
-            return;
-        }
-
-        Map.Entry<String, Object> entry = object.getEntryIterator().next();
+        Map.Entry<String, Object> entry = parameterMap.getEntryIterator().next();
         setAdViewLocalExtraParameters( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), entry.getKey(), entry.getValue() );
     }
 
@@ -1085,25 +1079,13 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setMRecExtraParameter(final String adUnitId, final String key, final String value)
     {
-        if ( sdk == null )
-        {
-            logUninitializedAccessError( "setMRecExtraParameter" );
-            return;
-        }
-
         setAdViewExtraParameters( adUnitId, MaxAdFormat.MREC, key, value );
     }
 
     @ReactMethod
-    public void setMRecLocalExtraParameter(final String adUnitId, final ReadableMap object)
+    public void setMRecLocalExtraParameter(final String adUnitId, final ReadableMap parameterMap)
     {
-        if ( sdk == null )
-        {
-            logUninitializedAccessError( "setMRecLocalExtraParameter" );
-            return;
-        }
-
-        Map.Entry<String, Object> entry = object.getEntryIterator().next();
+        Map.Entry<String, Object> entry = parameterMap.getEntryIterator().next();
         setAdViewLocalExtraParameters( adUnitId, MaxAdFormat.MREC, entry.getKey(), entry.getValue() );
     }
 
@@ -1243,7 +1225,7 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod
-    public void setInterstitialLocalExtraParameter(final String adUnitId, final ReadableMap object)
+    public void setInterstitialLocalExtraParameter(final String adUnitId, final ReadableMap parameterMap)
     {
         if ( sdk == null )
         {
@@ -1254,7 +1236,7 @@ public class AppLovinMAXModule
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId, "setInterstitialLocalExtraParameter" );
         if ( interstitial == null ) return;
 
-        Map.Entry<String, Object> entry = object.getEntryIterator().next();
+        Map.Entry<String, Object> entry = parameterMap.getEntryIterator().next();
         interstitial.setLocalExtraParameter( entry.getKey(), entry.getValue() );
     }
 
@@ -1334,7 +1316,7 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod
-    public void setRewardedAdLocalExtraParameter(final String adUnitId, final ReadableMap object)
+    public void setRewardedAdLocalExtraParameter(final String adUnitId, final ReadableMap parameterMap)
     {
         if ( sdk == null )
         {
@@ -1345,7 +1327,7 @@ public class AppLovinMAXModule
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId, "setRewardedAdLocalExtraParameter" );
         if ( rewardedAd == null ) return;
 
-        Map.Entry<String, Object> entry = object.getEntryIterator().next();
+        Map.Entry<String, Object> entry = parameterMap.getEntryIterator().next();
         rewardedAd.setLocalExtraParameter( entry.getKey(), entry.getValue() );
     }
 
@@ -1361,8 +1343,6 @@ public class AppLovinMAXModule
         }
 
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
-        if ( appOpenAd == null ) return;
-
         appOpenAd.loadAd();
     }
 
@@ -1377,8 +1357,6 @@ public class AppLovinMAXModule
         }
 
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
-        if ( appOpenAd == null ) return;
-
         promise.resolve( appOpenAd.isReady() );
     }
 
@@ -1392,8 +1370,6 @@ public class AppLovinMAXModule
         }
 
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
-        if ( appOpenAd == null ) return;
-
         appOpenAd.showAd( placement, customData );
     }
 
@@ -1407,24 +1383,14 @@ public class AppLovinMAXModule
         }
 
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
-        if ( appOpenAd == null ) return;
-
         appOpenAd.setExtraParameter( key, value );
     }
 
     @ReactMethod
-    public void setAppOpenAdLocalExtraParameter(final String adUnitId, final ReadableMap object)
+    public void setAppOpenAdLocalExtraParameter(final String adUnitId, final ReadableMap parameterMap)
     {
-        if ( sdk == null )
-        {
-            logUninitializedAccessError( "setAppOpenAdLocalExtraParameter" );
-            return;
-        }
-
         MaxAppOpenAd appOpenAd = retrieveAppOpenAd( adUnitId );
-        if ( appOpenAd == null ) return;
-
-        Map.Entry<String, Object> entry = object.getEntryIterator().next();
+        Map.Entry<String, Object> entry = parameterMap.getEntryIterator().next();
         appOpenAd.setLocalExtraParameter( entry.getKey(), entry.getValue() );
     }
 
