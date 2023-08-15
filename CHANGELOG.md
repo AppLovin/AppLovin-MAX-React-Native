@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Add support for local extra parameters API with non-String values for the programmatical methods.
 ## 5.6.0
 * Depend on Android SDK 11.11.2 and iOS SDK 11.11.2.
 ## 5.5.3

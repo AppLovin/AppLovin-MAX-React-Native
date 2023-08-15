@@ -219,7 +219,7 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     self.consentFlowEnabledToSet = nil;
     self.privacyPolicyURLToSet = nil;
     self.termsOfServiceURLToSet = nil;
-
+    
     // Initialize SDK
     self.sdk = [ALSdk sharedWithKey: sdkKey settings: settings];
     [self.sdk setPluginVersion: [@"React-Native-" stringByAppendingString: pluginVersion]];
@@ -303,7 +303,7 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     }
     
     [self setPendingExtraParametersIfNeeded: self.sdk.settings];
-
+    
     [self.sdk initializeSdkWithCompletionHandler:^(ALSdkConfiguration *configuration) {
         
         [self log: @"SDK initialized"];
@@ -434,7 +434,7 @@ RCT_EXPORT_METHOD(setExtraParameter:(NSString *)key :(nullable NSString *)value)
         [self log: @"[%@] Failed to set extra parameter for nil or empty key: %@", TAG, key];
         return;
     }
-
+    
     if ( self.sdk )
     {
         ALSdkSettings *settings = self.sdk.settings;
@@ -662,7 +662,7 @@ RCT_EXPORT_METHOD(createBanner:(NSString *)adUnitIdentifier :(NSString *)bannerP
         [self logUninitializedAccessError: @"createBanner"];
         return;
     }
-
+    
     [self createAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT atPosition: bannerPosition withOffset: CGPointZero];
 }
 
@@ -674,7 +674,7 @@ RCT_EXPORT_METHOD(createBannerWithOffsets:(NSString *)adUnitIdentifier :(NSStrin
         [self logUninitializedAccessError: @"createBannerWithOffsets"];
         return;
     }
-
+    
     [self createAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT atPosition: bannerPosition withOffset: CGPointMake(xOffset, yOffset)];
 }
 
@@ -685,7 +685,7 @@ RCT_EXPORT_METHOD(setBannerBackgroundColor:(NSString *)adUnitIdentifier :(NSStri
         [self logUninitializedAccessError: @"setBannerBackgroundColor"];
         return;
     }
-
+    
     [self setAdViewBackgroundColorForAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT hexColorCode: hexColorCode];
 }
 
@@ -696,7 +696,7 @@ RCT_EXPORT_METHOD(setBannerPlacement:(NSString *)adUnitIdentifier :(nullable NSS
         [self logUninitializedAccessError: @"setBannerPlacement"];
         return;
     }
-
+    
     [self setAdViewPlacement: placement forAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
 }
 
@@ -707,7 +707,7 @@ RCT_EXPORT_METHOD(setBannerCustomData:(NSString *)adUnitIdentifier :(nullable NS
         [self logUninitializedAccessError: @"setBannerCustomData"];
         return;
     }
-
+    
     [self setAdViewCustomData: customData forAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
 }
 
@@ -718,7 +718,7 @@ RCT_EXPORT_METHOD(updateBannerPosition:(NSString *)adUnitIdentifier :(NSString *
         [self logUninitializedAccessError: @"updateBannerPosition"];
         return;
     }
-
+    
     [self updateAdViewPosition: bannerPosition withOffset: CGPointZero forAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
 }
 
@@ -729,7 +729,7 @@ RCT_EXPORT_METHOD(updateBannerOffsets:(NSString *)adUnitIdentifier :(CGFloat)xOf
         [self logUninitializedAccessError: @"updateBannerOffsets"];
         return;
     }
-
+    
     [self updateAdViewPosition: self.adViewPositions[adUnitIdentifier] withOffset: CGPointMake(xOffset, yOffset) forAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
 }
 
@@ -740,7 +740,7 @@ RCT_EXPORT_METHOD(setBannerWidth:(NSString *)adUnitIdentifier :(CGFloat)width)
         [self logUninitializedAccessError: @"setBannerWidth"];
         return;
     }
-
+    
     [self setAdViewWidth: width forAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
 }
 
@@ -751,12 +751,15 @@ RCT_EXPORT_METHOD(setBannerExtraParameter:(NSString *)adUnitIdentifier :(NSStrin
         [self logUninitializedAccessError: @"setBannerExtraParameter"];
         return;
     }
-
+    
     [self setAdViewExtraParameterForAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT key: key value: value];
 }
 
-RCT_EXPORT_METHOD(setBannerLocalExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
-{
+RCT_EXPORT_METHOD(setBannerLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)parameterDict)
+{    
+    NSString *key = parameterDict.allKeys.firstObject;
+    id value = parameterDict.allValues.firstObject;
+    
     [self setAdViewLocalExtraParameterForAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT key: key value: value];
 }
 
@@ -767,7 +770,7 @@ RCT_EXPORT_METHOD(startBannerAutoRefresh:(NSString *)adUnitIdentifier)
         [self logUninitializedAccessError: @"startBannerAutoRefresh"];
         return;
     }
-
+    
     [self startAutoRefresh: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
 }
 
@@ -778,7 +781,7 @@ RCT_EXPORT_METHOD(stopBannerAutoRefresh:(NSString *)adUnitIdentifier)
         [self logUninitializedAccessError: @"stopBannerAutoRefresh"];
         return;
     }
-
+    
     [self stopAutoRefresh: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
 }
 
@@ -789,7 +792,7 @@ RCT_EXPORT_METHOD(showBanner:(NSString *)adUnitIdentifier)
         [self logUninitializedAccessError: @"showBanner"];
         return;
     }
-
+    
     [self showAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
 }
 
@@ -800,7 +803,7 @@ RCT_EXPORT_METHOD(hideBanner:(NSString *)adUnitIdentifier)
         [self logUninitializedAccessError: @"hideBanner"];
         return;
     }
-
+    
     [self hideAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
 }
 
@@ -811,7 +814,7 @@ RCT_EXPORT_METHOD(destroyBanner:(NSString *)adUnitIdentifier)
         [self logUninitializedAccessError: @"destroyBanner"];
         return;
     }
-
+    
     [self destroyAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
 }
 
@@ -829,7 +832,7 @@ RCT_EXPORT_METHOD(createMRec:(NSString *)adUnitIdentifier :(NSString *)mrecPosit
         [self logUninitializedAccessError: @"createMRec"];
         return;
     }
-
+    
     [self createAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec atPosition: mrecPosition withOffset: CGPointZero];
 }
 
@@ -840,7 +843,7 @@ RCT_EXPORT_METHOD(setMRecPlacement:(NSString *)adUnitIdentifier :(nullable NSStr
         [self logUninitializedAccessError: @"setMRecPlacement"];
         return;
     }
-
+    
     [self setAdViewPlacement: placement forAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
 }
 
@@ -851,7 +854,7 @@ RCT_EXPORT_METHOD(setMRecCustomData:(NSString *)adUnitIdentifier :(nullable NSSt
         [self logUninitializedAccessError: @"setMRecCustomData"];
         return;
     }
-
+    
     [self setAdViewCustomData: customData forAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
 }
 
@@ -862,17 +865,20 @@ RCT_EXPORT_METHOD(updateMRecPosition:(NSString *)mrecPosition :(NSString *)adUni
         [self logUninitializedAccessError: @"updateMRecPosition"];
         return;
     }
-
+    
     [self updateAdViewPosition: mrecPosition withOffset: CGPointZero forAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
 }
 
 RCT_EXPORT_METHOD(setMRecExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
-{
+{   
     [self setAdViewExtraParameterForAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec key: key value: value];
 }
 
-RCT_EXPORT_METHOD(setMRecLocalExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
+RCT_EXPORT_METHOD(setMRecLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)parameterDict)
 {
+    NSString *key = parameterDict.allKeys.firstObject;
+    id value = parameterDict.allValues.firstObject;
+    
     [self setAdViewLocalExtraParameterForAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec key: key value: value];
 }
 
@@ -883,7 +889,7 @@ RCT_EXPORT_METHOD(startMRecAutoRefresh:(NSString *)adUnitIdentifier)
         [self logUninitializedAccessError: @"startMRecAutoRefresh"];
         return;
     }
-
+    
     [self startAutoRefresh: adUnitIdentifier adFormat: MAAdFormat.mrec];
 }
 
@@ -894,7 +900,7 @@ RCT_EXPORT_METHOD(stopMRecAutoRefresh:(NSString *)adUnitIdentifier)
         [self logUninitializedAccessError: @"stopMRecAutoRefresh"];
         return;
     }
-
+    
     [self stopAutoRefresh: adUnitIdentifier adFormat: MAAdFormat.mrec];
 }
 
@@ -905,7 +911,7 @@ RCT_EXPORT_METHOD(showMRec:(NSString *)adUnitIdentifier)
         [self logUninitializedAccessError: @"showMRec"];
         return;
     }
-
+    
     [self showAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
 }
 
@@ -916,7 +922,7 @@ RCT_EXPORT_METHOD(hideMRec:(NSString *)adUnitIdentifier)
         [self logUninitializedAccessError: @"hideMRec"];
         return;
     }
-
+    
     [self hideAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
 }
 
@@ -927,7 +933,7 @@ RCT_EXPORT_METHOD(destroyMRec:(NSString *)adUnitIdentifier)
         [self logUninitializedAccessError: @"destroyMRec"];
         return;
     }
-
+    
     [self destroyAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
 }
 
@@ -940,7 +946,7 @@ RCT_EXPORT_METHOD(loadInterstitial:(NSString *)adUnitIdentifier)
         [self logUninitializedAccessError: @"loadInterstitial"];
         return;
     }
-
+    
     MAInterstitialAd *interstitial = [self retrieveInterstitialForAdUnitIdentifier: adUnitIdentifier];
     [interstitial loadAd];
 }
@@ -953,7 +959,7 @@ RCT_EXPORT_METHOD(isInterstitialReady:(NSString *)adUnitIdentifier :(RCTPromiseR
         resolve(@(NO));
         return;
     }
-
+    
     MAInterstitialAd *interstitial = [self retrieveInterstitialForAdUnitIdentifier: adUnitIdentifier];
     resolve(@([interstitial isReady]));
 }
@@ -965,7 +971,7 @@ RCT_EXPORT_METHOD(showInterstitial:(NSString *)adUnitIdentifier :(nullable NSStr
         [self logUninitializedAccessError: @"showInterstitial"];
         return;
     }
-
+    
     MAInterstitialAd *interstitial = [self retrieveInterstitialForAdUnitIdentifier: adUnitIdentifier];
     [interstitial showAdForPlacement: placement customData: customData];
 }
@@ -977,13 +983,16 @@ RCT_EXPORT_METHOD(setInterstitialExtraParameter:(NSString *)adUnitIdentifier :(N
         [self logUninitializedAccessError: @"setInterstitialExtraParameter"];
         return;
     }
-
+    
     MAInterstitialAd *interstitial = [self retrieveInterstitialForAdUnitIdentifier: adUnitIdentifier];
     [interstitial setExtraParameterForKey: key value: value];
 }
 
-RCT_EXPORT_METHOD(setInterstitialLocalExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
+RCT_EXPORT_METHOD(setInterstitialLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)parameterDict)
 {
+    NSString *key = parameterDict.allKeys.firstObject;
+    id value = parameterDict.allValues.firstObject;
+    
     MAInterstitialAd *interstitial = [self retrieveInterstitialForAdUnitIdentifier: adUnitIdentifier];
     [interstitial setLocalExtraParameterForKey: key value: value];
 }
@@ -997,7 +1006,7 @@ RCT_EXPORT_METHOD(loadRewardedAd:(NSString *)adUnitIdentifier)
         [self logUninitializedAccessError: @"loadRewardedAd"];
         return;
     }
-
+    
     MARewardedAd *rewardedAd = [self retrieveRewardedAdForAdUnitIdentifier: adUnitIdentifier];
     [rewardedAd loadAd];
 }
@@ -1010,7 +1019,7 @@ RCT_EXPORT_METHOD(isRewardedAdReady:(NSString *)adUnitIdentifier :(RCTPromiseRes
         resolve(@(NO));
         return;
     }
-
+    
     MARewardedAd *rewardedAd = [self retrieveRewardedAdForAdUnitIdentifier: adUnitIdentifier];
     resolve(@([rewardedAd isReady]));
 }
@@ -1022,7 +1031,7 @@ RCT_EXPORT_METHOD(showRewardedAd:(NSString *)adUnitIdentifier :(nullable NSStrin
         [self logUninitializedAccessError: @"showRewardedAd"];
         return;
     }
-
+    
     MARewardedAd *rewardedAd = [self retrieveRewardedAdForAdUnitIdentifier: adUnitIdentifier];
     [rewardedAd showAdForPlacement: placement customData: customData];
 }
@@ -1034,13 +1043,16 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
         [self logUninitializedAccessError: @"setRewardedAdExtraParameter"];
         return;
     }
-
+    
     MARewardedAd *rewardedAd = [self retrieveRewardedAdForAdUnitIdentifier: adUnitIdentifier];
     [rewardedAd setExtraParameterForKey: key value: value];
 }
 
-RCT_EXPORT_METHOD(setRewardedAdLocalExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
+RCT_EXPORT_METHOD(setRewardedAdLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)parameterDict)
 {
+    NSString *key = parameterDict.allKeys.firstObject;
+    id value = parameterDict.allValues.firstObject;
+    
     MARewardedAd *rewardedAd = [self retrieveRewardedAdForAdUnitIdentifier: adUnitIdentifier];
     [rewardedAd setLocalExtraParameterForKey: key value: value];
 }
@@ -1054,7 +1066,7 @@ RCT_EXPORT_METHOD(loadAppOpenAd:(NSString *)adUnitIdentifier)
         [self logUninitializedAccessError: @"loadAppOpenAd"];
         return;
     }
-
+    
     MAAppOpenAd *appOpenAd = [self retrieveAppOpenAdForAdUnitIdentifier: adUnitIdentifier];
     [appOpenAd loadAd];
 }
@@ -1067,7 +1079,7 @@ RCT_EXPORT_METHOD(isAppOpenAdReady:(NSString *)adUnitIdentifier :(RCTPromiseReso
         resolve(@(NO));
         return;
     }
-
+    
     MAAppOpenAd *appOpenAd = [self retrieveAppOpenAdForAdUnitIdentifier: adUnitIdentifier];
     resolve(@([appOpenAd isReady]));
 }
@@ -1079,7 +1091,7 @@ RCT_EXPORT_METHOD(showAppOpenAd:(NSString *)adUnitIdentifier placement:(nullable
         [self logUninitializedAccessError: @"showAppOpenAd"];
         return;
     }
-
+    
     MAAppOpenAd *appOpenAd = [self retrieveAppOpenAdForAdUnitIdentifier: adUnitIdentifier];
     [appOpenAd showAdForPlacement: placement customData: customData];
 }
@@ -1091,13 +1103,16 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
         [self logUninitializedAccessError: @"setAppOpenAdExtraParameter"];
         return;
     }
-
+    
     MAAppOpenAd *appOpenAd = [self retrieveAppOpenAdForAdUnitIdentifier: adUnitIdentifier];
     [appOpenAd setExtraParameterForKey: key value: value];
 }
 
-RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier key:(NSString *)key value:(nullable NSString *)value)
+RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)parameterDict)
 {
+    NSString *key = parameterDict.allKeys.firstObject;
+    id value = parameterDict.allValues.firstObject;
+    
     MAAppOpenAd *appOpenAd = [self retrieveAppOpenAdForAdUnitIdentifier: adUnitIdentifier];
     [appOpenAd setLocalExtraParameterForKey: key value: value];
 }
@@ -1435,9 +1450,9 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier k
 - (void)setAdViewCustomData:(nullable NSString *)customData forAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-
+        
         [self log: @"Setting custom data \"%@\" for \"%@\" with ad unit identifier \"%@\"", customData, adFormat, adUnitIdentifier];
-
+        
         MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: @"" withOffset: CGPointZero];
         adView.customData = customData;
     });
@@ -1512,7 +1527,7 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier k
     });
 }
 
-- (void)setAdViewLocalExtraParameterForAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat key:(NSString *)key value:(nullable NSString *)value
+- (void)setAdViewLocalExtraParameterForAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat key:(NSString *)key value:(nullable id)value
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         
@@ -1665,7 +1680,7 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier k
         
         // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
         [result setExtraParameterForKey: @"allow_pause_auto_refresh_immediately" value: @"true"];
-
+        
         self.adViews[adUnitIdentifier] = result;
         self.adViewPositions[adUnitIdentifier] = adViewPosition;
         self.adViewOffsets[adUnitIdentifier] = [NSValue valueWithCGPoint: offset];
@@ -1878,7 +1893,7 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier k
     {
         [settings setExtraParameterForKey: key value: self.extraParametersToSet[key]];
     }
-
+    
     [self.extraParametersToSet removeAllObjects];
 }
 
@@ -1937,7 +1952,7 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier k
     {
         return @"O";
     }
-
+    
     return @"U";
 }
 
@@ -1980,14 +1995,14 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier k
 - (NSDictionary<NSString *, id> *)adLoadFailedInfoForAd:(NSString *)adUnitIdentifier withError:(MAError *)error
 {
     return ( error ) ?
-        @{@"adUnitId": adUnitIdentifier,
-          @"code" : @(error.code),
-          @"message" : error.message,
-          @"adLoadFailureInfo" : error.adLoadFailureInfo ?: @"",
-          @"waterfall": [self createAdWaterfallInfo: error.waterfall]}
+    @{@"adUnitId": adUnitIdentifier,
+      @"code" : @(error.code),
+      @"message" : error.message,
+      @"adLoadFailureInfo" : error.adLoadFailureInfo ?: @"",
+      @"waterfall": [self createAdWaterfallInfo: error.waterfall]}
     :
-        @{@"adUnitId": adUnitIdentifier,
-          @"code" : @(MAErrorCodeUnspecified)};
+    @{@"adUnitId": adUnitIdentifier,
+      @"code" : @(MAErrorCodeUnspecified)};
 }
 
 - (NSDictionary<NSString *, id> *)adDisplayFailedInfoForAd:(MAAd *)ad withError:(MAError *)error
