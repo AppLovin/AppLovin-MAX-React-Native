@@ -67,7 +67,7 @@ export interface NativeAdViewProps {
   /**
    * React Native UI components.
    */
-  children?: React.ReactNode
+  children?: React.ReactNode;
 
   /**
    * React Native View style props.

@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useEffect } from "react";
-import type { ViewProps, ImageProps } from "react-native";
+import type { ViewProps, ImageProps, TextStyle } from "react-native";
 import { findNodeHandle, Text, Image, View, TouchableOpacity } from "react-native";
 import { NativeAdViewContext } from "./NativeAdViewProvider";
 
@@ -148,13 +148,12 @@ export const MediaView = (props: ViewProps) => {
   );
 };
 
-// FIXME: should not be `any`
-export const StarRatingView = (props: any) => {
+export const StarRatingView = (props: ViewProps) => {
   const { style, ...restProps } = props;
 
   const maxStarCount: number = 5;
-  const starColor: string = style?.color ?? "#ffe234";
-  const starSize: number = style?.fontSize ?? 10;
+  const starColor = (style as TextStyle)?.color ?? "#ffe234";
+  const starSize = (style as TextStyle)?.fontSize ?? 10;
 
   const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
 

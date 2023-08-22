@@ -3,14 +3,14 @@ import { NativeModules, requireNativeComponent, UIManager, findNodeHandle } from
 import { NativeAdViewContext, NativeAdViewProvider } from "./NativeAdViewProvider";
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from "../types/AdInfo";
 import type { AdNativeEvent } from "../types/AdEvent";
-import type { NativeAdType } from "../types/NativeAd";
+import type { NativeAd } from "../types/NativeAd";
 import type { NativeAdViewHandler, NativeAdViewProps } from "../types/NativeAdViewProps";
 import type { NativeAdViewType, NativeAdViewContextType } from "./NativeAdViewProvider";
 
 const { AppLovinMAX } = NativeModules;
 
 type NativeAdViewNativeEvents = {
-  onAdLoadedEvent(event: { nativeEvent: { nativeAd: NativeAdType; adInfo: AdInfo; } }): void
+  onAdLoadedEvent(event: { nativeEvent: { nativeAd: NativeAd; adInfo: AdInfo; } }): void
   onAdLoadFailedEvent(event: AdNativeEvent<AdLoadFailedInfo>): void
   onAdClickedEvent(event: AdNativeEvent<AdInfo>): void
   onAdRevenuePaidEvent(event: AdNativeEvent<AdRevenueInfo>): void
@@ -82,7 +82,7 @@ const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps>(
       }
     }, []);
 
-    const onAdLoadedEvent = (event: { nativeEvent: { nativeAd: NativeAdType; adInfo: AdInfo; } }) => {
+    const onAdLoadedEvent = (event: { nativeEvent: { nativeAd: NativeAd; adInfo: AdInfo; } }) => {
       setNativeAd(event.nativeEvent.nativeAd);
       if (onAdLoaded) onAdLoaded(event.nativeEvent.adInfo);
     };

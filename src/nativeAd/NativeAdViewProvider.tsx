@@ -1,14 +1,14 @@
 import React, { useState, createContext } from "react";
 import type { NativeMethods } from "react-native";
-import type { NativeAdType } from "../types/NativeAd";
+import type { NativeAd } from "../types/NativeAd";
 import type { NativeAdViewProps } from "../types/NativeAdViewProps";
 
 export type NativeAdViewType = React.Component<NativeAdViewProps> & NativeMethods;
 
 export type NativeAdViewContextType = {
-  nativeAd: NativeAdType;
+  nativeAd: NativeAd;
   nativeAdView: NativeAdViewType | null;
-  setNativeAd: React.Dispatch<React.SetStateAction<NativeAdType>>;
+  setNativeAd: React.Dispatch<React.SetStateAction<NativeAd>>;
   setNativeAdView: React.Dispatch<React.SetStateAction<NativeAdViewType>>;
 };
 
