@@ -44,13 +44,14 @@ const ProgrammaticMRecExample = (props: any) => {
         <AppButton
             title={isProgrammaticMRecShowing ? 'Hide Programmatic MREC' : 'Show Programmatic MREC'}
             enabled={isInitialized && !isNativeUIMRecShowing}
-            onPress={async () => {
+            onPress={() => {
                 if (isProgrammaticMRecShowing) {
                     AppLovinMAX.hideMRec(adUnitId);
                 } else {
 
                     if (!isProgrammaticMRecCreated) {
                         AppLovinMAX.createMRec(adUnitId, AdViewPosition.TOP_CENTER);
+
                         setIsProgrammaticMRecCreated(true);
                     }
 

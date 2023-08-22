@@ -1,5 +1,5 @@
 /**
- * Represents an ad when it is successfully loaded.
+ * Represents an AppLovinMAX ad.
  */
 export interface AdInfo {
 
@@ -48,7 +48,7 @@ export interface AdInfo {
 }
 
 /**
- * Encapsulates data for load errors.
+ * Encapsulates load errors.
  */
 export interface AdLoadFailedInfo {
 
@@ -79,7 +79,7 @@ export interface AdLoadFailedInfo {
 }
 
 /**
-  * Encapsulates data for display errors.
+  * Encapsulates display errors.
  */
 export interface AdDisplayFailedInfo extends AdInfo {
 
@@ -111,7 +111,7 @@ export interface AdRewardInfo extends AdInfo {
 }
 
 /**
- * Represents a ad revenue when receiving a revenue event.
+ * Represents an ad revenue when receiving a revenue event.
  */
 export interface AdRevenueInfo extends AdInfo {
 

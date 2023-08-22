@@ -1,5 +1,5 @@
 /**
- * Represents a native ad that is internally applied to render the React UI components.
+ * Represents a native ad for rendering `NativeAdView`.  Internal use only. 
  */
 export interface NativeAd {
 

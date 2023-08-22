@@ -3,9 +3,9 @@ import type { ViewProps } from "react-native";
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from "./AdInfo";
 
 /**
- * Represents an AdView - banner / MRec.
+ * Represents an `AdView` - banner / MRec.
  */
-export type AdViewProps = ViewProps & {
+export interface AdViewProps extends ViewProps {
 
     /**
      * A string value representing the ad unit id to load ads for.

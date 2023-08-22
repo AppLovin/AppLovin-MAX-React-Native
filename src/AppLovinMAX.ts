@@ -6,7 +6,7 @@ import type { Configuration, AppLovinMAXType } from "./types/AppLovinMAX";
 
 const NativeModule = NativeModules.AppLovinMAX;
 
-const VERSION = "4.1.5";
+const VERSION = "6.0.0";
 
 const {
     ON_INTERSTITIAL_LOADED_EVENT,

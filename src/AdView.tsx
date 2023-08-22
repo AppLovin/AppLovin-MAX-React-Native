@@ -11,7 +11,7 @@ const { AppLovinMAX } = NativeModules;
 /**
  * Defines callback functions for receiving events from the native module.
  *
- * The received events are delivered to the app via the corresponding AdViewProps callbacks.
+ * The received events are delivered to the app via the corresponding callbacks.
  */
 type AdViewNativeEvents = {
     onAdLoadedEvent(event: AdNativeEvent<AdInfo>): void
@@ -24,28 +24,37 @@ type AdViewNativeEvents = {
 }
 
 /**
- * A native module of AdView
+ * The native `AdView` component.
  */
 const AdViewComponent = requireNativeComponent<AdViewProps & AdViewNativeEvents>("AppLovinMAXAdView");
 
 /**
- * The AdView component for building a banner or a MRec.
+ * The `AdView` component for building a banner or a MRec.
  */
-export const AdView = (props: AdViewProps) => {
-    const {
-        style,
-        extraParameters,
-        localExtraParameters,
-        adaptiveBannerEnabled = true,
-        autoRefresh = true,
-        ...otherProps
-    } = props;
-
+export const AdView = ({
+    adUnitId,
+    adFormat,
+    placement,
+    customData,
+    adaptiveBannerEnabled = true,
+    autoRefresh = true,
+    extraParameters,
+    localExtraParameters,
+    onAdLoaded,
+    onAdLoadFailed,
+    onAdDisplayFailed,
+    onAdClicked,
+    onAdExpanded,
+    onAdCollapsed,
+    onAdRevenuePaid,
+    style,
+    ...otherProps
+}: AdViewProps) => {
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
     const [dimensions, setDimensions] = useState<{ width?: number, height?: number }>({});
 
-    const viewWidth: string | number | undefined = (style as ViewStyle)?.width;
-    const viewHeight: string | number | undefined = (style as ViewStyle)?.height;
+    const viewWidth = (style as ViewStyle)?.width;
+    const viewHeight = (style as ViewStyle)?.height;
 
     useEffect(() => {
         // check that AppLovinMAX has been initialized
@@ -64,9 +73,9 @@ export const AdView = (props: AdViewProps) => {
 
         const sizeForBannerFormat = async () => {
             const isTablet = await AppLovinMAX.isTablet();
-            const width: number = isTablet ? 728 : 320;
-            let height: number;
-            if (props.adaptiveBannerEnabled) {
+            const width = isTablet ? 728 : 320;
+            let height;
+            if (adaptiveBannerEnabled) {
                 height = await AppLovinMAX.getAdaptiveBannerHeightForWidth(-1);
             } else {
                 height = isTablet ? 90 : 50;
@@ -82,7 +91,7 @@ export const AdView = (props: AdViewProps) => {
             (viewHeight && viewHeight !== 'auto'));
 
         if (!isSizeSpecified) {
-            if (props.adFormat === AdFormat.BANNER) {
+            if (adFormat === AdFormat.BANNER) {
                 sizeForBannerFormat();
             } else {
                 setDimensions({
@@ -94,31 +103,31 @@ export const AdView = (props: AdViewProps) => {
     }, [isInitialized]);
 
     const onAdLoadedEvent = (event: AdNativeEvent<AdInfo>) => {
-        if (props.onAdLoaded) props.onAdLoaded(event.nativeEvent);
+        if (onAdLoaded) onAdLoaded(event.nativeEvent);
     };
 
     const onAdLoadFailedEvent = (event: AdNativeEvent<AdLoadFailedInfo>) => {
-        if (props.onAdLoadFailed) props.onAdLoadFailed(event.nativeEvent);
+        if (onAdLoadFailed) onAdLoadFailed(event.nativeEvent);
     };
 
     const onAdDisplayFailedEvent = (event: AdNativeEvent<AdDisplayFailedInfo>) => {
-        if (props.onAdDisplayFailed) props.onAdDisplayFailed(event.nativeEvent);
+        if (onAdDisplayFailed) onAdDisplayFailed(event.nativeEvent);
     };
 
     const onAdClickedEvent = (event: AdNativeEvent<AdInfo>) => {
-        if (props.onAdClicked) props.onAdClicked(event.nativeEvent);
+        if (onAdClicked) onAdClicked(event.nativeEvent);
     };
 
     const onAdExpandedEvent = (event: AdNativeEvent<AdInfo>) => {
-        if (props.onAdExpanded) props.onAdExpanded(event.nativeEvent);
+        if (onAdExpanded) onAdExpanded(event.nativeEvent);
     };
 
     const onAdCollapsedEvent = (event: AdNativeEvent<AdInfo>) => {
-        if (props.onAdCollapsed) props.onAdCollapsed(event.nativeEvent);
+        if (onAdCollapsed) onAdCollapsed(event.nativeEvent);
     };
 
     const onAdRevenuePaidEvent = (event: AdNativeEvent<AdRevenueInfo>) => {
-        if (props.onAdRevenuePaid) props.onAdRevenuePaid(event.nativeEvent);
+        if (onAdRevenuePaid) onAdRevenuePaid(event.nativeEvent);
     };
 
     // Not initialized
@@ -137,7 +146,10 @@ export const AdView = (props: AdViewProps) => {
 
     return (
         <AdViewComponent
-            style={{ ...(style as ViewProps), ...dimensions }}
+            adUnitId={adUnitId}
+            adFormat={adFormat}
+            placement={placement}
+            customData={customData}
             adaptiveBannerEnabled={adaptiveBannerEnabled}
             autoRefresh={autoRefresh}
             extraParameters={extraParameters}
@@ -149,6 +161,7 @@ export const AdView = (props: AdViewProps) => {
             onAdExpandedEvent={onAdExpandedEvent}
             onAdCollapsedEvent={onAdCollapsedEvent}
             onAdRevenuePaidEvent={onAdRevenuePaidEvent}
+            style={{ ...(style as ViewProps), ...dimensions }}
             {...otherProps}
         />
     );

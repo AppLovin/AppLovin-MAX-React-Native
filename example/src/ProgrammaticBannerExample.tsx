@@ -44,12 +44,20 @@ const ProgrammaticBannerExample = (props: any) => {
         <AppButton
             title={isProgrammaticBannerShowing ? 'Hide Programmatic Banner' : 'Show Programmatic Banner'}
             enabled={isInitialized && !isNativeUIBannerShowing}
-            onPress={async () => {
+            onPress={() => {
                 if (isProgrammaticBannerShowing) {
                     AppLovinMAX.hideBanner(adUnitId);
                 } else {
                     if (!isProgrammaticBannerCreated) {
-                        AppLovinMAX.createBannerWithOffsets(adUnitId, AdViewPosition.BOTTOM_CENTER, 0, 0);
+
+                        //
+                        // Programmatic banner creation - banners are automatically sized to 320x50
+                        // on phones and 728x90 on tablets
+                        //
+                        AppLovinMAX.createBannerWithOffsets(adUnitId, AdViewPosition.BOTTOM_CENTER, 0, 50);
+
+                        // Set background color for banners to be fully functional In this case we
+                        // are setting it to black - PLEASE USE HEX STRINGS ONLY
                         AppLovinMAX.setBannerBackgroundColor(adUnitId, '#000000');
 
                         setIsProgrammaticBannerCreated(true);

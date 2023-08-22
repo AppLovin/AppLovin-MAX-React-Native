@@ -151,7 +151,7 @@ export const MediaView = (props: ViewProps) => {
 export const StarRatingView = (props: ViewProps) => {
     const { style, ...restProps } = props;
 
-    const maxStarCount: number = 5;
+    const maxStarCount = 5;
     const starColor = (style as TextStyle)?.color ?? "#ffe234";
     const starSize = (style as TextStyle)?.fontSize ?? 10;
 

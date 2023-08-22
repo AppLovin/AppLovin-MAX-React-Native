@@ -30,7 +30,7 @@ const NativeAdViewComponent = requireNativeComponent<NativeAdViewProps & NativeA
  * - `CallToActionView`
  *
  * Each asset view will be filled with its data when loading an ad but the layout and style of the
- * asset views need to be provided.  An ad can be reloaded via the ref handler.
+ * asset views need to be provided.  A new ad can be loaded via the ref handler.
  * 
  * ### Example:
  * ```js
@@ -151,11 +151,11 @@ const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps>(({
             customData={customData}
             extraParameters={extraParameters}
             localExtraParameters={localExtraParameters}
-            style={style}
             onAdLoadedEvent={onAdLoadedEvent}
             onAdLoadFailedEvent={onAdLoadFailedEvent}
             onAdClickedEvent={onAdClickedEvent}
             onAdRevenuePaidEvent={onAdRevenuePaidEvent}
+            style={style}
             {...otherProps}
         >
             {children}
