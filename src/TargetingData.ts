@@ -21,16 +21,16 @@ type TargetingDataNativeMethodType = {
   clearAllTargetingData(): Promise<void>
 }
 
-const TargetingDataNativeMethods: TargetingDataNativeMethodType = AppLovinMAX;
+const nativeModule: TargetingDataNativeMethodType = AppLovinMAX;
 
 export const TargetingData = {
 
   set yearOfBirth(value: number) {
-    TargetingDataNativeMethods.setTargetingDataYearOfBirth(value);
+    nativeModule.setTargetingDataYearOfBirth(value);
   },
 
   get yearOfBirth(): Promise<number> {
-    return TargetingDataNativeMethods.getTargetingDataYearOfBirth();
+    return nativeModule.getTargetingDataYearOfBirth();
   },
 
   set gender(value: UserGender) {
@@ -38,12 +38,12 @@ export const TargetingData = {
       value === UserGender.Female ||
       value === UserGender.Male ||
       value === UserGender.Other) {
-      TargetingDataNativeMethods.setTargetingDataGender(value);
+      nativeModule.setTargetingDataGender(value);
     }
   },
 
   get gender(): Promise<UserGender> {
-    return TargetingDataNativeMethods.getTargetingDataGender().then((value:string) => {
+    return nativeModule.getTargetingDataGender().then((value:string) => {
       return value as UserGender;
     });
   },
@@ -53,49 +53,49 @@ export const TargetingData = {
       value === AdContentRating.AllAudiences ||
       value === AdContentRating.EveryoneOverTwelve ||
       value === AdContentRating.MatureAudiences) {
-      TargetingDataNativeMethods.setTargetingDataMaximumAdContentRating(value);
+      nativeModule.setTargetingDataMaximumAdContentRating(value);
     }
   },
 
   get maximumAdContentRating(): Promise<AdContentRating> {
-    return TargetingDataNativeMethods.getTargetingDataMaximumAdContentRating().then((value:number) => {
+    return nativeModule.getTargetingDataMaximumAdContentRating().then((value:number) => {
       return value as AdContentRating;
     });
   },
 
   set email(value: string | null) {
-    TargetingDataNativeMethods.setTargetingDataEmail(value);
+    nativeModule.setTargetingDataEmail(value);
   },
 
   get email(): Promise<string | null> {
-    return TargetingDataNativeMethods.getTargetingDataEmail();
+    return nativeModule.getTargetingDataEmail();
   },
 
   set phoneNumber(value: string | null) {
-    TargetingDataNativeMethods.setTargetingDataPhoneNumber(value);
+    nativeModule.setTargetingDataPhoneNumber(value);
   },
 
   get phoneNumber(): Promise<string | null> {
-    return TargetingDataNativeMethods.getTargetingDataPhoneNumber();
+    return nativeModule.getTargetingDataPhoneNumber();
   },
 
   set keywords(value: string[] | null) {
-    TargetingDataNativeMethods.setTargetingDataKeywords(value);
+    nativeModule.setTargetingDataKeywords(value);
   },
 
   get keywords(): Promise<string[] | null> {
-    return TargetingDataNativeMethods.getTargetingDataKeywords();
+    return nativeModule.getTargetingDataKeywords();
   },
 
   set interests(value: string[] | null) {
-    TargetingDataNativeMethods.setTargetingDataInterests(value);
+    nativeModule.setTargetingDataInterests(value);
   },
 
   get interests(): Promise<string[] | null> {
-    return TargetingDataNativeMethods.getTargetingDataInterests();
+    return nativeModule.getTargetingDataInterests();
   },
 
   clearAll(): Promise<void> {
-    return TargetingDataNativeMethods.clearAllTargetingData();
+    return nativeModule.clearAllTargetingData();
   },
 }

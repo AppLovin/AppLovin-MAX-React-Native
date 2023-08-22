@@ -19,7 +19,38 @@ type NativeAdViewNativeEvents = {
 const NativeAdViewComponent = requireNativeComponent<NativeAdViewProps & NativeAdViewNativeEvents>('AppLovinMAXNativeAdView');
 
 /**
- * @public
+ * A React component for showing a native ad.  `NativeAdView` loads an ad when mounted and renders it with its asset views:
+ *
+ * - `IconView`
+ * - `TitleView`
+ * - `AdvertiserView`
+ * - `StarRatingView`
+ * - `BodyView`
+ * - `MediaView`
+ * - `CallToActionView`
+ *
+ * Each ad asset will be set when loading an ad but the layout and style of the asset views
+ * need to be provided.
+ * 
+ * ### Example:
+ * ```js
+ * <NativeAdView
+ *   adUnitId={adUnitId}
+ *   style={styles.nativead}
+ *   onAdLoaded={(adInfo: AdInfo) => { ... }}
+ * >
+ *   <View style={ ... }}>
+ *     <IconView style={styles.icon} />
+ *     <TitleView style={styles.title} />
+ *     <AdvertiserView style={styles.advertiser} />
+ *     <StarRatingView style={styles.starRatingView} />
+ *     <OptionsView style={styles.optionsView} />
+ *     <BodyView style={styles.body} />
+ *     <MediaView style={{styles.mediaView}} />
+ *     <CallToActionView style={styles.callToAction} />
+ *   </View>
+ * </NativeAdView>
+ * ```
  */
 export const NativeAdView = forwardRef<NativeAdViewHandler, NativeAdViewProps>((props, ref) => {
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
@@ -51,8 +82,19 @@ export const NativeAdView = forwardRef<NativeAdViewHandler, NativeAdViewProps>((
 // 2. update of the nativeAdView context by saveElement, which locates and renders the all child 
 //    components including the user's components without nativeAd
 // 3. update of the nativeAd context by onNativeAdLoaded, which renders the ad components with nativeAd
-const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps>(
-  ({ adUnitId, placement, customData, extraParameters, localExtraParameters, onAdLoaded, onAdLoadFailed, onAdClicked, onAdRevenuePaid, children, style }, ref) => {
+const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps>(({ 
+    adUnitId, 
+    placement, 
+    customData, 
+    extraParameters, 
+    localExtraParameters, 
+    onAdLoaded, 
+    onAdLoadFailed, 
+    onAdClicked, 
+    onAdRevenuePaid, 
+    children, 
+    style 
+  }, ref) => {
 
     // context from NativeAdViewProvider
     const { setNativeAd, setNativeAdView } = useContext(NativeAdViewContext) as NativeAdViewContextType;

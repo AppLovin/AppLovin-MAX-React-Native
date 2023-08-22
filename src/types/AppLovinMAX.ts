@@ -5,12 +5,12 @@ import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo, AdDisplayFailedInfo, AdRe
 /**
  * The SDK configuration.
  */
-export type Configuration = {
+export interface Configuration {
 
     /**
      * The country code of this user. 
      */
-    countryCode: string
+    countryCode: string;
 }
 
 export type AppLovinMAXType = {
@@ -20,7 +20,7 @@ export type AppLovinMAXType = {
     /**********************************************************************************/
 
     /**
-     * 
+     * Whether the SDK has fully been initialized without errors and the completion callback called.
      */
     isInitialized(): Promise<boolean>
 
@@ -32,63 +32,68 @@ export type AppLovinMAXType = {
     initialize(sdkKey: string): Promise<Configuration>
 
     /**
-     * 
+     * Presents the mediation debugger UI.
      */
     showMediationDebugger(): void
 
     /**
-     * 
+     * Whether this device is a tablet.
      */
     isTablet(): Promise<boolean>
 
     /**
+     * Sets an id for the current user.  This identifier will be tied to SDK events and AppLovin’s
+     * optional S2S postbacks.
      * 
      * @param userId 
      */
     setUserId(userId: string): void
 
     /**
-     * 
+     * Sets a muted state or not for beginning video ads.
+     *
      * @param muted 
      */
     setMuted(muted: boolean): void
 
     /**
-     * 
+     * Whether to begin video ads in a muted state or not.
      */
     isMuted(): Promise<boolean>
 
     /**
-     * 
+     * A toggle for verbose logging for the SDK.
+     *
      * @param verboseLoggingEnabled 
      */
     setVerboseLogging(verboseLoggingEnabled: boolean): void
 
     /**
+     * Enable devices to receive test ads by passing in the advertising identifier (IDFA) of each
+     * test device.  Refer to AppLovin logs for the IDFA of your current device.
      * 
      * @param advertisingIds 
      */
     setTestDeviceAdvertisingIds(advertisingIds: string[]): void
 
     /**
-     * 
+     * Whether the Creative Debugger will be displayed after flipping the device screen down twice.
+     *
      * @param enabled 
      */
     setCreativeDebuggerEnabled(enabled: boolean): void
 
     /**
+     * Set an extra parameter to pass to the AppLovin server.
      * 
      * @param key 
      * @param value 
      */
     setExtraParameter(key: string, value: string | null): void
 
-    /**********************************************************************************/
-    /* Targeting Data */
-    /**********************************************************************************/
-
     /**
-     * 
+     * Whether or not the SDK will collect the device location.
+     *
      * @param enabled 
      */
     setLocationCollectionEnabled(enabled: boolean): Promise<void>
@@ -103,35 +108,38 @@ export type AppLovinMAXType = {
     showConsentDialog(): Promise<void>
 
     /**
+     * Sets whether or not the user has provided consent for information-sharing with AppLovin.
      * 
      * @param hasUserConsent 
      */
     setHasUserConsent(hasUserConsent: boolean): void
 
     /**
-     * 
+     * Checks if user has set consent for information sharing.
      */
     hasUserConsent(): Promise<boolean>
 
     /**
+     * Marks the user as age-restricted (i.e. under 16).
      * 
      * @param isAgeRestrictedUser 
      */
     setIsAgeRestrictedUser(isAgeRestrictedUser: boolean): void
 
     /**
-     * 
+     * Checks if the user is age-restricted.
      */
     isAgeRestrictedUser(): Promise<boolean>
 
     /**
+     * Sets whether or not the user has opted out of the sale of their personal information.
      * 
      * @param doNotSell 
      */
     setDoNotSell(doNotSell: boolean): void
 
     /**
-     * 
+     * Checks if the user has opted out of the sale of their personal information.
      */
     isDoNotSell(): Promise<boolean>
 
@@ -140,18 +148,22 @@ export type AppLovinMAXType = {
     /**********************************************************************************/
 
     /**
-     * 
+     * Enable the Terms Flow.
+     *
      * @param enabled 
      */
     setConsentFlowEnabled(enabled: boolean): Promise<void>
 
     /**
+     * URL for your company’s privacy policy. This is required in order to enable the Terms Flow.
      * 
      * @param urlString 
      */
     setPrivacyPolicyUrl(urlString: string): Promise<void>
 
     /**
+     * URL for your company’s terms of service. This is optional; you can enable the Terms Flow with
+     * or without it.
      * 
      * @param urlString 
      */
@@ -162,18 +174,21 @@ export type AppLovinMAXType = {
     /**********************************************************************************/
 
     /**
+     * Loads an interstitial ad.
      * 
      * @param adUnitId 
      */
     loadInterstitial(adUnitId: string): void
 
     /**
+     * Whether or not this ad is ready to be shown.
      * 
      * @param adUnitId 
      */
     isInterstitialReady(adUnitId: string): Promise<boolean>
 
     /**
+     * Show the loaded interstitial ad, optionallly for a given placement and custom data to tie ad events to.
      * 
      * @param adUnitId 
      * @param placement 
@@ -182,6 +197,7 @@ export type AppLovinMAXType = {
     showInterstitial(adUnitId: string, placement?: string | null, customData?: string | null): void
 
     /**
+     * Sets an extra key/value parameter for the ad.
      * 
      * @param adUnitId 
      * @param key 
@@ -190,7 +206,8 @@ export type AppLovinMAXType = {
     setInterstitialExtraParameter(adUnitId: string, key: string, value: string | null): void
 
     /**
-     * 
+     * Set a local extra parameter to pass to the adapter instances.
+     *
      * @param adUnitId 
      * @param key 
      * @param value 

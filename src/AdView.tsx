@@ -39,6 +39,7 @@ export const AdView = (props: AdViewProps) => {
     autoRefresh = true,
     ...otherProps
   } = props;
+
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [dimensions, setDimensions] = useState<{ width?: number | string, height?: number | string }>({});
 
