@@ -312,13 +312,16 @@ public class AppLovinMAXNativeAdView
         // Some adapters, like Google, expect a Button widget for CTA to be clickable
         if ( view instanceof ViewGroup )
         {
-            Button button = new Button( reactContext );
-            button.setAlpha( 0 );
-            ( (ViewGroup) view ).addView( button );
-            sizeToFit( button, view );
+            if ( view.findViewById( CALL_TO_ACTION_VIEW_TAG ) == null )
+            {
+                Button button = new Button( reactContext );
+                button.setAlpha( 0 );
+                ( (ViewGroup) view ).addView( button );
+                sizeToFit( button, view );
 
-            button.setTag( CALL_TO_ACTION_VIEW_TAG );
-            clickableViews.add( button );
+                button.setTag( CALL_TO_ACTION_VIEW_TAG );
+                clickableViews.add( button );
+            }
         }
         else
         {
@@ -364,7 +367,17 @@ public class AppLovinMAXNativeAdView
         }
 
         view.addOnLayoutChangeListener( this );
-        view.addView( optionsView );
+
+        ViewGroup optionsViewParent = (ViewGroup) optionsView.getParent();
+        if ( optionsViewParent == null )
+        {
+            view.addView( optionsView );
+        }
+        else if ( optionsViewParent != view )
+        {
+            optionsViewParent.removeView( optionsView );
+            view.addView( optionsView );
+        }
 
         sizeToFit( optionsView, view );
     }
@@ -385,7 +398,17 @@ public class AppLovinMAXNativeAdView
         clickableViews.add( view );
 
         view.addOnLayoutChangeListener( this );
-        view.addView( mediaView );
+
+        ViewGroup mediaViewParent = (ViewGroup) mediaView.getParent();
+        if ( mediaViewParent == null )
+        {
+            view.addView( mediaView );
+        }
+        else if ( mediaViewParent != view )
+        {
+            mediaViewParent.removeView( mediaView );
+            view.addView( mediaView );
+        }
 
         sizeToFit( mediaView, view );
 
