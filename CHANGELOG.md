@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Fix `java.lang.IllegalStateException` when rendering native ads. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/238)
 ## 5.6.1
 * Add support for local extra parameters API with non-String values for the programmatical methods.
 ## 5.6.0
