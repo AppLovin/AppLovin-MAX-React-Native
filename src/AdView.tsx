@@ -1,7 +1,7 @@
 import { NativeModules, requireNativeComponent } from "react-native";
 import type { ViewProps, ViewStyle } from "react-native";
 import React, { useEffect, useState } from "react";
-import { AdFormat } from "./types/AdFormat";
+import { AdFormat } from "./types/AdViewProps";
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from "./types/AdInfo";
 import type { AdNativeEvent } from "./types/AdEvent";
 import type { AdViewProps } from "./types/AdViewProps";

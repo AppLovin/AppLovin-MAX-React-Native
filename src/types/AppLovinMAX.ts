@@ -1,4 +1,4 @@
-import { AdViewPosition } from "./AdViewPosition";
+import { AdViewPosition } from "./AdViewProps";
 import type { AdEventListener } from "./AdEvent";
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo, AdDisplayFailedInfo, AdRewardInfo } from "./AdInfo";
 
