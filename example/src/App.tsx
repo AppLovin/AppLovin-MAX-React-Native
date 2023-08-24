@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Platform, StyleSheet, Text, View, SafeAreaView, Dimensions } from 'react-native';
 
 import AppLovinMAX from '../../src/index';
+import type { Configuration } from '../../src/index';
 import AppLogo from './components/AppLogo';
 import AppButton from './components/AppButton';
 import InterExample from './InterExample';
@@ -66,7 +67,7 @@ const App = () => {
         if (isInitialized) return;
 
         // MAX Consent Flow for iOS 14.5+
-        if (Platform.OS === 'ios' && parseFloat(Platform.Version) >= 14.5) {
+        if (Platform.OS === 'ios' && parseFloat(Platform.Version as string) >= 14.5) {
             // Enable the iOS consent flow programmatically - NSUserTrackingUsageDescription must be added to the Info.plist
             AppLovinMAX.setConsentFlowEnabled(true);
             AppLovinMAX.setPrivacyPolicyUrl('https://your_company_name.com/privacy/'); // mandatory
@@ -74,9 +75,9 @@ const App = () => {
         }
 
         AppLovinMAX.setTestDeviceAdvertisingIds([]);
-        AppLovinMAX.initialize(SDK_KEY).then(configuration => {
+        AppLovinMAX.initialize(SDK_KEY).then((conf: Configuration) => {
             setIsInitialized(true);
-            setStatusText('SDK Initialized in ' + configuration?.countryCode);
+            setStatusText('SDK Initialized in ' + conf?.countryCode);
         }).catch(error => {
             setStatusText(error.toString());
         });
