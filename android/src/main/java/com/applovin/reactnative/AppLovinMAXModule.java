@@ -2446,6 +2446,8 @@ public class AppLovinMAXModule
         {
             errInfo.putInt( "code", error.getCode() );
             errInfo.putString( "message", error.getMessage() );
+            errInfo.putString( "mediatedNetworkErrorCode", error.getMediatedNetworkErrorCode() );
+            errInfo.putString( "mediatedNetworkErrorMessage", error.getMediatedNetworkErrorMessage() );
             errInfo.putString( "adLoadFailureInfo", error.getAdLoadFailureInfo() );
             errInfo.putMap( "waterfall", createAdWaterfallInfo( error.getWaterfall() ) );
         }
@@ -2462,6 +2464,8 @@ public class AppLovinMAXModule
         WritableMap info = getAdInfo( ad );
         info.putInt( "code", error.getCode() );
         info.putString( "message", error.getMessage() );
+        info.putString( "mediatedNetworkErrorCode", error.getMediatedNetworkErrorCode() );
+        info.putString( "mediatedNetworkErrorMessage", error.getMediatedNetworkErrorMessage() );
         return info;
     }
 

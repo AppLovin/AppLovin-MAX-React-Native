@@ -1998,6 +1998,8 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
     @{@"adUnitId": adUnitIdentifier,
       @"code" : @(error.code),
       @"message" : error.message,
+      @"mediatedNetworkErrorCode" : @(error.mediatedNetworkErrorCode),
+      @"mediatedNetworkErrorMessage" : error.mediatedNetworkErrorMessage,
       @"adLoadFailureInfo" : error.adLoadFailureInfo ?: @"",
       @"waterfall": [self createAdWaterfallInfo: error.waterfall]}
     :
@@ -2008,7 +2010,9 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
 - (NSDictionary<NSString *, id> *)adDisplayFailedInfoForAd:(MAAd *)ad withError:(MAError *)error
 {
     NSMutableDictionary *body = [@{@"code" : @(error.code),
-                                   @"message" : error.message} mutableCopy];
+                                   @"message" : error.message,
+                                   @"mediatedNetworkErrorCode" : @(error.mediatedNetworkErrorCode),
+                                   @"mediatedNetworkErrorMessage" : error.mediatedNetworkErrorMessage} mutableCopy];
     [body addEntriesFromDictionary: [self adInfoForAd: ad]];
     return body;
 }
