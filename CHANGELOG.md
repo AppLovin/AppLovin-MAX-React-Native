@@ -1,8 +1,9 @@
 ## Versions
 
 ## x.x.x
-* Fix `java.lang.IllegalStateException` when rendering native ads. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/238)
 * Depend on Android SDK 11.11.3 and iOS SDK 11.11.3.
+* Add support for retrieving the `errorInfo.mediatedNetworkErrorCode` and `errorInfo.mediatedNetworkErrorMessage` for ad load and ad display failures. For more info, check out our docs here: https://dash.applovin.com/documentation/mediation/react-native/getting-started/errorcodes#error-object.
+* Fix `java.lang.IllegalStateException` when rendering native ads. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/238)
 ## 5.6.1
 * Add support for local extra parameters API with non-String values for the programmatical methods.
 ## 5.6.0
