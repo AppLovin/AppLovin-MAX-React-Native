@@ -1,5 +1,7 @@
 ## Versions
 
+## 5.7.1
+* Fix Anrdoid build issue.
 ## 5.7.0
 * Depend on Android SDK 11.11.3 and iOS SDK 11.11.3.
 * Add support for retrieving the `errorInfo.mediatedNetworkErrorCode` and `errorInfo.mediatedNetworkErrorMessage` for ad load and ad display failures. For more info, check out our docs here: https://dash.applovin.com/documentation/mediation/react-native/getting-started/errorcodes#error-object.

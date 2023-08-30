@@ -35,8 +35,8 @@ android {
   defaultConfig {
     minSdkVersion 16
     targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
-    versionCode 5070000
-    versionName "5.7.0"
+    versionCode 5070100
+    versionName "5.7.1"
   }
 
   flavorDimensions("default")
