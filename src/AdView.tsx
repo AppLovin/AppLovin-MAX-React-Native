@@ -1,5 +1,5 @@
-import { NativeModules, requireNativeComponent } from "react-native";
-import type { ViewProps, ViewStyle } from "react-native";
+import { NativeModules, requireNativeComponent, StyleSheet } from "react-native";
+import type { ViewProps, ViewStyle, StyleProp } from "react-native";
 import React, { useEffect, useState } from "react";
 import { AdFormat } from "./types/AdViewProps";
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from "./types/AdInfo";
@@ -31,10 +31,18 @@ const AdViewComponent = requireNativeComponent<AdViewProps & AdViewNativeEvents>
 /**
  * Pre-defined sizes for banners and mrecs.
  */
-const AD_SIZE = {
+const ADVIEW_SIZE = {
     banner: { width: 320, height: 50 },
     leader: { width: 728, height: 90 },
     mrec: { width: 300, height: 250 },
+};
+
+/**
+ * Retrieves width and height from the style props
+ */
+const getFlattenedSize = (style: StyleProp<ViewStyle>) => {
+    const viewStyle = StyleSheet.flatten(style || {});
+    return [viewStyle?.width, viewStyle?.height];
 };
 
 /**
@@ -62,10 +70,10 @@ export const AdView = ({
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
     const [dimensions, setDimensions] = useState<{ width?: number | string, height?: number | string }>({});
 
-    const viewWidth = (style as ViewStyle)?.width;
-    const viewHeight = (style as ViewStyle)?.height;
-    const hasViewWidth = viewWidth && viewWidth !== 'auto';
-    const hasViewHeight = viewHeight && viewHeight !== 'auto';
+    const [width, height] = getFlattenedSize(style);
+
+    const isWidthSet = width && width !== 'auto';
+    const isHeightSet = height && height !== 'auto';
 
     useEffect(() => {
         // check that AppLovinMAX has been initialized
@@ -85,36 +93,37 @@ export const AdView = ({
         const sizeForBannerFormat = async () => {
             let isTablet;
 
-            let width;
-            if (hasViewWidth) {
-                width = viewWidth;
+            let adViewWidth;
+            if (isWidthSet) {
+                adViewWidth = width;
             } else {
                 isTablet = await AppLovinMAX.isTablet();
-                width = isTablet ? AD_SIZE.leader.width : AD_SIZE.banner.width;
+                adViewWidth = isTablet ? ADVIEW_SIZE.leader.width : ADVIEW_SIZE.banner.width;
             }
 
-            let height;
-            if (hasViewHeight) {
-                height = viewHeight;
+            let adViewHeight;
+            if (isHeightSet) {
+                adViewHeight = height;
             } else {
                 if (adaptiveBannerEnabled) {
-                    height = await AppLovinMAX.getAdaptiveBannerHeightForWidth(width);
+                    adViewHeight = await AppLovinMAX.getAdaptiveBannerHeightForWidth(adViewWidth);
                 } else {
-                    isTablet ??= await AppLovinMAX.isTablet();
-                    height = isTablet ? AD_SIZE.leader.height : AD_SIZE.banner.height;
+                    if (isTablet === undefined) isTablet = await AppLovinMAX.isTablet();
+                    adViewHeight = isTablet ? ADVIEW_SIZE.leader.height : ADVIEW_SIZE.banner.height;
                 }
             }
 
-            setDimensions({ width: width, height: height });
+            setDimensions({ width: adViewWidth, height: adViewHeight });
         }
 
-        if (!(hasViewWidth && hasViewHeight)) {
+        // evaluate width or height if either one is not defined, also evaluate when it is 'auto'.
+        if (!(isWidthSet && isHeightSet)) {
             if (adFormat === AdFormat.BANNER) {
                 sizeForBannerFormat();
             } else {
                 setDimensions({
-                    width: hasViewWidth ? viewWidth : AD_SIZE.mrec.width,
-                    height: hasViewHeight ? viewHeight : AD_SIZE.mrec.height
+                    width: isWidthSet ? width : ADVIEW_SIZE.mrec.width,
+                    height: isHeightSet ? height : ADVIEW_SIZE.mrec.height
                 });
             }
         }
@@ -153,11 +162,11 @@ export const AdView = ({
     if (!isInitialized) {
         return null;
     } else {
-        const isSizeSpecified = hasViewWidth && hasViewHeight;
+        const isSizeSet = isWidthSet && isHeightSet;
         const isDimensionsSet = (Object.keys(dimensions).length > 0);
 
         // Not sized yet
-        if (!(isSizeSpecified || isDimensionsSet)) {
+        if (!(isSizeSet || isDimensionsSet)) {
             return null;
         }
     }

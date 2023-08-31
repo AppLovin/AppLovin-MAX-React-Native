@@ -201,7 +201,7 @@ export interface AdWaterfallInfo {
      * The list of `AdNetworkResponseInfo` info objects relating to each ad in the waterfall,
      * ordered by their position.
      */
-    networkResponses?: AdNetworkResponseInfo[];
+    networkResponses: AdNetworkResponseInfo[];
 
     /**
      * The total latency in seconds for this waterfall to finish processing.
@@ -260,7 +260,7 @@ export interface AdNetworkResponseInfo {
     /**
      * The state of the ad that this object represents.
      */
-    adLoadState?: AdLoadState;
+    adLoadState: AdLoadState;
 
     /**
      * The mediated network that this adapter response info object represents.
@@ -270,7 +270,7 @@ export interface AdNetworkResponseInfo {
     /**
      * The credentials used to load an ad from this adapter, as entered in the AppLovin MAX dashboard.
      */
-    credentials?: { [key: string]: any; };
+    credentials: { [key: string]: any; };
 
     /**
      * The ad load error this network response resulted in.
@@ -280,7 +280,7 @@ export interface AdNetworkResponseInfo {
     /**
      * The amount of time the network took to load (either successfully or not) an ad, in seconds. 
      */
-    latencyMillis?: number;
+    latencyMillis: number;
 }
 
 /**
