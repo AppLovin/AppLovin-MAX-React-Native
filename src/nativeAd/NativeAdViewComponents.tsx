@@ -8,13 +8,12 @@ export const TitleView = (props: ViewProps) => {
     const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
 
     useEffect(() => {
-        if (!nativeAd.title) return;
+        if (!nativeAd.title || !titleRef.current) return;
+
         nativeAdView?.setNativeProps({
             titleView: findNodeHandle(titleRef.current),
         });
     }, [nativeAd]);
-
-    if (!nativeAdView) return null;
 
     return (
         <Text {...props} ref={titleRef}>
@@ -28,13 +27,12 @@ export const AdvertiserView = (props: ViewProps) => {
     const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
 
     useEffect(() => {
-        if (!nativeAd.advertiser) return;
+        if (!nativeAd.advertiser || !advertiserRef.current) return;
+
         nativeAdView?.setNativeProps({
             advertiserView: findNodeHandle(advertiserRef.current),
         });
     }, [nativeAd]);
-
-    if (!nativeAdView) return null;
 
     return (
         <Text {...props} ref={advertiserRef}>
@@ -48,13 +46,12 @@ export const BodyView = (props: ViewProps) => {
     const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
 
     useEffect(() => {
-        if (!nativeAd.body) return;
+        if (!nativeAd.body || !bodyRef.current) return;
+
         nativeAdView?.setNativeProps({
             bodyView: findNodeHandle(bodyRef.current),
         });
     }, [nativeAd]);
-
-    if (!nativeAdView) return null;
 
     return (
         <Text {...props} ref={bodyRef}>
@@ -68,13 +65,12 @@ export const CallToActionView = (props: ViewProps) => {
     const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
 
     useEffect(() => {
-        if (!nativeAd.callToAction) return;
+        if (!nativeAd.callToAction || !callToActionRef.current) return;
+
         nativeAdView?.setNativeProps({
             callToActionView: findNodeHandle(callToActionRef.current),
         });
     }, [nativeAd]);
-
-    if (!nativeAdView) return null;
 
     return (
         <TouchableOpacity {...props}>
@@ -90,13 +86,12 @@ export const IconView = (props: Omit<ImageProps, | 'source'>) => {
     const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
 
     useEffect(() => {
-        if (!nativeAd.image) return;
+        if (!nativeAd.image || !imageRef.current) return;
+
         nativeAdView?.setNativeProps({
             iconView: findNodeHandle(imageRef.current),
         });
     }, [nativeAd]);
-
-    if (!nativeAdView) return null;
 
     return (
         nativeAd.url ? <Image {...props} source={{ uri: nativeAd.url }} /> :
@@ -110,13 +105,11 @@ export const OptionsView = (props: ViewProps) => {
     const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
 
     useEffect(() => {
-        if (!nativeAd.isOptionsViewAvailable) return;
+        if (!nativeAd.isOptionsViewAvailable || !viewRef.current) return;
         nativeAdView?.setNativeProps({
             optionsView: findNodeHandle(viewRef.current),
         });
     }, [nativeAd]);
-
-    if (!nativeAdView) return null;
 
     return (
         <View {...props} ref={viewRef} />
@@ -128,13 +121,12 @@ export const MediaView = (props: ViewProps) => {
     const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
 
     useEffect(() => {
-        if (!nativeAd.isMediaViewAvailable) return;
+        if (!nativeAd.isMediaViewAvailable || !viewRef.current) return;
+
         nativeAdView?.setNativeProps({
             mediaView: findNodeHandle(viewRef.current),
         });
     }, [nativeAd]);
-
-    if (!nativeAdView) return null;
 
     return (
         <View {...props} ref={viewRef} />
@@ -163,8 +155,6 @@ export const StarRatingView = (props: ViewProps) => {
             <Text style={{ fontSize: starSize, color: starColor }}>{String.fromCodePoint(0x2606)}</Text>
         );
     };
-
-    if (!nativeAdView) return null;
 
     return (
         <View {...restProps} style={[style, { flexDirection: 'row', alignItems: 'center' }]}>

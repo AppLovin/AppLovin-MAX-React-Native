@@ -31,7 +31,7 @@ export const NativeAdViewExample = (props: any) => {
     const DEFAULT_ASPECT_RATIO = (16 / 9);
     const [aspectRatio, setAspectRatio] = useState(DEFAULT_ASPECT_RATIO);
     const [mediaViewSize, setMediaViewSize] = useState({});
-    const [isNativeAdLoaded, setIsNativeAdLoaded] = useState(false);
+    const [isNativeAdLoading, setIsNativeAdLoading] = useState(false);
 
     // Ref for NativeAdView
     const nativeAdViewRef = useRef<NativeAdViewHandler>(null);
@@ -60,10 +60,11 @@ export const NativeAdViewExample = (props: any) => {
                         setAspectRatio(adInfo?.nativeAd?.mediaContentAspectRatio);
                     }
                     log('Native ad loaded from ' + adInfo.networkName);
-                    setIsNativeAdLoaded(true);
+                    setIsNativeAdLoading(false);
                 }}
                 onAdLoadFailed={(errorInfo: AdLoadFailedInfo) => {
                     log('Native ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+                    setIsNativeAdLoading(false);
                 }}
                 onAdClicked={(adInfo: AdInfo) => {
                     log('Native ad clicked on ' + adInfo.adUnitId);
@@ -105,15 +106,15 @@ export const NativeAdViewExample = (props: any) => {
                     <NativeAdExample />
                     <AppButton
                         title={'RELOAD'}
-                        enabled={isNativeAdLoaded}
+                        enabled={!isNativeAdLoading}
                         onPress={() => {
-                            setIsNativeAdLoaded(false);
+                            setIsNativeAdLoading(true);
                             nativeAdViewRef.current?.loadAd();
                         }}
                     />
                     <AppButton
                         title={'CLOSE'}
-                        enabled={isNativeAdLoaded}
+                        enabled={!isNativeAdLoading}
                         onPress={() => {
                             setIsNativeAdShowing(!isNativeAdShowing);
                         }}
