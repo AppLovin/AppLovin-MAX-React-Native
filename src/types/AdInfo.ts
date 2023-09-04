@@ -68,6 +68,16 @@ export interface AdLoadFailedInfo {
     message?: string | null;
 
     /**
+     * The mediated network's error code for the error.
+     */
+    mediatedNetworkErrorCode: number;
+
+    /**
+     * The mediated network's error message for the error.
+     */
+    mediatedNetworkErrorMessage: string;
+
+    /**
      * The message for the error.
      */
     adLoadFailureInfo?: string | null;
@@ -92,6 +102,16 @@ export interface AdDisplayFailedInfo extends AdInfo {
      * The error message for the error.
      */
     message?: string | null;
+
+    /**
+     * The mediated network's error code for the error.
+     */
+    mediatedNetworkErrorCode: number;
+
+    /**
+     * The mediated network's error message for the error.
+     */
+    mediatedNetworkErrorMessage: string;
 }
 
 /**
