@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 5.7.2
 * Fix a warning of `key` in the local extra parameter not enclosing in brackets.
 ## 5.7.1
 * Fix Anrdoid build issue.
