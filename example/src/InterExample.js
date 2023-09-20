@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import AppLovinMAX from '../../src/index';
 import AppButton from './components/AppButton';
 
@@ -15,6 +15,8 @@ const InterExample = (props) => {
 
   const [interstitialAdLoadState, setInterstitialAdLoadState] = useState(AdLoadState.notLoaded);
 
+  const interstitialRetryAttempt = useRef(0);
+
   useEffect(() => {
     setupEventListeners();
   }, []);
@@ -22,10 +24,27 @@ const InterExample = (props) => {
   const setupEventListeners = () => {
     AppLovinMAX.addInterstitialLoadedEventListener((adInfo) => {
       setInterstitialAdLoadState(AdLoadState.loaded);
+
+      // Interstitial ad is ready to be shown. AppLovinMAX.isInterstitialReady(INTERSTITIAL_AD_UNIT_ID) will now return 'true'
       log('Interstitial ad loaded from ' + adInfo.networkName);
+
+      // Reset retry attempt
+      interstitialRetryAttempt.current = 0;
     });
     AppLovinMAX.addInterstitialLoadFailedEventListener((errorInfo) => {
-      log('Interstitial ad failed to load with code ' + errorInfo.code + ' with ' + errorInfo.message);
+      setInterstitialAdLoadState(AdLoadState.notLoaded);
+
+      // Interstitial ad failed to load
+      // We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds)
+      interstitialRetryAttempt.current += 1;
+
+      let retryDelay = Math.pow(2, Math.min(6, interstitialRetryAttempt.current));
+      log('Interstitial ad failed to load with code ' + errorInfo.code + ' - retrying in ' + retryDelay + 's');
+
+      setTimeout(() => {
+        setInterstitialAdLoadState(AdLoadState.loading);
+        AppLovinMAX.loadInterstitial(adUnitId);
+      }, retryDelay * 1000);
     });
     AppLovinMAX.addInterstitialClickedEventListener((_adInfo) => {
       log('Interstitial ad clicked');
