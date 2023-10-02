@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import AppLovinMAX from '../../src/index';
+import { InterstitialAd } from '../../src/index';
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo, AdDisplayFailedInfo } from '../../src/index';
 import AppButton from './components/AppButton';
 
@@ -16,62 +16,62 @@ const InterExample = (props: any) => {
         log,
     } = props;
 
-    const [interstitialAdLoadState, setInterstitialAdLoadState] = useState<AdLoadState>(AdLoadState.notLoaded);
+    const [adLoadState, setAdLoadState] = useState<AdLoadState>(AdLoadState.notLoaded);
 
-    const interstitialRetryAttempt = useRef(0);
+    const retryAttempt = useRef(0);
 
     useEffect(() => {
         setupEventListeners();
     }, []);
 
     const setupEventListeners = () => {
-        AppLovinMAX.addInterstitialLoadedEventListener((adInfo: AdInfo) => {
-            setInterstitialAdLoadState(AdLoadState.loaded);
+        InterstitialAd.addAdLoadedEventListener((adInfo: AdInfo) => {
+            setAdLoadState(AdLoadState.loaded);
 
-            // Interstitial ad is ready to be shown. AppLovinMAX.isInterstitialReady(INTERSTITIAL_AD_UNIT_ID) will now return 'true'
+            // Interstitial ad is ready to be shown. AppLovinMAX.isReady(INTERSTITIAL_AD_UNIT_ID) will now return 'true'
             log('Interstitial ad loaded from ' + adInfo.networkName);
 
             // Reset retry attempt
-            interstitialRetryAttempt.current = 0;
+            retryAttempt.current = 0;
         });
-        AppLovinMAX.addInterstitialLoadFailedEventListener((errorInfo: AdLoadFailedInfo) => {
-            setInterstitialAdLoadState(AdLoadState.notLoaded);
+        InterstitialAd.addAdLoadFailedEventListener((errorInfo: AdLoadFailedInfo) => {
+            setAdLoadState(AdLoadState.notLoaded);
 
             // Interstitial ad failed to load
             // We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds)
-            interstitialRetryAttempt.current += 1;
+            retryAttempt.current += 1;
 
-            const retryDelay = Math.pow(2, Math.min(6, interstitialRetryAttempt.current));
+            const retryDelay = Math.pow(2, Math.min(6, retryAttempt.current));
             log('Interstitial ad failed to load with code ' + errorInfo.code + ' - retrying in ' + retryDelay + 's');
 
             setTimeout(() => {
-                setInterstitialAdLoadState(AdLoadState.loading);
-                AppLovinMAX.loadInterstitial(adUnitId);
+                setAdLoadState(AdLoadState.loading);
+                InterstitialAd.load(adUnitId);
             }, retryDelay * 1000);
         });
-        AppLovinMAX.addInterstitialClickedEventListener((_adInfo: AdInfo) => {
+        InterstitialAd.addAdClickedEventListener((_adInfo: AdInfo) => {
             log('Interstitial ad clicked');
         });
-        AppLovinMAX.addInterstitialDisplayedEventListener((_adInfo: AdInfo) => {
+        InterstitialAd.addAdDisplayedEventListener((_adInfo: AdInfo) => {
             log('Interstitial ad displayed');
         });
-        AppLovinMAX.addInterstitialAdFailedToDisplayEventListener((_adInfo: AdDisplayFailedInfo) => {
-            setInterstitialAdLoadState(AdLoadState.notLoaded);
+        InterstitialAd.addAdFailedToDisplayEventListener((_adInfo: AdDisplayFailedInfo) => {
+            setAdLoadState(AdLoadState.notLoaded);
             log('Interstitial ad failed to display');
         });
-        AppLovinMAX.addInterstitialHiddenEventListener((_adInfo: AdInfo) => {
-            setInterstitialAdLoadState(AdLoadState.notLoaded);
+        InterstitialAd.addAdHiddenEventListener((_adInfo: AdInfo) => {
+            setAdLoadState(AdLoadState.notLoaded);
             log('Interstitial ad hidden');
         });
-        AppLovinMAX.addInterstitialAdRevenuePaidListener((adInfo: AdRevenueInfo) => {
+        InterstitialAd.addAdRevenuePaidListener((adInfo: AdRevenueInfo) => {
             log('Interstitial ad revenue paid: ' + adInfo.revenue);
         });
     }
 
     const getInterstitialButtonTitle = () => {
-        if (interstitialAdLoadState === AdLoadState.notLoaded) {
+        if (adLoadState === AdLoadState.notLoaded) {
             return 'Load Interstitial';
-        } else if (interstitialAdLoadState === AdLoadState.loading) {
+        } else if (adLoadState === AdLoadState.loading) {
             return 'Loading...';
         } else {
             return 'Show Interstitial'; // adLoadState.loaded
@@ -82,17 +82,17 @@ const InterExample = (props: any) => {
         <AppButton
             title={getInterstitialButtonTitle()}
             enabled={
-                isInitialized && interstitialAdLoadState !== AdLoadState.loading
+                isInitialized && adLoadState !== AdLoadState.loading
             }
             onPress={async () => {
                 try {
-                    const isInterstitialReady = await AppLovinMAX.isInterstitialReady(adUnitId);
+                    const isInterstitialReady = await InterstitialAd.isReady(adUnitId);
                     if (isInterstitialReady) {
-                        AppLovinMAX.showInterstitial(adUnitId);
+                        InterstitialAd.show(adUnitId);
                     } else {
                         log('Loading interstitial ad...');
-                        setInterstitialAdLoadState(AdLoadState.loading);
-                        AppLovinMAX.loadInterstitial(adUnitId);
+                        setAdLoadState(AdLoadState.loading);
+                        InterstitialAd.load(adUnitId);
                     }
                 } catch (error: any) {
                     log(error.toString());

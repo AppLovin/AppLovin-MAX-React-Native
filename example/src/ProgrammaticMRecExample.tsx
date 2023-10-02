@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import AppLovinMAX, { AdViewPosition } from '../../src/index';
+import { MRecAd, AdViewPosition } from '../../src/index';
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from '../../src/index';
 import AppButton from './components/AppButton';
 
@@ -20,22 +20,22 @@ const ProgrammaticMRecExample = (props: any) => {
     }, []);
 
     const setupEventListeners = () => {
-        AppLovinMAX.addMRecAdLoadedEventListener((adInfo: AdInfo) => {
+        MRecAd.addAdLoadedEventListener((adInfo: AdInfo) => {
             log('MRec ad loaded from ' + adInfo.networkName);
         });
-        AppLovinMAX.addMRecAdLoadFailedEventListener((errorInfo: AdLoadFailedInfo) => {
+        MRecAd.addAdLoadFailedEventListener((errorInfo: AdLoadFailedInfo) => {
             log('MRec ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
         });
-        AppLovinMAX.addMRecAdClickedEventListener((_adInfo: AdInfo) => {
+        MRecAd.addAdClickedEventListener((_adInfo: AdInfo) => {
             log('MRec ad clicked');
         });
-        AppLovinMAX.addMRecAdExpandedEventListener((_adInfo: AdInfo) => {
+        MRecAd.addAdExpandedEventListener((_adInfo: AdInfo) => {
             log('MRec ad expanded')
         });
-        AppLovinMAX.addMRecAdCollapsedEventListener((_adInfo: AdInfo) => {
+        MRecAd.addAdCollapsedEventListener((_adInfo: AdInfo) => {
             log('MRec ad collapsed')
         });
-        AppLovinMAX.addMRecAdRevenuePaidListener((adInfo: AdRevenueInfo) => {
+        MRecAd.addAdRevenuePaidListener((adInfo: AdRevenueInfo) => {
             log('MRec ad revenue paid: ' + adInfo.revenue);
         });
     }
@@ -46,16 +46,16 @@ const ProgrammaticMRecExample = (props: any) => {
             enabled={isInitialized && !isNativeUIMRecShowing}
             onPress={() => {
                 if (isProgrammaticMRecShowing) {
-                    AppLovinMAX.hideMRec(adUnitId);
+                    MRecAd.hide(adUnitId);
                 } else {
 
                     if (!isProgrammaticMRecCreated) {
-                        AppLovinMAX.createMRec(adUnitId, AdViewPosition.TOP_CENTER);
+                        MRecAd.create(adUnitId, AdViewPosition.TOP_CENTER);
 
                         setIsProgrammaticMRecCreated(true);
                     }
 
-                    AppLovinMAX.showMRec(adUnitId);
+                    MRecAd.show(adUnitId);
                 }
 
                 setIsProgrammaticMRecShowing(!isProgrammaticMRecShowing);

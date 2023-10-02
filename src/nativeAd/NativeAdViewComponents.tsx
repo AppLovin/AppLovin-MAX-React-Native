@@ -140,7 +140,7 @@ export const StarRatingView = (props: ViewProps) => {
     const starColor = StyleSheet.flatten(style as StyleProp<TextStyle> || {}).color ?? "#ffe234";
     const starSize = StyleSheet.flatten(style as StyleProp<TextStyle> || {}).fontSize ?? 10;
 
-    const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
+    const { nativeAd } = useContext(NativeAdViewContext);
 
     const FilledStar = () => {
         return (

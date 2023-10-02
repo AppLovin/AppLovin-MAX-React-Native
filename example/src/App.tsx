@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Platform, StyleSheet, Text, View, SafeAreaView, Dimensions } from 'react-native';
 
-import AppLovinMAX from '../../src/index';
+import AppLovinMAX, { Privacy } from '../../src/index';
 import type { Configuration } from '../../src/index';
 import AppLogo from './components/AppLogo';
 import AppButton from './components/AppButton';
@@ -69,9 +69,9 @@ const App = () => {
         // MAX Consent Flow for iOS 14.5+
         if (Platform.OS === 'ios' && parseFloat(Platform.Version as string) >= 14.5) {
             // Enable the iOS consent flow programmatically - NSUserTrackingUsageDescription must be added to the Info.plist
-            AppLovinMAX.setConsentFlowEnabled(true);
-            AppLovinMAX.setPrivacyPolicyUrl('https://your_company_name.com/privacy/'); // mandatory
-            AppLovinMAX.setTermsOfServiceUrl('https://your_company_name.com/terms/'); // optional
+            Privacy.setConsentFlowEnabled(true);
+            Privacy.setPrivacyPolicyUrl('https://your_company_name.com/privacy/'); // mandatory
+            Privacy.setTermsOfServiceUrl('https://your_company_name.com/terms/'); // optional
         }
 
         AppLovinMAX.setTestDeviceAdvertisingIds([]);

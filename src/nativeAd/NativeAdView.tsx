@@ -78,11 +78,6 @@ export const NativeAdView = forwardRef<NativeAdViewHandler, NativeAdViewProps>((
     );
 });
 
-// NativeAdView renders itself multiple times:
-// 1. initial render
-// 2. update of the nativeAdView context by saveElement, which locates and renders the all child 
-//    components including the user's components without nativeAd
-// 3. update of the nativeAd context by onNativeAdLoaded, which renders the ad components with nativeAd
 const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps>(({
     adUnitId,
     placement,

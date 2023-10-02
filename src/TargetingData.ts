@@ -3,25 +3,25 @@ import { UserGender, AdContentRating } from "./types/TargetingData";
 
 const { AppLovinMAX } = NativeModules;
 
-type TargetingDataNativeMethodType = {
-    setTargetingDataYearOfBirth(value: number): void
-    getTargetingDataYearOfBirth(): Promise<number>
-    setTargetingDataGender(value: string): void
-    getTargetingDataGender(): Promise<string>
-    setTargetingDataMaximumAdContentRating(value: number): void
-    getTargetingDataMaximumAdContentRating(): Promise<number>
-    setTargetingDataEmail(value: string | null): void
-    getTargetingDataEmail(): Promise<string | null>
-    setTargetingDataPhoneNumber(value: string | null): void
-    getTargetingDataPhoneNumber(): Promise<string | null>
-    setTargetingDataKeywords(value: string[] | null): void
-    getTargetingDataKeywords(): Promise<string[] | null>
-    setTargetingDataInterests(value: string[] | null): void
-    getTargetingDataInterests(): Promise<string[] | null>
-    clearAllTargetingData(): Promise<void>
+interface NativeTargetingData {
+    setTargetingDataYearOfBirth(value: number): void;
+    getTargetingDataYearOfBirth(): Promise<number>;
+    setTargetingDataGender(value: string): void;
+    getTargetingDataGender(): Promise<string>;
+    setTargetingDataMaximumAdContentRating(value: number): void;
+    getTargetingDataMaximumAdContentRating(): Promise<number>;
+    setTargetingDataEmail(value: string | null): void;
+    getTargetingDataEmail(): Promise<string | null>;
+    setTargetingDataPhoneNumber(value: string | null): void;
+    getTargetingDataPhoneNumber(): Promise<string | null>;
+    setTargetingDataKeywords(value: string[] | null): void;
+    getTargetingDataKeywords(): Promise<string[] | null>;
+    setTargetingDataInterests(value: string[] | null): void;
+    getTargetingDataInterests(): Promise<string[] | null>;
+    clearAllTargetingData(): void;
 }
 
-const nativeModule: TargetingDataNativeMethodType = AppLovinMAX;
+const nativeModule: NativeTargetingData = AppLovinMAX;
 
 export const TargetingData = {
 

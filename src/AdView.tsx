@@ -68,12 +68,9 @@ export const AdView = ({
     ...otherProps
 }: AdViewProps) => {
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
-    const [dimensions, setDimensions] = useState<{ width?: number | string, height?: number | string }>({});
+    const [dimensions, setDimensions] = useState<{ minWidth?: number | string, minHeight?: number | string }>({});
 
-    const [width, height] = getFlattenedSize(style);
-
-    const isWidthSet = width && width !== 'auto';
-    const isHeightSet = height && height !== 'auto';
+    const [width, _height] = getFlattenedSize(style);
 
     useEffect(() => {
         // check that AppLovinMAX has been initialized
@@ -91,41 +88,27 @@ export const AdView = ({
         }
 
         const sizeForBannerFormat = async () => {
-            let isTablet;
+            const isTablet = await AppLovinMAX.isTablet();
 
-            let adViewWidth;
-            if (isWidthSet) {
-                adViewWidth = width;
+            const minWidth = isTablet ? ADVIEW_SIZE.leader.width : ADVIEW_SIZE.banner.width;
+
+            let minHeight;
+            if (adaptiveBannerEnabled) {
+                if ( typeof width === "number" && width > minWidth)
+                    minHeight = await AppLovinMAX.getAdaptiveBannerHeightForWidth(width);
+                else
+                    minHeight = await AppLovinMAX.getAdaptiveBannerHeightForWidth(minWidth);
             } else {
-                isTablet = await AppLovinMAX.isTablet();
-                adViewWidth = isTablet ? ADVIEW_SIZE.leader.width : ADVIEW_SIZE.banner.width;
+                minHeight = isTablet ? ADVIEW_SIZE.leader.height : ADVIEW_SIZE.banner.height;
             }
 
-            let adViewHeight;
-            if (isHeightSet) {
-                adViewHeight = height;
-            } else {
-                if (adaptiveBannerEnabled) {
-                    adViewHeight = await AppLovinMAX.getAdaptiveBannerHeightForWidth(adViewWidth);
-                } else {
-                    if (isTablet === undefined) isTablet = await AppLovinMAX.isTablet();
-                    adViewHeight = isTablet ? ADVIEW_SIZE.leader.height : ADVIEW_SIZE.banner.height;
-                }
-            }
-
-            setDimensions({ width: adViewWidth, height: adViewHeight });
+            setDimensions({minWidth: minWidth, minHeight: minHeight});
         }
 
-        // evaluate width or height if either one is not defined, also evaluate when it is 'auto'.
-        if (!(isWidthSet && isHeightSet)) {
-            if (adFormat === AdFormat.BANNER) {
-                sizeForBannerFormat();
-            } else {
-                setDimensions({
-                    width: isWidthSet ? width : ADVIEW_SIZE.mrec.width,
-                    height: isHeightSet ? height : ADVIEW_SIZE.mrec.height
-                });
-            }
+        if (adFormat === AdFormat.BANNER) {
+            sizeForBannerFormat();
+        } else {
+            setDimensions({minWidth: ADVIEW_SIZE.mrec.width, minHeight: ADVIEW_SIZE.mrec.height});
         }
 
     }, [isInitialized]);
@@ -162,11 +145,10 @@ export const AdView = ({
     if (!isInitialized) {
         return null;
     } else {
-        const isSizeSet = isWidthSet && isHeightSet;
         const isDimensionsSet = (Object.keys(dimensions).length > 0);
 
         // Not sized yet
-        if (!(isSizeSet || isDimensionsSet)) {
+        if (!isDimensionsSet) {
             return null;
         }
     }
