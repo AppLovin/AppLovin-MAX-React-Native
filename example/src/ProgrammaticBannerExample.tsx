@@ -46,7 +46,7 @@ const ProgrammaticBannerExample = (props: any) => {
             enabled={isInitialized && !isNativeUIBannerShowing}
             onPress={() => {
                 if (isProgrammaticBannerShowing) {
-                    BannerAd.hide(adUnitId);
+                    BannerAd.hideAd(adUnitId);
                 } else {
                     if (!isProgrammaticBannerCreated) {
 
@@ -54,7 +54,7 @@ const ProgrammaticBannerExample = (props: any) => {
                         // Programmatic banner creation - banners are automatically sized to 320x50
                         // on phones and 728x90 on tablets
                         //
-                        BannerAd.create(adUnitId, AdViewPosition.BOTTOM_CENTER, 0, 50);
+                        BannerAd.createAd(adUnitId, AdViewPosition.BOTTOM_CENTER, 0, 50);
 
                         // Set background color for banners to be fully functional In this case we
                         // are setting it to black - PLEASE USE HEX STRINGS ONLY
@@ -63,7 +63,7 @@ const ProgrammaticBannerExample = (props: any) => {
                         setIsProgrammaticBannerCreated(true);
                     }
 
-                    BannerAd.show(adUnitId);
+                    BannerAd.showAd(adUnitId);
                 }
 
                 setIsProgrammaticBannerShowing(!isProgrammaticBannerShowing);

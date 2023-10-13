@@ -15,15 +15,15 @@ const {
     ON_APPOPEN_AD_REVENUE_PAID,
 } = AppLovinMAX.getConstants();
 
-const load = (adUnitId: string): void => {
-    AppLovinMAX.loadAppOpenAd(adUnitId);
-}
-
-const isReady = (adUnitId: string): Promise<boolean> => {
+const isAdReady = (adUnitId: string): Promise<boolean> => {
     return AppLovinMAX.isAppOpenAdReady(adUnitId);
 }
 
-const show = (
+const loadAd = (adUnitId: string): void => {
+    AppLovinMAX.loadAppOpenAd(adUnitId);
+}
+
+const showAd = (
     adUnitId: string,
     placement?: string | null,
     customData?: string | null
@@ -96,27 +96,32 @@ const removeAdRevenuePaidListener = () => {
 }
 
 export const AppOpenAd: AppOpenAdInterface = {
-    load,
-    isReady,
-    show,
+    isAdReady,
+    loadAd,
+    showAd,
 
     setExtraParameter,
     setLocalExtraParameter,
 
     addAdLoadedEventListener,
-    addAdLoadFailedEventListener,
-    addAdClickedEventListener,
-    addAdDisplayedEventListener,
-    addAdFailedToDisplayEventListener,
-    addAdHiddenEventListener,
-    addAdRevenuePaidListener,
-
     removeAdLoadedEventListener,
+
+    addAdLoadFailedEventListener,
     removeAdLoadFailedEventListener,
+
+    addAdClickedEventListener,
     removeAdClickedEventListener,
+
+    addAdDisplayedEventListener,
     removeAdDisplayedEventListener,
+
+    addAdFailedToDisplayEventListener,
     removeAdFailedToDisplayEventListener,
+
+    addAdHiddenEventListener,
     removeAdHiddenEventListener,
+
+    addAdRevenuePaidListener,
     removeAdRevenuePaidListener,
 }
 

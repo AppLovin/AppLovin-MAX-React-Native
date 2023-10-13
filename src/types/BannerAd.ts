@@ -11,7 +11,7 @@ export interface BannerAdInterface extends AdViewAdInterface {
      * @param xOffset 
      * @param yOffset 
      */
-    create(adUnitId: string, position: AdViewPosition, xOffset?: number, yOffset?: number): void;
+    createAd(adUnitId: string, position: AdViewPosition, xOffset?: number, yOffset?: number): void;
 
     /**
      * Sets a background color for the banner.  

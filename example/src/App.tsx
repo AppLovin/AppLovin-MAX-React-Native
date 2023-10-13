@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Platform, StyleSheet, Text, View, SafeAreaView, Dimensions } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { Platform, StyleSheet, Text, View, SafeAreaView, Dimensions, AppState } from 'react-native';
 
-import AppLovinMAX, { Privacy } from '../../src/index';
-import type { Configuration } from '../../src/index';
+import AppLovinMAX, { AppOpenAd, Privacy } from '../../src/index';
+import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, Configuration } from '../../src/index';
 import AppLogo from './components/AppLogo';
 import AppButton from './components/AppButton';
 import InterExample from './InterExample';
@@ -43,6 +43,10 @@ const App = () => {
         ios: 'ENTER_IOS_NATIVE_AD_UNIT_ID_HERE',
         android: 'ENTER_ANDROID_NATIVE_AD_UNIT_ID_HERE',
     });
+    const APPOPEN_AD_UNIT_ID = Platform.select({
+        ios: 'ENTER_IOS_APPOPEN_AD_UNIT_ID_HERE',
+        android: 'ENTER_ANDROID_APPOPEN_AD_UNIT_ID_HERE',
+    });
 
     // Create states
     const [isInitialized, setIsInitialized] = useState(false);
@@ -53,9 +57,22 @@ const App = () => {
     const [isNativeAdShowing, setIsNativeAdShowing] = useState(false);
     const [statusText, setStatusText] = useState('Initializing SDK...');
 
+    const appState = useRef(AppState.currentState);
+
     // Run once after mounting
     useEffect(() => {
         initAppLovinMax();
+
+        AppState.addEventListener("change", nextAppState => {
+            if (appState.current.match(/inactive|background/) && nextAppState === "active") {
+                showAppOpenAdIfReady();
+            }
+            appState.current = nextAppState;
+        });
+
+        return () => {
+            AppState.removeEventListener('change', () => { });
+        };
     }, []);
 
     // Run when statusText has changed
@@ -78,8 +95,34 @@ const App = () => {
         AppLovinMAX.initialize(SDK_KEY).then((conf: Configuration) => {
             setIsInitialized(true);
             setStatusText('SDK Initialized in ' + conf?.countryCode);
+
+            // AppOpen Ad
+            AppOpenAd.addAdLoadedEventListener((adInfo: AdInfo) => {
+                setStatusText('AppOpen ad loaded from ' + adInfo.networkName);
+            });
+            AppOpenAd.addAdLoadFailedEventListener((errorInfo: AdLoadFailedInfo) => {
+                setStatusText('AppOpen ad failed to load with code ' + errorInfo.code);
+            });
+            AppOpenAd.addAdFailedToDisplayEventListener((_adInfo: AdDisplayFailedInfo) => {
+                AppOpenAd.loadAd(APPOPEN_AD_UNIT_ID!);
+            });
+            AppOpenAd.addAdHiddenEventListener((_adInfo: AdInfo) => {
+                AppOpenAd.loadAd(APPOPEN_AD_UNIT_ID!);
+            });
+
+            AppOpenAd.loadAd(APPOPEN_AD_UNIT_ID!);
         }).catch(error => {
             setStatusText(error.toString());
+        });
+    }
+
+    const showAppOpenAdIfReady = () => {
+        AppOpenAd.isAdReady(APPOPEN_AD_UNIT_ID!).then(isAppOpenAdReady => {
+            if (isAppOpenAdReady) {
+                AppOpenAd.showAd(APPOPEN_AD_UNIT_ID!);
+            } else {
+                AppOpenAd.loadAd(APPOPEN_AD_UNIT_ID!);
+            }
         });
     }
 

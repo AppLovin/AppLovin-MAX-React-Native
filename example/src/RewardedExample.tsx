@@ -46,7 +46,7 @@ const RewardedExample = (props: any) => {
 
             setTimeout(() => {
                 setAdLoadState(AdLoadState.loading);
-                RewardedAd.load(adUnitId);
+                RewardedAd.loadAd(adUnitId);
             }, retryDelay * 1000);
         });
         RewardedAd.addAdClickedEventListener((_adInfo: AdInfo) => {
@@ -89,13 +89,13 @@ const RewardedExample = (props: any) => {
             }
             onPress={async () => {
                 try {
-                    const isRewardedReady = await RewardedAd.isReady(adUnitId);
+                    const isRewardedReady = await RewardedAd.isAdReady(adUnitId);
                     if (isRewardedReady) {
-                        RewardedAd.show(adUnitId);
+                        RewardedAd.showAd(adUnitId);
                     } else {
                         log('Loading rewarded ad...');
                         setAdLoadState(AdLoadState.loading);
-                        RewardedAd.load(adUnitId);
+                        RewardedAd.loadAd(adUnitId);
                     }
                 } catch (error: any) {
                     log(error.toString());

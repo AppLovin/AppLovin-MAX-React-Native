@@ -15,8 +15,20 @@ const {
     ON_MREC_AD_REVENUE_PAID,
 } = AppLovinMAX.getConstants();
 
-const create = (adUnitId: string, position: AdViewPosition): void => {
+const createAd = (adUnitId: string, position: AdViewPosition): void => {
     AppLovinMAX.createMRec(adUnitId, position);
+}
+
+const destroyAd = (adUnitId: string): void => {
+    AppLovinMAX.destroyMRec(adUnitId);
+}
+
+const showAd = (adUnitId: string): void => {
+    AppLovinMAX.showMRec(adUnitId);
+}
+
+const hideAd = (adUnitId: string): void => {
+    AppLovinMAX.hideMRec(adUnitId);
 }
 
 const setPlacement = (adUnitId: string, placement: string | null): void => {
@@ -45,18 +57,6 @@ const startAutoRefresh = (adUnitId: string): void => {
 
 const stopAutoRefresh = (adUnitId: string): void => {
     AppLovinMAX.stopMRecAutoRefresh(adUnitId);
-}
-
-const show = (adUnitId: string): void => {
-    AppLovinMAX.showMRec(adUnitId);
-}
-
-const hide = (adUnitId: string): void => {
-    AppLovinMAX.hideMRec(adUnitId);
-}
-
-const destroy = (adUnitId: string): void => {
-    AppLovinMAX.destroyMRec(adUnitId);
 }
 
 const addAdLoadedEventListener = (listener: (adInfo: AdInfo) => void) => {
@@ -108,9 +108,15 @@ const removeAdRevenuePaidListener = () => {
 }
 
 export const MRecAd: MRecAdInterface = {
-    create,
+    createAd,
+    destroyAd,
+
+    showAd,
+    hideAd,
+
     setPlacement,
     setCustomData,
+
     updatePosition,
 
     setExtraParameter,
@@ -118,22 +124,23 @@ export const MRecAd: MRecAdInterface = {
 
     startAutoRefresh,
     stopAutoRefresh,
-    show,
-    hide,
-    destroy,
 
     addAdLoadedEventListener,
-    addAdLoadFailedEventListener,
-    addAdClickedEventListener,
-    addAdCollapsedEventListener,
-    addAdExpandedEventListener,
-    addAdRevenuePaidListener,
-
     removeAdLoadedEventListener,
+
+    addAdLoadFailedEventListener,
     removeAdLoadFailedEventListener,
+
+    addAdClickedEventListener,
     removeAdClickedEventListener,
+
+    addAdCollapsedEventListener,
     removeAdCollapsedEventListener,
+
+    addAdExpandedEventListener,
     removeAdExpandedEventListener,
+
+    addAdRevenuePaidListener,
     removeAdRevenuePaidListener,
 }
 

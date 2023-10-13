@@ -16,15 +16,15 @@ const {
     ON_REWARDED_AD_REVENUE_PAID,
 } = AppLovinMAX.getConstants();
 
-const load = (adUnitId: string): void => {
-    AppLovinMAX.loadRewardedAd(adUnitId);
-}
-
-const isReady = (adUnitId: string): Promise<boolean> => {
+const isAdReady = (adUnitId: string): Promise<boolean> => {
     return AppLovinMAX.isRewardedAdReady(adUnitId);
 }
 
-const show = (
+const loadAd = (adUnitId: string): void => {
+    AppLovinMAX.loadRewardedAd(adUnitId);
+}
+
+const showAd = (
     adUnitId: string,
     placement?: string | null,
     customData?: string | null
@@ -105,30 +105,37 @@ const removeAdReceivedRewardEventListener = () => {
 }
 
 export const RewardedAd: RewardedAdInterface = {
-    load,
-    isReady,
-    show,
+    isAdReady,
+    loadAd,
+    showAd,
 
     setExtraParameter,
     setLocalExtraParameter,
 
     addAdLoadedEventListener,
-    addAdLoadFailedEventListener,
-    addAdClickedEventListener,
-    addAdDisplayedEventListener,
-    addAdFailedToDisplayEventListener,
-    addAdHiddenEventListener,
-    addAdReceivedRewardEventListener,
-    addAdRevenuePaidListener,
-
     removeAdLoadedEventListener,
+
+    addAdLoadFailedEventListener,
     removeAdLoadFailedEventListener,
+
+    addAdClickedEventListener,
     removeAdClickedEventListener,
+
+    addAdDisplayedEventListener,
     removeAdDisplayedEventListener,
+
+    addAdFailedToDisplayEventListener,
     removeAdFailedToDisplayEventListener,
+
+    addAdHiddenEventListener,
     removeAdHiddenEventListener,
-    removeAdReceivedRewardEventListener,
+
+    addAdRevenuePaidListener,
     removeAdRevenuePaidListener,
+
+    // Rewarded specific
+    addAdReceivedRewardEventListener,
+    removeAdReceivedRewardEventListener,
 }
 
 export default RewardedAd;

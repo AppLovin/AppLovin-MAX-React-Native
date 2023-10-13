@@ -46,16 +46,16 @@ const ProgrammaticMRecExample = (props: any) => {
             enabled={isInitialized && !isNativeUIMRecShowing}
             onPress={() => {
                 if (isProgrammaticMRecShowing) {
-                    MRecAd.hide(adUnitId);
+                    MRecAd.hideAd(adUnitId);
                 } else {
 
                     if (!isProgrammaticMRecCreated) {
-                        MRecAd.create(adUnitId, AdViewPosition.TOP_CENTER);
+                        MRecAd.createAd(adUnitId, AdViewPosition.TOP_CENTER);
 
                         setIsProgrammaticMRecCreated(true);
                     }
 
-                    MRecAd.show(adUnitId);
+                    MRecAd.showAd(adUnitId);
                 }
 
                 setIsProgrammaticMRecShowing(!isProgrammaticMRecShowing);

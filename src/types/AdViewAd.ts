@@ -5,6 +5,36 @@ import type { AdViewPosition } from "./AdViewProps";
 export interface AdViewAdInterface {
 
     /**
+     * Creates a banner/mrec at the specified position and offsets.
+     * 
+     * @param adUnitId 
+     * @param position 
+     * @param args
+     */
+    createAd(adUnitId: string, position: AdViewPosition, ...args: any[]): void;
+
+    /**
+     * Destroys the banner/mrec.
+     * 
+     * @param adUnitId 
+     */
+    destroyAd(adUnitId: string): void;
+
+    /**
+     * Shows the banner/mrec.
+     * 
+     * @param adUnitId 
+     */
+    showAd(adUnitId: string): void;
+
+    /**
+     * Hides the banner/mrec.
+     * 
+     * @param adUnitId 
+     */
+    hideAd(adUnitId: string): void;
+
+    /**
      * Sets a placement to tie the showing ad’s events to.
      *
      * @param adUnitId 
@@ -21,7 +51,7 @@ export interface AdViewAdInterface {
     setCustomData(adUnitId: string, customData: string | null): void;
 
     /**
-     * Updates the banner position.
+     * Updates the banner/mrec position.
      * 
      * @param adUnitId 
      * @param bannerPosition 
@@ -47,39 +77,18 @@ export interface AdViewAdInterface {
     setLocalExtraParameter(adUnitId: string, key: string, value: any): void;
 
     /**
-     * Starts or resumes auto-refreshing of the banner.
+     * Starts or resumes auto-refreshing of the banner/mrec.
      * 
      * @param adUnitId 
      */
     startAutoRefresh(adUnitId: string): void;
 
     /**
-     * Pauses auto-refreshing of the banner.
+     * Pauses auto-refreshing of the banner/mrec.
      * 
      * @param adUnitId 
      */
     stopAutoRefresh(adUnitId: string): void;
-
-    /**
-     * Shows the banner.
-     * 
-     * @param adUnitId 
-     */
-    show(adUnitId: string): void;
-
-    /**
-     * Hides the banner.
-     * 
-     * @param adUnitId 
-     */
-    hide(adUnitId: string): void;
-
-    /**
-     * Destroys the banner.
-     * 
-     * @param adUnitId 
-     */
-    destroy(adUnitId: string): void;
 
     /**
      * Adds the specified event listener to receive `AdInfo` when a new ad has been loaded.
@@ -89,11 +98,21 @@ export interface AdViewAdInterface {
     addAdLoadedEventListener(listener: AdEventListener<AdInfo>): void;
 
     /**
+     * 
+     */
+    removeAdLoadedEventListener(): void;
+
+    /**
      * Adds the specified event listener to receive `AdLoadFailedInfo` when an ad could not be loaded.
      * 
      * @param listener 
      */
     addAdLoadFailedEventListener(listener: AdEventListener<AdLoadFailedInfo>): void;
+
+    /**
+     * 
+     */
+    removeAdLoadFailedEventListener(): void;
 
     /**
      * Adds the specified event listener to receive `AdInfo` when the ad is clicked.
@@ -103,11 +122,21 @@ export interface AdViewAdInterface {
     addAdClickedEventListener(listener: AdEventListener<AdInfo>): void;
 
     /**
+     * 
+     */
+    removeAdClickedEventListener(): void;
+
+    /**
      * Adds the specified event listener to receive `AdInfo` when the ad is collapsed.
      * 
      * @param listener 
      */
     addAdCollapsedEventListener(listener: AdEventListener<AdInfo>): void;
+
+    /**
+     * 
+     */
+    removeAdCollapsedEventListener(): void;
 
     /**
      * Adds the specified event listener to receive `AdInfo` when the ad is expanded.
@@ -117,21 +146,19 @@ export interface AdViewAdInterface {
     addAdExpandedEventListener(listener: AdEventListener<AdInfo>): void;
 
     /**
+     * 
+     */
+    removeAdExpandedEventListener(): void;
+
+    /**
      * Adds the specified event listener to receive `AdRevenueInfo` when the ad revenue is paid.
      * 
      * @param listener 
      */
     addAdRevenuePaidListener(listener: AdEventListener<AdRevenueInfo>): void;
 
-    removeAdLoadedEventListener(): void;
-
-    removeAdLoadFailedEventListener(): void;
-
-    removeAdClickedEventListener(): void;
-
-    removeAdCollapsedEventListener(): void;
-
-    removeAdExpandedEventListener(): void;
-
+    /**
+     * 
+     */
     removeAdRevenuePaidListener(): void;
 }

@@ -46,7 +46,7 @@ const InterExample = (props: any) => {
 
             setTimeout(() => {
                 setAdLoadState(AdLoadState.loading);
-                InterstitialAd.load(adUnitId);
+                InterstitialAd.loadAd(adUnitId);
             }, retryDelay * 1000);
         });
         InterstitialAd.addAdClickedEventListener((_adInfo: AdInfo) => {
@@ -86,13 +86,13 @@ const InterExample = (props: any) => {
             }
             onPress={async () => {
                 try {
-                    const isInterstitialReady = await InterstitialAd.isReady(adUnitId);
+                    const isInterstitialReady = await InterstitialAd.isAdReady(adUnitId);
                     if (isInterstitialReady) {
-                        InterstitialAd.show(adUnitId);
+                        InterstitialAd.showAd(adUnitId);
                     } else {
                         log('Loading interstitial ad...');
                         setAdLoadState(AdLoadState.loading);
-                        InterstitialAd.load(adUnitId);
+                        InterstitialAd.loadAd(adUnitId);
                     }
                 } catch (error: any) {
                     log(error.toString());

@@ -4,18 +4,18 @@ import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo, AdDisplayFailedInfo } fro
 export interface FullscreenAdInterface {
 
     /**
-     * Loads an interstitial ad.
-     * 
-     * @param adUnitId 
-     */
-    load(adUnitId: string): void;
-
-    /**
      * Whether or not this ad is ready to be shown.
      * 
      * @param adUnitId 
      */
-    isReady(adUnitId: string): Promise<boolean>;
+    isAdReady(adUnitId: string): Promise<boolean>;
+
+    /**
+     * Loads an interstitial ad.
+     * 
+     * @param adUnitId 
+     */
+    loadAd(adUnitId: string): void;
 
     /**
      * Show the loaded interstitial ad, optionallly for a given placement and custom data to tie ad
@@ -25,7 +25,7 @@ export interface FullscreenAdInterface {
      * @param placement 
      * @param customData 
      */
-    show(adUnitId: string, placement?: string | null, customData?: string | null): void;
+    showAd(adUnitId: string, placement?: string | null, customData?: string | null): void;
 
     /**
      * Sets an extra key/value parameter for the ad.
@@ -53,11 +53,21 @@ export interface FullscreenAdInterface {
     addAdLoadedEventListener(listener: AdEventListener<AdInfo>): void;
 
     /**
+     * 
+     */
+    removeAdLoadedEventListener(): void;
+
+    /**
      * Adds the specified event listener to receive `AdLoadFailedInfo` when an ad could not be loaded.
      * 
      * @param listener 
      */
     addAdLoadFailedEventListener(listener: AdEventListener<AdLoadFailedInfo>): void;
+
+    /**
+     * 
+     */
+    removeAdLoadFailedEventListener(): void;
 
     /**
      * Adds the specified event listener to receive `AdInfo` when the ad is clicked.
@@ -67,11 +77,21 @@ export interface FullscreenAdInterface {
     addAdClickedEventListener(listener: AdEventListener<AdInfo>): void;
 
     /**
+     * 
+     */
+    removeAdClickedEventListener(): void;
+
+    /**
      * Adds the specified event listener to receive `AdInfo` when the ad is displayed.
      * 
      * @param listener 
      */
     addAdDisplayedEventListener(listener: AdEventListener<AdInfo>): void;
+
+    /**
+     * 
+     */
+    removeAdDisplayedEventListener(): void;
 
     /**
      * Adds the specified event listener to receive `AdDisplayFailedInfo` when the ad is failed to
@@ -82,11 +102,21 @@ export interface FullscreenAdInterface {
     addAdFailedToDisplayEventListener(listener: AdEventListener<AdDisplayFailedInfo>): void;
 
     /**
+     * 
+     */
+    removeAdFailedToDisplayEventListener(): void;
+
+    /**
      * Adds the specified event listener to receive `AdInfo` when the ad is hidden.
      * 
      * @param listener 
      */
     addAdHiddenEventListener(listener: AdEventListener<AdInfo>): void;
+
+    /**
+     * 
+     */
+    removeAdHiddenEventListener(): void;
 
     /**
      * Adds the specified event listener to receive `AdRevenueInfo` when the ad revenue is paid.
@@ -95,17 +125,8 @@ export interface FullscreenAdInterface {
      */
     addAdRevenuePaidListener(listener: AdEventListener<AdRevenueInfo>): void;
 
-    removeAdLoadedEventListener(): void;
-
-    removeAdLoadFailedEventListener(): void;
-
-    removeAdClickedEventListener(): void;
-
-    removeAdDisplayedEventListener(): void;
-
-    removeAdFailedToDisplayEventListener(): void;
-
-    removeAdHiddenEventListener(): void;
-
+    /**
+     * 
+     */
     removeAdRevenuePaidListener(): void;
 }

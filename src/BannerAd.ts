@@ -15,12 +15,20 @@ const {
     ON_BANNER_AD_REVENUE_PAID,
 } = AppLovinMAX.getConstants();
 
-const create = (adUnitId: string, position: AdViewPosition, xOffset?: number, yOffset?: number): void => {
+const createAd = (adUnitId: string, position: AdViewPosition, xOffset?: number, yOffset?: number): void => {
     AppLovinMAX.createBannerWithOffsets(adUnitId, position, xOffset ?? 0, yOffset ?? 0);
 }
 
-const setBackgroundColor = (adUnitId: string, hexColorCode: string): void => {
-    AppLovinMAX.setBannerBackgroundColor(adUnitId, hexColorCode);
+const destroyAd = (adUnitId: string): void => {
+    AppLovinMAX.destroyBanner(adUnitId);
+}
+
+const showAd = (adUnitId: string): void => {
+    AppLovinMAX.showBanner(adUnitId);
+}
+
+const hideAd = (adUnitId: string): void => {
+    AppLovinMAX.hideBanner(adUnitId);
 }
 
 const setPlacement = (adUnitId: string, placement: string | null): void => {
@@ -31,16 +39,8 @@ const setCustomData = (adUnitId: string, customData: string | null): void => {
     AppLovinMAX.setBannerCustomData(adUnitId, customData);
 }
 
-const setWidth = (adUnitId: string, width: number): void => {
-    AppLovinMAX.setBannerWidth(adUnitId, width);
-}
-
 const updatePosition = (adUnitId: string, bannerPosition: AdViewPosition): void => {
     AppLovinMAX.updateBannerPosition(adUnitId, bannerPosition);
-}
-
-const updateOffsets = (adUnitId: string, xOffset: number, yOffset: number): void => {
-    AppLovinMAX.updateBannerOffsets(adUnitId, xOffset, yOffset);
 }
 
 const setExtraParameter = (adUnitId: string, key: string, value: any): void => {
@@ -57,22 +57,6 @@ const startAutoRefresh = (adUnitId: string): void => {
 
 const stopAutoRefresh = (adUnitId: string): void => {
     AppLovinMAX.stopBannerAutoRefresh(adUnitId);
-}
-
-const show = (adUnitId: string): void => {
-    AppLovinMAX.showBanner(adUnitId);
-}
-
-const hide = (adUnitId: string): void => {
-    AppLovinMAX.hideBanner(adUnitId);
-}
-
-const destroy = (adUnitId: string): void => {
-    AppLovinMAX.destroyBanner(adUnitId);
-}
-
-const getAdaptiveHeightForWidth = (width: number): Promise<number> => {
-    return AppLovinMAX.getAdaptiveBannerHeightForWidth(width);
 }
 
 const addAdLoadedEventListener = (listener: (adInfo: AdInfo) => void) => {
@@ -123,39 +107,65 @@ const removeAdRevenuePaidListener = () => {
     removeEventListener(ON_BANNER_AD_REVENUE_PAID);
 }
 
+// banner specific
+
+const setBackgroundColor = (adUnitId: string, hexColorCode: string): void => {
+    AppLovinMAX.setBannerBackgroundColor(adUnitId, hexColorCode);
+}
+
+const setWidth = (adUnitId: string, width: number): void => {
+    AppLovinMAX.setBannerWidth(adUnitId, width);
+}
+
+const updateOffsets = (adUnitId: string, xOffset: number, yOffset: number): void => {
+    AppLovinMAX.updateBannerOffsets(adUnitId, xOffset, yOffset);
+}
+
+const getAdaptiveHeightForWidth = (width: number): Promise<number> => {
+    return AppLovinMAX.getAdaptiveBannerHeightForWidth(width);
+}
+
 export const BannerAd: BannerAdInterface = {
-    create,
-    setBackgroundColor,
+    createAd,
+    destroyAd,
+
+    showAd,
+    hideAd,
+
     setPlacement,
     setCustomData,
-    setWidth,
+
     updatePosition,
-    updateOffsets,
 
     setExtraParameter,
     setLocalExtraParameter,
 
     startAutoRefresh,
     stopAutoRefresh,
-    show,
-    hide,
-    destroy,
-
-    getAdaptiveHeightForWidth,
 
     addAdLoadedEventListener,
-    addAdLoadFailedEventListener,
-    addAdClickedEventListener,
-    addAdCollapsedEventListener,
-    addAdExpandedEventListener,
-    addAdRevenuePaidListener,
-
     removeAdLoadedEventListener,
+
+    addAdLoadFailedEventListener,
     removeAdLoadFailedEventListener,
+
+    addAdClickedEventListener,
     removeAdClickedEventListener,
+
+    addAdCollapsedEventListener,
     removeAdCollapsedEventListener,
+
+    addAdExpandedEventListener,
     removeAdExpandedEventListener,
+
+    addAdRevenuePaidListener,
     removeAdRevenuePaidListener,
+
+    // banner specific
+    setBackgroundColor,
+    setWidth,
+    updateOffsets,
+    getAdaptiveHeightForWidth,
 }
 
 export default BannerAd;

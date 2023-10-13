@@ -9,5 +9,5 @@ export interface MRecAdInterface extends AdViewAdInterface {
      * @param adUnitId 
      * @param position 
      */
-    create(adUnitId: string, position: AdViewPosition): void;
+    createAd(adUnitId: string, position: AdViewPosition): void;
 }

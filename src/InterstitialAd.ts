@@ -15,15 +15,15 @@ const {
     ON_INTERSTITIAL_AD_REVENUE_PAID,
 } = AppLovinMAX.getConstants();
 
-const load = (adUnitId: string): void => {
-    AppLovinMAX.loadInterstitial(adUnitId);
-}
-
-const isReady = (adUnitId: string): Promise<boolean> => {
+const isAdReady = (adUnitId: string): Promise<boolean> => {
     return AppLovinMAX.isInterstitialReady(adUnitId);
 }
 
-const show = (
+const loadAd = (adUnitId: string): void => {
+    AppLovinMAX.loadInterstitial(adUnitId);
+}
+
+const showAd = (
     adUnitId: string,
     placement?: string | null,
     customData?: string | null
@@ -96,27 +96,32 @@ const removeAdRevenuePaidListener = () => {
 }
 
 export const InterstitialAd: InterstitialAdInterface = {
-    load,
-    isReady,
-    show,
+    isAdReady,
+    loadAd,
+    showAd,
 
     setExtraParameter,
     setLocalExtraParameter,
 
     addAdLoadedEventListener,
-    addAdLoadFailedEventListener,
-    addAdClickedEventListener,
-    addAdDisplayedEventListener,
-    addAdFailedToDisplayEventListener,
-    addAdHiddenEventListener,
-    addAdRevenuePaidListener,
-
     removeAdLoadedEventListener,
+
+    addAdLoadFailedEventListener,
     removeAdLoadFailedEventListener,
+
+    addAdClickedEventListener,
     removeAdClickedEventListener,
+
+    addAdDisplayedEventListener,
     removeAdDisplayedEventListener,
+
+    addAdFailedToDisplayEventListener,
     removeAdFailedToDisplayEventListener,
+
+    addAdHiddenEventListener,
     removeAdHiddenEventListener,
+
+    addAdRevenuePaidListener,
     removeAdRevenuePaidListener,
 }
 
