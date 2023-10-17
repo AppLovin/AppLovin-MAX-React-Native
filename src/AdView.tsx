@@ -26,7 +26,7 @@ type AdViewNativeEvents = {
 /**
  * The native `AdView` component.
  */
-const AdViewComponent = requireNativeComponent<AdViewProps & AdViewNativeEvents>("AppLovinMAXAdView");
+const AdViewComponent = requireNativeComponent<AdViewProps & ViewProps & AdViewNativeEvents>("AppLovinMAXAdView");
 
 /**
  * Pre-defined sizes for banners and mrecs.
@@ -66,7 +66,7 @@ export const AdView = ({
     onAdRevenuePaid,
     style,
     ...otherProps
-}: AdViewProps) => {
+}: AdViewProps & ViewProps) => {
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
     const [dimensions, setDimensions] = useState({});
 

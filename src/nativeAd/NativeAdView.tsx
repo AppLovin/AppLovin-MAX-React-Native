@@ -1,5 +1,6 @@
 import React, { forwardRef, useContext, useImperativeHandle, useRef, useState, useEffect, useCallback } from "react";
 import { NativeModules, requireNativeComponent, UIManager, findNodeHandle } from "react-native";
+import type { ViewProps } from "react-native";
 import { NativeAdViewContext, NativeAdViewProvider } from "./NativeAdViewProvider";
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from "../types/AdInfo";
 import type { AdNativeEvent } from "../types/AdEvent";
@@ -16,7 +17,7 @@ type NativeAdViewNativeEvents = {
     onAdRevenuePaidEvent(event: AdNativeEvent<AdRevenueInfo>): void
 };
 
-const NativeAdViewComponent = requireNativeComponent<NativeAdViewProps & NativeAdViewNativeEvents>('AppLovinMAXNativeAdView');
+const NativeAdViewComponent = requireNativeComponent<NativeAdViewProps & ViewProps & NativeAdViewNativeEvents>('AppLovinMAXNativeAdView');
 
 /**
  * The `NativeAdView` component for building a native ad. This loads an ad and renders it with the asset views:
@@ -53,7 +54,7 @@ const NativeAdViewComponent = requireNativeComponent<NativeAdViewProps & NativeA
  * </NativeAdView>
  * ```
  */
-export const NativeAdView = forwardRef<NativeAdViewHandler, NativeAdViewProps>((props, ref) => {
+export const NativeAdView = forwardRef<NativeAdViewHandler, NativeAdViewProps & ViewProps>((props, ref) => {
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
 
     useEffect(() => {
@@ -78,7 +79,7 @@ export const NativeAdView = forwardRef<NativeAdViewHandler, NativeAdViewProps>((
     );
 });
 
-const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps>(({
+const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps & ViewProps>(({
     adUnitId,
     placement,
     customData,
