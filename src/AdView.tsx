@@ -68,11 +68,13 @@ export const AdView = ({
     ...otherProps
 }: AdViewProps) => {
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
-    const [dimensions, setDimensions] = useState<{ minWidth?: number | string, minHeight?: number | string }>({});
+    const [dimensions, setDimensions] = useState({});
 
-    const [width, _height] = getFlattenedSize(style);
+    const [width, height] = getFlattenedSize(style);
 
     useEffect(() => {
+        setupDimensions();
+
         // check that AppLovinMAX has been initialized
         AppLovinMAX.isInitialized().then((result: boolean) => {
             setIsInitialized(result);
@@ -82,11 +84,7 @@ export const AdView = ({
         });
     }, []);
 
-    useEffect(() => {
-        if (!isInitialized) {
-            return;
-        }
-
+    const setupDimensions = () => {
         const sizeForBannerFormat = async () => {
             const isTablet = await AppLovinMAX.isTablet();
 
@@ -94,7 +92,7 @@ export const AdView = ({
 
             let minHeight;
             if (adaptiveBannerEnabled) {
-                if ( typeof width === "number" && width > minWidth)
+                if (typeof width === "number" && width > minWidth)
                     minHeight = await AppLovinMAX.getAdaptiveBannerHeightForWidth(width);
                 else
                     minHeight = await AppLovinMAX.getAdaptiveBannerHeightForWidth(minWidth);
@@ -102,16 +100,37 @@ export const AdView = ({
                 minHeight = isTablet ? ADVIEW_SIZE.leader.height : ADVIEW_SIZE.banner.height;
             }
 
-            setDimensions({minWidth: minWidth, minHeight: minHeight});
+            setDimensions({
+                ...width === "auto" ? {
+                    width: minWidth,
+                } : {
+                    minWidth: minWidth,
+                },
+                ...height === "auto" ? {
+                    height: minHeight,
+                } : {
+                    minHeight: minHeight,
+                }
+            });
         }
 
         if (adFormat === AdFormat.BANNER) {
             sizeForBannerFormat();
         } else {
-            setDimensions({minWidth: ADVIEW_SIZE.mrec.width, minHeight: ADVIEW_SIZE.mrec.height});
+            setDimensions({
+                ...width === "auto" ? {
+                    width: ADVIEW_SIZE.mrec.width,
+                } : {
+                    minWidth: ADVIEW_SIZE.mrec.width,
+                },
+                ...height === "auto" ? {
+                    height: ADVIEW_SIZE.mrec.height,
+                } : {
+                    minHeight: ADVIEW_SIZE.mrec.height,
+                }
+            });
         }
-
-    }, [isInitialized]);
+    }
 
     const onAdLoadedEvent = (event: AdNativeEvent<AdInfo>) => {
         if (onAdLoaded) onAdLoaded(event.nativeEvent);
