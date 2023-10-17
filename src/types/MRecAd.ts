@@ -1,7 +1,7 @@
-import type { AdViewAdInterface } from "./AdViewAd";
+import type { ViewAdInterface } from "./ViewAd";
 import type { AdViewPosition } from "./AdViewProps";
 
-export interface MRecAdInterface extends AdViewAdInterface {
+export interface MRecAdInterface extends ViewAdInterface {
 
     /**
      * Creates a MREC at the specified position.

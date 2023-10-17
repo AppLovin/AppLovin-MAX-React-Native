@@ -1,7 +1,7 @@
-import type { AdViewAdInterface } from "./AdViewAd";
+import type { ViewAdInterface } from "./ViewAd";
 import type { AdViewPosition } from "./AdViewProps";
 
-export interface BannerAdInterface extends AdViewAdInterface {
+export interface BannerAdInterface extends ViewAdInterface {
 
     /**
      * Creates a banner at the specified position and offsets.

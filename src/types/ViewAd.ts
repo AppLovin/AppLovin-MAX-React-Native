@@ -2,7 +2,7 @@ import type { AdEventListener } from "./AdEvent";
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from "./AdInfo";
 import type { AdViewPosition } from "./AdViewProps";
 
-export interface AdViewAdInterface {
+export interface ViewAdInterface {
 
     /**
      * Creates a banner/mrec at the specified position and offsets.
