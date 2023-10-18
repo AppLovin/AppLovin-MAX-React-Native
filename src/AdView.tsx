@@ -118,15 +118,16 @@ export const AdView = ({
     const [width, height] = getFlattenedSize(style);
 
     useEffect(() => {
-        setupDimensions();
-
         // check that AppLovinMAX has been initialized
         AppLovinMAX.isInitialized().then((result: boolean) => {
             setIsInitialized(result);
             if (!result) {
-                console.warn("ERROR: AppLovinMAX.AdView is mounted before the initialization of the AppLovin MAX React Native module");
+                console.warn("ERROR: AdView is mounted before the initialization of the AppLovin MAX React Native module");
             }
         });
+
+        // dimenstions can be set before the MAX initialization
+        setupDimensions();
     }, []);
 
     const setupDimensions = () => {

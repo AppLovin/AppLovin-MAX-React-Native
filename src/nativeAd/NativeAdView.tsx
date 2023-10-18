@@ -62,7 +62,7 @@ export const NativeAdView = forwardRef<NativeAdViewHandler, NativeAdViewProps & 
         AppLovinMAX.isInitialized().then((result: boolean) => {
             setIsInitialized(result);
             if (!result) {
-                console.warn("ERROR: AppLovinMAX.NativeAdView is mounted before the initialization of the AppLovin MAX React Native module");
+                console.warn("ERROR: NativeAdView is mounted before the initialization of the AppLovin MAX React Native module");
             }
         });
     }, []);
