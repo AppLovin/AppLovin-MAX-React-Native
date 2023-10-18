@@ -1,12 +1,12 @@
 export { default, AppLovinMAX } from "./AppLovinMAX";
 export { Privacy } from "./Privacy";
-export { TargetingData } from "./TargetingData";
+export { TargetingData, AdContentRating, UserGender } from "./TargetingData";
 export { InterstitialAd } from "./InterstitialAd";
 export { RewardedAd } from "./RewardedAd";
 export { AppOpenAd } from "./AppOpenAd";
 export { BannerAd } from "./BannerAd";
 export { MRecAd } from "./MRecAd";
-export { AdView } from "./AdView";
+export { AdView, AdFormat, AdViewPosition } from "./AdView";
 export { NativeAdView } from "./nativeAd/NativeAdView";
 export {
     TitleView,

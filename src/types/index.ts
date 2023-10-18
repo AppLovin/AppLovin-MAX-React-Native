@@ -1,6 +1,5 @@
 export * from "./AppLovinMAX";
 export * from "./Privacy";
-export * from "./TargetingData";
 export * from "./AdInfo";
 export * from "./InterstitialAd";
 export * from "./RewardedAd";

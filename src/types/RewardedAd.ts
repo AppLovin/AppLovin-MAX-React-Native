@@ -11,5 +11,8 @@ export interface RewardedAdInterface extends FullscreenAdInterface {
      */
     addAdReceivedRewardEventListener(listener: AdEventListener<AdRewardInfo>): void;
 
+    /**
+     * 
+     */
     removeAdReceivedRewardEventListener(): void;
 }

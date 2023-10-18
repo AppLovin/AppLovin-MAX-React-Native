@@ -1,5 +1,5 @@
 import type { ViewAdInterface } from "./ViewAd";
-import type { AdViewPosition } from "./AdViewProps";
+import type { AdViewPosition } from "../AdView";
 
 export interface MRecAdInterface extends ViewAdInterface {
 

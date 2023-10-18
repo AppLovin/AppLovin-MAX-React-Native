@@ -2,7 +2,7 @@ import { NativeModules } from "react-native";
 import { addEventListener, removeEventListener } from "./EventEmitter"
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from "./types/AdInfo";
 import type { MRecAdInterface } from "./types/MRecAd";
-import type { AdViewPosition } from "./types/AdViewProps";
+import type { AdViewPosition } from "./AdView";
 
 const { AppLovinMAX } = NativeModules;
 

@@ -1,6 +1,6 @@
 import type { AdEventListener } from "./AdEvent";
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from "./AdInfo";
-import type { AdViewPosition } from "./AdViewProps";
+import type { AdViewPosition } from "../AdView";
 
 export interface ViewAdInterface {
 

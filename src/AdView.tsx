@@ -1,12 +1,57 @@
 import { NativeModules, requireNativeComponent, StyleSheet } from "react-native";
 import type { ViewProps, ViewStyle, StyleProp } from "react-native";
 import React, { useEffect, useState } from "react";
-import { AdFormat } from "./types/AdViewProps";
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from "./types/AdInfo";
 import type { AdNativeEvent } from "./types/AdEvent";
 import type { AdViewProps } from "./types/AdViewProps";
 
 const { AppLovinMAX } = NativeModules;
+
+const {
+    BANNER_AD_FORMAT_LABEL,
+    MREC_AD_FORMAT_LABEL,
+
+    TOP_CENTER_POSITION,
+    TOP_LEFT_POSITION,
+    TOP_RIGHT_POSITION,
+    CENTERED_POSITION,
+    CENTER_LEFT_POSITION,
+    CENTER_RIGHT_POSITION,
+    BOTTOM_LEFT_POSITION,
+    BOTTOM_CENTER_POSITION,
+    BOTTOM_RIGHT_POSITION,
+} = AppLovinMAX.getConstants();
+
+/**
+ * Defines a format of an ad.
+ */
+export enum AdFormat {
+
+    /**
+     * Banner ad.
+     */
+    BANNER = BANNER_AD_FORMAT_LABEL,
+
+    /**
+     * MRec ad.
+     */
+    MREC = MREC_AD_FORMAT_LABEL,
+}
+
+/**
+ * Defines a position of a banner and MRec ad.
+ */
+export enum AdViewPosition {
+    TOP_CENTER = TOP_CENTER_POSITION,
+    TOP_LEFT = TOP_LEFT_POSITION,
+    TOP_RIGHT = TOP_RIGHT_POSITION,
+    CENTERED = CENTERED_POSITION,
+    CENTER_LEFT = CENTER_LEFT_POSITION,
+    CENTER_RIGHT = CENTER_RIGHT_POSITION,
+    BOTTOM_LEFT = BOTTOM_LEFT_POSITION,
+    BOTTOM_CENTER = BOTTOM_CENTER_POSITION,
+    BOTTOM_RIGHT = BOTTOM_RIGHT_POSITION,
+}
 
 /**
  * Defines callback functions for receiving events from the native module.
