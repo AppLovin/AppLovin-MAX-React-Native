@@ -6,7 +6,8 @@ const { AppLovinMAX } = NativeModules;
 
 // Note that this is a singleton in ES6 module
 const emitter = new NativeEventEmitter(AppLovinMAX);
-const subscriptions: Record<string, EventSubscription> = {};
+
+const subscriptions: Record<string, EventSubscription> = { };
 
 export const addEventListener = <T extends AdEventObject>(event: string, handler: AdEventListener<T>) => {
     let subscription: EventSubscription = emitter.addListener(event, handler);

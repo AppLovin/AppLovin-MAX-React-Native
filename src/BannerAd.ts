@@ -162,9 +162,13 @@ export const BannerAd: BannerAdInterface = {
     removeAdRevenuePaidListener,
 
     // banner specific
+
     setBackgroundColor,
+
     setWidth,
+
     updateOffsets,
+
     getAdaptiveHeightForWidth,
 }
 

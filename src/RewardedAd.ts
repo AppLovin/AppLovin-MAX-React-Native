@@ -134,6 +134,7 @@ export const RewardedAd: RewardedAdInterface = {
     removeAdRevenuePaidListener,
 
     // Rewarded specific
+    
     addAdReceivedRewardEventListener,
     removeAdReceivedRewardEventListener,
 }

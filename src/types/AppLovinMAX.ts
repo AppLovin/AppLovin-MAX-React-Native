@@ -9,6 +9,9 @@ export interface Configuration {
     countryCode: string;
 }
 
+/**
+ * Represents the AppLovinMAX module.
+ */
 export interface AppLovinMAXInterface {
 
     /**

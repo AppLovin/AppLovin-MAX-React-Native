@@ -53,11 +53,6 @@ export enum AdViewPosition {
     BOTTOM_RIGHT = BOTTOM_RIGHT_POSITION,
 }
 
-/**
- * Defines callback functions for receiving events from the native module.
- *
- * The received events are delivered to the app via the corresponding callbacks.
- */
 type AdViewNativeEvents = {
     onAdLoadedEvent(event: AdNativeEvent<AdInfo>): void
     onAdLoadFailedEvent(event: AdNativeEvent<AdLoadFailedInfo>): void
@@ -68,23 +63,14 @@ type AdViewNativeEvents = {
     onAdRevenuePaidEvent(event: AdNativeEvent<AdRevenueInfo>): void
 }
 
-/**
- * The native `AdView` component.
- */
 const AdViewComponent = requireNativeComponent<AdViewProps & ViewProps & AdViewNativeEvents>("AppLovinMAXAdView");
 
-/**
- * Pre-defined sizes for banners and mrecs.
- */
 const ADVIEW_SIZE = {
     banner: { width: 320, height: 50 },
     leader: { width: 728, height: 90 },
     mrec: { width: 300, height: 250 },
 };
 
-/**
- * Retrieves width and height from the style props
- */
 const getFlattenedSize = (style: StyleProp<ViewStyle>) => {
     const viewStyle = StyleSheet.flatten(style || {});
     return [viewStyle?.width, viewStyle?.height];

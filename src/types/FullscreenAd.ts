@@ -1,6 +1,9 @@
 import type { AdEventListener } from "./AdEvent";
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo, AdDisplayFailedInfo } from "./AdInfo";
 
+/**
+ * Define a fullscreen ad (i.e Intestitial / Rewarded / AppOpen)
+ */
 export interface FullscreenAdInterface {
 
     /**

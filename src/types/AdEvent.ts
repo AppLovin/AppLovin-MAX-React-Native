@@ -6,9 +6,6 @@ import type {
     AdRewardInfo
 } from "./AdInfo";
 
-/**
- * Defines an event object that is generated in the native modules.
- */
 export type AdEventObject =
     AdInfo |
     AdLoadFailedInfo |

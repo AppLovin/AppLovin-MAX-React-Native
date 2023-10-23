@@ -11,7 +11,7 @@ const initialize = async (
     return NativeAppLovinMAX.initialize(VERSION, sdkKey);
 }
 
-interface NativeAppLovinMAX extends Omit<AppLovinMAXInterface, | 'initialize'> {}
+interface NativeAppLovinMAX extends Omit<AppLovinMAXInterface, | 'initialize'> { }
 
 const nativeMethods: NativeAppLovinMAX = NativeAppLovinMAX;
 

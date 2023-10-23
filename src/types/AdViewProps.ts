@@ -3,7 +3,7 @@ import type { AdInfo } from "./AdInfo";
 import type { AdFormat } from "../AdView";
 
 /**
- * Represents an `AdView` - banner / MRec.
+ * Represents an `AdView` - Banner / MRec.
  */
 export interface AdViewProps extends AdProps { 
 
