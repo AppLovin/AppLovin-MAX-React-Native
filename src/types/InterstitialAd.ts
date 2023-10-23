@@ -1,3 +1,3 @@
-import type { FullscreenAdInterface } from "./FullscreenAd";
+import type { FullscreenAdType } from "./FullscreenAd";
 
-export interface InterstitialAdInterface extends FullscreenAdInterface { }
+export type InterstitialAdType = FullscreenAdType;

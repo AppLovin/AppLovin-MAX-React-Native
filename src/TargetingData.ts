@@ -2,7 +2,7 @@ import { NativeModules } from "react-native";
 
 const { AppLovinMAX } = NativeModules;
 
-interface TargetingDataNativeModules {
+type TargetingDataNativeModules = {
     setTargetingDataYearOfBirth(value: number): void;
     getTargetingDataYearOfBirth(): Promise<number>;
     setTargetingDataGender(value: string): void;
@@ -18,7 +18,7 @@ interface TargetingDataNativeModules {
     setTargetingDataInterests(value: string[] | null): void;
     getTargetingDataInterests(): Promise<string[] | null>;
     clearAllTargetingData(): void;
-}
+};
 
 const nativeTd: TargetingDataNativeModules = AppLovinMAX;
 

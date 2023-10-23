@@ -1,7 +1,7 @@
 import { NativeModules } from "react-native";
 import { addEventListener, removeEventListener } from "./EventEmitter"
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from "./types/AdInfo";
-import type { BannerAdInterface } from "./types/BannerAd";
+import type { BannerAdType } from "./types/BannerAd";
 import type { AdViewPosition } from "./AdView";
 
 const { AppLovinMAX } = NativeModules;
@@ -125,7 +125,7 @@ const getAdaptiveHeightForWidth = (width: number): Promise<number> => {
     return AppLovinMAX.getAdaptiveBannerHeightForWidth(width);
 }
 
-export const BannerAd: BannerAdInterface = {
+export const BannerAd: BannerAdType = {
     createAd,
     destroyAd,
 

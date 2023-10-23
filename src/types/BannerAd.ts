@@ -1,7 +1,7 @@
-import type { ViewAdInterface } from "./ViewAd";
+import type { ViewAdType } from "./ViewAd";
 import type { AdViewPosition } from "../AdView";
 
-export interface BannerAdInterface extends ViewAdInterface {
+export type BannerAdType = ViewAdType & {
 
     /**
      * Creates a banner at the specified position and offsets.
@@ -44,4 +44,4 @@ export interface BannerAdInterface extends ViewAdInterface {
      * @param width 
      */
     getAdaptiveHeightForWidth(width: number): Promise<number>;
-}
+};

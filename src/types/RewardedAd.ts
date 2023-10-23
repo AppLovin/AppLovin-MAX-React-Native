@@ -1,8 +1,8 @@
 import type { AdEventListener } from "./AdEvent";
 import type { AdRewardInfo } from "./AdInfo";
-import type { FullscreenAdInterface } from "./FullscreenAd";
+import type { FullscreenAdType } from "./FullscreenAd";
 
-export interface RewardedAdInterface extends FullscreenAdInterface {
+export type RewardedAdType = FullscreenAdType & {
 
     /**
      * Adds the specified event listener to receive `AdRewardInfo` when the ad is rewarded.
@@ -15,4 +15,4 @@ export interface RewardedAdInterface extends FullscreenAdInterface {
      * 
      */
     removeAdReceivedRewardEventListener(): void;
-}
+};

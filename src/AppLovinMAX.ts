@@ -1,5 +1,6 @@
 import { NativeModules } from "react-native";
-import type { Configuration, AppLovinMAXInterface } from "./types/AppLovinMAX";
+import type { AppLovinMAXType } from "./types/AppLovinMAX";
+import type { Configuration } from "./types/Configuration";
 
 const NativeAppLovinMAX = NativeModules.AppLovinMAX;
 
@@ -11,11 +12,11 @@ const initialize = async (
     return NativeAppLovinMAX.initialize(VERSION, sdkKey);
 }
 
-interface NativeAppLovinMAX extends Omit<AppLovinMAXInterface, | 'initialize'> { }
+type NativeAppLovinMAX = Omit<AppLovinMAXType, | 'initialize'>;
 
 const nativeMethods: NativeAppLovinMAX = NativeAppLovinMAX;
 
-export const AppLovinMAX: AppLovinMAXInterface = {
+export const AppLovinMAX: AppLovinMAXType = {
     ...nativeMethods,
     initialize,
 }

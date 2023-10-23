@@ -1,7 +1,7 @@
 import { NativeModules } from "react-native";
 import { addEventListener, removeEventListener } from "./EventEmitter"
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo, AdRewardInfo } from "./types/AdInfo";
-import type { RewardedAdInterface } from "./types/RewardedAd";
+import type { RewardedAdType } from "./types/RewardedAd";
 
 const { AppLovinMAX } = NativeModules;
 
@@ -104,7 +104,7 @@ const removeAdReceivedRewardEventListener = () => {
     removeEventListener(ON_REWARDED_AD_RECEIVED_REWARD_EVENT);
 }
 
-export const RewardedAd: RewardedAdInterface = {
+export const RewardedAd: RewardedAdType = {
     isAdReady,
     loadAd,
     showAd,

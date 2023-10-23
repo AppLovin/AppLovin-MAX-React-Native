@@ -4,7 +4,7 @@ import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo, AdDisplayFailedInfo } fro
 /**
  * Define a fullscreen ad (i.e Intestitial / Rewarded / AppOpen)
  */
-export interface FullscreenAdInterface {
+export type FullscreenAdType = {
 
     /**
      * Whether or not this ad is ready to be shown.
@@ -132,4 +132,4 @@ export interface FullscreenAdInterface {
      * 
      */
     removeAdRevenuePaidListener(): void;
-}
+};

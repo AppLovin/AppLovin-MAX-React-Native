@@ -1,7 +1,7 @@
 /**
  * Represents a native ad for rendering `NativeAdView`.  Internal use only. 
  */
-export interface NativeAd {
+export type NativeAd = {
 
     /**
      * The native ad title text.
@@ -47,4 +47,4 @@ export interface NativeAd {
      * Whether or not the Media view is available.
      */
     isMediaViewAvailable: boolean;
-}
+};

@@ -1,7 +1,7 @@
 import { NativeModules } from "react-native";
 import { addEventListener, removeEventListener } from "./EventEmitter"
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from "./types/AdInfo";
-import type { AppOpenAdInterface } from "./types/AppOpenAd";
+import type { AppOpenAdType } from "./types/AppOpenAd";
 
 const { AppLovinMAX } = NativeModules;
 
@@ -95,7 +95,7 @@ const removeAdRevenuePaidListener = () => {
     removeEventListener(ON_APPOPEN_AD_REVENUE_PAID);
 }
 
-export const AppOpenAd: AppOpenAdInterface = {
+export const AppOpenAd: AppOpenAdType = {
     isAdReady,
     loadAd,
     showAd,

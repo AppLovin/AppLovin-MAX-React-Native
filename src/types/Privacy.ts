@@ -1,4 +1,4 @@
-export interface PrivacyInterface {
+export type PrivacyType = {
 
     /**********************************************************************************/
     /* Privacy */
@@ -70,4 +70,4 @@ export interface PrivacyInterface {
      * @param urlString 
      */
     setTermsOfServiceUrl(urlString: string): Promise<void>;
-}
+};

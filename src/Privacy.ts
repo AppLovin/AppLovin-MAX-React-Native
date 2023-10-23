@@ -1,6 +1,6 @@
 import { NativeModules } from "react-native";
-import type { PrivacyInterface } from "./types/Privacy";
+import type { PrivacyType } from "./types/Privacy";
 
 const { AppLovinMAX } = NativeModules;
 
-export const Privacy: PrivacyInterface = AppLovinMAX;
+export const Privacy: PrivacyType = AppLovinMAX;

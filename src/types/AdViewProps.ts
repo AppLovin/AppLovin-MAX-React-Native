@@ -5,7 +5,7 @@ import type { AdFormat } from "../AdView";
 /**
  * Represents an `AdView` - Banner / MRec.
  */
-export interface AdViewProps extends AdProps { 
+export type AdViewProps = AdProps & { 
 
     /**
      * A string value representing the ad format to load ads for. Should be either `AppLovinMAX.AdFormat.BANNER` or `AppLovinMAX.AdFormat.MREC`.
@@ -31,4 +31,4 @@ export interface AdViewProps extends AdProps {
      * A callback fuction to be fired when the ad view is collapsed.
      */
     onAdCollapsed?: (adInfo: AdInfo) => void;
-}
+};

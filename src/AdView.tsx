@@ -1,6 +1,6 @@
+import React, { useEffect, useState } from "react";
 import { NativeModules, requireNativeComponent, StyleSheet } from "react-native";
 import type { ViewProps, ViewStyle, StyleProp } from "react-native";
-import React, { useEffect, useState } from "react";
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from "./types/AdInfo";
 import type { AdNativeEvent } from "./types/AdEvent";
 import type { AdViewProps } from "./types/AdViewProps";
@@ -77,7 +77,21 @@ const getFlattenedSize = (style: StyleProp<ViewStyle>) => {
 };
 
 /**
- * The `AdView` component for building a banner or a MRec.
+ * The `AdView` component for building a banner or a MRec.  Banners are sized to 320x50 on phones
+ * and 728x90 on tablets.  MRECs are sized to 300x250 on phones and tablets.  You may use the
+ * utility method `AppLovinMAX.isTablet()` to help with view sizing adjustments.  For adaptive
+ * banners, call `BannerAd.getAdaptiveHeightForWidth(width)` to get the banner height, and then adjust
+ * your content accordingly.
+ *
+ * ### Example:
+ * ```js
+ * <AdView
+ *   adUnitId={adUnitId}
+ *   adFormat={AdFormat.BANNER}
+ *   style={styles.banner}
+ *   onAdLoaded={(adInfo: AdInfo) => { ... }}
+ * />
+ * ```
  */
 export const AdView = ({
     adUnitId,

@@ -1,7 +1,7 @@
 /**
  * Represents an AppLovinMAX ad.
  */
-export interface AdInfo {
+export type AdInfo = {
 
     /**
      * The ad unit ID for which this ad was loaded.
@@ -45,12 +45,12 @@ export interface AdInfo {
      * The native ad info.
      */
     nativeAd?: AdNativeInfo | null;
-}
+};
 
 /**
  * Encapsulates load errors.
  */
-export interface AdLoadFailedInfo {
+export type AdLoadFailedInfo = {
 
     /**
      * The ad unit ID for which this ad was loaded.
@@ -86,12 +86,12 @@ export interface AdLoadFailedInfo {
      * The underlying waterfall of ad responses.
      */
     waterfall?: AdWaterfallInfo | null;
-}
+};
 
 /**
   * Encapsulates display errors.
  */
-export interface AdDisplayFailedInfo extends AdInfo {
+export type AdDisplayFailedInfo = AdInfo & {
 
     /**
      * The error code for the error.
@@ -112,12 +112,12 @@ export interface AdDisplayFailedInfo extends AdInfo {
      * The mediated network's error message for the error.
      */
     mediatedNetworkErrorMessage: string;
-}
+};
 
 /**
  * Represents a reward ad when receiving a reward event.
  */
-export interface AdRewardInfo extends AdInfo {
+export type AdRewardInfo = AdInfo & {
 
     /**
      * The reward label.
@@ -128,12 +128,12 @@ export interface AdRewardInfo extends AdInfo {
      * The rewarded amount.
      */
     rewardAmount: string;
-}
+};
 
 /**
  * Represents an ad revenue when receiving a revenue event.
  */
-export interface AdRevenueInfo extends AdInfo {
+export type AdRevenueInfo = AdInfo & {
 
     /**
      * The ad network placement for which this ad was loaded.
@@ -149,12 +149,12 @@ export interface AdRevenueInfo extends AdInfo {
      * The current country code.
      */
     countryCode: string;
-}
+};
 
 /**
  * Represents a native ad.
  */
-export interface AdNativeInfo {
+export type AdNativeInfo = {
 
     /**
      * The native ad title text.
@@ -200,12 +200,12 @@ export interface AdNativeInfo {
      * Whether or not the Media view is available.
      */
     isMediaViewAvailable: boolean;
-}
+};
 
 /**
  * Represents an ad waterfall.
  */
-export interface AdWaterfallInfo {
+export type AdWaterfallInfo = {
 
     /**
      * The ad waterfall name.
@@ -227,7 +227,7 @@ export interface AdWaterfallInfo {
      * The total latency in seconds for this waterfall to finish processing.
      */
     latencyMillis: number;
-}
+};
 
 /**
  * States of an ad in the waterfall the adapter response info could represent.
@@ -254,7 +254,7 @@ export enum AdLoadState {
 /**
  * Encapsulates load and display errors.
  */
-export interface AdErrorInfo {
+export type AdErrorInfo = {
 
     /**
      * The error code for the error
@@ -270,12 +270,12 @@ export interface AdErrorInfo {
      * @deprecated
      */
     adLoadFailureInfo?: string;
-}
+};
 
 /**
  * Represents an ad response in a waterfall.
  */
-export interface AdNetworkResponseInfo {
+export type AdNetworkResponseInfo = {
 
     /**
      * The state of the ad that this object represents.
@@ -301,12 +301,12 @@ export interface AdNetworkResponseInfo {
      * The amount of time the network took to load (either successfully or not) an ad, in seconds. 
      */
     latencyMillis: number;
-}
+};
 
 /**
  * Represents information for a mediated network.
  */
-export interface AdMediatedNetworkInfo {
+export type AdMediatedNetworkInfo = {
 
     /**
      * The name of the mediated network.
@@ -327,4 +327,4 @@ export interface AdMediatedNetworkInfo {
      * The version of the mediated network’s SDK.
      */
     sdkVersion: string;
-}
+};

@@ -1,6 +1,6 @@
 import React, { useContext, useRef, useEffect } from "react";
-import type { ViewProps, ImageProps, TextStyle, StyleProp } from "react-native";
 import { findNodeHandle, Text, Image, View, TouchableOpacity, StyleSheet } from "react-native";
+import type { ViewProps, ImageProps, TextStyle, StyleProp } from "react-native";
 import { NativeAdViewContext } from "./NativeAdViewProvider";
 
 export const TitleView = (props: ViewProps) => {

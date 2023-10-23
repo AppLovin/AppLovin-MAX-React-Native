@@ -5,7 +5,7 @@ import type { AdViewPosition } from "../AdView";
 /**
  * Define a view based ad (i.e. Banner / MRec)
  */
-export interface ViewAdInterface {
+export type ViewAdType = {
 
     /**
      * Creates a banner/mrec at the specified position and offsets.
@@ -164,4 +164,4 @@ export interface ViewAdInterface {
      * 
      */
     removeAdRevenuePaidListener(): void;
-}
+};

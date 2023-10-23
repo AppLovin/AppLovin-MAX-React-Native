@@ -1,18 +1,9 @@
-/**
- * The SDK configuration.
- */
-export interface Configuration {
-
-    /**
-     * The country code of this user. 
-     */
-    countryCode: string;
-}
+import type { Configuration } from "./Configuration";
 
 /**
  * Represents the AppLovinMAX module.
  */
-export interface AppLovinMAXInterface {
+export type AppLovinMAXType = {
 
     /**
      * Whether the SDK has fully been initialized without errors and the completion callback called.
@@ -92,4 +83,4 @@ export interface AppLovinMAXInterface {
      * @param enabled 
      */
     setLocationCollectionEnabled(enabled: boolean): Promise<void>;
-}
+};

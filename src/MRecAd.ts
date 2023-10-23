@@ -1,7 +1,7 @@
 import { NativeModules } from "react-native";
 import { addEventListener, removeEventListener } from "./EventEmitter"
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from "./types/AdInfo";
-import type { MRecAdInterface } from "./types/MRecAd";
+import type { MRecAdType } from "./types/MRecAd";
 import type { AdViewPosition } from "./AdView";
 
 const { AppLovinMAX } = NativeModules;
@@ -107,7 +107,7 @@ const removeAdRevenuePaidListener = () => {
     removeEventListener(ON_MREC_AD_REVENUE_PAID);
 }
 
-export const MRecAd: MRecAdInterface = {
+export const MRecAd: MRecAdType = {
     createAd,
     destroyAd,
 

@@ -23,4 +23,4 @@ export type AdEventListener<T extends AdEventObject> = (event: T) => void;
  * Defines a generic event object for the UI components i.e. AdView and NativeAdView to receive an
  * event from the native module.
  */
-export interface AdNativeEvent<T extends AdEventObject> { nativeEvent: T }
+export type AdNativeEvent<T extends AdEventObject> = { nativeEvent: T };

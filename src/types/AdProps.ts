@@ -3,7 +3,7 @@ import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } fro
 /**
  * Define the base properties of the UI component ads i.e Adview and NativeAdView.
  */
-export interface AdProps {
+export type AdProps = {
     
     /**
      * A string value representing the ad unit id to load ads for.
@@ -56,4 +56,4 @@ export interface AdProps {
      * A callback fuction to be fired when the revenue event is detected.
      */
     onAdRevenuePaid?: (adInfo: AdRevenueInfo) => void;
-}
+};

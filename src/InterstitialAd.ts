@@ -1,7 +1,7 @@
 import { NativeModules } from "react-native";
 import { addEventListener, removeEventListener } from "./EventEmitter"
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from "./types/AdInfo";
-import type { InterstitialAdInterface } from "./types/InterstitialAd";
+import type { InterstitialAdType } from "./types/InterstitialAd";
 
 const { AppLovinMAX } = NativeModules;
 
@@ -95,7 +95,7 @@ const removeAdRevenuePaidListener = () => {
     removeEventListener(ON_INTERSTITIAL_AD_REVENUE_PAID);
 }
 
-export const InterstitialAd: InterstitialAdInterface = {
+export const InterstitialAd: InterstitialAdType = {
     isAdReady,
     loadAd,
     showAd,
