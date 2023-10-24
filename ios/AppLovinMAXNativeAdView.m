@@ -221,7 +221,7 @@
         if ( !icon.URL && icon.image )
         {
             RCTImageView *iconImageView = (RCTImageView *) view;
-            iconImageView.defaultImage = icon.image;
+            [iconImageView performSelector: @selector(setImage:) withObject: icon.image];
         }
     }
 }

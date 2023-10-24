@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Fix IconView not being displayed when setting a native image on iOS.
 ## 5.7.2
 * Fix a warning of `key` in the local extra parameter not enclosing in brackets.
 ## 5.7.1
