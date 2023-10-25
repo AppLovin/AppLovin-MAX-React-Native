@@ -227,7 +227,7 @@
             }
             else
             {
-                [[AppLovinMAX shared] log: @"Unable to set an icon image due to missing a React Native method"];
+                [[AppLovinMAX shared] log: @"Unable to set native ad IconView image"];
             }
         }
     }
