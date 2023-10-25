@@ -2,7 +2,7 @@ import { NativeModules } from "react-native";
 
 const { AppLovinMAX } = NativeModules;
 
-type TargetingDataNativeModules = {
+type NativeTargetingDataType = {
     setTargetingDataYearOfBirth(value: number): void;
     getTargetingDataYearOfBirth(): Promise<number>;
     setTargetingDataGender(value: string): void;
@@ -20,7 +20,7 @@ type TargetingDataNativeModules = {
     clearAllTargetingData(): void;
 };
 
-const nativeTd: TargetingDataNativeModules = AppLovinMAX;
+const nativeMethods: NativeTargetingDataType = AppLovinMAX;
 
 /**
  * This enumeration represents content ratings for the ads shown to users.
@@ -48,14 +48,14 @@ export const TargetingData = {
      *  Sets the year of birth of the user.  Sets 0 to clear this value.
      */
     set yearOfBirth(value: number) {
-        nativeTd.setTargetingDataYearOfBirth(value);
+        nativeMethods.setTargetingDataYearOfBirth(value);
     },
 
     /**
      *  Gets the year of birth of the user.
      */
     get yearOfBirth(): Promise<number> {
-        return nativeTd.getTargetingDataYearOfBirth();
+        return nativeMethods.getTargetingDataYearOfBirth();
     },
 
     /**
@@ -66,7 +66,7 @@ export const TargetingData = {
             value === UserGender.Female ||
             value === UserGender.Male ||
             value === UserGender.Other) {
-            nativeTd.setTargetingDataGender(value);
+            nativeMethods.setTargetingDataGender(value);
         }
     },
 
@@ -74,7 +74,7 @@ export const TargetingData = {
      * Gets the gender of the user.
      */
     get gender(): Promise<UserGender> {
-        return nativeTd.getTargetingDataGender().then((value: string) => {
+        return nativeMethods.getTargetingDataGender().then((value: string) => {
             return value as UserGender;
         });
     },
@@ -87,7 +87,7 @@ export const TargetingData = {
             value === AdContentRating.AllAudiences ||
             value === AdContentRating.EveryoneOverTwelve ||
             value === AdContentRating.MatureAudiences) {
-            nativeTd.setTargetingDataMaximumAdContentRating(value);
+            nativeMethods.setTargetingDataMaximumAdContentRating(value);
         }
     },
 
@@ -95,7 +95,7 @@ export const TargetingData = {
      * Gets the maximum ad content rating shown to the user.
      */
     get maximumAdContentRating(): Promise<AdContentRating> {
-        return nativeTd.getTargetingDataMaximumAdContentRating().then((value: number) => {
+        return nativeMethods.getTargetingDataMaximumAdContentRating().then((value: number) => {
             return value as AdContentRating;
         });
     },
@@ -104,62 +104,62 @@ export const TargetingData = {
      * Sets the email of the user.  Sets null to clear this value.
      */
     set email(value: string | null) {
-        nativeTd.setTargetingDataEmail(value);
+        nativeMethods.setTargetingDataEmail(value);
     },
 
     /**
      * Gets the email of the user.
      */
     get email(): Promise<string | null> {
-        return nativeTd.getTargetingDataEmail();
+        return nativeMethods.getTargetingDataEmail();
     },
 
     /**
      * Sets the phone number of the user.  Sets null to clear this value.
      */
     set phoneNumber(value: string | null) {
-        nativeTd.setTargetingDataPhoneNumber(value);
+        nativeMethods.setTargetingDataPhoneNumber(value);
     },
 
     /**
      * Gets the phone number of the user.
      */
     get phoneNumber(): Promise<string | null> {
-        return nativeTd.getTargetingDataPhoneNumber();
+        return nativeMethods.getTargetingDataPhoneNumber();
     },
 
     /**
      * Sets the keywords describing the application.  Sets null to clear this value.
      */
     set keywords(value: string[] | null) {
-        nativeTd.setTargetingDataKeywords(value);
+        nativeMethods.setTargetingDataKeywords(value);
     },
 
     /**
      * Gets the keywords describing the application.
      */
     get keywords(): Promise<string[] | null> {
-        return nativeTd.getTargetingDataKeywords();
+        return nativeMethods.getTargetingDataKeywords();
     },
 
     /**
      * Sets the interests of the user.  Sets null to clear this value.
      */
     set interests(value: string[] | null) {
-        nativeTd.setTargetingDataInterests(value);
+        nativeMethods.setTargetingDataInterests(value);
     },
 
     /**
      * Gets the interests of the user.
      */
     get interests(): Promise<string[] | null> {
-        return nativeTd.getTargetingDataInterests();
+        return nativeMethods.getTargetingDataInterests();
     },
 
     /**
      *  Clear all saved data from this class.
      */
     clearAll(): void {
-        nativeTd.clearAllTargetingData();
+        nativeMethods.clearAllTargetingData();
     },
 }

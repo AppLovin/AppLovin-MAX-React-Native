@@ -12,9 +12,9 @@ const initialize = async (
     return NativeAppLovinMAX.initialize(VERSION, sdkKey);
 }
 
-type NativeAppLovinMAX = Omit<AppLovinMAXType, | 'initialize'>;
+type NativeAppLovinMAXType = Omit<AppLovinMAXType, | 'initialize'>;
 
-const nativeMethods: NativeAppLovinMAX = NativeAppLovinMAX;
+const nativeMethods: NativeAppLovinMAXType = NativeAppLovinMAX;
 
 export const AppLovinMAX: AppLovinMAXType = {
     ...nativeMethods,

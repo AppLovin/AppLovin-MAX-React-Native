@@ -93,7 +93,6 @@ const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps & Vie
     onAdRevenuePaid,
     children,
     style,
-    ...otherProps
 }, ref) => {
 
     // context from NativeAdViewProvider
@@ -154,7 +153,6 @@ const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps & Vie
             onAdClickedEvent={onAdClickedEvent}
             onAdRevenuePaidEvent={onAdRevenuePaidEvent}
             style={style}
-            {...otherProps}
         >
             {children}
         </NativeAdViewComponent>
