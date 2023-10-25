@@ -221,7 +221,14 @@
         if ( !icon.URL && icon.image )
         {
             RCTImageView *iconImageView = (RCTImageView *) view;
-            [iconImageView performSelector: @selector(setImage:) withObject: icon.image];
+            if ( [iconImageView respondsToSelector: @selector(setImage:)] )
+            {
+                [iconImageView performSelector: @selector(setImage:) withObject: icon.image];
+            }
+            else
+            {
+                [[AppLovinMAX shared] log: @"Unable to set an icon image due to missing a React Native method"];
+            }
         }
     }
 }
