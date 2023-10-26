@@ -158,6 +158,7 @@ export const AdView = ({
     onAdCollapsed,
     onAdRevenuePaid,
     style,
+    ...otherProps
 }: AdViewProps & ViewProps) => {
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
     const [dimensions, setDimensions] = useState({});
@@ -237,6 +238,7 @@ export const AdView = ({
             onAdCollapsedEvent={onAdCollapsedEvent}
             onAdRevenuePaidEvent={onAdRevenuePaidEvent}
             style={{ ...(style as ViewProps), ...dimensions }}
+            {...otherProps}
         />
     );
 };
