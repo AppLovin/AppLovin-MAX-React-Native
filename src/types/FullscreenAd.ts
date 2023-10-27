@@ -56,7 +56,7 @@ export type FullscreenAdType = {
     addAdLoadedEventListener(listener: AdEventListener<AdInfo>): void;
 
     /**
-     * 
+     * Removes the event listener to receive `AdInfo` when a new ad has been loaded.
      */
     removeAdLoadedEventListener(): void;
 
@@ -68,8 +68,8 @@ export type FullscreenAdType = {
     addAdLoadFailedEventListener(listener: AdEventListener<AdLoadFailedInfo>): void;
 
     /**
-     * 
-     */
+     * Removes the event listener to receive `AdLoadFailedInfo` when an ad could not be loaded.
+      */
     removeAdLoadFailedEventListener(): void;
 
     /**
@@ -80,7 +80,7 @@ export type FullscreenAdType = {
     addAdClickedEventListener(listener: AdEventListener<AdInfo>): void;
 
     /**
-     * 
+     * Removes the event listener to receive `AdInfo` when the ad is clicked.
      */
     removeAdClickedEventListener(): void;
 
@@ -92,7 +92,7 @@ export type FullscreenAdType = {
     addAdDisplayedEventListener(listener: AdEventListener<AdInfo>): void;
 
     /**
-     * 
+     * Removes the event listener to receive `AdInfo` when the ad is displayed.
      */
     removeAdDisplayedEventListener(): void;
 
@@ -105,7 +105,7 @@ export type FullscreenAdType = {
     addAdFailedToDisplayEventListener(listener: AdEventListener<AdDisplayFailedInfo>): void;
 
     /**
-     * 
+     * Removes the event listener to receive `AdDisplayFailedInfo` when the ad is failed to display.
      */
     removeAdFailedToDisplayEventListener(): void;
 
@@ -117,7 +117,7 @@ export type FullscreenAdType = {
     addAdHiddenEventListener(listener: AdEventListener<AdInfo>): void;
 
     /**
-     * 
+     * Removes the event listener to receive `AdInfo` when the ad is hidden.
      */
     removeAdHiddenEventListener(): void;
 
@@ -129,7 +129,7 @@ export type FullscreenAdType = {
     addAdRevenuePaidListener(listener: AdEventListener<AdRevenueInfo>): void;
 
     /**
-     * 
+     * Removes the event listener to receive `AdRevenueInfo` when the ad revenue is paid.
      */
     removeAdRevenuePaidListener(): void;
 };

@@ -101,7 +101,7 @@ export type ViewAdType = {
     addAdLoadedEventListener(listener: AdEventListener<AdInfo>): void;
 
     /**
-     * 
+     * Removes the event listener to receive `AdInfo` when a new ad has been loaded.
      */
     removeAdLoadedEventListener(): void;
 
@@ -113,7 +113,7 @@ export type ViewAdType = {
     addAdLoadFailedEventListener(listener: AdEventListener<AdLoadFailedInfo>): void;
 
     /**
-     * 
+     * Removes the event listener to receive `AdLoadFailedInfo` when an ad could not be loaded.
      */
     removeAdLoadFailedEventListener(): void;
 
@@ -125,7 +125,7 @@ export type ViewAdType = {
     addAdClickedEventListener(listener: AdEventListener<AdInfo>): void;
 
     /**
-     * 
+     * Removes the event listener to receive `AdInfo` when the ad is clicked.
      */
     removeAdClickedEventListener(): void;
 
@@ -137,7 +137,7 @@ export type ViewAdType = {
     addAdCollapsedEventListener(listener: AdEventListener<AdInfo>): void;
 
     /**
-     * 
+     * Removes the event listener to receive `AdInfo` when the ad is collapsed.
      */
     removeAdCollapsedEventListener(): void;
 
@@ -149,7 +149,7 @@ export type ViewAdType = {
     addAdExpandedEventListener(listener: AdEventListener<AdInfo>): void;
 
     /**
-     * 
+     * Removes the event listener to receive `AdInfo` when the ad is expanded.
      */
     removeAdExpandedEventListener(): void;
 
@@ -161,7 +161,7 @@ export type ViewAdType = {
     addAdRevenuePaidListener(listener: AdEventListener<AdRevenueInfo>): void;
 
     /**
-     * 
+     * Removes the event listener to receive `AdRevenueInfo` when the ad revenue is paid.
      */
     removeAdRevenuePaidListener(): void;
 };

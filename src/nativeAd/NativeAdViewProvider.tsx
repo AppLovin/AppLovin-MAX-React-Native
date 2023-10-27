@@ -20,7 +20,6 @@ export const NativeAdViewContext = createContext<NativeAdViewContextType>({
 });
 
 export const NativeAdViewProvider: React.FC<{ children: React.ReactNode }> = (props) => {
-
     const [nativeAd, setNativeAd] = useState({ isOptionsViewAvailable: false, isMediaViewAvailable: false });
     const [nativeAdView, setNativeAdView] = useState(Object);
 

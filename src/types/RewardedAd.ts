@@ -12,7 +12,7 @@ export type RewardedAdType = FullscreenAdType & {
     addAdReceivedRewardEventListener(listener: AdEventListener<AdRewardInfo>): void;
 
     /**
-     * 
+     * Removes the event listener to receive `AdRewardInfo` when the ad is rewarded.
      */
     removeAdReceivedRewardEventListener(): void;
 };

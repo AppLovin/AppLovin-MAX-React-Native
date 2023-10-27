@@ -136,6 +136,12 @@ const sizeAdViewDimensions = (adFormat: AdFormat, adaptiveBannerEnabled?: boolea
  * <AdView
  *   adUnitId={adUnitId}
  *   adFormat={AdFormat.BANNER}
+ *   placement="my_placement"
+ *   customData="my_customData"
+ *   extraParameters={{"key1":"value1", "key2":"value2"}}
+ *   localExtraParameters={{"key1":123", "key2":object}}
+ *   adaptiveBannerEnabled={false}
+ *   autoRefresh={false}
  *   style={styles.banner}
  *   onAdLoaded={(adInfo: AdInfo) => { ... }}
  * />
