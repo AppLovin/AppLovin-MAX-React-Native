@@ -1,5 +1,7 @@
 ## Versions
 
+## 6.0.0
+* Add support for TypeScript and modules - [docs](https://dash.applovin.com/documentation/mediation/react-native/getting-started/migration6).
 ## x.x.x
 * Fix IconView not being displayed when setting a native image on iOS.
 ## 5.7.2
