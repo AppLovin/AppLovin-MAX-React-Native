@@ -84,10 +84,11 @@ const sizeAdViewDimensions = (adFormat: AdFormat, adaptiveBannerEnabled?: boolea
 
         let minHeight;
         if (adaptiveBannerEnabled) {
-            if (typeof width === "number" && width > minWidth)
+            if (typeof width === "number" && width > minWidth) {
                 minHeight = await AppLovinMAX.getAdaptiveBannerHeightForWidth(width);
-            else
+            } else {
                 minHeight = await AppLovinMAX.getAdaptiveBannerHeightForWidth(minWidth);
+            }
         } else {
             minHeight = isTablet ? ADVIEW_SIZE.leader.height : ADVIEW_SIZE.banner.height;
         }
@@ -125,7 +126,7 @@ const sizeAdViewDimensions = (adFormat: AdFormat, adaptiveBannerEnabled?: boolea
 }
 
 /**
- * The `AdView` component for building a banner or a MRec.  Banners are sized to 320x50 on phones
+ * The `AdView` component for building a banner or a MREC.  Banners are sized to 320x50 on phones
  * and 728x90 on tablets.  MRECs are sized to 300x250 on phones and tablets.  You may use the
  * utility method `AppLovinMAX.isTablet()` to help with view sizing adjustments.  For adaptive
  * banners, call `BannerAd.getAdaptiveHeightForWidth(width)` to get the banner height, and then adjust
@@ -152,8 +153,8 @@ export const AdView = ({
     adFormat,
     placement,
     customData,
-    adaptiveBannerEnabled,
-    autoRefresh,
+    adaptiveBannerEnabled = true,
+    autoRefresh = true,
     extraParameters,
     localExtraParameters,
     onAdLoaded,

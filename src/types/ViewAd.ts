@@ -3,7 +3,7 @@ import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from "./AdInfo";
 import type { AdViewPosition } from "../AdView";
 
 /**
- * Define a view based ad (i.e. Banner / MRec)
+ * Define a view based ad (i.e. Banner / MREC)
  */
 export type ViewAdType = {
 

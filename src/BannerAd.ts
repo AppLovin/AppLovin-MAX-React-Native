@@ -107,7 +107,7 @@ const removeAdRevenuePaidListener = () => {
     removeEventListener(ON_BANNER_AD_REVENUE_PAID);
 }
 
-// banner specific
+// Banner specific APIs
 
 const setBackgroundColor = (adUnitId: string, hexColorCode: string): void => {
     AppLovinMAX.setBannerBackgroundColor(adUnitId, hexColorCode);
@@ -161,7 +161,7 @@ export const BannerAd: BannerAdType = {
     addAdRevenuePaidListener,
     removeAdRevenuePaidListener,
 
-    // banner specific
+    // Banner specific APIs
 
     setBackgroundColor,
 

@@ -96,6 +96,8 @@ const removeAdRevenuePaidListener = () => {
     removeEventListener(ON_REWARDED_AD_REVENUE_PAID);
 }
 
+// Rewarded specific APIs
+
 const addAdReceivedRewardEventListener = (listener: (adInfo: AdRewardInfo) => void) => {
     addEventListener(ON_REWARDED_AD_RECEIVED_REWARD_EVENT, (adInfo: AdRewardInfo) => listener(adInfo));
 }
@@ -133,7 +135,7 @@ export const RewardedAd: RewardedAdType = {
     addAdRevenuePaidListener,
     removeAdRevenuePaidListener,
 
-    // Rewarded specific
+    // Rewarded specific APIs
     
     addAdReceivedRewardEventListener,
     removeAdReceivedRewardEventListener,
