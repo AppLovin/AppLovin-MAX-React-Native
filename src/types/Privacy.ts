@@ -5,14 +5,14 @@ export type PrivacyType = {
     /**********************************************************************************/
 
     /**
-     * 
+     * Show the user consent dialog to the user using one from AppLovin's SDK.
      */
     showConsentDialog(): Promise<void>;
 
     /**
      * Sets whether or not the user has provided consent for information-sharing with AppLovin.
      * 
-     * @param hasUserConsent 
+     * @param hasUserConsent true if the user has provided consent for information sharing.
      */
     setHasUserConsent(hasUserConsent: boolean): void;
 
@@ -24,7 +24,7 @@ export type PrivacyType = {
     /**
      * Marks the user as age-restricted (i.e. under 16).
      * 
-     * @param isAgeRestrictedUser 
+     * @param isAgeRestrictedUser true if the user is age restricted (i.e. under 16).
      */
     setIsAgeRestrictedUser(isAgeRestrictedUser: boolean): void;
 
@@ -36,7 +36,7 @@ export type PrivacyType = {
     /**
      * Sets whether or not the user has opted out of the sale of their personal information.
      * 
-     * @param doNotSell 
+     * @param doNotSell true if the user has opted out of the sale of their personal information.
      */
     setDoNotSell(doNotSell: boolean): void;
 
@@ -50,16 +50,16 @@ export type PrivacyType = {
     /**********************************************************************************/
 
     /**
-     * Enable the Terms Flow.
+     * Enable the MAX Terms Flow.
      *
-     * @param enabled 
+     * @param enabled Enable the MAX Terms Flow.
      */
     setConsentFlowEnabled(enabled: boolean): Promise<void>;
 
     /**
      * URL for your company’s privacy policy. This is required in order to enable the Terms Flow.
      * 
-     * @param urlString 
+     * @param urlString The URL string to point your company’s privacy policy.
      */
     setPrivacyPolicyUrl(urlString: string): Promise<void>;
 
@@ -67,7 +67,7 @@ export type PrivacyType = {
      * URL for your company’s terms of service. This is optional; you can enable the Terms Flow with
      * or without it.
      * 
-     * @param urlString 
+     * @param urlString The URL string to point your company’s terms of service. 
      */
     setTermsOfServiceUrl(urlString: string): Promise<void>;
 };

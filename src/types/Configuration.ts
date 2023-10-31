@@ -1,5 +1,5 @@
 /**
- * The SDK configuration.
+ * Encapsulates various data for the SDK configuration.
  */
 export type Configuration = {
 

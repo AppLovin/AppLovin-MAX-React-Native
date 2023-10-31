@@ -1,5 +1,5 @@
 /**
- * Represents an AppLovinMAX ad.
+ * Represents an ad that has been served by AppLovin MAX.
  */
 export type AdInfo = {
 
@@ -11,11 +11,15 @@ export type AdInfo = {
     /**
      * The creative id tied to the ad, if any. You can report creative issues to the corresponding
      * ad network using this id.
+     *
+     * @see {@link https://dash.applovin.com/documentation/mediation/react-native/testing-networks/creative-debugger#creative-id}
      */
     creativeId?: string | null;
 
     /**
      * The ad network from which this ad was loaded.
+     *
+     * @see {@link https://dash.applovin.com/documentation/mediation/react-native/testing-networks/creative-debugger#network-name}
      */
     networkName: string;
 
@@ -47,8 +51,9 @@ export type AdInfo = {
     nativeAd?: AdNativeInfo | null;
 };
 
+
 /**
- * Encapsulates load errors.
+ * Encapsulates various data for MAX load errors.
  */
 export type AdLoadFailedInfo = {
 
@@ -89,7 +94,7 @@ export type AdLoadFailedInfo = {
 };
 
 /**
-  * Encapsulates display errors.
+ * Encapsulates various data for MAX display errors.
  */
 export type AdDisplayFailedInfo = AdInfo & {
 
@@ -115,7 +120,7 @@ export type AdDisplayFailedInfo = AdInfo & {
 };
 
 /**
- * Represents a reward ad when receiving a reward event.
+ * Represents a reward given to the user.
  */
 export type AdRewardInfo = AdInfo & {
 
@@ -131,7 +136,7 @@ export type AdRewardInfo = AdInfo & {
 };
 
 /**
- * Represents an ad revenue when receiving a revenue event.
+ * Represents a revenue given to the user.
  */
 export type AdRevenueInfo = AdInfo & {
 
@@ -142,6 +147,13 @@ export type AdRevenueInfo = AdInfo & {
 
     /**
      * The precision of the revenue value for this ad.
+     *
+     * Possible values are:
+     * - "publisher_defined" - If the revenue is the price assigned to the line item by the publisher.
+     * - "exact" - If the revenue is the resulting price of a real-time auction.
+     * - "estimated" - If the revenue is the price obtained by auto-CPM.
+     * - "undefined" - If we do not have permission from the ad network to share impression-level data.
+     * - "" - An empty string, if revenue and precision are not valid (for example, in test mode).
      */
     revenuePrecision: string;
 
@@ -203,7 +215,8 @@ export type AdNativeInfo = {
 };
 
 /**
- * Represents an ad waterfall.
+ * Represents an ad waterfall, encapsulating various metadata such as total latency, underlying ad
+ * responses, etc.
  */
 export type AdWaterfallInfo = {
 
@@ -218,7 +231,7 @@ export type AdWaterfallInfo = {
     testName: string;
 
     /**
-     * The list of `AdNetworkResponseInfo` info objects relating to each ad in the waterfall,
+     * The list of {@link AdNetworkResponseInfo} info objects relating to each ad in the waterfall,
      * ordered by their position.
      */
     networkResponses: AdNetworkResponseInfo[];
@@ -230,23 +243,24 @@ export type AdWaterfallInfo = {
 };
 
 /**
- * States of an ad in the waterfall the adapter response info could represent.
+ * This enum contains possible states of an ad in the waterfall the adapter response info could
+ * represent.
  */
 export enum AdLoadState {
 
     /**
      * The AppLovin MAX SDK did not attempt to load an ad from this network in the waterfall because
-     * an ad higher in the waterfall loaded successfully
+     * an ad higher in the waterfall loaded successfully.
      */
     LoadStateAdLoadNotAttempted = 0,
 
     /**
-     * An ad successfully loaded from this network
+     * An ad successfully loaded from this network.
      */
     LoadStateAdLoaded = 1,
 
     /**
-     * An ad failed to load from this network
+     * An ad failed to load from this network.
      */
     LoadStateAdFailedToLoad = 2
 }
@@ -257,12 +271,12 @@ export enum AdLoadState {
 export type AdErrorInfo = {
 
     /**
-     * The error code for the error
+     * The error code for the error.
      */
     code: number;
 
     /**
-     * The error message for the error
+     * The error message for the error.
      */
     message?: string;
 
@@ -273,12 +287,12 @@ export type AdErrorInfo = {
 };
 
 /**
- * Represents an ad response in a waterfall.
+ * This class represents an ad response in a waterfall.
  */
 export type AdNetworkResponseInfo = {
 
     /**
-     * The state of the ad that this object represents.
+     * The state of the ad that this object represents.  For more info, see the {@link AdLoadState} enum.
      */
     adLoadState: AdLoadState;
 
@@ -293,18 +307,22 @@ export type AdNetworkResponseInfo = {
     credentials: { [key: string]: any; };
 
     /**
-     * The ad load error this network response resulted in.
+     * The ad load error this network response resulted in. Will be unavailable if an attempt to
+     * load an ad has not been made or an ad was loaded successfully (i.e. the loadState is NOT
+     * LoadStateAdFailedToLoad).
      */
     error?: AdErrorInfo;
 
     /**
-     * The amount of time the network took to load (either successfully or not) an ad, in seconds. 
+     * The amount of time the network took to load (either successfully or not) an ad, in
+     * milliseconds. If an attempt to load an ad has not been made (i.e. the loadState is
+     * LoadStateAdLoadNotAttempted), the value will be -1.
      */
     latencyMillis: number;
 };
 
 /**
- * Represents information for a mediated network.
+ * This class represents information for a mediated network.
  */
 export type AdMediatedNetworkInfo = {
 

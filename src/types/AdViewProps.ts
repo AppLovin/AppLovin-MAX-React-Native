@@ -5,10 +5,11 @@ import type { AdFormat } from "../AdView";
 /**
  * Represents an `AdView` - Banner / MREC.
  */
-export type AdViewProps = AdProps & { 
+export type AdViewProps = AdProps & {
 
     /**
-     * A string value representing the ad format to load ads for. Should be either `AppLovinMAX.AdFormat.BANNER` or `AppLovinMAX.AdFormat.MREC`.
+     * A string value representing the ad format to load ads for. Should be either 
+     * {@link AdFormat.BANNER} or {@link AdFormat.MREC}.
      */
     adFormat: AdFormat;
 
@@ -18,7 +19,8 @@ export type AdViewProps = AdProps & {
     adaptiveBannerEnabled?: boolean;
 
     /**
-     * A boolean value representing whether or not to enable auto-refresh. Note that auto-refresh is enabled by default.
+     * A boolean value representing whether or not to enable auto-refresh. Note that auto-refresh is
+     * enabled by default.
      */
     autoRefresh?: boolean;
 

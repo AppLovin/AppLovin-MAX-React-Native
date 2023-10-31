@@ -42,6 +42,9 @@ export enum UserGender {
     Other = 'O',
 }
 
+/**
+ * This class allows you to provide user or app data that will improve how we target ads.
+ */
 export const TargetingData = {
 
     /**

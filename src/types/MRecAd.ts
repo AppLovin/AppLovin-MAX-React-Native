@@ -6,8 +6,8 @@ export type MRecAdType = ViewAdType & {
     /**
      * Creates a MREC at the specified position.
      * 
-     * @param adUnitId 
-     * @param position 
+     * @param adUnitId The Ad Unit ID to  to load ads for.
+     * @param position {@link AdViewPosition} position.
      */
     createAd(adUnitId: string, position: AdViewPosition): void;
 };

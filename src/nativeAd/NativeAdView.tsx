@@ -20,20 +20,19 @@ type NativeAdViewNativeEvents = {
 const NativeAdViewComponent = requireNativeComponent<NativeAdViewProps & ViewProps & NativeAdViewNativeEvents>('AppLovinMAXNativeAdView');
 
 /**
- * The `NativeAdView` component for building a native ad. This loads a native ad and renders it with
+ * The {@link NativeAdView} component for building a native ad. This loads a native ad and renders it with
  * the asset views:
  *
- * - `IconView`
- * - `TitleView`
- * - `AdvertiserView`
- * - `StarRatingView`
- * - `BodyView`
- * - `MediaView`
- * - `CallToActionView`
+ * - {@link IconView}
+ * - {@link TitleView}
+ * - {@link AdvertiserView}
+ * - {@link StarRatingView}
+ * - {@link BodyView}
+ * - {@link MediaView}
+ * - {@link CallToActionView}
  *
- * Each asset view will be filled with its data of a native ad when it is loaded but you need to
- * provide the layout and style of th asset views.  A new native ad can be re-loaded via the ref
- * handler.
+ * Each asset view will be filled with the data of a native ad when loaded, but you need to provide
+ * the layout and style of the asset views.  A new native ad can be re-loaded via the ref handler.
  * 
  * ### Example:
  * ```js
