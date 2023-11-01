@@ -1,7 +1,7 @@
 import type { AdProps } from "./AdProps";
 
 /**
- * A handler of `NativeAdView`.
+ * A handler of {@link NativeAdView}.
  */
 export type NativeAdViewHandler = {
 
@@ -12,6 +12,6 @@ export type NativeAdViewHandler = {
 };
 
 /**
- * Represents a `NativeAdView`.
+ * Represents a {@link NativeAdView}.
  */
 export type NativeAdViewProps = AdProps;

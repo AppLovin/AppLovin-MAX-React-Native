@@ -1,7 +1,7 @@
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from "./AdInfo";
 
 /**
- * Defines the base properties for the UI component ads i.e Adview and NativeAdView.
+ * Defines the base properties for the UI component ads i.e {@link Adview} and {@link NativeAdView}.
  */
 export type AdProps = {
 
