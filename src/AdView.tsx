@@ -1,10 +1,12 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { NativeModules, requireNativeComponent, StyleSheet } from 'react-native';
 import type { ViewProps, ViewStyle, StyleProp } from 'react-native';
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from './types/AdInfo';
-import type { AdNativeEvent } from './types/AdEvent';
-import type { AdViewProps } from './types/AdViewProps';
+import type { AdViewProps, LoadedAdViewProps } from './types/AdViewProps';
+import { createAdViewAd } from './AdViewAd';
+import type { AdViewAd } from './types/AdViewAd';
+import type { AdViewAdId, AdViewAdWithId } from './AdViewAd';
 
 const { AppLovinMAX } = NativeModules;
 
@@ -53,17 +55,7 @@ export enum AdViewPosition {
     BOTTOM_RIGHT = BOTTOM_RIGHT_POSITION,
 }
 
-type AdViewNativeEvents = {
-    onAdLoadedEvent(event: AdNativeEvent<AdInfo>): void;
-    onAdLoadFailedEvent(event: AdNativeEvent<AdLoadFailedInfo>): void;
-    onAdDisplayFailedEvent(event: AdNativeEvent<AdDisplayFailedInfo>): void;
-    onAdClickedEvent(event: AdNativeEvent<AdInfo>): void;
-    onAdExpandedEvent(event: AdNativeEvent<AdInfo>): void;
-    onAdCollapsedEvent(event: AdNativeEvent<AdInfo>): void;
-    onAdRevenuePaidEvent(event: AdNativeEvent<AdRevenueInfo>): void;
-};
-
-const AdViewComponent = requireNativeComponent<AdViewProps & ViewProps & AdViewNativeEvents>('AppLovinMAXAdView');
+const AdViewComponent = requireNativeComponent<ViewProps & AdViewAdId>('AppLovinMAXAdView');
 
 const ADVIEW_SIZE = {
     banner: { width: 320, height: 50 },
@@ -77,8 +69,7 @@ const getOutlineViewSize = (style: StyleProp<ViewStyle>) => {
 };
 
 const sizeAdViewDimensions = (
-    adFormat: AdFormat,
-    adaptiveBannerEnabled?: boolean,
+    ad: AdViewAd,
     width?: number | string | null,
     height?: number | string | null
 ): Promise<Record<string, number>> => {
@@ -88,7 +79,7 @@ const sizeAdViewDimensions = (
         const minWidth = isTablet ? ADVIEW_SIZE.leader.width : ADVIEW_SIZE.banner.width;
 
         let minHeight;
-        if (adaptiveBannerEnabled) {
+        if (ad.adaptiveBannerEnabled) {
             if (typeof width === 'number' && width > minWidth) {
                 minHeight = await AppLovinMAX.getAdaptiveBannerHeightForWidth(width);
             } else {
@@ -116,7 +107,7 @@ const sizeAdViewDimensions = (
         });
     };
 
-    if (adFormat === AdFormat.BANNER) {
+    if (ad.adFormat === AdFormat.BANNER) {
         return sizeForBannerFormat();
     } else {
         return Promise.resolve({
@@ -138,12 +129,83 @@ const sizeAdViewDimensions = (
     }
 };
 
+const setDefaultAdViewProps = (props: AdViewProps): AdViewProps => {
+    let adaptiveBannerEnabled = {};
+    if (props.adaptiveBannerEnabled === undefined) {
+        adaptiveBannerEnabled = { adaptiveBannerEnabled: true };
+    }
+
+    let autoRefresh = {};
+    if (props.autoRefresh === undefined) {
+        autoRefresh = { autoRefresh: true };
+    }
+
+    return { ...props, ...adaptiveBannerEnabled, ...autoRefresh };
+};
+
+const updateAdViewAd = (ad: AdViewAd, props: AdViewProps) => {
+    if (props.placement !== ad.placement) ad.placement = props.placement;
+    if (props.customData !== ad.customData) ad.customData = props.customData;
+    if (props.adaptiveBannerEnabled !== ad.adaptiveBannerEnabled)
+        ad.adaptiveBannerEnabled = props.adaptiveBannerEnabled;
+    if (props.autoRefresh !== ad.autoRefresh) ad.autoRefresh = props.autoRefresh;
+    if (props.extraParameters !== ad.extraParameters) ad.extraParameters = props.extraParameters;
+    if (props.localExtraParameters !== ad.localExtraParameters) ad.localExtraParameters = props.localExtraParameters;
+    if (props.onAdLoaded) {
+        ad.removeAdLoadedEventListener();
+        ad.addAdLoadedEventListener((adInfo: AdInfo) => {
+            props.onAdLoaded!(adInfo);
+        });
+    }
+    if (props.onAdLoadFailed) {
+        ad.removeAdLoadFailedEventListener();
+        ad.addAdLoadFailedEventListener((adInfo: AdLoadFailedInfo) => {
+            props.onAdLoadFailed!(adInfo);
+        });
+    }
+    if (props.onAdDisplayFailed) {
+        ad.removeAdDisplayFailedEventListener();
+        ad.addAdDisplayFailedEventListener((adInfo: AdDisplayFailedInfo) => {
+            props.onAdDisplayFailed!(adInfo);
+        });
+    }
+    if (props.onAdClicked) {
+        ad.removeAdClickedEventListener();
+        ad.addAdClickedEventListener((adInfo: AdInfo) => {
+            props.onAdClicked!(adInfo);
+        });
+    }
+    if (props.onAdExpanded) {
+        ad.removeAdExpandedEventListener();
+        ad.addAdExpandedEventListener((adInfo: AdInfo) => {
+            props.onAdExpanded!(adInfo);
+        });
+    }
+    if (props.onAdCollapsed) {
+        ad.removeAdCollapsedEventListener();
+        ad.addAdCollapsedEventListener((adInfo: AdInfo) => {
+            props.onAdCollapsed!(adInfo);
+        });
+    }
+    if (props.onAdRevenuePaid) {
+        ad.removeAdRevenuePaidListener();
+        ad.addAdRevenuePaidListener((adInfo: AdRevenueInfo) => {
+            props.onAdRevenuePaid!(adInfo);
+        });
+    }
+};
+
+type Props = (LoadedAdViewProps | AdViewProps) & ViewProps;
+
 /**
  * The {@link AdView} component that you use building a banner or an MREC. Phones
  * sizes banners to 320x50 and MRECs to 300x250. Tablets sizes banners to 728x90 and MRECs to
  * 300x250. You may use the utility method {@link AppLovinMAX.isTablet()} to help with view sizing
  * adjustments. For adaptive banners, call {@link BannerAd.getAdaptiveHeightForWidth()} to get
  * the banner height, and then adjust your content accordingly.
+ *
+ * You can use {@link createAdView()} to load ads in advance.  {@link createAdView()} returns
+ * {@link AdViewAd} that can be passed to AdView.
  *
  * ### Example:
  * ```js
@@ -160,28 +222,25 @@ const sizeAdViewDimensions = (
  *   onAdLoaded={(adInfo: AdInfo) => { ... }}
  * />
  * ```
+ * ### Example with createAdViewAd:
+ * ```js
+ * const bannerAd:AdViewAd = await createAdViewAd(adUnitId, AdFormat.BANNER);
+ * ...
+ * <AdView
+ *   ad={bannerAd}
+ *   style={styles.banner}
+ * />
+ * ```
+ *
  */
-export const AdView = ({
-    adUnitId,
-    adFormat,
-    placement,
-    customData,
-    adaptiveBannerEnabled = true,
-    autoRefresh = true,
-    extraParameters,
-    localExtraParameters,
-    onAdLoaded,
-    onAdLoadFailed,
-    onAdDisplayFailed,
-    onAdClicked,
-    onAdExpanded,
-    onAdCollapsed,
-    onAdRevenuePaid,
-    style,
-    ...otherProps
-}: AdViewProps & ViewProps) => {
+export const AdView = (props: Props) => {
+    const { style, ...otherProps } = props as ViewProps;
+
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
     const [dimensions, setDimensions] = useState({});
+    const [adViewAd, setAdViewAd] = useState<AdViewAdWithId>();
+
+    const uiAd = useRef<AdViewAdWithId>();
 
     useEffect(() => {
         AppLovinMAX.isInitialized().then((result: boolean) => {
@@ -190,45 +249,53 @@ export const AdView = ({
                 console.warn('AdView is mounted before the initialization of the AppLovin MAX React Native module');
             }
         });
+
+        return () => {
+            uiAd.current?.destroy();
+        };
     }, []);
 
     useEffect(() => {
-        if (!isInitialized) return;
+        if (!isInitialized || uiAd.current) return;
+
+        // props can be casted to either LoadedAdViewProps or AdViewProps
+        const loadedAdViewProps = props as LoadedAdViewProps;
+        const adViewProps = props as AdViewProps;
+
+        if (loadedAdViewProps.ad) {
+            // Set the user provided ad.
+            setAdViewAd(loadedAdViewProps.ad as AdViewAdWithId);
+        } else if (adViewProps.adUnitId && adViewProps.adFormat) {
+            // Create a new ad which needs to be deleted when unmounted.
+            const createUIAd = async () => {
+                const ad: AdViewAdWithId = (await createAdViewAd(
+                    adViewProps.adUnitId,
+                    adViewProps.adFormat
+                )) as AdViewAdWithId;
+                updateAdViewAd(ad, setDefaultAdViewProps(adViewProps));
+                setAdViewAd(ad);
+                uiAd.current = ad;
+            };
+            createUIAd();
+        } else {
+            console.error('ERROR: Cannot create AdView with missing argument');
+        }
+    }, [isInitialized]);
+
+    useEffect(() => {
+        if (!adViewAd) return;
         const [width, height] = getOutlineViewSize(style);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore: width and height should be of type DimensionValue in react-native 0.72.0 and above
-        sizeAdViewDimensions(adFormat, adaptiveBannerEnabled, width, height).then((value: Record<string, number>) => {
+        sizeAdViewDimensions(adViewAd, width, height).then((value: Record<string, number>) => {
             setDimensions(value);
         });
-    }, [isInitialized]);
+    }, [adViewAd]);
 
-    const onAdLoadedEvent = (event: AdNativeEvent<AdInfo>) => {
-        if (onAdLoaded) onAdLoaded(event.nativeEvent);
-    };
-
-    const onAdLoadFailedEvent = (event: AdNativeEvent<AdLoadFailedInfo>) => {
-        if (onAdLoadFailed) onAdLoadFailed(event.nativeEvent);
-    };
-
-    const onAdDisplayFailedEvent = (event: AdNativeEvent<AdDisplayFailedInfo>) => {
-        if (onAdDisplayFailed) onAdDisplayFailed(event.nativeEvent);
-    };
-
-    const onAdClickedEvent = (event: AdNativeEvent<AdInfo>) => {
-        if (onAdClicked) onAdClicked(event.nativeEvent);
-    };
-
-    const onAdExpandedEvent = (event: AdNativeEvent<AdInfo>) => {
-        if (onAdExpanded) onAdExpanded(event.nativeEvent);
-    };
-
-    const onAdCollapsedEvent = (event: AdNativeEvent<AdInfo>) => {
-        if (onAdCollapsed) onAdCollapsed(event.nativeEvent);
-    };
-
-    const onAdRevenuePaidEvent = (event: AdNativeEvent<AdRevenueInfo>) => {
-        if (onAdRevenuePaid) onAdRevenuePaid(event.nativeEvent);
-    };
+    useEffect(() => {
+        if (!uiAd.current) return;
+        updateAdViewAd(uiAd.current, props as AdViewProps);
+    }, [props]);
 
     // Not initialized
     if (!isInitialized) {
@@ -240,25 +307,16 @@ export const AdView = ({
         if (!isDimensionsSet) {
             return null;
         }
+
+        // Not ad ready yet
+        if (!adViewAd) {
+            return null;
+        }
     }
 
     return (
         <AdViewComponent
-            adUnitId={adUnitId}
-            adFormat={adFormat}
-            placement={placement}
-            customData={customData}
-            adaptiveBannerEnabled={adaptiveBannerEnabled}
-            autoRefresh={autoRefresh}
-            extraParameters={extraParameters}
-            localExtraParameters={localExtraParameters}
-            onAdLoadedEvent={onAdLoadedEvent}
-            onAdLoadFailedEvent={onAdLoadFailedEvent}
-            onAdDisplayFailedEvent={onAdDisplayFailedEvent}
-            onAdClickedEvent={onAdClickedEvent}
-            onAdExpandedEvent={onAdExpandedEvent}
-            onAdCollapsedEvent={onAdCollapsedEvent}
-            onAdRevenuePaidEvent={onAdRevenuePaidEvent}
+            adViewAdId={adViewAd.adViewAdId}
             style={Object.assign({}, style, dimensions)}
             {...otherProps}
         />

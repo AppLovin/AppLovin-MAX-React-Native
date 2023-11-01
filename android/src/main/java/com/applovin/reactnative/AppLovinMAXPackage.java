@@ -21,6 +21,7 @@ public class AppLovinMAXPackage
     {
         List<NativeModule> module = new ArrayList<>( 1 );
         module.add( new AppLovinMAXModule( reactContext ) );
+        module.add( new AppLovinMAXAdViewAdManager( reactContext ) );
         return module;
     }
 

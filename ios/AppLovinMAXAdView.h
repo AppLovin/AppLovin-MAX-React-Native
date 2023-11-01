@@ -9,7 +9,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AppLovinMAXAdViewAdManager;
+
 @interface AppLovinMAXAdView : UIView
+
+- (instancetype)initWithAdViewAdManager:(AppLovinMAXAdViewAdManager *)manager;
 
 @end
 

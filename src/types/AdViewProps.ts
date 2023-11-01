@@ -1,6 +1,7 @@
 import type { AdProps } from './AdProps';
 import type { AdInfo } from './AdInfo';
 import type { AdFormat } from '../AdView';
+import type { AdViewAd } from './AdViewAd';
 
 /**
  * Represents an {@link AdView} - Banner / MREC.
@@ -32,4 +33,14 @@ export type AdViewProps = AdProps & {
      * A callback fuction that {@link AdView} fires when it collapses the ad.
      */
     onAdCollapsed?: (adInfo: AdInfo) => void;
+};
+
+/**
+ * Defines props for {@link AdView} with {@link AdViewAd}.
+ */
+export type LoadedAdViewProps = {
+    /**
+     * A loaded ad.
+     */
+    ad: AdViewAd;
 };

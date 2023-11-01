@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Add support for AdView preloading.
 ## 6.1.1
 * Allow calls to `AppLovinMAX.setMuted(...)` before SDK is initialized.
 * Improve loading time for native ads. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/273)

@@ -1,18 +1,99 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, ScrollView, View, Dimensions, Platform } from 'react-native';
-import { AdFormat, AdView } from '../../src/index';
+import { AdFormat, AdView, createAdViewAd } from '../../src/index';
+import type { AdViewAd, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from '../../src/index';
 import AppButton from './components/AppButton';
 
 type Props = {
     bannerAdUnitId: string;
     mrecAdUnitId: string;
     isInitialized: boolean;
+    log: (str: string) => void;
     isNativeAdShowing: boolean;
 };
 
-const ScrolledAdViewExample = ({ bannerAdUnitId, mrecAdUnitId, isInitialized, isNativeAdShowing }: Props) => {
+const ScrolledAdViewExample = ({ bannerAdUnitId, mrecAdUnitId, isInitialized, log, isNativeAdShowing }: Props) => {
+    const NUM_ADVIEWS = 4;
+
     const [isAdEnabled, setIsAdEnabled] = useState(true);
     const [isScrollViewShowing, setIsScrollViewShowing] = useState(false);
+
+    const adViewAds = useRef<AdViewAd[]>([]);
+    const bannerAd = useRef<AdViewAd>();
+
+    useEffect(() => {
+        if (!isInitialized) return;
+
+        // Creates AdViewAds to load ads as soon as the AppLovin SDK has initialized.
+
+        createAdViewAd(bannerAdUnitId, AdFormat.BANNER).then((ad: AdViewAd) => {
+            ad.addAdLoadedEventListener((info: AdInfo) => {
+                bannerAd.current = ad;
+                log('Bottom banner ad loaded from ' + info.networkName);
+            });
+            ad.addAdLoadFailedEventListener((errorInfo: AdLoadFailedInfo) => {
+                log(
+                    'Bottom banner ad failed to load with error code ' +
+                        errorInfo.code +
+                        ' and message: ' +
+                        errorInfo.message
+                );
+                setTimeout(() => {
+                    ad.loadAd();
+                }, 10 * 1000);
+            });
+            ad.addAdClickedEventListener((/* adInfo: AdInfo */) => {
+                log('Bottom banner ad clicked');
+            });
+            ad.addAdExpandedEventListener((/* adInfo: AdInfo */) => {
+                log('Bottom banner ad expanded');
+            });
+            ad.addAdCollapsedEventListener((/* adInfo: AdInfo */) => {
+                log('Bottom banner ad collapsed');
+            });
+            ad.addAdRevenuePaidListener((adInfo: AdRevenueInfo) => {
+                log('Bottom banner ad revenue paid: ' + adInfo.revenue);
+            });
+        });
+
+        for (let i = 0; i < NUM_ADVIEWS; i++) {
+            const adUnitId = i % 2 == 0 ? bannerAdUnitId : mrecAdUnitId;
+            const adFormat = i % 2 == 0 ? AdFormat.BANNER : AdFormat.MREC;
+
+            createAdViewAd(adUnitId, adFormat).then((ad: AdViewAd) => {
+                ad.addAdLoadedEventListener((info: AdInfo) => {
+                    adViewAds.current[i] = ad;
+                    log(adFormat + ' ad ' + i + ' loaded from ' + info.networkName);
+                });
+                ad.addAdLoadFailedEventListener((errorInfo: AdLoadFailedInfo) => {
+                    log(
+                        adFormat +
+                            ' ad ' +
+                            i +
+                            ' failed to load with error code ' +
+                            errorInfo.code +
+                            ' and message: ' +
+                            errorInfo.message
+                    );
+                    setTimeout(() => {
+                        ad.loadAd();
+                    }, 10 * 1000);
+                });
+                ad.addAdClickedEventListener((/* adInfo: AdInfo */) => {
+                    log(adFormat + ' ad ' + i + ' clicked');
+                });
+                ad.addAdExpandedEventListener((/* adInfo: AdInfo */) => {
+                    log(adFormat + ' ad ' + i + ' expanded');
+                });
+                ad.addAdCollapsedEventListener((/* adInfo: AdInfo */) => {
+                    log(adFormat + ' ad ' + i + ' collapsed');
+                });
+                ad.addAdRevenuePaidListener((adInfo: AdRevenueInfo) => {
+                    log(adFormat + ' ad ' + i + ' revenue paid: ' + adInfo.revenue);
+                });
+            });
+        }
+    }, [isInitialized]);
 
     return (
         <>
@@ -40,7 +121,7 @@ const ScrolledAdViewExample = ({ bannerAdUnitId, mrecAdUnitId, isInitialized, is
                                 setIsAdEnabled(!isAdEnabled);
                             }}
                         />
-                        {[...Array(4)].map((_, i) => (
+                        {[...Array(NUM_ADVIEWS)].map((_, i) => (
                             <View key={i}>
                                 <Text style={styles.text} key={i + '-1'}>
                                     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
@@ -51,22 +132,8 @@ const ScrolledAdViewExample = ({ bannerAdUnitId, mrecAdUnitId, isInitialized, is
                                     deserunt mollit anim id est laborum.
                                 </Text>
 
-                                {isAdEnabled ? (
-                                    i % 2 == 0 ? (
-                                        <AdView
-                                            adUnitId={bannerAdUnitId}
-                                            adFormat={AdFormat.BANNER}
-                                            style={styles.adview}
-                                            key={i + '-2'}
-                                        />
-                                    ) : (
-                                        <AdView
-                                            adUnitId={mrecAdUnitId}
-                                            adFormat={AdFormat.MREC}
-                                            style={styles.adview}
-                                            key={i + '-2'}
-                                        />
-                                    )
+                                {isAdEnabled && adViewAds.current[i] ? (
+                                    <AdView ad={adViewAds.current[i]} style={styles.adview} key={i + '-2'} />
                                 ) : (
                                     <Text style={styles.placeholder} key={i + '-2'}>
                                         AD PLACEHOLDER
@@ -84,8 +151,8 @@ const ScrolledAdViewExample = ({ bannerAdUnitId, mrecAdUnitId, isInitialized, is
                             </View>
                         ))}
                     </ScrollView>
-                    {isAdEnabled ? (
-                        <AdView adUnitId={bannerAdUnitId} adFormat={AdFormat.BANNER} style={styles.adview} />
+                    {isAdEnabled && bannerAd.current ? (
+                        <AdView ad={bannerAd.current} style={styles.adview} />
                     ) : (
                         <Text style={styles.placeholder}>AD PLACEHOLDER</Text>
                     )}

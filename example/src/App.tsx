@@ -161,6 +161,7 @@ const App = () => {
                     bannerAdUnitId={BANNER_AD_UNIT_ID}
                     mrecAdUnitId={MREC_AD_UNIT_ID}
                     isInitialized={isInitialized}
+                    log={setStatusText}
                     isNativeAdShowing={isNativeAdShowing}
                 />
             </View>

@@ -7,6 +7,7 @@ export { AppOpenAd } from './AppOpenAd';
 export { BannerAd } from './BannerAd';
 export { MRecAd } from './MRecAd';
 export { AdView, AdFormat, AdViewPosition } from './AdView';
+export { createAdViewAd } from './AdViewAd';
 export { NativeAdView } from './nativeAd/NativeAdView';
 export {
     TitleView,
