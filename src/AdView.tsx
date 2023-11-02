@@ -39,7 +39,7 @@ export enum AdFormat {
 }
 
 /**
- * Defines a position of a banner and MREC ad.
+ * Defines a position of a banner or MREC ad.
  */
 export enum AdViewPosition {
     TOP_CENTER = TOP_CENTER_POSITION,
@@ -126,11 +126,11 @@ const sizeAdViewDimensions = (adFormat: AdFormat, adaptiveBannerEnabled?: boolea
 }
 
 /**
- * The {@link AdView} component for building a banner or a MREC.  Banners are sized to 320x50 on phones
- * and 728x90 on tablets.  MRECs are sized to 300x250 on phones and tablets.  You may use the
- * utility method `AppLovinMAX.isTablet()` to help with view sizing adjustments.  For adaptive
- * banners, call `BannerAd.getAdaptiveHeightForWidth(width)` to get the banner height, and then adjust
- * your content accordingly.
+ * The {@link AdView} component that you use building a banner or an MREC.  Phones
+ * sizes banners to 320x50 and MRECs to 300x250.  Tablets sizes banners to 728x90 and MRECs to
+ * 300x250.  You may use the utility method {@link AppLovinMAX.isTablet()} to help with view sizing
+ * adjustments.  For adaptive banners, call {@link BannerAd.getAdaptiveHeightForWidth()} to get
+ * the banner height, and then adjust your content accordingly.
  *
  * ### Example:
  * ```js

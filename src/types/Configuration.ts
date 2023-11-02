@@ -1,5 +1,5 @@
 /**
- * Encapsulates various data for the SDK configuration.
+ * Encapsulates data for the AppLovinMAX SDK configuration.
  */
 export type Configuration = {
 

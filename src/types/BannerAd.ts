@@ -8,8 +8,8 @@ export type BannerAdType = ViewAdType & {
      * 
      * @param adUnitId The Ad Unit ID to load ads for.
      * @param position {@ AdViewPosition} position.
-     * @param xOffset Offset from the left corner.
-     * @param yOffset Offset from the top corner.
+     * @param xOffset Horizontal offset from the left position.
+     * @param yOffset Vertical offset from the top position.
      */
     createAd(adUnitId: string, position: AdViewPosition, xOffset?: number, yOffset?: number): void;
 
@@ -33,8 +33,8 @@ export type BannerAdType = ViewAdType & {
      * Updates the banner position offsets.
      * 
      * @param adUnitId The Ad Unit ID to load ads for.
-     * @param xOffset Offset from the left corner.
-     * @param yOffset Offset from the top corner.
+     * @param xOffset Horizontal offset from the left position.
+     * @param yOffset Vertical offset from the top position.
      */
     updateOffsets(adUnitId: string, xOffset: number, yOffset: number): void;
 
