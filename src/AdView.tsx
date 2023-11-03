@@ -244,7 +244,7 @@ export const AdView = ({
             onAdExpandedEvent={onAdExpandedEvent}
             onAdCollapsedEvent={onAdCollapsedEvent}
             onAdRevenuePaidEvent={onAdRevenuePaidEvent}
-            style={{ ...(style as ViewProps), ...dimensions }}
+            style={Object.assign({}, style, dimensions)}
             {...otherProps}
         />
     );
