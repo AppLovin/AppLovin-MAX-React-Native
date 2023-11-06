@@ -244,8 +244,7 @@ export type AdWaterfallInfo = {
 
 /**
  * This enum contains possible states of an ad in the waterfall. 
- * Each adapter response {@link AdNetworkResponseInfo} corresponds 
- * to one of these states.
+ * Each adapter response {@link AdNetworkResponseInfo} corresponds to one of these states.
  */
 export enum AdLoadState {
 
@@ -293,7 +292,7 @@ export type AdErrorInfo = {
 export type AdNetworkResponseInfo = {
 
     /**
-     * The state of the ad that this object represents.  For more info, see the {@link AdLoadState} enum.
+     * The state of the ad that this object represents. For more info, see the {@link AdLoadState} enum.
      */
     adLoadState: AdLoadState;
 
@@ -316,8 +315,8 @@ export type AdNetworkResponseInfo = {
 
     /**
      * The amount of time the network took to load (either successfully or not) an ad, in milliseconds. 
-     * If an attempt to load an ad has not been made (i.e. {@link adLoadState} is
-     * LoadStateAdLoadNotAttempted), the value will be -1.
+     * If an attempt to load an ad has not been made (i.e. {@link adLoadState} is LoadStateAdLoadNotAttempted), 
+     * the value will be -1.
      */
     latencyMillis: number;
 };

@@ -126,10 +126,10 @@ const sizeAdViewDimensions = (adFormat: AdFormat, adaptiveBannerEnabled?: boolea
 }
 
 /**
- * The {@link AdView} component that you use building a banner or an MREC.  Phones
- * sizes banners to 320x50 and MRECs to 300x250.  Tablets sizes banners to 728x90 and MRECs to
- * 300x250.  You may use the utility method {@link AppLovinMAX.isTablet()} to help with view sizing
- * adjustments.  For adaptive banners, call {@link BannerAd.getAdaptiveHeightForWidth()} to get
+ * The {@link AdView} component that you use building a banner or an MREC. Phones
+ * sizes banners to 320x50 and MRECs to 300x250. Tablets sizes banners to 728x90 and MRECs to
+ * 300x250. You may use the utility method {@link AppLovinMAX.isTablet()} to help with view sizing
+ * adjustments. For adaptive banners, call {@link BannerAd.getAdaptiveHeightForWidth()} to get
  * the banner height, and then adjust your content accordingly.
  *
  * ### Example:

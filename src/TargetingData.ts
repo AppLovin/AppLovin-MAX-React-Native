@@ -50,7 +50,7 @@ export enum UserGender {
 export const TargetingData = {
 
     /**
-     *  Sets the year of birth of the user.  Set this to 0 to clear this value.
+     *  Sets the year of birth of the user. Set this to 0 to clear this value.
      */
     set yearOfBirth(value: number) {
         nativeMethods.setTargetingDataYearOfBirth(value);
@@ -64,7 +64,7 @@ export const TargetingData = {
     },
 
     /**
-     * Sets the gender of the user.  Set this to {@link UserGender.Unknown} to clear this value.
+     * Sets the gender of the user. Set this to {@link UserGender.Unknown} to clear this value.
      */
     set gender(value: UserGender) {
         if (value === UserGender.Unknown ||
@@ -85,7 +85,7 @@ export const TargetingData = {
     },
 
     /**
-     * Sets the maximum ad content rating shown to the user.  The levels are based on IQG Media
+     * Sets the maximum ad content rating shown to the user. The levels are based on IQG Media
      * Ratings: 1=All Audiences, 2=Everyone Over 12, 3=Mature Audiences.  
      * Set this to {@link AdContentRating.None} to clear this value.
      */
@@ -99,7 +99,7 @@ export const TargetingData = {
     },
 
     /**
-     * Gets the maximum ad content rating shown to the user.  The levels are based on IQG Media
+     * Gets the maximum ad content rating shown to the user. The levels are based on IQG Media
      * Ratings: 1=All Audiences, 2=Everyone Over 12, 3=Mature Audiences.
      */
     get maximumAdContentRating(): Promise<AdContentRating> {
@@ -109,7 +109,7 @@ export const TargetingData = {
     },
 
     /**
-     * Sets the email of the user.  Set this to null to clear this value.
+     * Sets the email of the user. Set this to null to clear this value.
      */
     set email(value: string | null) {
         nativeMethods.setTargetingDataEmail(value);
@@ -123,7 +123,7 @@ export const TargetingData = {
     },
 
     /**
-     * Sets the phone number of the user.  Set this to null to clear this value.
+     * Sets the phone number of the user. Set this to null to clear this value.
      */
     set phoneNumber(value: string | null) {
         nativeMethods.setTargetingDataPhoneNumber(value);
@@ -137,7 +137,7 @@ export const TargetingData = {
     },
 
     /**
-     * Sets the keywords describing the application.  Set this to null to clear this value.
+     * Sets the keywords describing the application. Set this to null to clear this value.
      */
     set keywords(value: string[] | null) {
         nativeMethods.setTargetingDataKeywords(value);
@@ -151,7 +151,7 @@ export const TargetingData = {
     },
 
     /**
-     * Sets the interests of the user.  Set this to null to clear this value.
+     * Sets the interests of the user. Set this to null to clear this value.
      */
     set interests(value: string[] | null) {
         nativeMethods.setTargetingDataInterests(value);

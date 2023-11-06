@@ -32,8 +32,8 @@ const NativeAdViewComponent = requireNativeComponent<NativeAdViewProps & ViewPro
  * - {@link CallToActionView}
  *
  * {@link NativeAdView} fills each asset view with the data of a native ad as soon as it loads the native
- * ad, but you need to provide the layout and style of the asset views.  {@link NativeAdView} 
- * can reload a new native ad by using the ref handler.
+ * ad, but you need to provide the layout and style of the asset views.
+ * {@link NativeAdView} can reload a new native ad by using the ref handler.
  * 
  * ### Example:
  * ```js

@@ -29,7 +29,7 @@ export type AppLovinMAXType = {
     isTablet(): Promise<boolean>;
 
     /**
-     * Sets an ID for the current user.  AppLovin ties this identifier to SDK events and AppLovin’s
+     * Sets an ID for the current user. AppLovin ties this identifier to SDK events and AppLovin’s
      * optional S2S postbacks.
      * 
      * @param userId User id.
@@ -57,7 +57,7 @@ export type AppLovinMAXType = {
 
     /**
      * Enables devices to receive test ads by passing in the advertising identifier (IDFA) of each
-     * test device.  Refer to AppLovin logs for the IDFA of your current device.
+     * test device. Refer to AppLovin logs for the IDFA of your current device.
      * 
      * @param advertisingIds A list of the advertising ids.
      */

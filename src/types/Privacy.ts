@@ -57,7 +57,7 @@ export type PrivacyType = {
     setConsentFlowEnabled(enabled: boolean): Promise<void>;
 
     /**
-     * The URL of your company’s privacy policy, as a string.  This is required in order to enable
+     * The URL of your company’s privacy policy, as a string. This is required in order to enable
      * the Terms Flow.
      * 
      * @param urlString The URL string to point your company’s privacy policy.
