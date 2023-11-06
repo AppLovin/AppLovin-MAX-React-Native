@@ -8,7 +8,7 @@ import type { AdFormat } from "../AdView";
 export type AdViewProps = AdProps & {
 
     /**
-     * A string value representing the ad format to load ads for. Should be either 
+     * An enum value representing the ad format to load ads for. Should be either 
      * {@link AdFormat.BANNER} or {@link AdFormat.MREC}.
      */
     adFormat: AdFormat;
@@ -25,12 +25,12 @@ export type AdViewProps = AdProps & {
     autoRefresh?: boolean;
 
     /**
-     * A callback fuction to be fired when the ad view is expanded.
+     * A callback fuction that {@link AdView} fires when it expands the ad.
      */
     onAdExpanded?: (adInfo: AdInfo) => void;
 
     /**
-     * A callback fuction to be fired when the ad view is collapsed.
+     * A callback fuction that {@link AdView} fires when it collapses the ad.
      */
     onAdCollapsed?: (adInfo: AdInfo) => void;
 };

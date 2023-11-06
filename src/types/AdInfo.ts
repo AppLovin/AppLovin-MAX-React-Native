@@ -9,17 +9,17 @@ export type AdInfo = {
     adUnitId: string;
 
     /**
-     * The creative id tied to the ad, if any. You can report creative issues to the corresponding
-     * ad network using this id.
+     * The creative ID tied to the ad, if any. You can report creative issues to the corresponding
+     * ad network using this ID.
      *
-     * @see {@link https://dash.applovin.com/documentation/mediation/react-native/testing-networks/creative-debugger#creative-id}
+     * @see {@link https://support.applovin.com/hc/en-us/articles/13986039797389-Creative-Debugger#h_01HC10588YYDNZMS1GPCVRD2E7}
      */
     creativeId?: string | null;
 
     /**
      * The ad network from which this ad was loaded.
      *
-     * @see {@link https://dash.applovin.com/documentation/mediation/react-native/testing-networks/creative-debugger#network-name}
+     * @see {@link https://support.applovin.com/hc/en-us/articles/13986039797389-Creative-Debugger#h_01HC10588YWTJHYE1E35HWQTX7}
      */
     networkName: string;
 
@@ -31,12 +31,12 @@ export type AdInfo = {
 
     /**
      *  The ad’s revenue amount. In the case where no revenue amount exists, or it is not available
-     *  yet, will return a value of 0.
+     *  yet, return 0.
      */
     revenue: number;
 
     /**
-     * The DSP network that provided the loaded ad when the ad is served through AppLovin Exchange.
+     * The DSP network that provides the loaded ad when the ad is served through AppLovin Exchange.
      */
     dspName?: string | null;
 
@@ -136,7 +136,7 @@ export type AdRewardInfo = AdInfo & {
 };
 
 /**
- * Represents a revenue given to the user.
+ * Represents revenue given to the publisher.
  */
 export type AdRevenueInfo = AdInfo & {
 
@@ -158,7 +158,7 @@ export type AdRevenueInfo = AdInfo & {
     revenuePrecision: string;
 
     /**
-     * The current country code.
+     * The current country code where the ad was shown.
      */
     countryCode: string;
 };
@@ -169,47 +169,47 @@ export type AdRevenueInfo = AdInfo & {
 export type AdNativeInfo = {
 
     /**
-     * The native ad title text.
+     * The native ad title text for {@link TitleView}.
      */
     title?: string;
 
     /**
-     * The native ad advertiser text.
+     * The native ad advertiser text for {@link AdvertiserView}.
      */
     advertiser?: string;
 
     /**
-     * The native ad body text.
+     * The native ad body text for {@link BodyView}}.
      */
     body?: string;
 
     /**
-     * The native ad CTA button text.
+     * The native ad CTA (call to action) text for {@link CallToActionView}.
      */
     callToAction?: string;
 
     /**
-     * The star rating of the native ad.
+     * The star rating of the native ad in the [0.0, 5.0] range for {@link StarRatingView}, if provided by the network.
      */
     starRating?: number;
 
     /**
-     * The aspect ratio for the media view if provided by the network.
+     * The aspect ratio (width-to-height) for {@link MediaView} if provided by the network.
      */
     mediaContentAspectRatio?: number;
 
     /**
-     * Whether or not the icon is available.
+     * Whether or not the content for {@link IconView} is available.
      */
     isIconImageAvailable: boolean;
 
     /**
-     * Whether or not the Options view is available.
+     * Whether or not the content for {@link OptionsView} is available.
      */
     isOptionsViewAvailable: boolean;
 
     /**
-     * Whether or not the Media view is available.
+     * Whether or not the content for {@link MediaView} is available.
      */
     isMediaViewAvailable: boolean;
 };
@@ -243,8 +243,8 @@ export type AdWaterfallInfo = {
 };
 
 /**
- * This enum contains possible states of an ad in the waterfall the adapter response info could
- * represent.
+ * This enum contains possible states of an ad in the waterfall. 
+ * Each adapter response {@link AdNetworkResponseInfo} corresponds to one of these states.
  */
 export enum AdLoadState {
 
@@ -292,7 +292,7 @@ export type AdErrorInfo = {
 export type AdNetworkResponseInfo = {
 
     /**
-     * The state of the ad that this object represents.  For more info, see the {@link AdLoadState} enum.
+     * The state of the ad that this object represents. For more info, see the {@link AdLoadState} enum.
      */
     adLoadState: AdLoadState;
 
@@ -308,15 +308,15 @@ export type AdNetworkResponseInfo = {
 
     /**
      * The ad load error this network response resulted in. Will be unavailable if an attempt to
-     * load an ad has not been made or an ad was loaded successfully (i.e. the loadState is NOT
-     * LoadStateAdFailedToLoad).
+     * load an ad has not been made or an ad was loaded successfully (i.e. {@link adLoadState} 
+     * is NOT LoadStateAdFailedToLoad).
      */
     error?: AdErrorInfo;
 
     /**
-     * The amount of time the network took to load (either successfully or not) an ad, in
-     * milliseconds. If an attempt to load an ad has not been made (i.e. the loadState is
-     * LoadStateAdLoadNotAttempted), the value will be -1.
+     * The amount of time the network took to load (either successfully or not) an ad, in milliseconds. 
+     * If an attempt to load an ad has not been made (i.e. {@link adLoadState} is LoadStateAdLoadNotAttempted), 
+     * the value will be -1.
      */
     latencyMillis: number;
 };

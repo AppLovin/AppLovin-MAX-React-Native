@@ -6,7 +6,7 @@ import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } fro
 export type AdProps = {
 
     /**
-     * A string value representing the ad unit id to load ads for.
+     * A string value representing the ad unit ID to load ads for.
      */
     adUnitId: string;
 
@@ -34,27 +34,27 @@ export type AdProps = {
     localExtraParameters?: { [key: string]: any };
 
     /**
-     * A callback fuction to be fired when a new ad has been loaded.
+     * A callback fuction that {@link Adview} or {@link NativeAdView} fires when it loads a new ad.
      */
     onAdLoaded?: (adInfo: AdInfo) => void;
 
     /**
-     * A callback fuction to be fired when an ad could not be retrieved.
+     * A callback fuction that {@link Adview} or {@link NativeAdView} fires when it could not load a new ad.
      */
     onAdLoadFailed?: (error: AdLoadFailedInfo) => void;
 
     /**
-     * A callback fuction to be fired when the ad failed to display.
+     * A callback fuction that {@link Adview} or {@link NativeAdView} fires when it fails to display the ad.
      */
     onAdDisplayFailed?: (error: AdDisplayFailedInfo) => void;
 
     /**
-     * A callback fuction to be fired when ad is clicked.
+     * A callback fuction that {@link Adview} or {@link NativeAdView} fires when the user clicks the ad.
      */
     onAdClicked?: (adInfo: AdInfo) => void;
 
     /**
-     * A callback fuction to be fired when the revenue event is detected.
+     * A callback fuction that {@link Adview} or {@link NativeAdView} fires when it pays ad revenue to the publisher.
      */
     onAdRevenuePaid?: (adInfo: AdRevenueInfo) => void;
 };

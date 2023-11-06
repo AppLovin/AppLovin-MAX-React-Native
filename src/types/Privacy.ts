@@ -5,19 +5,19 @@ export type PrivacyType = {
     /**********************************************************************************/
 
     /**
-     * Show the user consent dialog to the user using one from AppLovin's SDK.
+     * Shows the user consent dialog to the user by using a dialog in the AppLovinMAX SDK.
      */
     showConsentDialog(): Promise<void>;
 
     /**
-     * Sets whether or not the user has provided consent for information-sharing with AppLovin.
+     * Sets whether or not the user provided consent for information-sharing with AppLovin.
      * 
-     * @param hasUserConsent true if the user has provided consent for information sharing.
+     * @param hasUserConsent true if the user provided consent for information sharing.
      */
     setHasUserConsent(hasUserConsent: boolean): void;
 
     /**
-     * Checks if user has set consent for information sharing.
+     * Checks if user set consent for information sharing.
      */
     hasUserConsent(): Promise<boolean>;
 
@@ -34,14 +34,14 @@ export type PrivacyType = {
     isAgeRestrictedUser(): Promise<boolean>;
 
     /**
-     * Sets whether or not the user has opted out of the sale of their personal information.
+     * Sets whether or not the user opted out of the sale of their personal information.
      * 
-     * @param doNotSell true if the user has opted out of the sale of their personal information.
+     * @param doNotSell true if the user opted out of the sale of their personal information.
      */
     setDoNotSell(doNotSell: boolean): void;
 
     /**
-     * Checks if the user has opted out of the sale of their personal information.
+     * Checks if the user opted out of the sale of their personal information.
      */
     isDoNotSell(): Promise<boolean>;
 
@@ -50,22 +50,23 @@ export type PrivacyType = {
     /**********************************************************************************/
 
     /**
-     * Enable the MAX Terms Flow.
+     * Enables the MAX Terms Flow.
      *
-     * @param enabled Enable the MAX Terms Flow.
+     * @param enabled true to enable the MAX Terms Flow.
      */
     setConsentFlowEnabled(enabled: boolean): Promise<void>;
 
     /**
-     * URL for your company’s privacy policy. This is required in order to enable the Terms Flow.
+     * The URL of your company’s privacy policy, as a string. This is required in order to enable
+     * the Terms Flow.
      * 
      * @param urlString The URL string to point your company’s privacy policy.
      */
     setPrivacyPolicyUrl(urlString: string): Promise<void>;
 
     /**
-     * URL for your company’s terms of service. This is optional; you can enable the Terms Flow with
-     * or without it.
+     * The URL of your company’s terms of service, as a string. This is optional; you can enable 
+     * the Terms Flow with or without it.
      * 
      * @param urlString The URL string to point your company’s terms of service. 
      */
