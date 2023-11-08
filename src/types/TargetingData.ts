@@ -8,7 +8,7 @@ import type { AdContentRating, UserGender } from "src/TargetingData";
 export type TargetingDataType = {
 
     /**
-     *  Sets the year of birth of the user. Set this to 0 to clear this value.
+     * Sets the year of birth of the user. Set this to 0 to clear this value.
      */
     yearOfBirth: number | Promise<number>;
 
@@ -45,7 +45,7 @@ export type TargetingDataType = {
     interests: string[] | null | Promise<string[] | null>;
 
     /**
-     *  Clears all saved data from this class.
+     * Clears all saved data from this class.
      */
     clearAll(): void;
 };

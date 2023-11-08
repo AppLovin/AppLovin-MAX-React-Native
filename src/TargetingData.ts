@@ -198,7 +198,7 @@ export const TargetingData: TargetingDataType = {
     },
 
     /**
-     *  Clears all saved data from this class.
+     * Clears all saved data from this class.
      */
     clearAll(): void {
         nativeMethods.clearAllTargetingData();
