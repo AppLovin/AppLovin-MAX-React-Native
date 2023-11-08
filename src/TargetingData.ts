@@ -51,16 +51,18 @@ export enum UserGender {
 export const TargetingData: TargetingDataType = {
 
     /**
-     *  Sets the year of birth of the user. Set this to 0 to clear this value.
+     * Sets the year of birth of the user. Set this to 0 to clear this value.
      */
     set yearOfBirth(value: number | Promise<number>) {
         if (typeof value === 'number') {
             nativeMethods.setTargetingDataYearOfBirth(value);
+        } else {
+            printError("TargetingData.yearOfBirth", "number", typeof value);
         }
     },
 
     /**
-     *  Gets the year of birth of the user.
+     * Gets the year of birth of the user.
      */
     get yearOfBirth(): number | Promise<number> {
         return nativeMethods.getTargetingDataYearOfBirth();
@@ -75,6 +77,8 @@ export const TargetingData: TargetingDataType = {
             value === UserGender.Male ||
             value === UserGender.Other) {
             nativeMethods.setTargetingDataGender(value);
+        } else {
+            printError("TargetingData.gender", "UserGender", typeof value);
         }
     },
 
@@ -98,6 +102,8 @@ export const TargetingData: TargetingDataType = {
             value === AdContentRating.EveryoneOverTwelve ||
             value === AdContentRating.MatureAudiences) {
             nativeMethods.setTargetingDataMaximumAdContentRating(value);
+        } else {
+            printError("TargetingData.maximumAdContentRating", "AdContentRating", typeof value);
         }
     },
 
@@ -119,6 +125,8 @@ export const TargetingData: TargetingDataType = {
             nativeMethods.setTargetingDataEmail(null);
         } else if (typeof value === 'string') {
             nativeMethods.setTargetingDataEmail(value as string);
+        } else {
+            printError("TargetingData.email", "string or null", typeof value);
         }
     },
 
@@ -137,6 +145,8 @@ export const TargetingData: TargetingDataType = {
             nativeMethods.setTargetingDataPhoneNumber(null);
         } else if ( typeof value === 'string') {
             nativeMethods.setTargetingDataPhoneNumber(value as string);
+        } else {
+            printError("TargetingData.phoneNumber", "string or null", typeof value);
         }
     },
 
@@ -155,6 +165,8 @@ export const TargetingData: TargetingDataType = {
             nativeMethods.setTargetingDataKeywords(null);
         } else if (isStringArray(value)) {
             nativeMethods.setTargetingDataKeywords(value as string[]);
+        } else {
+            printError("TargetingData.keywords", "string[] or null", typeof value);
         }
     },
 
@@ -173,6 +185,8 @@ export const TargetingData: TargetingDataType = {
             nativeMethods.setTargetingDataInterests(null);
         } else if (isStringArray(value)) {
             nativeMethods.setTargetingDataInterests(value as string[]);
+        } else {
+            printError("TargetingData.interests", "string[] or null", typeof value);
         }
     },
 
@@ -193,4 +207,8 @@ export const TargetingData: TargetingDataType = {
 
 const isStringArray = (strs: any): boolean => {
     return Array.isArray(strs) && strs.every((value) => typeof value === 'string')
+}
+
+const printError = (fieldName: string, correctType: string, wrongType: string) => {
+    console.error("Cannot set value to " +  fieldName + " with unsupported type: " + wrongType  + ".  Value has to be of type " + correctType + ".");
 }
