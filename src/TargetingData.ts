@@ -1,4 +1,5 @@
 import { NativeModules } from "react-native";
+import type { TargetingDataType } from "./types/TargetingData";
 
 const { AppLovinMAX } = NativeModules;
 
@@ -47,38 +48,44 @@ export enum UserGender {
  *
  * @see {@link https://support.applovin.com/hc/en-us/articles/13964925614733-Data-and-Keyword-Passing}
  */
-export const TargetingData = {
+export const TargetingData: TargetingDataType = {
 
     /**
-     *  Sets the year of birth of the user. Set this to 0 to clear this value.
+     * Sets the year of birth of the user. Set this to 0 to clear this value.
      */
-    set yearOfBirth(value: number) {
-        nativeMethods.setTargetingDataYearOfBirth(value);
+    set yearOfBirth(value: number | Promise<number>) {
+        if (typeof value === 'number') {
+            nativeMethods.setTargetingDataYearOfBirth(value);
+        } else {
+            printError("TargetingData.yearOfBirth", "number", typeof value);
+        }
     },
 
     /**
-     *  Gets the year of birth of the user.
+     * Gets the year of birth of the user.
      */
-    get yearOfBirth(): Promise<number> {
+    get yearOfBirth(): number | Promise<number> {
         return nativeMethods.getTargetingDataYearOfBirth();
     },
 
     /**
      * Sets the gender of the user. Set this to {@link UserGender.Unknown} to clear this value.
      */
-    set gender(value: UserGender) {
+    set gender(value: UserGender | Promise<UserGender>) {
         if (value === UserGender.Unknown ||
             value === UserGender.Female ||
             value === UserGender.Male ||
             value === UserGender.Other) {
             nativeMethods.setTargetingDataGender(value);
+        } else {
+            printError("TargetingData.gender", "UserGender", typeof value);
         }
     },
 
     /**
      * Gets the gender of the user.
      */
-    get gender(): Promise<UserGender> {
+    get gender(): UserGender | Promise<UserGender> {
         return nativeMethods.getTargetingDataGender().then((value: string) => {
             return value as UserGender;
         });
@@ -89,12 +96,14 @@ export const TargetingData = {
      * Ratings: 1=All Audiences, 2=Everyone Over 12, 3=Mature Audiences.  
      * Set this to {@link AdContentRating.None} to clear this value.
      */
-    set maximumAdContentRating(value: AdContentRating) {
+    set maximumAdContentRating(value: AdContentRating | Promise<AdContentRating>) {
         if (value === AdContentRating.None ||
             value === AdContentRating.AllAudiences ||
             value === AdContentRating.EveryoneOverTwelve ||
             value === AdContentRating.MatureAudiences) {
             nativeMethods.setTargetingDataMaximumAdContentRating(value);
+        } else {
+            printError("TargetingData.maximumAdContentRating", "AdContentRating", typeof value);
         }
     },
 
@@ -102,7 +111,7 @@ export const TargetingData = {
      * Gets the maximum ad content rating shown to the user. The levels are based on IQG Media
      * Ratings: 1=All Audiences, 2=Everyone Over 12, 3=Mature Audiences.
      */
-    get maximumAdContentRating(): Promise<AdContentRating> {
+    get maximumAdContentRating(): AdContentRating | Promise<AdContentRating> {
         return nativeMethods.getTargetingDataMaximumAdContentRating().then((value: number) => {
             return value as AdContentRating;
         });
@@ -111,63 +120,95 @@ export const TargetingData = {
     /**
      * Sets the email of the user. Set this to null to clear this value.
      */
-    set email(value: string | null) {
-        nativeMethods.setTargetingDataEmail(value);
+    set email(value: string | null | Promise<string | null>) {
+        if (value === null) {
+            nativeMethods.setTargetingDataEmail(null);
+        } else if (typeof value === 'string') {
+            nativeMethods.setTargetingDataEmail(value as string);
+        } else {
+            printError("TargetingData.email", "string or null", typeof value);
+        }
     },
 
     /**
      * Gets the email of the user.
      */
-    get email(): Promise<string | null> {
+    get email(): string | null | Promise<string | null> {
         return nativeMethods.getTargetingDataEmail();
     },
 
     /**
      * Sets the phone number of the user. Set this to null to clear this value.
      */
-    set phoneNumber(value: string | null) {
-        nativeMethods.setTargetingDataPhoneNumber(value);
+    set phoneNumber(value: string | null | Promise<string | null>) {
+        if (value === null) {
+            nativeMethods.setTargetingDataPhoneNumber(null);
+        } else if ( typeof value === 'string') {
+            nativeMethods.setTargetingDataPhoneNumber(value as string);
+        } else {
+            printError("TargetingData.phoneNumber", "string or null", typeof value);
+        }
     },
 
     /**
      * Gets the phone number of the user.
      */
-    get phoneNumber(): Promise<string | null> {
+    get phoneNumber(): string | null | Promise<string | null> {
         return nativeMethods.getTargetingDataPhoneNumber();
     },
 
     /**
      * Sets the keywords describing the application. Set this to null to clear this value.
      */
-    set keywords(value: string[] | null) {
-        nativeMethods.setTargetingDataKeywords(value);
+    set keywords(value: string[] | null | Promise<string[]> | null) {
+        if (value === null) {
+            nativeMethods.setTargetingDataKeywords(null);
+        } else if (isStringArray(value)) {
+            nativeMethods.setTargetingDataKeywords(value as string[]);
+        } else {
+            printError("TargetingData.keywords", "string[] or null", typeof value);
+        }
     },
 
     /**
      * Gets the keywords describing the application.
      */
-    get keywords(): Promise<string[] | null> {
+    get keywords(): string[] | null | Promise<string[] | null> {
         return nativeMethods.getTargetingDataKeywords();
     },
 
     /**
      * Sets the interests of the user. Set this to null to clear this value.
      */
-    set interests(value: string[] | null) {
-        nativeMethods.setTargetingDataInterests(value);
+    set interests(value: string[] | null | Promise<string[] | null>) {
+        if (value === null) {
+            nativeMethods.setTargetingDataInterests(null);
+        } else if (isStringArray(value)) {
+            nativeMethods.setTargetingDataInterests(value as string[]);
+        } else {
+            printError("TargetingData.interests", "string[] or null", typeof value);
+        }
     },
 
     /**
      * Gets the interests of the user.
      */
-    get interests(): Promise<string[] | null> {
+    get interests(): string[] | null | Promise<string[] | null> {
         return nativeMethods.getTargetingDataInterests();
     },
 
     /**
-     *  Clears all saved data from this class.
+     * Clears all saved data from this class.
      */
     clearAll(): void {
         nativeMethods.clearAllTargetingData();
     },
+}
+
+const isStringArray = (strs: any): boolean => {
+    return Array.isArray(strs) && strs.every((value) => typeof value === 'string')
+}
+
+const printError = (fieldName: string, correctType: string, wrongType: string) => {
+    console.error("Cannot set value to " +  fieldName + " with unsupported type: " + wrongType  + ".  Value has to be of type " + correctType + ".");
 }

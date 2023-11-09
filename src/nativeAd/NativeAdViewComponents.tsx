@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useEffect } from "react";
+import React, { useContext, useRef, useEffect, type ReactNode } from "react";
 import { findNodeHandle, Text, Image, View, TouchableOpacity, StyleSheet } from "react-native";
 import type { ViewProps, ImageProps, TextStyle, StyleProp } from "react-native";
 import { NativeAdViewContext } from "./NativeAdViewProvider";
@@ -159,7 +159,7 @@ export const StarRatingView = (props: ViewProps) => {
     return (
         <View {...restProps} style={[style, { flexDirection: 'row', alignItems: 'center' }]}>
             {(() => {
-                let stars = [];
+                let stars: ReactNode[] = [];
                 for (let index = 0; index < maxStarCount; index++) {
                     if (nativeAd.starRating) {
                         const width = (nativeAd.starRating - index) * starSize;
