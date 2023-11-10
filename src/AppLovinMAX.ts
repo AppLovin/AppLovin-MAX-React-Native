@@ -4,7 +4,7 @@ import type { Configuration } from "./types/Configuration";
 
 const NativeAppLovinMAX = NativeModules.AppLovinMAX;
 
-const VERSION = "6.0.0";
+const VERSION = "6.0.1";
 
 const initialize = async (
     sdkKey: string
