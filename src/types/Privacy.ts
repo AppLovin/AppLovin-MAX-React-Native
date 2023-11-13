@@ -5,11 +5,6 @@ export type PrivacyType = {
     /**********************************************************************************/
 
     /**
-     * Shows the user consent dialog to the user by using a dialog in the AppLovinMAX SDK.
-     */
-    showConsentDialog(): Promise<void>;
-
-    /**
      * Sets whether or not the user provided consent for information-sharing with AppLovin.
      * 
      * @param hasUserConsent true if the user provided consent for information sharing.
