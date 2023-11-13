@@ -83,5 +83,5 @@ export type AppLovinMAXType = {
      *
      * @param enabled Defaults to true.
      */
-    setLocationCollectionEnabled(enabled: boolean): Promise<void>;
+    setLocationCollectionEnabled(enabled: boolean): void;
 };
