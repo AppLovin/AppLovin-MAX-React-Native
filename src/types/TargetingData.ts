@@ -1,4 +1,4 @@
-import type { AdContentRating, UserGender } from "src/TargetingData";
+import type { AdContentRating, UserGender } from "../TargetingData";
 
 /**
  * Defines additional data for the publisher to send to AppLovin.
