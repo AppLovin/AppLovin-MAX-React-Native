@@ -1,7 +1,7 @@
 ## Versions
 
 ## x.x.x
-* Fix broken import path in TargetingData.
+* Fix broken import path in `TargetingData`.
 ## 6.0.1
 * Depend on iOS SDK 11.11.4.
 * Fix TypeScript compilation errors. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/199#issuecomment-1791339558)
