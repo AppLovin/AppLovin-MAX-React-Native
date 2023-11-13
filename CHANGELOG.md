@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+* Fix broken import path in `TargetingData`.
 * Fix wrong return type with `AppLovinMAX.setLocationCollectionEnabled()`.
 * Remove an obsolete function `Privacy.showConsentDialog()`.
 ## 6.0.1
