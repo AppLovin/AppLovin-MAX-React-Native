@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+* Fix wrong return type with `AppLovinMAX.setLocationCollectionEnabled()`.
 * Remove an obsolete function `Privacy.showConsentDialog()`.
 ## 6.0.1
 * Depend on iOS SDK 11.11.4.
