@@ -4,15 +4,23 @@ import { AdView, AdFormat } from '../../src/index';
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from '../../src/index';
 import AppButton from './components/AppButton';
 
-const NativeMRecExample = (props: any) => {
-    const {
-        adUnitId,
-        isInitialized,
-        log,
-        isNativeUIMRecShowing,
-        isProgrammaticMRecShowing,
-        setIsNativeUIMRecShowing
-    } = props;
+type Props = {
+    adUnitId: string;
+    isInitialized: boolean;
+    log: ((str: string) => void);
+    isNativeUIMRecShowing: boolean;
+    isProgrammaticMRecShowing: boolean;
+    setIsNativeUIMRecShowing: ((showing: boolean) => void);
+};
+
+const NativeMRecExample = ({
+    adUnitId,
+    isInitialized,
+    log,
+    isNativeUIMRecShowing,
+    isProgrammaticMRecShowing,
+    setIsNativeUIMRecShowing
+}: Props) => {
 
     return (
         <>
@@ -35,13 +43,13 @@ const NativeMRecExample = (props: any) => {
                     onAdLoadFailed={(errorInfo: AdLoadFailedInfo) => {
                         log('MREC ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
                     }}
-                    onAdClicked={(_adInfo: AdInfo) => {
+                    onAdClicked={(/* adInfo: AdInfo */) => {
                         log('MREC ad clicked');
                     }}
-                    onAdExpanded={(_adInfo: AdInfo) => {
+                    onAdExpanded={(/* adInfo: AdInfo */) => {
                         log('MREC ad expanded')
                     }}
-                    onAdCollapsed={(_adInfo: AdInfo) => {
+                    onAdCollapsed={(/* adInfo: AdInfo */) => {
                         log('MREC ad collapsed')
                     }}
                     onAdRevenuePaid={(adInfo: AdRevenueInfo) => {

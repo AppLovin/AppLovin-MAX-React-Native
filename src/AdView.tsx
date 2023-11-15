@@ -76,7 +76,7 @@ const getOutlineViewSize = (style: StyleProp<ViewStyle>) => {
     return [viewStyle?.width, viewStyle?.height];
 };
 
-const sizeAdViewDimensions = (adFormat: AdFormat, adaptiveBannerEnabled?: boolean, width?: number | string, height?: number | string): Promise<{}> => {
+const sizeAdViewDimensions = (adFormat: AdFormat, adaptiveBannerEnabled?: boolean, width?: number | string, height?: number | string): Promise<Record<string, number>> => {
     const sizeForBannerFormat = async () => {
         const isTablet = await AppLovinMAX.isTablet();
 
@@ -182,7 +182,7 @@ export const AdView = ({
     useEffect(() => {
         if (!isInitialized) return;
         const [width, height] = getOutlineViewSize(style);
-        sizeAdViewDimensions(adFormat, adaptiveBannerEnabled, width, height).then((value: {}) => {
+        sizeAdViewDimensions(adFormat, adaptiveBannerEnabled, width, height).then((value: Record<string, number>) => {
             setDimensions(value);
         });
     }, [isInitialized]);

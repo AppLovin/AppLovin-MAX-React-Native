@@ -10,8 +10,8 @@ const emitter = new NativeEventEmitter(AppLovinMAX);
 const subscriptions: Record<string, EventSubscription> = { };
 
 export const addEventListener = <T extends AdEventObject>(event: string, handler: AdEventListener<T>) => {
-    let subscription: EventSubscription = emitter.addListener(event, handler);
-    let currentSubscription = subscriptions[event];
+    const subscription: EventSubscription = emitter.addListener(event, handler);
+    const currentSubscription = subscriptions[event];
     if (currentSubscription) {
         currentSubscription.remove();
     }
@@ -19,7 +19,7 @@ export const addEventListener = <T extends AdEventObject>(event: string, handler
 }
 
 export const removeEventListener = (event: string) => {
-    let currentSubscription = subscriptions[event];
+    const currentSubscription = subscriptions[event];
     if (currentSubscription) {
         currentSubscription.remove();
         delete subscriptions[event];

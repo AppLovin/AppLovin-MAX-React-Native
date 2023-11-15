@@ -304,7 +304,7 @@ export type AdNetworkResponseInfo = {
     /**
      * The credentials used to load an ad from this adapter, as entered in the AppLovin MAX dashboard.
      */
-    credentials: { [key: string]: any; };
+    credentials: { [key: string]: string | number | boolean | object | null; };
 
     /**
      * The ad load error this network response resulted in. Will be unavailable if an attempt to

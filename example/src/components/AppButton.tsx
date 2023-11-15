@@ -1,7 +1,14 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import type { ViewProps } from "react-native";
 
-const AppButton = (props:any) => {
+type Props = {
+    title: string;
+    enabled: boolean;
+    onPress: (() => void);
+};
+
+const AppButton = (props : Props & ViewProps) => {
   const {style} = props;
   return (
     <View style={[styles.container, style]}>

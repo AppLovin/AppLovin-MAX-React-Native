@@ -4,15 +4,23 @@ import { AdView, AdFormat } from '../../src/index';
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from '../../src/index';
 import AppButton from './components/AppButton';
 
-const NativeBannerExample = (props: any) => {
-    const {
-        adUnitId,
-        isInitialized,
-        log,
-        isNativeUIBannerShowing,
-        isProgrammaticBannerShowing,
-        setIsNativeUIBannerShowing
-    } = props;
+type Props = {
+    adUnitId: string;
+    isInitialized: boolean;
+    log: ((str: string) => void);
+    isNativeUIBannerShowing: boolean;
+    isProgrammaticBannerShowing: boolean;
+    setIsNativeUIBannerShowing: ((showing: boolean) => void);
+};
+
+const NativeBannerExample = ({
+    adUnitId,
+    isInitialized,
+    log,
+    isNativeUIBannerShowing,
+    isProgrammaticBannerShowing,
+    setIsNativeUIBannerShowing
+}: Props) => {
 
     return (
         <>
@@ -35,13 +43,13 @@ const NativeBannerExample = (props: any) => {
                     onAdLoadFailed={(errorInfo: AdLoadFailedInfo) => {
                         log('Banner ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
                     }}
-                    onAdClicked={(_adInfo: AdInfo) => {
+                    onAdClicked={(/* adInfo: AdInfo */) => {
                         log('Banner ad clicked');
                     }}
-                    onAdExpanded={(_adInfo: AdInfo) => {
+                    onAdExpanded={(/* adInfo: AdInfo */) => {
                         log('Banner ad expanded')
                     }}
-                    onAdCollapsed={(_adInfo: AdInfo) => {
+                    onAdCollapsed={(/* adInfo: AdInfo */) => {
                         log('Banner ad collapsed')
                     }}
                     onAdRevenuePaid={(adInfo: AdRevenueInfo) => {

@@ -56,7 +56,7 @@ const NativeAdViewComponent = requireNativeComponent<NativeAdViewProps & ViewPro
  * </NativeAdView>
  * ```
  */
-export const NativeAdView = forwardRef<NativeAdViewHandler, NativeAdViewProps & ViewProps>((props, ref) => {
+export const NativeAdView = forwardRef<NativeAdViewHandler, NativeAdViewProps & ViewProps>(function NativeAdView(props, ref) {
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
 
     useEffect(() => {
@@ -81,7 +81,7 @@ export const NativeAdView = forwardRef<NativeAdViewHandler, NativeAdViewProps & 
     );
 });
 
-const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps & ViewProps>(({
+const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps & ViewProps>(function NativeAdViewImpl({
     adUnitId,
     placement,
     customData,
@@ -94,7 +94,7 @@ const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps & Vie
     children,
     style,
     ...otherProps
-}, ref) => {
+}, ref) {
 
     // context from NativeAdViewProvider
     const { setNativeAd, setNativeAdView } = useContext(NativeAdViewContext) as NativeAdViewContextType;

@@ -3,13 +3,19 @@ import { StyleSheet, Text, ScrollView, View, Dimensions, Platform } from 'react-
 import { AdFormat, AdView } from '../../src/index';
 import AppButton from './components/AppButton';
 
-const ScrolledAdViewExample = (props: any) => {
-    const {
-        bannerAdUnitId,
-        mrecAdUnitId,
-        isInitialized,
-        isNativeAdShowing
-    } = props;
+type Props = {
+    bannerAdUnitId: string;
+    mrecAdUnitId: string;
+    isInitialized: boolean;
+    isNativeAdShowing: boolean;
+};
+
+const ScrolledAdViewExample = ({
+    bannerAdUnitId,
+    mrecAdUnitId,
+    isInitialized,
+    isNativeAdShowing
+}: Props) => {
 
     const [isAdEnabled, setIsAdEnabled] = useState(true);
     const [isScrollViewShowing, setIsScrollViewShowing] = useState(false);
