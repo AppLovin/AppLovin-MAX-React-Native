@@ -1,4 +1,5 @@
-import React, { useContext, useRef, useEffect, type ReactNode } from "react";
+import React, { useContext, useRef, useEffect } from "react";
+import type { ReactNode } from "react";
 import { findNodeHandle, Text, Image, View, TouchableOpacity, StyleSheet } from "react-native";
 import type { ViewProps, ImageProps, TextStyle, StyleProp, TextProps } from "react-native";
 import { NativeAdViewContext } from "./NativeAdViewProvider";
@@ -60,7 +61,7 @@ export const BodyView = (props: TextProps) => {
     );
 };
 
-export const CallToActionView = (props: ViewProps) => {
+export const CallToActionView = (props: TextProps) => {
     const callToActionRef = useRef(null);
     const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
 
@@ -73,7 +74,7 @@ export const CallToActionView = (props: ViewProps) => {
     }, [nativeAd]);
 
     return (
-        <TouchableOpacity {...props}>
+        <TouchableOpacity>
             <Text {...props} ref={callToActionRef}>
                 {nativeAd.callToAction || null}
             </Text>
