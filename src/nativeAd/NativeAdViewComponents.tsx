@@ -1,9 +1,9 @@
 import React, { useContext, useRef, useEffect, type ReactNode } from "react";
 import { findNodeHandle, Text, Image, View, TouchableOpacity, StyleSheet } from "react-native";
-import type { ViewProps, ImageProps, TextStyle, StyleProp } from "react-native";
+import type { ViewProps, ImageProps, TextStyle, StyleProp, TextProps } from "react-native";
 import { NativeAdViewContext } from "./NativeAdViewProvider";
 
-export const TitleView = (props: ViewProps) => {
+export const TitleView = (props: TextProps) => {
     const titleRef = useRef(null);
     const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
 
@@ -22,7 +22,7 @@ export const TitleView = (props: ViewProps) => {
     );
 };
 
-export const AdvertiserView = (props: ViewProps) => {
+export const AdvertiserView = (props: TextProps) => {
     const advertiserRef = useRef(null);
     const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
 
@@ -41,7 +41,7 @@ export const AdvertiserView = (props: ViewProps) => {
     );
 };
 
-export const BodyView = (props: ViewProps) => {
+export const BodyView = (props: TextProps) => {
     const bodyRef = useRef(null);
     const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
 
