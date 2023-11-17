@@ -1,5 +1,6 @@
 import type { AdEventListener } from "./AdEvent";
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from "./AdInfo";
+import type { LocalExtraParameterValue } from "./AdProps";
 import type { AdViewPosition } from "../AdView";
 
 /**
@@ -68,7 +69,7 @@ export type ViewAdType = {
      * @param key Key parameter.
      * @param value Value parameter.
      */
-    setLocalExtraParameter(adUnitId: string, key: string, value: any): void;
+    setLocalExtraParameter(adUnitId: string, key: string, value: LocalExtraParameterValue): void;
 
     /**
      * Starts or resumes auto-refreshing of the banner/mrec.

@@ -19,14 +19,21 @@ import type {
 } from '../../src/index';
 import AppButton from './components/AppButton';
 
-export const NativeAdViewExample = (props: any) => {
-    const {
-        adUnitId,
-        isInitialized,
-        log,
-        isNativeAdShowing,
-        setIsNativeAdShowing
-    } = props;
+type Props = {
+    adUnitId: string;
+    isInitialized: boolean;
+    log: ((str: string) => void);
+    isNativeAdShowing: boolean;
+    setIsNativeAdShowing: ((showing: boolean) => void);
+};
+
+export const NativeAdViewExample = ({
+    adUnitId,
+    isInitialized,
+    log,
+    isNativeAdShowing,
+    setIsNativeAdShowing
+}: Props) => {
 
     const DEFAULT_ASPECT_RATIO = (16 / 9);
     const [aspectRatio, setAspectRatio] = useState(DEFAULT_ASPECT_RATIO);

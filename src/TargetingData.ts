@@ -205,7 +205,7 @@ export const TargetingData: TargetingDataType = {
     },
 }
 
-const isStringArray = (strs: any): boolean => {
+const isStringArray = (strs: object): boolean => {
     return Array.isArray(strs) && strs.every((value) => typeof value === 'string')
 }
 

@@ -1,20 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { InterstitialAd } from '../../src/index';
-import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo, AdDisplayFailedInfo } from '../../src/index';
+import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from '../../src/index';
 import AppButton from './components/AppButton';
 
 enum AdLoadState {
     notLoaded = 'NOT_LOADED',
     loading = 'LOADING',
     loaded = 'LOADED',
+}
+
+type Props = {
+    adUnitId: string;
+    isInitialized: boolean;
+    log: ((str: string) => void);
 };
 
-const InterExample = (props: any) => {
-    const {
-        adUnitId,
-        isInitialized,
-        log,
-    } = props;
+const InterExample = ({
+    adUnitId,
+    isInitialized,
+    log,
+}: Props) => {
 
     const [adLoadState, setAdLoadState] = useState<AdLoadState>(AdLoadState.notLoaded);
 
@@ -49,17 +54,17 @@ const InterExample = (props: any) => {
                 InterstitialAd.loadAd(adUnitId);
             }, retryDelay * 1000);
         });
-        InterstitialAd.addAdClickedEventListener((_adInfo: AdInfo) => {
+        InterstitialAd.addAdClickedEventListener((/* adInfo: AdInfo */) => {
             log('Interstitial ad clicked');
         });
-        InterstitialAd.addAdDisplayedEventListener((_adInfo: AdInfo) => {
+        InterstitialAd.addAdDisplayedEventListener((/* adInfo: AdInfo */) => {
             log('Interstitial ad displayed');
         });
-        InterstitialAd.addAdFailedToDisplayEventListener((_adInfo: AdDisplayFailedInfo) => {
+        InterstitialAd.addAdFailedToDisplayEventListener((/* adInfo: AdDisplayFailedInfo */) => {
             setAdLoadState(AdLoadState.notLoaded);
             log('Interstitial ad failed to display');
         });
-        InterstitialAd.addAdHiddenEventListener((_adInfo: AdInfo) => {
+        InterstitialAd.addAdHiddenEventListener((/* adInfo: AdInfo */) => {
             setAdLoadState(AdLoadState.notLoaded);
             log('Interstitial ad hidden');
         });
@@ -94,8 +99,8 @@ const InterExample = (props: any) => {
                         setAdLoadState(AdLoadState.loading);
                         InterstitialAd.loadAd(adUnitId);
                     }
-                } catch (error: any) {
-                    log(error.toString());
+                } catch (error: unknown) {
+                    if (error instanceof Error) log(error.toString());
                 }
             }}
         />

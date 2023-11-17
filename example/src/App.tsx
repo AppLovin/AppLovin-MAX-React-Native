@@ -21,26 +21,31 @@ const App = () => {
     const INTERSTITIAL_AD_UNIT_ID = Platform.select({
         ios: 'ENTER_IOS_INTERSTITIAL_AD_UNIT_ID_HERE',
         android: 'ENTER_ANDROID_INTERSTITIAL_AD_UNIT_ID_HERE',
+        default: ''
     });
 
     const REWARDED_AD_UNIT_ID = Platform.select({
         ios: 'ENTER_IOS_REWARDED_AD_UNIT_ID_HERE',
         android: 'ENTER_ANDROID_REWARDED_AD_UNIT_ID_HERE',
+        default: ''
     });
 
     const BANNER_AD_UNIT_ID = Platform.select({
         ios: 'ENTER_IOS_BANNER_AD_UNIT_ID_HERE',
         android: 'ENTER_ANDROID_BANNER_AD_UNIT_ID_HERE',
+        default: ''
     });
 
     const MREC_AD_UNIT_ID = Platform.select({
         ios: 'ENTER_IOS_MREC_AD_UNIT_ID_HERE',
         android: 'ENTER_ANDROID_MREC_AD_UNIT_ID_HERE',
+        default: ''
     });
 
     const NATIVE_AD_UNIT_ID = Platform.select({
         ios: 'ENTER_IOS_NATIVE_AD_UNIT_ID_HERE',
         android: 'ENTER_ANDROID_NATIVE_AD_UNIT_ID_HERE',
+        default: ''
     });
 
     // Create states
@@ -149,7 +154,6 @@ const App = () => {
                     bannerAdUnitId={BANNER_AD_UNIT_ID}
                     mrecAdUnitId={MREC_AD_UNIT_ID}
                     isInitialized={isInitialized}
-                    log={setStatusText}
                     isNativeAdShowing={isNativeAdShowing}
                 />
             </View>

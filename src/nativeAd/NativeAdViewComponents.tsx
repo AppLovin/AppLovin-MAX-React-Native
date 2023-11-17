@@ -159,7 +159,7 @@ export const StarRatingView = (props: ViewProps) => {
     return (
         <View {...restProps} style={[style, { flexDirection: 'row', alignItems: 'center' }]}>
             {(() => {
-                let stars: ReactNode[] = [];
+                const stars: ReactNode[] = [];
                 for (let index = 0; index < maxStarCount; index++) {
                     if (nativeAd.starRating) {
                         const width = (nativeAd.starRating - index) * starSize;

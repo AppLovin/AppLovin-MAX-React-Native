@@ -1,20 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { RewardedAd } from '../../src/index';
-import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo, AdDisplayFailedInfo, AdRewardInfo } from '../../src/index';
+import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from '../../src/index';
 import AppButton from './components/AppButton';
 
 enum AdLoadState {
     notLoaded = 'NOT_LOADED',
     loading = 'LOADING',
     loaded = 'LOADED',
+}
+
+type Props = {
+    adUnitId: string;
+    isInitialized: boolean;
+    log: ((str: string) => void);
 };
 
-const RewardedExample = (props: any) => {
-    const {
-        adUnitId,
-        isInitialized,
-        log
-    } = props;
+const RewardedExample = ({
+    adUnitId,
+    isInitialized,
+    log
+}: Props) => {
 
     const [adLoadState, setAdLoadState] = useState<AdLoadState>(AdLoadState.notLoaded);
 
@@ -49,21 +54,21 @@ const RewardedExample = (props: any) => {
                 RewardedAd.loadAd(adUnitId);
             }, retryDelay * 1000);
         });
-        RewardedAd.addAdClickedEventListener((_adInfo: AdInfo) => {
+        RewardedAd.addAdClickedEventListener((/* adInfo: AdInfo */) => {
             log('Rewarded ad clicked');
         });
-        RewardedAd.addAdDisplayedEventListener((_adInfo: AdInfo) => {
+        RewardedAd.addAdDisplayedEventListener((/* adInfo: AdInfo */) => {
             log('Rewarded ad displayed');
         });
-        RewardedAd.addAdFailedToDisplayEventListener((_adInfo: AdDisplayFailedInfo) => {
+        RewardedAd.addAdFailedToDisplayEventListener((/* adInfo: AdDisplayFailedInfo */) => {
             setAdLoadState(AdLoadState.notLoaded);
             log('Rewarded ad failed to display');
         });
-        RewardedAd.addAdHiddenEventListener((_adInfo: AdInfo) => {
+        RewardedAd.addAdHiddenEventListener((/* adInfo: AdInfo */) => {
             setAdLoadState(AdLoadState.notLoaded);
             log('Rewarded ad hidden');
         });
-        RewardedAd.addAdReceivedRewardEventListener((_adInfo: AdRewardInfo) => {
+        RewardedAd.addAdReceivedRewardEventListener((/* adInfo: AdRewardInfo */) => {
             log('Rewarded ad granted reward');
         });
         RewardedAd.addAdRevenuePaidListener((adInfo: AdRevenueInfo) => {
@@ -97,8 +102,8 @@ const RewardedExample = (props: any) => {
                         setAdLoadState(AdLoadState.loading);
                         RewardedAd.loadAd(adUnitId);
                     }
-                } catch (error: any) {
-                    log(error.toString());
+                } catch (error: unknown) {
+                    if (error instanceof Error) log(error.toString());
                 }
             }}
         />

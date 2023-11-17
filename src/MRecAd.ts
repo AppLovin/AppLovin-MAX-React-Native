@@ -1,6 +1,7 @@
 import { NativeModules } from "react-native";
 import { addEventListener, removeEventListener } from "./EventEmitter"
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from "./types/AdInfo";
+import type { LocalExtraParameterValue } from "./types/AdProps";
 import type { MRecAdType } from "./types/MRecAd";
 import type { AdViewPosition } from "./AdView";
 
@@ -43,11 +44,11 @@ const updatePosition = (adUnitId: string, bannerPosition: AdViewPosition): void 
     AppLovinMAX.updateMRecPosition(adUnitId, bannerPosition);
 }
 
-const setExtraParameter = (adUnitId: string, key: string, value: any): void => {
+const setExtraParameter = (adUnitId: string, key: string, value: string | null): void => {
     AppLovinMAX.setMRecExtraParameter(adUnitId, key, value);
 }
 
-const setLocalExtraParameter = (adUnitId: string, key: string, value: any): void => {
+const setLocalExtraParameter = (adUnitId: string, key: string, value: LocalExtraParameterValue): void => {
     AppLovinMAX.setMRecLocalExtraParameter(adUnitId, { [key]: value });
 }
 

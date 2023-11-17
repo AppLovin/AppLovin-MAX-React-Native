@@ -1,5 +1,6 @@
 import type { AdEventListener } from "./AdEvent";
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo, AdDisplayFailedInfo } from "./AdInfo";
+import type { LocalExtraParameterValue } from "./AdProps";
 
 /**
  * Defines a full-screen ad (i.e Intestitial / Rewarded / AppOpen)
@@ -46,7 +47,7 @@ export type FullscreenAdType = {
      * @param key Parameter key.
      * @param value Parameter value.
      */
-    setLocalExtraParameter(adUnitId: string, key: string, value: any): void;
+    setLocalExtraParameter(adUnitId: string, key: string, value: LocalExtraParameterValue): void;
 
     /**
      * Adds the specified event listener to receive {@link AdInfo} when a full-screen ad loads a new ad.

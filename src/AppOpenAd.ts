@@ -1,6 +1,7 @@
 import { NativeModules } from "react-native";
 import { addEventListener, removeEventListener } from "./EventEmitter"
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from "./types/AdInfo";
+import type { LocalExtraParameterValue } from "./types/AdProps";
 import type { AppOpenAdType } from "./types/AppOpenAd";
 
 const { AppLovinMAX } = NativeModules;
@@ -31,11 +32,11 @@ const showAd = (
     AppLovinMAX.showAppOpenAd(adUnitId, placement ?? undefined, customData ?? undefined);
 }
 
-const setExtraParameter = (adUnitId: string, key: string, value: any): void => {
+const setExtraParameter = (adUnitId: string, key: string, value: string | null): void => {
     AppLovinMAX.setAppOpenAdExtraParameter(adUnitId, key, value);
 }
 
-const setLocalExtraParameter = (adUnitId: string, key: string, value: any): void => {
+const setLocalExtraParameter = (adUnitId: string, key: string, value: LocalExtraParameterValue): void => {
     AppLovinMAX.setAppOpenAdLocalExtraParameter(adUnitId, { [key]: value });
 }
 
