@@ -1,7 +1,7 @@
-import React, { useContext, useRef, useEffect, type ReactNode } from "react";
-import { findNodeHandle, Text, Image, View, TouchableOpacity, StyleSheet } from "react-native";
-import type { ViewProps, ImageProps, TextStyle, StyleProp } from "react-native";
-import { NativeAdViewContext } from "./NativeAdViewProvider";
+import React, { useContext, useRef, useEffect, type ReactNode } from 'react';
+import { findNodeHandle, Text, Image, View, TouchableOpacity, StyleSheet } from 'react-native';
+import type { ViewProps, ImageProps, TextStyle, StyleProp } from 'react-native';
+import { NativeAdViewContext } from './NativeAdViewProvider';
 
 export const TitleView = (props: ViewProps) => {
     const titleRef = useRef(null);
@@ -81,7 +81,7 @@ export const CallToActionView = (props: ViewProps) => {
     );
 };
 
-export const IconView = (props: Omit<ImageProps, | 'source'>) => {
+export const IconView = (props: Omit<ImageProps, 'source'>) => {
     const imageRef = useRef(null);
     const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
 
@@ -93,10 +93,12 @@ export const IconView = (props: Omit<ImageProps, | 'source'>) => {
         });
     }, [nativeAd]);
 
-    return (
-        nativeAd.url ? <Image {...props} source={{ uri: nativeAd.url }} /> :
-            nativeAd.image ? <Image {...props} ref={imageRef} source={0} /> :
-                <View {...props} />
+    return nativeAd.url ? (
+        <Image {...props} source={{ uri: nativeAd.url }} />
+    ) : nativeAd.image ? (
+        <Image {...props} ref={imageRef} source={0} />
+    ) : (
+        <View {...props} />
     );
 };
 
@@ -111,9 +113,7 @@ export const OptionsView = (props: ViewProps) => {
         });
     }, [nativeAd]);
 
-    return (
-        <View {...props} ref={viewRef} />
-    );
+    return <View {...props} ref={viewRef} />;
 };
 
 export const MediaView = (props: ViewProps) => {
@@ -128,17 +128,15 @@ export const MediaView = (props: ViewProps) => {
         });
     }, [nativeAd]);
 
-    return (
-        <View {...props} ref={viewRef} />
-    );
+    return <View {...props} ref={viewRef} />;
 };
 
 export const StarRatingView = (props: ViewProps) => {
     const { style, ...restProps } = props;
 
     const maxStarCount = 5;
-    const starColor = StyleSheet.flatten(style as StyleProp<TextStyle> || {}).color ?? "#ffe234";
-    const starSize = StyleSheet.flatten(style as StyleProp<TextStyle> || {}).fontSize ?? 10;
+    const starColor = StyleSheet.flatten((style as StyleProp<TextStyle>) || {}).color ?? '#ffe234';
+    const starSize = StyleSheet.flatten((style as StyleProp<TextStyle>) || {}).fontSize ?? 10;
 
     const { nativeAd } = useContext(NativeAdViewContext);
 
@@ -166,16 +164,25 @@ export const StarRatingView = (props: ViewProps) => {
                         stars.push(
                             <View key={index}>
                                 <EmptyStar />
-                                {
-                                    (nativeAd.starRating > index) &&
-                                    <View style={{ width: width, overflow: 'hidden', position: 'absolute' }}>
+                                {nativeAd.starRating > index && (
+                                    <View
+                                        style={{
+                                            width: width,
+                                            overflow: 'hidden',
+                                            position: 'absolute',
+                                        }}
+                                    >
                                         <FilledStar />
                                     </View>
-                                }
+                                )}
                             </View>
                         );
                     } else {
-                        stars.push(<Text key={index} style={{ fontSize: starSize }}> </Text>);
+                        stars.push(
+                            <Text key={index} style={{ fontSize: starSize }}>
+                                {' '}
+                            </Text>
+                        );
                     }
                 }
                 return stars;

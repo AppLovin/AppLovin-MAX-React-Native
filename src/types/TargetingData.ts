@@ -1,4 +1,4 @@
-import type { AdContentRating, UserGender } from "../TargetingData";
+import type { AdContentRating, UserGender } from '../TargetingData';
 
 /**
  * Defines additional data for the publisher to send to AppLovin.
@@ -6,7 +6,6 @@ import type { AdContentRating, UserGender } from "../TargetingData";
  * @see {@link https://support.applovin.com/hc/en-us/articles/13964925614733-Data-and-Keyword-Passing}
  */
 export type TargetingDataType = {
-
     /**
      * Sets the year of birth of the user. Set this to 0 to clear this value.
      */

@@ -1,14 +1,13 @@
-import type { AdProps } from "./AdProps";
-import type { AdInfo } from "./AdInfo";
-import type { AdFormat } from "../AdView";
+import type { AdProps } from './AdProps';
+import type { AdInfo } from './AdInfo';
+import type { AdFormat } from '../AdView';
 
 /**
  * Represents an {@link AdView} - Banner / MREC.
  */
 export type AdViewProps = AdProps & {
-
     /**
-     * An enum value representing the ad format to load ads for. Should be either 
+     * An enum value representing the ad format to load ads for. Should be either
      * {@link AdFormat.BANNER} or {@link AdFormat.MREC}.
      */
     adFormat: AdFormat;

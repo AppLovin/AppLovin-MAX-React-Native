@@ -6,10 +6,10 @@ import AppButton from './components/AppButton';
 type Props = {
     adUnitId: string;
     isInitialized: boolean;
-    log: ((str: string) => void);
+    log: (str: string) => void;
     isNativeUIBannerShowing: boolean;
     isProgrammaticBannerShowing: boolean;
-    setIsProgrammaticBannerShowing: ((showing: boolean) => void);
+    setIsProgrammaticBannerShowing: (showing: boolean) => void;
 };
 
 const ProgrammaticBannerExample = ({
@@ -20,7 +20,6 @@ const ProgrammaticBannerExample = ({
     isProgrammaticBannerShowing,
     setIsProgrammaticBannerShowing,
 }: Props) => {
-
     const [isProgrammaticBannerCreated, setIsProgrammaticBannerCreated] = useState(false);
 
     useEffect(() => {
@@ -38,15 +37,15 @@ const ProgrammaticBannerExample = ({
             log('Banner ad clicked');
         });
         BannerAd.addAdExpandedEventListener((/* adInfo: AdInfo */) => {
-            log('Banner ad expanded')
+            log('Banner ad expanded');
         });
         BannerAd.addAdCollapsedEventListener((/* adInfo: AdInfo */) => {
-            log('Banner ad collapsed')
+            log('Banner ad collapsed');
         });
         BannerAd.addAdRevenuePaidListener((adInfo: AdRevenueInfo) => {
             log('Banner ad revenue paid: ' + adInfo.revenue);
         });
-    }
+    };
 
     return (
         <AppButton
@@ -57,7 +56,6 @@ const ProgrammaticBannerExample = ({
                     BannerAd.hideAd(adUnitId);
                 } else {
                     if (!isProgrammaticBannerCreated) {
-
                         //
                         // Programmatic banner creation - banners are automatically sized to 320x50
                         // on phones and 728x90 on tablets
@@ -78,6 +76,6 @@ const ProgrammaticBannerExample = ({
             }}
         />
     );
-}
+};
 
 export default ProgrammaticBannerExample;

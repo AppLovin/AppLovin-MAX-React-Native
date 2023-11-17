@@ -14,38 +14,37 @@ import NativeAdViewExample from './NativeAdViewExample';
 import ScrolledAdViewExample from './ScrolledAdViewExample';
 
 const App = () => {
-
     // Create constants
     const SDK_KEY = 'YOUR_SDK_KEY_HERE';
 
     const INTERSTITIAL_AD_UNIT_ID = Platform.select({
         ios: 'ENTER_IOS_INTERSTITIAL_AD_UNIT_ID_HERE',
         android: 'ENTER_ANDROID_INTERSTITIAL_AD_UNIT_ID_HERE',
-        default: ''
+        default: '',
     });
 
     const REWARDED_AD_UNIT_ID = Platform.select({
         ios: 'ENTER_IOS_REWARDED_AD_UNIT_ID_HERE',
         android: 'ENTER_ANDROID_REWARDED_AD_UNIT_ID_HERE',
-        default: ''
+        default: '',
     });
 
     const BANNER_AD_UNIT_ID = Platform.select({
         ios: 'ENTER_IOS_BANNER_AD_UNIT_ID_HERE',
         android: 'ENTER_ANDROID_BANNER_AD_UNIT_ID_HERE',
-        default: ''
+        default: '',
     });
 
     const MREC_AD_UNIT_ID = Platform.select({
         ios: 'ENTER_IOS_MREC_AD_UNIT_ID_HERE',
         android: 'ENTER_ANDROID_MREC_AD_UNIT_ID_HERE',
-        default: ''
+        default: '',
     });
 
     const NATIVE_AD_UNIT_ID = Platform.select({
         ios: 'ENTER_IOS_NATIVE_AD_UNIT_ID_HERE',
         android: 'ENTER_ANDROID_NATIVE_AD_UNIT_ID_HERE',
-        default: ''
+        default: '',
     });
 
     // Create states
@@ -79,21 +78,21 @@ const App = () => {
         }
 
         AppLovinMAX.setTestDeviceAdvertisingIds([]);
-        AppLovinMAX.initialize(SDK_KEY).then((conf: Configuration) => {
-            setIsInitialized(true);
-            setStatusText('SDK Initialized in ' + conf?.countryCode);
-        }).catch(error => {
-            setStatusText(error.toString());
-        });
-    }
+        AppLovinMAX.initialize(SDK_KEY)
+            .then((conf: Configuration) => {
+                setIsInitialized(true);
+                setStatusText('SDK Initialized in ' + conf?.countryCode);
+            })
+            .catch((error) => {
+                setStatusText(error.toString());
+            });
+    };
 
     return (
         <SafeAreaView>
             <View style={styles.container}>
                 <AppLogo />
-                <Text style={styles.statusText}>
-                    {statusText}
-                </Text>
+                <Text style={styles.statusText}>{statusText}</Text>
                 <AppButton
                     title="Mediation Debugger"
                     enabled={isInitialized}
@@ -101,16 +100,8 @@ const App = () => {
                         AppLovinMAX.showMediationDebugger();
                     }}
                 />
-                <InterExample
-                    adUnitId={INTERSTITIAL_AD_UNIT_ID}
-                    log={setStatusText}
-                    isInitialized={isInitialized}
-                />
-                <RewardedExample
-                    adUnitId={REWARDED_AD_UNIT_ID}
-                    log={setStatusText}
-                    isInitialized={isInitialized}
-                />
+                <InterExample adUnitId={INTERSTITIAL_AD_UNIT_ID} log={setStatusText} isInitialized={isInitialized} />
+                <RewardedExample adUnitId={REWARDED_AD_UNIT_ID} log={setStatusText} isInitialized={isInitialized} />
                 <ProgrammaticBannerExample
                     adUnitId={BANNER_AD_UNIT_ID}
                     log={setStatusText}

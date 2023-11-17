@@ -12,15 +12,10 @@ enum AdLoadState {
 type Props = {
     adUnitId: string;
     isInitialized: boolean;
-    log: ((str: string) => void);
+    log: (str: string) => void;
 };
 
-const RewardedExample = ({
-    adUnitId,
-    isInitialized,
-    log
-}: Props) => {
-
+const RewardedExample = ({ adUnitId, isInitialized, log }: Props) => {
     const [adLoadState, setAdLoadState] = useState<AdLoadState>(AdLoadState.notLoaded);
 
     const retryAttempt = useRef(0);
@@ -74,7 +69,7 @@ const RewardedExample = ({
         RewardedAd.addAdRevenuePaidListener((adInfo: AdRevenueInfo) => {
             log('Rewarded ad revenue paid: ' + adInfo.revenue);
         });
-    }
+    };
 
     const getRewardedButtonTitle = () => {
         if (adLoadState === AdLoadState.notLoaded) {
@@ -84,14 +79,12 @@ const RewardedExample = ({
         } else {
             return 'Show Rewarded Ad'; // adLoadState.loaded
         }
-    }
+    };
 
     return (
         <AppButton
             title={getRewardedButtonTitle()}
-            enabled={
-                isInitialized && adLoadState !== AdLoadState.loading
-            }
+            enabled={isInitialized && adLoadState !== AdLoadState.loading}
             onPress={async () => {
                 try {
                     const isRewardedReady = await RewardedAd.isAdReady(adUnitId);
@@ -108,6 +101,6 @@ const RewardedExample = ({
             }}
         />
     );
-}
+};
 
 export default RewardedExample;

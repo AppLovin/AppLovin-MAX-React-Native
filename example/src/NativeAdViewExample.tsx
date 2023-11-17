@@ -11,20 +11,15 @@ import {
     MediaView,
     StarRatingView,
 } from '../../src/index';
-import type {
-    AdInfo,
-    AdLoadFailedInfo,
-    AdRevenueInfo,
-    NativeAdViewHandler
-} from '../../src/index';
+import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo, NativeAdViewHandler } from '../../src/index';
 import AppButton from './components/AppButton';
 
 type Props = {
     adUnitId: string;
     isInitialized: boolean;
-    log: ((str: string) => void);
+    log: (str: string) => void;
     isNativeAdShowing: boolean;
-    setIsNativeAdShowing: ((showing: boolean) => void);
+    setIsNativeAdShowing: (showing: boolean) => void;
 };
 
 export const NativeAdViewExample = ({
@@ -32,10 +27,9 @@ export const NativeAdViewExample = ({
     isInitialized,
     log,
     isNativeAdShowing,
-    setIsNativeAdShowing
+    setIsNativeAdShowing,
 }: Props) => {
-
-    const DEFAULT_ASPECT_RATIO = (16 / 9);
+    const DEFAULT_ASPECT_RATIO = 16 / 9;
     const [aspectRatio, setAspectRatio] = useState(DEFAULT_ASPECT_RATIO);
     const [mediaViewSize, setMediaViewSize] = useState({});
     const [isNativeAdLoading, setIsNativeAdLoading] = useState(false);
@@ -46,7 +40,7 @@ export const NativeAdViewExample = ({
     // adjust the size of MediaView when `aspectRatio` changes
     useEffect(() => {
         if (aspectRatio > 1) {
-            // landscape 
+            // landscape
             setMediaViewSize({ aspectRatio: aspectRatio, width: '80%', height: undefined });
         } else {
             // portrait or square
@@ -58,8 +52,8 @@ export const NativeAdViewExample = ({
         return (
             <NativeAdView
                 adUnitId={adUnitId}
-                placement='myplacement'
-                customData='mycustomdata'
+                placement="myplacement"
+                customData="mycustomdata"
                 ref={nativeAdViewRef}
                 style={styles.nativead}
                 onAdLoaded={(adInfo: AdInfo) => {
@@ -70,7 +64,12 @@ export const NativeAdViewExample = ({
                     setIsNativeAdLoading(false);
                 }}
                 onAdLoadFailed={(errorInfo: AdLoadFailedInfo) => {
-                    log('Native ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+                    log(
+                        'Native ad failed to load with error code ' +
+                            errorInfo.code +
+                            ' and message: ' +
+                            errorInfo.message
+                    );
                     setIsNativeAdLoading(false);
                 }}
                 onAdClicked={(adInfo: AdInfo) => {
@@ -107,8 +106,7 @@ export const NativeAdViewExample = ({
                     setIsNativeAdShowing(!isNativeAdShowing);
                 }}
             />
-            {
-                isNativeAdShowing &&
+            {isNativeAdShowing && (
                 <View style={styles.container}>
                     <NativeAdExample />
                     <AppButton
@@ -127,10 +125,10 @@ export const NativeAdViewExample = ({
                         }}
                     />
                 </View>
-            }
+            )}
         </>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {

@@ -1,4 +1,4 @@
-import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from "./AdInfo";
+import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from './AdInfo';
 
 /**
  * Local extra parameters can be of type: string, number, boolean, array, map, and null.
@@ -9,7 +9,6 @@ export type LocalExtraParameterValue = string | number | boolean | object | null
  * Defines the base properties for the UI component ads i.e {@link Adview} and {@link NativeAdView}.
  */
 export type AdProps = {
-
     /**
      * A string value representing the ad unit ID to load ads for.
      */

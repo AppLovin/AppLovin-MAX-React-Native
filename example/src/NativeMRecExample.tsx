@@ -7,10 +7,10 @@ import AppButton from './components/AppButton';
 type Props = {
     adUnitId: string;
     isInitialized: boolean;
-    log: ((str: string) => void);
+    log: (str: string) => void;
     isNativeUIMRecShowing: boolean;
     isProgrammaticMRecShowing: boolean;
-    setIsNativeUIMRecShowing: ((showing: boolean) => void);
+    setIsNativeUIMRecShowing: (showing: boolean) => void;
 };
 
 const NativeMRecExample = ({
@@ -19,9 +19,8 @@ const NativeMRecExample = ({
     log,
     isNativeUIMRecShowing,
     isProgrammaticMRecShowing,
-    setIsNativeUIMRecShowing
+    setIsNativeUIMRecShowing,
 }: Props) => {
-
     return (
         <>
             <AppButton
@@ -31,8 +30,7 @@ const NativeMRecExample = ({
                     setIsNativeUIMRecShowing(!isNativeUIMRecShowing);
                 }}
             />
-            {
-                isNativeUIMRecShowing &&
+            {isNativeUIMRecShowing && (
                 <AdView
                     adUnitId={adUnitId}
                     adFormat={AdFormat.MREC}
@@ -41,25 +39,36 @@ const NativeMRecExample = ({
                         log('MREC ad loaded from ' + adInfo.networkName);
                     }}
                     onAdLoadFailed={(errorInfo: AdLoadFailedInfo) => {
-                        log('MREC ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+                        log(
+                            'MREC ad failed to load with error code ' +
+                                errorInfo.code +
+                                ' and message: ' +
+                                errorInfo.message
+                        );
                     }}
-                    onAdClicked={(/* adInfo: AdInfo */) => {
-                        log('MREC ad clicked');
-                    }}
-                    onAdExpanded={(/* adInfo: AdInfo */) => {
-                        log('MREC ad expanded')
-                    }}
-                    onAdCollapsed={(/* adInfo: AdInfo */) => {
-                        log('MREC ad collapsed')
-                    }}
+                    onAdClicked={
+                        (/* adInfo: AdInfo */) => {
+                            log('MREC ad clicked');
+                        }
+                    }
+                    onAdExpanded={
+                        (/* adInfo: AdInfo */) => {
+                            log('MREC ad expanded');
+                        }
+                    }
+                    onAdCollapsed={
+                        (/* adInfo: AdInfo */) => {
+                            log('MREC ad collapsed');
+                        }
+                    }
                     onAdRevenuePaid={(adInfo: AdRevenueInfo) => {
                         log('MREC ad revenue paid: ' + adInfo.revenue);
                     }}
                 />
-            }
+            )}
         </>
     );
-}
+};
 
 const styles = StyleSheet.create({
     mrec: {
@@ -69,7 +78,7 @@ const styles = StyleSheet.create({
         bottom: Platform.select({
             ios: 36, // For bottom safe area
             android: 0,
-        })
+        }),
     },
 });
 

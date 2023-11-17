@@ -6,10 +6,10 @@ import AppButton from './components/AppButton';
 type Props = {
     adUnitId: string;
     isInitialized: boolean;
-    log: ((str: string) => void);
+    log: (str: string) => void;
     isNativeUIMRecShowing: boolean;
     isProgrammaticMRecShowing: boolean;
-    setIsProgrammaticMRecShowing: ((showing: boolean) => void);
+    setIsProgrammaticMRecShowing: (showing: boolean) => void;
 };
 
 const ProgrammaticMRecExample = ({
@@ -20,7 +20,6 @@ const ProgrammaticMRecExample = ({
     isProgrammaticMRecShowing,
     setIsProgrammaticMRecShowing,
 }: Props) => {
-
     const [isProgrammaticMRecCreated, setIsProgrammaticMRecCreated] = useState(false);
 
     useEffect(() => {
@@ -38,15 +37,15 @@ const ProgrammaticMRecExample = ({
             log('MRec ad clicked');
         });
         MRecAd.addAdExpandedEventListener((/* adInfo: AdInfo */) => {
-            log('MRec ad expanded')
+            log('MRec ad expanded');
         });
         MRecAd.addAdCollapsedEventListener((/* adInfo: AdInfo */) => {
-            log('MRec ad collapsed')
+            log('MRec ad collapsed');
         });
         MRecAd.addAdRevenuePaidListener((adInfo: AdRevenueInfo) => {
             log('MRec ad revenue paid: ' + adInfo.revenue);
         });
-    }
+    };
 
     return (
         <AppButton
@@ -56,7 +55,6 @@ const ProgrammaticMRecExample = ({
                 if (isProgrammaticMRecShowing) {
                     MRecAd.hideAd(adUnitId);
                 } else {
-
                     if (!isProgrammaticMRecCreated) {
                         MRecAd.createAd(adUnitId, AdViewPosition.TOP_CENTER);
 
@@ -70,6 +68,6 @@ const ProgrammaticMRecExample = ({
             }}
         />
     );
-}
+};
 
 export default ProgrammaticMRecExample;

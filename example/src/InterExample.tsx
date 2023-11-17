@@ -12,15 +12,10 @@ enum AdLoadState {
 type Props = {
     adUnitId: string;
     isInitialized: boolean;
-    log: ((str: string) => void);
+    log: (str: string) => void;
 };
 
-const InterExample = ({
-    adUnitId,
-    isInitialized,
-    log,
-}: Props) => {
-
+const InterExample = ({ adUnitId, isInitialized, log }: Props) => {
     const [adLoadState, setAdLoadState] = useState<AdLoadState>(AdLoadState.notLoaded);
 
     const retryAttempt = useRef(0);
@@ -71,7 +66,7 @@ const InterExample = ({
         InterstitialAd.addAdRevenuePaidListener((adInfo: AdRevenueInfo) => {
             log('Interstitial ad revenue paid: ' + adInfo.revenue);
         });
-    }
+    };
 
     const getInterstitialButtonTitle = () => {
         if (adLoadState === AdLoadState.notLoaded) {
@@ -81,14 +76,12 @@ const InterExample = ({
         } else {
             return 'Show Interstitial'; // adLoadState.loaded
         }
-    }
+    };
 
     return (
         <AppButton
             title={getInterstitialButtonTitle()}
-            enabled={
-                isInitialized && adLoadState !== AdLoadState.loading
-            }
+            enabled={isInitialized && adLoadState !== AdLoadState.loading}
             onPress={async () => {
                 try {
                     const isInterstitialReady = await InterstitialAd.isAdReady(adUnitId);
@@ -105,6 +98,6 @@ const InterExample = ({
             }}
         />
     );
-}
+};
 
 export default InterExample;
