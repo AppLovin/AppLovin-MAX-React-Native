@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+* Fix type of argument in `TargetingData.keywords`.
 * Update code format with `prettier`.
 * Update code with `eslint`.
 * Fix broken import path in `TargetingData`.

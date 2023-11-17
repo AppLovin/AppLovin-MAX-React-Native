@@ -163,7 +163,7 @@ export const TargetingData: TargetingDataType = {
     /**
      * Sets the keywords describing the application. Set this to null to clear this value.
      */
-    set keywords(value: string[] | null | Promise<string[]> | null) {
+    set keywords(value: string[] | null | Promise<string[] | null>) {
         if (value === null) {
             nativeMethods.setTargetingDataKeywords(null);
         } else if (isStringArray(value)) {
