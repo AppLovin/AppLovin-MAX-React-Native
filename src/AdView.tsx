@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { NativeModules, requireNativeComponent, StyleSheet } from "react-native";
-import type { ViewProps, ViewStyle, StyleProp } from "react-native";
-import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from "./types/AdInfo";
-import type { AdNativeEvent } from "./types/AdEvent";
-import type { AdViewProps } from "./types/AdViewProps";
+import React, { useEffect, useState } from 'react';
+import { NativeModules, requireNativeComponent, StyleSheet } from 'react-native';
+import type { ViewProps, ViewStyle, StyleProp } from 'react-native';
+import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from './types/AdInfo';
+import type { AdNativeEvent } from './types/AdEvent';
+import type { AdViewProps } from './types/AdViewProps';
 
 const { AppLovinMAX } = NativeModules;
 
@@ -26,7 +26,6 @@ const {
  * Defines a format of an ad.
  */
 export enum AdFormat {
-
     /**
      * Banner ad.
      */
@@ -54,16 +53,16 @@ export enum AdViewPosition {
 }
 
 type AdViewNativeEvents = {
-    onAdLoadedEvent(event: AdNativeEvent<AdInfo>): void
-    onAdLoadFailedEvent(event: AdNativeEvent<AdLoadFailedInfo>): void
-    onAdDisplayFailedEvent(event: AdNativeEvent<AdDisplayFailedInfo>): void
-    onAdClickedEvent(event: AdNativeEvent<AdInfo>): void
-    onAdExpandedEvent(event: AdNativeEvent<AdInfo>): void
-    onAdCollapsedEvent(event: AdNativeEvent<AdInfo>): void
-    onAdRevenuePaidEvent(event: AdNativeEvent<AdRevenueInfo>): void
-}
+    onAdLoadedEvent(event: AdNativeEvent<AdInfo>): void;
+    onAdLoadFailedEvent(event: AdNativeEvent<AdLoadFailedInfo>): void;
+    onAdDisplayFailedEvent(event: AdNativeEvent<AdDisplayFailedInfo>): void;
+    onAdClickedEvent(event: AdNativeEvent<AdInfo>): void;
+    onAdExpandedEvent(event: AdNativeEvent<AdInfo>): void;
+    onAdCollapsedEvent(event: AdNativeEvent<AdInfo>): void;
+    onAdRevenuePaidEvent(event: AdNativeEvent<AdRevenueInfo>): void;
+};
 
-const AdViewComponent = requireNativeComponent<AdViewProps & ViewProps & AdViewNativeEvents>("AppLovinMAXAdView");
+const AdViewComponent = requireNativeComponent<AdViewProps & ViewProps & AdViewNativeEvents>('AppLovinMAXAdView');
 
 const ADVIEW_SIZE = {
     banner: { width: 320, height: 50 },
@@ -76,7 +75,12 @@ const getOutlineViewSize = (style: StyleProp<ViewStyle>) => {
     return [viewStyle?.width, viewStyle?.height];
 };
 
-const sizeAdViewDimensions = (adFormat: AdFormat, adaptiveBannerEnabled?: boolean, width?: number | string, height?: number | string): Promise<{}> => {
+const sizeAdViewDimensions = (
+    adFormat: AdFormat,
+    adaptiveBannerEnabled?: boolean,
+    width?: number | string,
+    height?: number | string
+): Promise<Record<string, number>> => {
     const sizeForBannerFormat = async () => {
         const isTablet = await AppLovinMAX.isTablet();
 
@@ -84,7 +88,7 @@ const sizeAdViewDimensions = (adFormat: AdFormat, adaptiveBannerEnabled?: boolea
 
         let minHeight;
         if (adaptiveBannerEnabled) {
-            if (typeof width === "number" && width > minWidth) {
+            if (typeof width === 'number' && width > minWidth) {
                 minHeight = await AppLovinMAX.getAdaptiveBannerHeightForWidth(width);
             } else {
                 minHeight = await AppLovinMAX.getAdaptiveBannerHeightForWidth(minWidth);
@@ -94,36 +98,44 @@ const sizeAdViewDimensions = (adFormat: AdFormat, adaptiveBannerEnabled?: boolea
         }
 
         return Promise.resolve({
-            ...width === "auto" ? {
-                width: minWidth,
-            } : {
-                minWidth: minWidth,
-            },
-            ...height === "auto" ? {
-                height: minHeight,
-            } : {
-                minHeight: minHeight,
-            }
+            ...(width === 'auto'
+                ? {
+                      width: minWidth,
+                  }
+                : {
+                      minWidth: minWidth,
+                  }),
+            ...(height === 'auto'
+                ? {
+                      height: minHeight,
+                  }
+                : {
+                      minHeight: minHeight,
+                  }),
         });
-    }
+    };
 
     if (adFormat === AdFormat.BANNER) {
         return sizeForBannerFormat();
     } else {
         return Promise.resolve({
-            ...width === "auto" ? {
-                width: ADVIEW_SIZE.mrec.width,
-            } : {
-                minWidth: ADVIEW_SIZE.mrec.width,
-            },
-            ...height === "auto" ? {
-                height: ADVIEW_SIZE.mrec.height,
-            } : {
-                minHeight: ADVIEW_SIZE.mrec.height,
-            }
+            ...(width === 'auto'
+                ? {
+                      width: ADVIEW_SIZE.mrec.width,
+                  }
+                : {
+                      minWidth: ADVIEW_SIZE.mrec.width,
+                  }),
+            ...(height === 'auto'
+                ? {
+                      height: ADVIEW_SIZE.mrec.height,
+                  }
+                : {
+                      minHeight: ADVIEW_SIZE.mrec.height,
+                  }),
         });
     }
-}
+};
 
 /**
  * The {@link AdView} component that you use building a banner or an MREC. Phones
@@ -174,7 +186,7 @@ export const AdView = ({
         AppLovinMAX.isInitialized().then((result: boolean) => {
             setIsInitialized(result);
             if (!result) {
-                console.warn("ERROR: AdView is mounted before the initialization of the AppLovin MAX React Native module");
+                console.warn('AdView is mounted before the initialization of the AppLovin MAX React Native module');
             }
         });
     }, []);
@@ -182,7 +194,7 @@ export const AdView = ({
     useEffect(() => {
         if (!isInitialized) return;
         const [width, height] = getOutlineViewSize(style);
-        sizeAdViewDimensions(adFormat, adaptiveBannerEnabled, width, height).then((value: {}) => {
+        sizeAdViewDimensions(adFormat, adaptiveBannerEnabled, width, height).then((value: Record<string, number>) => {
             setDimensions(value);
         });
     }, [isInitialized]);
@@ -219,7 +231,7 @@ export const AdView = ({
     if (!isInitialized) {
         return null;
     } else {
-        const isDimensionsSet = (Object.keys(dimensions).length > 0);
+        const isDimensionsSet = Object.keys(dimensions).length > 0;
 
         // Not sized yet
         if (!isDimensionsSet) {

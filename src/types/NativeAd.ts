@@ -1,8 +1,7 @@
 /**
- * Represents a native ad for rendering `NativeAdView`.  Internal use only. 
+ * Represents a native ad for rendering `NativeAdView`.  Internal use only.
  */
 export type NativeAd = {
-
     /**
      * The native ad title text.
      */

@@ -1,19 +1,18 @@
-import type { Configuration } from "./Configuration";
+import type { Configuration } from './Configuration';
 
 /**
  * Represents the AppLovinMAX module.
  */
 export type AppLovinMAXType = {
-
     /**
-     * Indicates whether or not the AppLovinMAX SDK has fully initialized without errors and 
+     * Indicates whether or not the AppLovinMAX SDK has fully initialized without errors and
      * {@link AppLovinMAX.initialize()} has called the completion callback.
      */
     isInitialized(): Promise<boolean>;
 
     /**
      * Initializes the AppLovinMAX SDK, and returns {@link Configuration} when it finishes initializing.
-     * 
+     *
      * @param sdkKey SDK key to use for the instance of the AppLovinMAX SDK.
      */
     initialize(sdkKey: string): Promise<Configuration>;
@@ -31,7 +30,7 @@ export type AppLovinMAXType = {
     /**
      * Sets an ID for the current user. AppLovin ties this identifier to SDK events and AppLovin’s
      * optional S2S postbacks.
-     * 
+     *
      * @param userId User id.
      */
     setUserId(userId: string): void;
@@ -58,7 +57,7 @@ export type AppLovinMAXType = {
     /**
      * Enables devices to receive test ads by passing in the advertising identifier (IDFA) of each
      * test device. Refer to AppLovin logs for the IDFA of your current device.
-     * 
+     *
      * @param advertisingIds A list of the advertising ids.
      */
     setTestDeviceAdvertisingIds(advertisingIds: string[]): void;
@@ -72,7 +71,7 @@ export type AppLovinMAXType = {
 
     /**
      * Sets an extra parameter to pass to the AppLovin server.
-     * 
+     *
      * @param key Parameter key.
      * @param value Parameter value.
      */

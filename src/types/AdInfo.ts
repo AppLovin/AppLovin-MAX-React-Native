@@ -2,7 +2,6 @@
  * Represents an ad that has been served by AppLovin MAX.
  */
 export type AdInfo = {
-
     /**
      * The ad unit ID for which this ad was loaded.
      */
@@ -51,12 +50,10 @@ export type AdInfo = {
     nativeAd?: AdNativeInfo | null;
 };
 
-
 /**
  * Encapsulates various data for MAX load errors.
  */
 export type AdLoadFailedInfo = {
-
     /**
      * The ad unit ID for which this ad was loaded.
      */
@@ -97,7 +94,6 @@ export type AdLoadFailedInfo = {
  * Encapsulates various data for MAX display errors.
  */
 export type AdDisplayFailedInfo = AdInfo & {
-
     /**
      * The error code for the error.
      */
@@ -123,7 +119,6 @@ export type AdDisplayFailedInfo = AdInfo & {
  * Represents a reward given to the user.
  */
 export type AdRewardInfo = AdInfo & {
-
     /**
      * The reward label.
      */
@@ -139,7 +134,6 @@ export type AdRewardInfo = AdInfo & {
  * Represents revenue given to the publisher.
  */
 export type AdRevenueInfo = AdInfo & {
-
     /**
      * The ad network placement for which this ad was loaded.
      */
@@ -167,7 +161,6 @@ export type AdRevenueInfo = AdInfo & {
  * Represents a native ad.
  */
 export type AdNativeInfo = {
-
     /**
      * The native ad title text for {@link TitleView}.
      */
@@ -219,7 +212,6 @@ export type AdNativeInfo = {
  * responses, etc.
  */
 export type AdWaterfallInfo = {
-
     /**
      * The ad waterfall name.
      */
@@ -243,11 +235,10 @@ export type AdWaterfallInfo = {
 };
 
 /**
- * This enum contains possible states of an ad in the waterfall. 
+ * This enum contains possible states of an ad in the waterfall.
  * Each adapter response {@link AdNetworkResponseInfo} corresponds to one of these states.
  */
 export enum AdLoadState {
-
     /**
      * The AppLovin MAX SDK did not attempt to load an ad from this network in the waterfall because
      * an ad higher in the waterfall loaded successfully.
@@ -262,14 +253,13 @@ export enum AdLoadState {
     /**
      * An ad failed to load from this network.
      */
-    LoadStateAdFailedToLoad = 2
+    LoadStateAdFailedToLoad = 2,
 }
 
 /**
  * Encapsulates load and display errors.
  */
 export type AdErrorInfo = {
-
     /**
      * The error code for the error.
      */
@@ -290,7 +280,6 @@ export type AdErrorInfo = {
  * This class represents an ad response in a waterfall.
  */
 export type AdNetworkResponseInfo = {
-
     /**
      * The state of the ad that this object represents. For more info, see the {@link AdLoadState} enum.
      */
@@ -304,18 +293,18 @@ export type AdNetworkResponseInfo = {
     /**
      * The credentials used to load an ad from this adapter, as entered in the AppLovin MAX dashboard.
      */
-    credentials: { [key: string]: any; };
+    credentials: { [key: string]: string | number | boolean | object | null };
 
     /**
      * The ad load error this network response resulted in. Will be unavailable if an attempt to
-     * load an ad has not been made or an ad was loaded successfully (i.e. {@link adLoadState} 
+     * load an ad has not been made or an ad was loaded successfully (i.e. {@link adLoadState}
      * is NOT LoadStateAdFailedToLoad).
      */
     error?: AdErrorInfo;
 
     /**
-     * The amount of time the network took to load (either successfully or not) an ad, in milliseconds. 
-     * If an attempt to load an ad has not been made (i.e. {@link adLoadState} is LoadStateAdLoadNotAttempted), 
+     * The amount of time the network took to load (either successfully or not) an ad, in milliseconds.
+     * If an attempt to load an ad has not been made (i.e. {@link adLoadState} is LoadStateAdLoadNotAttempted),
      * the value will be -1.
      */
     latencyMillis: number;
@@ -325,7 +314,6 @@ export type AdNetworkResponseInfo = {
  * This class represents information for a mediated network.
  */
 export type AdMediatedNetworkInfo = {
-
     /**
      * The name of the mediated network.
      */

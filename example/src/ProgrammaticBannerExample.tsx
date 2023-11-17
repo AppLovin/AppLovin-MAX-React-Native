@@ -3,16 +3,23 @@ import { BannerAd, AdViewPosition } from '../../src/index';
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from '../../src/index';
 import AppButton from './components/AppButton';
 
-const ProgrammaticBannerExample = (props: any) => {
-    const {
-        adUnitId,
-        isInitialized,
-        log,
-        isNativeUIBannerShowing,
-        isProgrammaticBannerShowing,
-        setIsProgrammaticBannerShowing,
-    } = props;
+type Props = {
+    adUnitId: string;
+    isInitialized: boolean;
+    log: (str: string) => void;
+    isNativeUIBannerShowing: boolean;
+    isProgrammaticBannerShowing: boolean;
+    setIsProgrammaticBannerShowing: (showing: boolean) => void;
+};
 
+const ProgrammaticBannerExample = ({
+    adUnitId,
+    isInitialized,
+    log,
+    isNativeUIBannerShowing,
+    isProgrammaticBannerShowing,
+    setIsProgrammaticBannerShowing,
+}: Props) => {
     const [isProgrammaticBannerCreated, setIsProgrammaticBannerCreated] = useState(false);
 
     useEffect(() => {
@@ -26,19 +33,19 @@ const ProgrammaticBannerExample = (props: any) => {
         BannerAd.addAdLoadFailedEventListener((errorInfo: AdLoadFailedInfo) => {
             log('Banner ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
         });
-        BannerAd.addAdClickedEventListener((_adInfo: AdInfo) => {
+        BannerAd.addAdClickedEventListener((/* adInfo: AdInfo */) => {
             log('Banner ad clicked');
         });
-        BannerAd.addAdExpandedEventListener((_adInfo: AdInfo) => {
-            log('Banner ad expanded')
+        BannerAd.addAdExpandedEventListener((/* adInfo: AdInfo */) => {
+            log('Banner ad expanded');
         });
-        BannerAd.addAdCollapsedEventListener((_adInfo: AdInfo) => {
-            log('Banner ad collapsed')
+        BannerAd.addAdCollapsedEventListener((/* adInfo: AdInfo */) => {
+            log('Banner ad collapsed');
         });
         BannerAd.addAdRevenuePaidListener((adInfo: AdRevenueInfo) => {
             log('Banner ad revenue paid: ' + adInfo.revenue);
         });
-    }
+    };
 
     return (
         <AppButton
@@ -49,7 +56,6 @@ const ProgrammaticBannerExample = (props: any) => {
                     BannerAd.hideAd(adUnitId);
                 } else {
                     if (!isProgrammaticBannerCreated) {
-
                         //
                         // Programmatic banner creation - banners are automatically sized to 320x50
                         // on phones and 728x90 on tablets
@@ -70,6 +76,6 @@ const ProgrammaticBannerExample = (props: any) => {
             }}
         />
     );
-}
+};
 
 export default ProgrammaticBannerExample;
