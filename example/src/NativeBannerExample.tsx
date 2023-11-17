@@ -7,10 +7,10 @@ import AppButton from './components/AppButton';
 type Props = {
     adUnitId: string;
     isInitialized: boolean;
-    log: ((str: string) => void);
+    log: (str: string) => void;
     isNativeUIBannerShowing: boolean;
     isProgrammaticBannerShowing: boolean;
-    setIsNativeUIBannerShowing: ((showing: boolean) => void);
+    setIsNativeUIBannerShowing: (showing: boolean) => void;
 };
 
 const NativeBannerExample = ({
@@ -19,9 +19,8 @@ const NativeBannerExample = ({
     log,
     isNativeUIBannerShowing,
     isProgrammaticBannerShowing,
-    setIsNativeUIBannerShowing
+    setIsNativeUIBannerShowing,
 }: Props) => {
-
     return (
         <>
             <AppButton
@@ -31,8 +30,7 @@ const NativeBannerExample = ({
                     setIsNativeUIBannerShowing(!isNativeUIBannerShowing);
                 }}
             />
-            {
-                isNativeUIBannerShowing &&
+            {isNativeUIBannerShowing && (
                 <AdView
                     adUnitId={adUnitId}
                     adFormat={AdFormat.BANNER}
@@ -41,25 +39,36 @@ const NativeBannerExample = ({
                         log('Banner ad loaded from ' + adInfo.networkName);
                     }}
                     onAdLoadFailed={(errorInfo: AdLoadFailedInfo) => {
-                        log('Banner ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+                        log(
+                            'Banner ad failed to load with error code ' +
+                                errorInfo.code +
+                                ' and message: ' +
+                                errorInfo.message
+                        );
                     }}
-                    onAdClicked={(/* adInfo: AdInfo */) => {
-                        log('Banner ad clicked');
-                    }}
-                    onAdExpanded={(/* adInfo: AdInfo */) => {
-                        log('Banner ad expanded')
-                    }}
-                    onAdCollapsed={(/* adInfo: AdInfo */) => {
-                        log('Banner ad collapsed')
-                    }}
+                    onAdClicked={
+                        (/* adInfo: AdInfo */) => {
+                            log('Banner ad clicked');
+                        }
+                    }
+                    onAdExpanded={
+                        (/* adInfo: AdInfo */) => {
+                            log('Banner ad expanded');
+                        }
+                    }
+                    onAdCollapsed={
+                        (/* adInfo: AdInfo */) => {
+                            log('Banner ad collapsed');
+                        }
+                    }
                     onAdRevenuePaid={(adInfo: AdRevenueInfo) => {
                         log('Banner ad revenue paid: ' + adInfo.revenue);
                     }}
                 />
-            }
+            )}
         </>
     );
-}
+};
 
 const styles = StyleSheet.create({
     banner: {
@@ -73,7 +82,7 @@ const styles = StyleSheet.create({
         bottom: Platform.select({
             ios: 36, // For bottom safe area
             android: 0,
-        })
+        }),
     },
 });
 

@@ -1,12 +1,11 @@
 export type PrivacyType = {
-
     /**********************************************************************************/
     /* Privacy */
     /**********************************************************************************/
 
     /**
      * Sets whether or not the user provided consent for information-sharing with AppLovin.
-     * 
+     *
      * @param hasUserConsent true if the user provided consent for information sharing.
      */
     setHasUserConsent(hasUserConsent: boolean): void;
@@ -18,7 +17,7 @@ export type PrivacyType = {
 
     /**
      * Marks the user as age-restricted (i.e. under 16).
-     * 
+     *
      * @param isAgeRestrictedUser true if the user is age restricted (i.e. under 16).
      */
     setIsAgeRestrictedUser(isAgeRestrictedUser: boolean): void;
@@ -30,7 +29,7 @@ export type PrivacyType = {
 
     /**
      * Sets whether or not the user opted out of the sale of their personal information.
-     * 
+     *
      * @param doNotSell true if the user opted out of the sale of their personal information.
      */
     setDoNotSell(doNotSell: boolean): void;
@@ -54,16 +53,16 @@ export type PrivacyType = {
     /**
      * The URL of your company’s privacy policy, as a string. This is required in order to enable
      * the Terms Flow.
-     * 
+     *
      * @param urlString The URL string to point your company’s privacy policy.
      */
     setPrivacyPolicyUrl(urlString: string): Promise<void>;
 
     /**
-     * The URL of your company’s terms of service, as a string. This is optional; you can enable 
+     * The URL of your company’s terms of service, as a string. This is optional; you can enable
      * the Terms Flow with or without it.
-     * 
-     * @param urlString The URL string to point your company’s terms of service. 
+     *
+     * @param urlString The URL string to point your company’s terms of service.
      */
     setTermsOfServiceUrl(urlString: string): Promise<void>;
 };
