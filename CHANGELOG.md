@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+* Depend on Android SDK 12.0.0 and iOS SDK 12.0.0.
 * Fix type of argument in `TargetingData.keywords`.
 * Update code format with `prettier`.
 * Update code with `eslint`.
