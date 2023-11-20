@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 6.0.2
 * Depend on Android SDK 12.0.0 and iOS SDK 12.0.0.
 * Fix type of argument in `TargetingData.keywords`.
 * Update code format with `prettier`.
