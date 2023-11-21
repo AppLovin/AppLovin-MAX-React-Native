@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Add support for Google UMP.
 ## 6.0.2
 * Depend on Android SDK 12.0.0 and iOS SDK 12.0.0.
 * Fix type of argument in `TargetingData.keywords`.

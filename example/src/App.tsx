@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Platform, StyleSheet, Text, View, SafeAreaView, Dimensions } from 'react-native';
-import AppLovinMAX, { Privacy } from '../../src/index';
+import AppLovinMAX, { ConsentFlowUserGeography, Privacy } from '../../src/index';
 import type { Configuration } from '../../src/index';
 import AppLogo from './components/AppLogo';
 import AppButton from './components/AppButton';
@@ -69,19 +69,25 @@ const App = () => {
     const initAppLovinMax = () => {
         if (isInitialized) return;
 
-        // MAX Consent Flow for iOS 14.5+
-        if (Platform.OS === 'ios' && parseFloat(Platform.Version as string) >= 14.5) {
-            // Enable the iOS consent flow programmatically - NSUserTrackingUsageDescription must be added to the Info.plist
-            Privacy.setConsentFlowEnabled(true);
-            Privacy.setPrivacyPolicyUrl('https://your_company_name.com/privacy/'); // mandatory
-            Privacy.setTermsOfServiceUrl('https://your_company_name.com/terms/'); // optional
-        }
+        // MAX Consent Flow - https://dash.applovin.com/documentation/mediation/react-native/getting-started/terms-and-privacy-policy-flow
+        Privacy.setConsentFlowEnabled(true);
+        Privacy.setPrivacyPolicyUrl('https://your_company_name.com/privacy/'); // mandatory
+        Privacy.setTermsOfServiceUrl('https://your_company_name.com/terms/'); // optional
+        Privacy.setConsentFlowDebugUserGeography(ConsentFlowUserGeography.GDPR); // debug mode
 
         AppLovinMAX.setTestDeviceAdvertisingIds([]);
         AppLovinMAX.initialize(SDK_KEY)
             .then((conf: Configuration) => {
                 setIsInitialized(true);
-                setStatusText('SDK Initialized in ' + conf?.countryCode);
+                setStatusText('SDK Initialized in ' + conf.countryCode);
+
+                console.log(
+                    'consentFlowUserGeography: ' +
+                        Object.keys(ConsentFlowUserGeography)[
+                            Object.values(ConsentFlowUserGeography).indexOf(conf.consentFlowUserGeography)
+                        ]
+                );
+                console.log('isTestModeEnabled: ' + conf.isTestModeEnabled);
             })
             .catch((error) => {
                 setStatusText(error.toString());

@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -41,6 +42,7 @@ import com.applovin.sdk.AppLovinMediationProvider;
 import com.applovin.sdk.AppLovinPrivacySettings;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
+import com.applovin.sdk.AppLovinSdkConfiguration.ConsentFlowUserGeography;
 import com.applovin.sdk.AppLovinSdkSettings;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.facebook.react.bridge.Arguments;
@@ -149,6 +151,11 @@ public class AppLovinMAXModule
     private       Boolean             creativeDebuggerEnabledToSet;
     private       Boolean             locationCollectionEnabledToSet;
     private final Map<String, String> extraParametersToSet = new HashMap<>( 8 );
+
+    private Boolean consentFlowEnabledToSet;
+    private Uri     privacyPolicyURLToSet;
+    private Uri     termsOfServiceURLToSet;
+    private String  debugUserGeographyToSet;
 
     private Integer targetingYearOfBirthToSet;
     private String  targetingGenderToSet;
@@ -286,8 +293,34 @@ public class AppLovinMAXModule
             }
         }
 
+        AppLovinSdkSettings settings = new AppLovinSdkSettings( getReactApplicationContext() );
+
+        if ( consentFlowEnabledToSet != null )
+        {
+            settings.getTermsAndPrivacyPolicyFlowSettings().setEnabled( consentFlowEnabledToSet );
+            consentFlowEnabledToSet = null;
+        }
+
+        if ( privacyPolicyURLToSet != null )
+        {
+            settings.getTermsAndPrivacyPolicyFlowSettings().setPrivacyPolicyUri( privacyPolicyURLToSet );
+            privacyPolicyURLToSet = null;
+        }
+
+        if ( termsOfServiceURLToSet != null )
+        {
+            settings.getTermsAndPrivacyPolicyFlowSettings().setTermsOfServiceUri( termsOfServiceURLToSet );
+            termsOfServiceURLToSet = null;
+        }
+
+        if ( !TextUtils.isEmpty( debugUserGeographyToSet ) )
+        {
+            settings.getTermsAndPrivacyPolicyFlowSettings().setDebugUserGeography( getAppLovinConsentFlowUserGeography( debugUserGeographyToSet ) );
+            debugUserGeographyToSet = null;
+        }
+
         // Initialize SDK
-        sdk = AppLovinSdk.getInstance( sdkKeyToUse, new AppLovinSdkSettings( getReactApplicationContext() ), context );
+        sdk = AppLovinSdk.getInstance( sdkKeyToUse, settings, context );
         sdk.setPluginVersion( "React-Native-" + pluginVersion );
         sdk.setMediationProvider( AppLovinMediationProvider.MAX );
 
@@ -404,6 +437,8 @@ public class AppLovinMAXModule
 
                 WritableMap sdkConfiguration = Arguments.createMap();
                 sdkConfiguration.putString( "countryCode", configuration.getCountryCode() );
+                sdkConfiguration.putString( "consentFlowUserGeography", getRawAppLovinConsentFlowUserGeography( configuration.getConsentFlowUserGeography() ) );
+                sdkConfiguration.putBoolean( "isTestModeEnabled", configuration.isTestModeEnabled() );
                 promise.resolve( sdkConfiguration );
             }
         } );
@@ -566,14 +601,31 @@ public class AppLovinMAXModule
         }
     }
 
-    @ReactMethod
-    public void setConsentFlowEnabled(final boolean enabled) { }
+    // MAX Terms and Privacy Policy Flow
 
     @ReactMethod
-    public void setPrivacyPolicyUrl(final String urlString) { }
+    public void setConsentFlowEnabled(final boolean enabled)
+    {
+        consentFlowEnabledToSet = enabled;
+    }
 
     @ReactMethod
-    public void setTermsOfServiceUrl(final String urlString) { }
+    public void setPrivacyPolicyUrl(final String urlString)
+    {
+        privacyPolicyURLToSet = Uri.parse( urlString );
+    }
+
+    @ReactMethod
+    public void setTermsOfServiceUrl(final String urlString)
+    {
+        termsOfServiceURLToSet = Uri.parse( urlString );
+    }
+
+    @ReactMethod
+    public void setConsentFlowDebugUserGeography(final String userGeography)
+    {
+        debugUserGeographyToSet = userGeography;
+    }
 
     // Data Passing
 
@@ -2419,6 +2471,34 @@ public class AppLovinMAXModule
         }
 
         return AppLovinAdContentRating.NONE;
+    }
+
+    private static ConsentFlowUserGeography getAppLovinConsentFlowUserGeography(final String userGeography)
+    {
+        if ( "G".equalsIgnoreCase( userGeography ) )
+        {
+            return ConsentFlowUserGeography.GDPR;
+        }
+        else if ( "O".equalsIgnoreCase( userGeography ) )
+        {
+            return ConsentFlowUserGeography.OTHER;
+        }
+
+        return ConsentFlowUserGeography.UNKNOWN;
+    }
+
+    private static String getRawAppLovinConsentFlowUserGeography(final ConsentFlowUserGeography userGeography)
+    {
+        if ( ConsentFlowUserGeography.GDPR == userGeography )
+        {
+            return "G";
+        }
+        else if ( ConsentFlowUserGeography.OTHER == userGeography )
+        {
+            return "O";
+        }
+
+        return "U";
     }
 
     // AD INFO
