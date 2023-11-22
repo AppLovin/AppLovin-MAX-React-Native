@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Improve loading time for native ads. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/273)
 ## 6.1.0
 * Fix inconsistent naming for enum fields.
 * Add support for Terms and Privacy Policy Flow. For more info, check out our [docs](https://dash.applovin.com/documentation/mediation/react-native/getting-started/terms-and-privacy-policy-flow).

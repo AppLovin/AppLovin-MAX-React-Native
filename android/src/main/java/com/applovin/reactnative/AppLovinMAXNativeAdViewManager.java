@@ -149,6 +149,14 @@ public class AppLovinMAXNativeAdViewManager
     }
 
     @Override
+    public void onAfterUpdateTransaction(final AppLovinMAXNativeAdView view)
+    {
+        super.onAfterUpdateTransaction( view );
+
+        view.onSetProps();
+    }
+
+    @Override
     public void onDropViewInstance(@NonNull final AppLovinMAXNativeAdView view)
     {
         view.destroy();
