@@ -46,11 +46,20 @@ export type PrivacyType = {
     /**********************************************************************************/
 
     /**
+     * @deprecated Use {@link setTermsAndPrivacyPolicyFlowEnabled()} instead.
+     * 
      * Enables the MAX Terms Flow.
      *
      * @param enabled true to enable the MAX Terms Flow.
      */
     setConsentFlowEnabled(enabled: boolean): void;
+
+    /**
+     * Enables the MAX Terms and Privacy Policy Flow.
+     *
+     * @param enabled true to enable the MAX Terms and Privacy Policy Flow.
+     */
+    setTermsAndPrivacyPolicyFlowEnabled(enabled: boolean): void;
 
     /**
      * The URL of your company’s privacy policy, as a string. This is required in order to enable

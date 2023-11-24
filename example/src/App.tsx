@@ -70,7 +70,7 @@ const App = () => {
         if (isInitialized) return;
 
         // MAX Consent Flow - https://dash.applovin.com/documentation/mediation/react-native/getting-started/terms-and-privacy-policy-flow
-        Privacy.setConsentFlowEnabled(true);
+        Privacy.setTermsAndPrivacyPolicyFlowEnabled(true);
         Privacy.setPrivacyPolicyUrl('https://your_company_name.com/privacy/'); // mandatory
         Privacy.setTermsOfServiceUrl('https://your_company_name.com/terms/'); // optional
         Privacy.setConsentFlowDebugUserGeography(ConsentFlowUserGeography.GDPR); // debug mode
