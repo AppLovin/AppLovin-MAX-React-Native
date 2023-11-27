@@ -44,6 +44,7 @@
 @property (nonatomic, strong, nullable) NSNumber *locationCollectionEnabledToSet;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSString *> *extraParametersToSet;
 
+@property (nonatomic, strong, nullable) NSNumber *consentFlowEnabledToSet;
 @property (nonatomic, strong, nullable) NSNumber *termsAndPrivacyPolicyFlowEnabledToSet;
 @property (nonatomic, strong, nullable) NSURL *privacyPolicyURLToSet;
 @property (nonatomic, strong, nullable) NSURL *termsOfServiceURLToSet;
@@ -213,11 +214,13 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     }
     
     ALSdkSettings *settings = [[ALSdkSettings alloc] init];
+    settings.consentFlowSettings.enabled = self.consentFlowEnabledToSet.boolValue;
     settings.termsAndPrivacyPolicyFlowSettings.enabled = self.termsAndPrivacyPolicyFlowEnabledToSet.boolValue;
     settings.termsAndPrivacyPolicyFlowSettings.privacyPolicyURL = self.privacyPolicyURLToSet;
     settings.termsAndPrivacyPolicyFlowSettings.termsOfServiceURL = self.termsOfServiceURLToSet;
     settings.termsAndPrivacyPolicyFlowSettings.debugUserGeography = [self toAppLovinConsentFlowUserGeography: self.debugUserGeographyToSet];
 
+    self.consentFlowEnabledToSet = nil;
     self.termsAndPrivacyPolicyFlowEnabledToSet = nil;
     self.privacyPolicyURLToSet = nil;
     self.termsOfServiceURLToSet = nil;
@@ -456,7 +459,7 @@ RCT_EXPORT_METHOD(setExtraParameter:(NSString *)key :(nullable NSString *)value)
 
 RCT_EXPORT_METHOD(setConsentFlowEnabled:(BOOL)enabled)
 {
-    self.termsAndPrivacyPolicyFlowEnabledToSet = @(enabled);
+    self.consentFlowEnabledToSet = @(enabled);
 }
 
 RCT_EXPORT_METHOD(setTermsAndPrivacyPolicyFlowEnabled:(BOOL)enabled)
