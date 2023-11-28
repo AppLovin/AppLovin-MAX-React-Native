@@ -152,7 +152,6 @@ public class AppLovinMAXModule
     private       Boolean             locationCollectionEnabledToSet;
     private final Map<String, String> extraParametersToSet = new HashMap<>( 8 );
 
-    private Boolean consentFlowEnabledToSet;
     private Boolean termsAndPrivacyPolicyFlowEnabledToSet;
     private Uri     privacyPolicyURLToSet;
     private Uri     termsOfServiceURLToSet;
@@ -295,12 +294,6 @@ public class AppLovinMAXModule
         }
 
         AppLovinSdkSettings settings = new AppLovinSdkSettings( getReactApplicationContext() );
-
-        if ( consentFlowEnabledToSet != null )
-        {
-            settings.getTermsFlowSettings().setEnabled( consentFlowEnabledToSet );
-            consentFlowEnabledToSet = null;
-        }
 
         if ( termsAndPrivacyPolicyFlowEnabledToSet != null )
         {
@@ -611,10 +604,7 @@ public class AppLovinMAXModule
     // MAX Terms and Privacy Policy Flow
 
     @ReactMethod
-    public void setConsentFlowEnabled(final boolean enabled)
-    {
-        consentFlowEnabledToSet = enabled;
-    }
+    public void setConsentFlowEnabled(final boolean enabled) { }
 
     @ReactMethod
     public void setTermsAndPrivacyPolicyFlowEnabled(final boolean enabled)

@@ -214,8 +214,14 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     }
     
     ALSdkSettings *settings = [[ALSdkSettings alloc] init];
+
+    // Deprecated consent flow which automatically moves to the new flow
     settings.consentFlowSettings.enabled = self.consentFlowEnabledToSet.boolValue;
-    settings.termsAndPrivacyPolicyFlowSettings.enabled = self.termsAndPrivacyPolicyFlowEnabledToSet.boolValue;
+    settings.consentFlowSettings.privacyPolicyURL = self.privacyPolicyURLToSet;
+    settings.consentFlowSettings.termsOfServiceURL = self.termsOfServiceURLToSet;
+
+    // New terms and privacy policy flow
+    settings.termsAndPrivacyPolicyFlowSettings.enabled = self.termsAndPrivacyPolicyFlowEnabledToSet.boolValue ;
     settings.termsAndPrivacyPolicyFlowSettings.privacyPolicyURL = self.privacyPolicyURLToSet;
     settings.termsAndPrivacyPolicyFlowSettings.termsOfServiceURL = self.termsOfServiceURLToSet;
     settings.termsAndPrivacyPolicyFlowSettings.debugUserGeography = [self toAppLovinConsentFlowUserGeography: self.debugUserGeographyToSet];
