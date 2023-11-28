@@ -24,4 +24,39 @@ export enum ConsentFlowUserGeography {
     OTHER = 'O',
 }
 
+/**
+ * AppLovin SDK-defined app tracking transparency status values (extended to include "unavailable"
+ * state on iOS before iOS14).
+ */
+export enum AppTrackingStatus {
+    /**
+     * Device is on iOS before iOS14, AppTrackingTransparency.framework is not available.
+     */
+    UNAVAILABLE = 'U',
+
+    /**
+     * The user has not yet received an authorization request to authorize access to app-related
+     * data that can be used for tracking the user or the device.
+     */
+    NOTDETERMINED = 'N',
+
+    /**
+     * Authorization to access app-related data that can be used for tracking the user or the device
+     * is restricted.
+     */
+    RESTRICTED = 'R',
+
+    /**
+     * The user denies authorization to access app-related data that can be used for tracking the
+     * user or the device.
+     */
+    DENIED = 'D',
+
+    /**
+     * The user authorizes access to app-related data that can be used for tracking the user or the
+     * device.
+     */
+    AUTHORIZED = 'A',
+}
+
 export const Privacy: PrivacyType = AppLovinMAX;

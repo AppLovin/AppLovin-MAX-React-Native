@@ -47,7 +47,7 @@ export type PrivacyType = {
 
     /**
      * @deprecated Use {@link setTermsAndPrivacyPolicyFlowEnabled()} instead.
-     * 
+     *
      * Enables the MAX Terms Flow.
      *
      * @param enabled true to enable the MAX Terms Flow.

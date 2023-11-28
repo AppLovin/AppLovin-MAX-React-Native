@@ -1,4 +1,4 @@
-import type { ConsentFlowUserGeography } from '../Privacy';
+import type { ConsentFlowUserGeography, AppTrackingStatus } from '../Privacy';
 
 /**
  * Encapsulates data for the AppLovinMAX SDK configuration.
@@ -14,6 +14,14 @@ export type Configuration = {
      * such determination could be made, {@link ConsentFlowUserGeography.UNKNOWN} will be returned.
      */
     consentFlowUserGeography: ConsentFlowUserGeography;
+
+    /**
+     * Indicates whether or not the user authorizes access to app-related data that can be used for
+     * tracking the user or the device.
+     *
+     * Note: available only on iOS
+     */
+    appTrackingStatus?: AppTrackingStatus;
 
     /**
      * Whether or not test mode is enabled for this session.

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Platform, StyleSheet, Text, View, SafeAreaView, Dimensions } from 'react-native';
-import AppLovinMAX, { ConsentFlowUserGeography, Privacy } from '../../src/index';
+import AppLovinMAX, { Privacy, ConsentFlowUserGeography, AppTrackingStatus } from '../../src/index';
 import type { Configuration } from '../../src/index';
 import AppLogo from './components/AppLogo';
 import AppButton from './components/AppButton';
@@ -81,13 +81,24 @@ const App = () => {
                 setIsInitialized(true);
                 setStatusText('SDK Initialized in ' + conf.countryCode);
 
+                console.log('isTestModeEnabled: ' + conf.isTestModeEnabled);
+
                 console.log(
                     'consentFlowUserGeography: ' +
                         Object.keys(ConsentFlowUserGeography)[
                             Object.values(ConsentFlowUserGeography).indexOf(conf.consentFlowUserGeography)
                         ]
                 );
-                console.log('isTestModeEnabled: ' + conf.isTestModeEnabled);
+
+                // AppTrackingStatus for iOS
+                if (conf.appTrackingStatus) {
+                    console.log(
+                        'appTrackingStatus: ' +
+                            Object.keys(AppTrackingStatus)[
+                                Object.values(AppTrackingStatus).indexOf(conf.appTrackingStatus)
+                            ]
+                    );
+                }
             })
             .catch((error) => {
                 setStatusText(error.toString());

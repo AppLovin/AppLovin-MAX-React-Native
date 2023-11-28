@@ -318,6 +318,7 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         self.sdkInitialized = YES;
         
         resolve(@{@"countryCode" : self.sdk.configuration.countryCode,
+                  @"appTrackingStatus" : [self fromAppLovinAppTrackingStatus: self.sdk.configuration.appTrackingTransparencyStatus],
                   @"consentFlowUserGeography" : [self fromAppLovinConsentFlowUserGeography: self.sdk.configuration.consentFlowUserGeography],
                   @"isTestModeEnabled" : @(self.sdk.configuration.isTestModeEnabled)});
     }];
@@ -2019,6 +2020,28 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
     }
 
     return @"U";
+}
+
+- (NSString *)fromAppLovinAppTrackingStatus:(ALAppTrackingTransparencyStatus)status
+{
+    if ( ALAppTrackingTransparencyStatusNotDetermined == status )
+    {
+        return @"N";
+    }
+    else if ( ALAppTrackingTransparencyStatusRestricted == status )
+    {
+        return @"R";
+    }
+    else if ( ALAppTrackingTransparencyStatusDenied == status )
+    {
+        return @"D";
+    }
+    else if ( ALAppTrackingTransparencyStatusAuthorized == status )
+    {
+        return @"A";
+    }
+
+    return @"U"; // ALAppTrackingTransparencyStatusUnavailable
 }
 
 #pragma mark - Ad Info
