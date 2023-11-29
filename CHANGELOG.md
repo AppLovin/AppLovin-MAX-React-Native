@@ -1,7 +1,7 @@
 ## Versions
 
 ## x.x.x
-* Add support for Terms and Privacy Policy Flow [docs](https://dash.applovin.com/documentation/mediation/react-native/getting-started/terms-and-privacy-policy-flow).
+* Add support for Terms and Privacy Policy Flow. For more info, check out our [docs](https://dash.applovin.com/documentation/mediation/react-native/getting-started/terms-and-privacy-policy-flow).
 ## 6.0.2
 * Depend on Android SDK 12.0.0 and iOS SDK 12.0.0.
 * Fix type of argument in `TargetingData.keywords`.

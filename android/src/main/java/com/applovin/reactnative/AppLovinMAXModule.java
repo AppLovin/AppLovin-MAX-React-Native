@@ -81,6 +81,10 @@ public class AppLovinMAXModule
     private static final String SDK_TAG = "AppLovinSdk";
     private static final String TAG     = "AppLovinMAXModule";
 
+    private static final String USER_GEOGRAPHY_GDPR    = "G";
+    private static final String USER_GEOGRAPHY_OTHER   = "O";
+    private static final String USER_GEOGRAPHY_UNKNOWN = "U";
+
     private static final String ON_BANNER_AD_LOADED_EVENT      = "OnBannerAdLoadedEvent";
     private static final String ON_BANNER_AD_LOAD_FAILED_EVENT = "OnBannerAdLoadFailedEvent";
     private static final String ON_BANNER_AD_CLICKED_EVENT     = "OnBannerAdClickedEvent";
@@ -313,7 +317,7 @@ public class AppLovinMAXModule
             termsOfServiceURLToSet = null;
         }
 
-        if ( !TextUtils.isEmpty( debugUserGeographyToSet ) )
+        if ( AppLovinSdkUtils.isValidString( debugUserGeographyToSet ) )
         {
             settings.getTermsAndPrivacyPolicyFlowSettings().setDebugUserGeography( getAppLovinConsentFlowUserGeography( debugUserGeographyToSet ) );
             debugUserGeographyToSet = null;
@@ -2478,11 +2482,11 @@ public class AppLovinMAXModule
 
     private static ConsentFlowUserGeography getAppLovinConsentFlowUserGeography(final String userGeography)
     {
-        if ( "G".equalsIgnoreCase( userGeography ) )
+        if ( USER_GEOGRAPHY_GDPR.equalsIgnoreCase( userGeography ) )
         {
             return ConsentFlowUserGeography.GDPR;
         }
-        else if ( "O".equalsIgnoreCase( userGeography ) )
+        else if ( USER_GEOGRAPHY_OTHER.equalsIgnoreCase( userGeography ) )
         {
             return ConsentFlowUserGeography.OTHER;
         }
@@ -2494,14 +2498,14 @@ public class AppLovinMAXModule
     {
         if ( ConsentFlowUserGeography.GDPR == userGeography )
         {
-            return "G";
+            return USER_GEOGRAPHY_GDPR;
         }
         else if ( ConsentFlowUserGeography.OTHER == userGeography )
         {
-            return "O";
+            return USER_GEOGRAPHY_OTHER;
         }
 
-        return "U";
+        return USER_GEOGRAPHY_UNKNOWN;
     }
 
     // AD INFO
