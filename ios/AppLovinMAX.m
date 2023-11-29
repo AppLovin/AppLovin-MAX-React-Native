@@ -216,22 +216,31 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     ALSdkSettings *settings = [[ALSdkSettings alloc] init];
 
     // Deprecated consent flow which automatically moves to the new flow
-    settings.consentFlowSettings.enabled = self.consentFlowEnabledToSet.boolValue;
-    settings.consentFlowSettings.privacyPolicyURL = self.privacyPolicyURLToSet;
-    settings.consentFlowSettings.termsOfServiceURL = self.termsOfServiceURLToSet;
+    if ( self.consentFlowEnabledToSet.boolValue )
+    {
+        settings.consentFlowSettings.enabled = YES;
+        settings.consentFlowSettings.privacyPolicyURL = self.privacyPolicyURLToSet;
+        settings.consentFlowSettings.termsOfServiceURL = self.termsOfServiceURLToSet;
+
+        self.consentFlowEnabledToSet = nil;
+        self.privacyPolicyURLToSet = nil;
+        self.termsOfServiceURLToSet = nil;
+    }
 
     // New terms and privacy policy flow
-    settings.termsAndPrivacyPolicyFlowSettings.enabled = self.termsAndPrivacyPolicyFlowEnabledToSet.boolValue ;
-    settings.termsAndPrivacyPolicyFlowSettings.privacyPolicyURL = self.privacyPolicyURLToSet;
-    settings.termsAndPrivacyPolicyFlowSettings.termsOfServiceURL = self.termsOfServiceURLToSet;
-    settings.termsAndPrivacyPolicyFlowSettings.debugUserGeography = [self toAppLovinConsentFlowUserGeography: self.debugUserGeographyToSet];
+    if ( self.termsAndPrivacyPolicyFlowEnabledToSet.boolValue )
+    {
+        settings.termsAndPrivacyPolicyFlowSettings.enabled = YES;
+        settings.termsAndPrivacyPolicyFlowSettings.privacyPolicyURL = self.privacyPolicyURLToSet;
+        settings.termsAndPrivacyPolicyFlowSettings.termsOfServiceURL = self.termsOfServiceURLToSet;
+        settings.termsAndPrivacyPolicyFlowSettings.debugUserGeography = [self toAppLovinConsentFlowUserGeography: self.debugUserGeographyToSet];
 
-    self.consentFlowEnabledToSet = nil;
-    self.termsAndPrivacyPolicyFlowEnabledToSet = nil;
-    self.privacyPolicyURLToSet = nil;
-    self.termsOfServiceURLToSet = nil;
-    self.debugUserGeographyToSet = nil;
-    
+        self.termsAndPrivacyPolicyFlowEnabledToSet = nil;
+        self.privacyPolicyURLToSet = nil;
+        self.termsOfServiceURLToSet = nil;
+        self.debugUserGeographyToSet = nil;
+    }
+
     // Initialize SDK
     self.sdk = [ALSdk sharedWithKey: sdkKey settings: settings];
     [self.sdk setPluginVersion: [@"React-Native-" stringByAppendingString: pluginVersion]];

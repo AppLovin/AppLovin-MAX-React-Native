@@ -73,7 +73,6 @@ const App = () => {
         Privacy.setTermsAndPrivacyPolicyFlowEnabled(true);
         Privacy.setPrivacyPolicyUrl('https://your_company_name.com/privacy/'); // mandatory
         Privacy.setTermsOfServiceUrl('https://your_company_name.com/terms/'); // optional
-        Privacy.setConsentFlowDebugUserGeography(ConsentFlowUserGeography.GDPR); // debug mode
 
         AppLovinMAX.setTestDeviceAdvertisingIds([]);
         AppLovinMAX.initialize(SDK_KEY)
