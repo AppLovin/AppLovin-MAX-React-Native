@@ -275,6 +275,36 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         }
     }
 
+    // Set test device ids if needed
+    if ( self.testDeviceIdentifiersToSet )
+    {
+        settings.testDeviceAdvertisingIdentifiers = self.testDeviceIdentifiersToSet;
+        self.testDeviceIdentifiersToSet = nil;
+    }
+    
+    // Set verbose logging state if needed
+    if ( self.verboseLoggingToSet )
+    {
+        settings.verboseLoggingEnabled = self.verboseLoggingToSet.boolValue;
+        self.verboseLoggingToSet = nil;
+    }
+    
+    // Set creative debugger enabled if needed.
+    if ( self.creativeDebuggerEnabledToSet )
+    {
+        settings.creativeDebuggerEnabled = self.creativeDebuggerEnabledToSet.boolValue;
+        self.creativeDebuggerEnabledToSet = nil;
+    }
+    
+    // Set location collection enabled if needed
+    if ( self.locationCollectionEnabledToSet )
+    {
+        settings.locationCollectionEnabled = self.locationCollectionEnabledToSet.boolValue;
+        self.locationCollectionEnabledToSet = nil;
+    }
+    
+    [self setPendingExtraParametersIfNeeded: settings];
+
     // Initialize SDK
     self.sdk = [ALSdk sharedWithKey: sdkKey settings: settings];
     [self.sdk setPluginVersion: [@"React-Native-" stringByAppendingString: pluginVersion]];
@@ -285,34 +315,6 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     {
         self.sdk.userIdentifier = self.userIdentifierToSet;
         self.userIdentifierToSet = nil;
-    }
-    
-    // Set test device ids if needed
-    if ( self.testDeviceIdentifiersToSet )
-    {
-        self.sdk.settings.testDeviceAdvertisingIdentifiers = self.testDeviceIdentifiersToSet;
-        self.testDeviceIdentifiersToSet = nil;
-    }
-    
-    // Set verbose logging state if needed
-    if ( self.verboseLoggingToSet )
-    {
-        self.sdk.settings.verboseLoggingEnabled = self.verboseLoggingToSet.boolValue;
-        self.verboseLoggingToSet = nil;
-    }
-    
-    // Set creative debugger enabled if needed.
-    if ( self.creativeDebuggerEnabledToSet )
-    {
-        self.sdk.settings.creativeDebuggerEnabled = self.creativeDebuggerEnabledToSet.boolValue;
-        self.creativeDebuggerEnabledToSet = nil;
-    }
-    
-    // Set location collection enabled if needed
-    if ( self.locationCollectionEnabledToSet )
-    {
-        self.sdk.settings.locationCollectionEnabled = self.locationCollectionEnabledToSet.boolValue;
-        self.locationCollectionEnabledToSet = nil;
     }
     
     if ( self.targetingYearOfBirthToSet )
@@ -356,8 +358,6 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         self.sdk.targetingData.interests = self.targetingInterestsToSet;
         self.targetingInterestsToSet = nil;
     }
-    
-    [self setPendingExtraParametersIfNeeded: self.sdk.settings];
     
     [self.sdk initializeSdkWithCompletionHandler:^(ALSdkConfiguration *configuration) {
         
