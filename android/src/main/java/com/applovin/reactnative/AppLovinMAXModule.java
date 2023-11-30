@@ -9,6 +9,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.OrientationEventListener;
@@ -273,7 +274,7 @@ public class AppLovinMAXModule
 
         // If SDK key passed in is empty, check Android Manifest
         String sdkKeyToUse = sdkKey;
-        if ( !AppLovinSdkUtils.isValidString( sdkKey ) )
+        if ( TextUtils.isEmpty( sdkKey ) )
         {
             try
             {
@@ -289,7 +290,7 @@ public class AppLovinMAXModule
                 e( "Unable to retrieve SDK key from Android Manifest: " + th );
             }
 
-            if ( !AppLovinSdkUtils.isValidString( sdkKeyToUse ) )
+            if ( TextUtils.isEmpty( sdkKeyToUse ) )
             {
                 promise.reject( new IllegalStateException( "Unable to initialize AppLovin SDK - no SDK key provided and not found in Android Manifest!" ) );
                 return;
@@ -586,7 +587,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setExtraParameter(final String key, @Nullable final String value)
     {
-        if ( !AppLovinSdkUtils.isValidString( key ) )
+        if ( TextUtils.isEmpty( key ) )
         {
             e( "ERROR: Failed to set extra parameter for null or empty key: " + key );
             return;
@@ -1502,7 +1503,7 @@ public class AppLovinMAXModule
     @Override
     public void onAdLoadFailed(final String adUnitId, final MaxError error)
     {
-        if ( !AppLovinSdkUtils.isValidString( adUnitId ) )
+        if ( TextUtils.isEmpty( adUnitId ) )
         {
             logStackTrace( new IllegalArgumentException( "adUnitId cannot be null" ) );
             return;
