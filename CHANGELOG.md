@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Fix TypeScript compilation errors. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/271)
 ## 6.0.2
 * Depend on Android SDK 12.0.0 and iOS SDK 12.0.0.
 * Fix type of argument in `TargetingData.keywords`.

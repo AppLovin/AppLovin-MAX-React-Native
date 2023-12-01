@@ -1,4 +1,5 @@
-import React, { useState, createContext } from 'react';
+import * as React from 'react';
+import { useState, createContext } from 'react';
 import type { NativeMethods } from 'react-native';
 import type { NativeAd } from '../types/NativeAd';
 import type { NativeAdViewProps } from '../types/NativeAdViewProps';
