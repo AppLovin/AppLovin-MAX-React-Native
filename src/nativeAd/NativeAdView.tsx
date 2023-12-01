@@ -1,4 +1,5 @@
-import React, { forwardRef, useContext, useImperativeHandle, useRef, useState, useEffect, useCallback } from 'react';
+import * as React from 'react';
+import { forwardRef, useContext, useImperativeHandle, useRef, useState, useEffect, useCallback } from 'react';
 import { NativeModules, requireNativeComponent, UIManager, findNodeHandle } from 'react-native';
 import type { ViewProps } from 'react-native';
 import { NativeAdViewContext, NativeAdViewProvider } from './NativeAdViewProvider';

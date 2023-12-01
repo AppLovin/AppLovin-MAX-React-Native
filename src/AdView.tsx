@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { NativeModules, requireNativeComponent, StyleSheet } from 'react-native';
 import type { ViewProps, ViewStyle, StyleProp } from 'react-native';
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from './types/AdInfo';
@@ -78,8 +79,8 @@ const getOutlineViewSize = (style: StyleProp<ViewStyle>) => {
 const sizeAdViewDimensions = (
     adFormat: AdFormat,
     adaptiveBannerEnabled?: boolean,
-    width?: number | string,
-    height?: number | string
+    width?: number | string | null,
+    height?: number | string | null
 ): Promise<Record<string, number>> => {
     const sizeForBannerFormat = async () => {
         const isTablet = await AppLovinMAX.isTablet();
@@ -194,6 +195,7 @@ export const AdView = ({
     useEffect(() => {
         if (!isInitialized) return;
         const [width, height] = getOutlineViewSize(style);
+        // @ts-expect-error: width and height should be of type DimensionValue in react-native 0.72.0 and above
         sizeAdViewDimensions(adFormat, adaptiveBannerEnabled, width, height).then((value: Record<string, number>) => {
             setDimensions(value);
         });
