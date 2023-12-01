@@ -37,6 +37,7 @@
 @property (nonatomic, strong) ALSdkConfiguration *sdkConfiguration;
 
 // Store these values if pub attempts to set it before initializing
+@property (nonatomic, strong, nullable) NSArray<NSString *> *initializationAdUnitIdentifiersToSet;
 @property (nonatomic,   copy, nullable) NSString *userIdentifierToSet;
 @property (nonatomic, strong, nullable) NSArray<NSString *> *testDeviceIdentifiersToSet;
 @property (nonatomic, strong, nullable) NSNumber *verboseLoggingToSet;
@@ -224,6 +225,13 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     }
     
     ALSdkSettings *settings = [[ALSdkSettings alloc] init];
+
+    // Selective init
+    if ( self.initializationAdUnitIdentifiersToSet )
+    {
+        settings.initializationAdUnitIdentifiers = self.initializationAdUnitIdentifiersToSet;
+        self.initializationAdUnitIdentifiersToSet = nil;
+    }
 
     // Deprecated consent flow which automatically moves to the new flow
     if ( self.consentFlowEnabledToSet )
@@ -497,6 +505,11 @@ RCT_EXPORT_METHOD(setExtraParameter:(NSString *)key :(nullable NSString *)value)
     {
         self.extraParametersToSet[key] = value;
     }
+}
+
+RCT_EXPORT_METHOD(setInitializationAdUnitIds:(NSArray<NSString *> *)adUnitIds)
+{
+    self.initializationAdUnitIdentifiersToSet = adUnitIds;
 }
 
 #pragma mark - MAX Terms and Privacy Policy Flow

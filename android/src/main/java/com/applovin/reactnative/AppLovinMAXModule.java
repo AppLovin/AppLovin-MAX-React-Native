@@ -149,6 +149,7 @@ public class AppLovinMAXModule
     private int           lastRotation;
 
     // Store these values if pub attempts to set it before initializing
+    private       List<String>        initializationAdUnitIdsToSet;
     private       String              userIdToSet;
     private       List<String>        testDeviceAdvertisingIdsToSet;
     private       Boolean             verboseLoggingToSet;
@@ -298,6 +299,13 @@ public class AppLovinMAXModule
         }
 
         AppLovinSdkSettings settings = new AppLovinSdkSettings( getReactApplicationContext() );
+
+        // Selective init
+        if ( initializationAdUnitIdsToSet != null )
+        {
+            settings.setInitializationAdUnitIds( initializationAdUnitIdsToSet );
+            initializationAdUnitIdsToSet = null;
+        }
 
         if ( termsAndPrivacyPolicyFlowEnabledToSet != null )
         {
@@ -602,6 +610,18 @@ public class AppLovinMAXModule
         else
         {
             extraParametersToSet.put( key, value );
+        }
+    }
+
+    @ReactMethod
+    public void setInitializationAdUnitIds(final ReadableArray rawAdUnitIds)
+    {
+        initializationAdUnitIdsToSet = new ArrayList<>( rawAdUnitIds.size() );
+
+        // Convert to String List
+        for ( Object adUnitId : rawAdUnitIds.toArrayList() )
+        {
+            initializationAdUnitIdsToSet.add( (String) adUnitId );
         }
     }
 
