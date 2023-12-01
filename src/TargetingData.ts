@@ -27,20 +27,20 @@ const nativeMethods: NativeTargetingDataType = AppLovinMAX;
  * This enumeration represents content ratings for the ads shown to users.
  */
 export enum AdContentRating {
-    None = 0,
-    AllAudiences = 1,
-    EveryoneOverTwelve = 2,
-    MatureAudiences = 3,
+    NONE = 0,
+    ALL_AUDIENCES = 1,
+    EVERYONE_OVER_TWELVE = 2,
+    MATURE_AUDIENCES = 3,
 }
 
 /**
  * This enumeration represents gender.
  */
 export enum UserGender {
-    Unknown = 'U',
-    Female = 'F',
-    Male = 'M',
-    Other = 'O',
+    UNKNOWN = 'U',
+    FEMALE = 'F',
+    MALE = 'M',
+    OTHER = 'O',
 }
 
 /**
