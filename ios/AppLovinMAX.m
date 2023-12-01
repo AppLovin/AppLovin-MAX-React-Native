@@ -37,6 +37,7 @@
 @property (nonatomic, strong) ALSdkConfiguration *sdkConfiguration;
 
 // Store these values if pub attempts to set it before initializing
+@property (nonatomic, strong, nullable) NSArray<NSString *> *initializationAdUnitIdentifiersToSet;
 @property (nonatomic,   copy, nullable) NSString *userIdentifierToSet;
 @property (nonatomic, strong, nullable) NSArray<NSString *> *testDeviceIdentifiersToSet;
 @property (nonatomic, strong, nullable) NSNumber *verboseLoggingToSet;
@@ -212,6 +213,11 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     }
     
     ALSdkSettings *settings = [[ALSdkSettings alloc] init];
+
+    // Selective init
+    settings.initializationAdUnitIdentifiers = self.initializationAdUnitIdentifiersToSet;
+    self.initializationAdUnitIdentifiersToSet = nil;
+
     settings.consentFlowSettings.enabled = self.consentFlowEnabledToSet.boolValue;
     settings.consentFlowSettings.privacyPolicyURL = self.privacyPolicyURLToSet;
     settings.consentFlowSettings.termsOfServiceURL = self.termsOfServiceURLToSet;
@@ -445,6 +451,11 @@ RCT_EXPORT_METHOD(setExtraParameter:(NSString *)key :(nullable NSString *)value)
     {
         self.extraParametersToSet[key] = value;
     }
+}
+
+RCT_EXPORT_METHOD(setInitializationAdUnitIds:(NSArray<NSString *> *)adUnitIds)
+{
+    self.initializationAdUnitIdentifiersToSet = adUnitIds;
 }
 
 RCT_EXPORT_METHOD(setConsentFlowEnabled:(BOOL)enabled)

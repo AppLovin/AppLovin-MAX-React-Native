@@ -143,6 +143,7 @@ public class AppLovinMAXModule
     private int           lastRotation;
 
     // Store these values if pub attempts to set it before initializing
+    private       List<String>        initializationAdUnitIdsToSet;
     private       String              userIdToSet;
     private       List<String>        testDeviceAdvertisingIdsToSet;
     private       Boolean             verboseLoggingToSet;
@@ -286,8 +287,17 @@ public class AppLovinMAXModule
             }
         }
 
+        AppLovinSdkSettings settings = new AppLovinSdkSettings( getReactApplicationContext() );
+
+        // Selective init
+        if ( initializationAdUnitIdsToSet != null )
+        {
+            settings.setInitializationAdUnitIds( initializationAdUnitIdsToSet );
+            initializationAdUnitIdsToSet = null;
+        }
+
         // Initialize SDK
-        sdk = AppLovinSdk.getInstance( sdkKeyToUse, new AppLovinSdkSettings( getReactApplicationContext() ), context );
+        sdk = AppLovinSdk.getInstance( sdkKeyToUse, settings, context );
         sdk.setPluginVersion( "React-Native-" + pluginVersion );
         sdk.setMediationProvider( AppLovinMediationProvider.MAX );
 
@@ -563,6 +573,18 @@ public class AppLovinMAXModule
         else
         {
             extraParametersToSet.put( key, value );
+        }
+    }
+
+    @ReactMethod
+    public void setInitializationAdUnitIds(final ReadableArray rawAdUnitIds)
+    {
+        initializationAdUnitIdsToSet = new ArrayList<>( rawAdUnitIds.size() );
+
+        // Convert to String List
+        for ( Object adUnitId : rawAdUnitIds.toArrayList() )
+        {
+            initializationAdUnitIdsToSet.add( (String) adUnitId );
         }
     }
 

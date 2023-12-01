@@ -18,6 +18,13 @@ export type AppLovinMAXType = {
     initialize(sdkKey: string): Promise<Configuration>;
 
     /**
+     * Sets a list of the ad units for the SDK to initialize only those networks.
+     *
+     * @param adUnitIds Ad units to be initialized with the SDK.
+     */
+    setInitializationAdUnitIds(adUnitIds: string[]): void;
+
+    /**
      * Presents the mediation debugger UI.
      */
     showMediationDebugger(): void;
