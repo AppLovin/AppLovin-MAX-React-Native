@@ -230,10 +230,7 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     {
         settings.consentFlowSettings.enabled = self.consentFlowEnabledToSet.boolValue;
         self.consentFlowEnabledToSet = nil;
-    }
 
-    if ( settings.consentFlowSettings.enabled )
-    {
         if ( self.privacyPolicyURLToSet )
         {
             settings.consentFlowSettings.privacyPolicyURL = self.privacyPolicyURLToSet;
@@ -252,10 +249,7 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     {
         settings.termsAndPrivacyPolicyFlowSettings.enabled = self.termsAndPrivacyPolicyFlowEnabledToSet.boolValue;
         self.termsAndPrivacyPolicyFlowEnabledToSet = nil;
-    }
 
-    if ( settings.termsAndPrivacyPolicyFlowSettings.enabled )
-    {
         if ( self.privacyPolicyURLToSet )
         {
             settings.termsAndPrivacyPolicyFlowSettings.privacyPolicyURL = self.privacyPolicyURLToSet;
