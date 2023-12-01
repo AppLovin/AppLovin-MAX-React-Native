@@ -4,7 +4,7 @@ import type { Configuration } from './types/Configuration';
 
 const NativeAppLovinMAX = NativeModules.AppLovinMAX;
 
-const VERSION = '6.0.2';
+const VERSION = '6.1.0';
 
 const initialize = async (sdkKey: string): Promise<Configuration> => {
     return NativeAppLovinMAX.initialize(VERSION, sdkKey);
