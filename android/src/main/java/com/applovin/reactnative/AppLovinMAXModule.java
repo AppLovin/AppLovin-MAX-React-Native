@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -41,6 +42,7 @@ import com.applovin.sdk.AppLovinMediationProvider;
 import com.applovin.sdk.AppLovinPrivacySettings;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
+import com.applovin.sdk.AppLovinSdkConfiguration.ConsentFlowUserGeography;
 import com.applovin.sdk.AppLovinSdkSettings;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.facebook.react.bridge.Arguments;
@@ -78,6 +80,10 @@ public class AppLovinMAXModule
 {
     private static final String SDK_TAG = "AppLovinSdk";
     private static final String TAG     = "AppLovinMAXModule";
+
+    private static final String USER_GEOGRAPHY_GDPR    = "G";
+    private static final String USER_GEOGRAPHY_OTHER   = "O";
+    private static final String USER_GEOGRAPHY_UNKNOWN = "U";
 
     private static final String ON_BANNER_AD_LOADED_EVENT      = "OnBannerAdLoadedEvent";
     private static final String ON_BANNER_AD_LOAD_FAILED_EVENT = "OnBannerAdLoadFailedEvent";
@@ -150,6 +156,11 @@ public class AppLovinMAXModule
     private       Boolean             creativeDebuggerEnabledToSet;
     private       Boolean             locationCollectionEnabledToSet;
     private final Map<String, String> extraParametersToSet = new HashMap<>( 8 );
+
+    private Boolean termsAndPrivacyPolicyFlowEnabledToSet;
+    private Uri     privacyPolicyURLToSet;
+    private Uri     termsOfServiceURLToSet;
+    private String  debugUserGeographyToSet;
 
     private Integer targetingYearOfBirthToSet;
     private String  targetingGenderToSet;
@@ -296,44 +307,70 @@ public class AppLovinMAXModule
             initializationAdUnitIdsToSet = null;
         }
 
-        // Initialize SDK
-        sdk = AppLovinSdk.getInstance( sdkKeyToUse, settings, context );
-        sdk.setPluginVersion( "React-Native-" + pluginVersion );
-        sdk.setMediationProvider( AppLovinMediationProvider.MAX );
-
-        // Set user id if needed
-        if ( !TextUtils.isEmpty( userIdToSet ) )
+        if ( termsAndPrivacyPolicyFlowEnabledToSet != null )
         {
-            sdk.setUserIdentifier( userIdToSet );
-            userIdToSet = null;
+            settings.getTermsAndPrivacyPolicyFlowSettings().setEnabled( termsAndPrivacyPolicyFlowEnabledToSet );
+            termsAndPrivacyPolicyFlowEnabledToSet = null;
+        }
+
+        if ( privacyPolicyURLToSet != null )
+        {
+            settings.getTermsAndPrivacyPolicyFlowSettings().setPrivacyPolicyUri( privacyPolicyURLToSet );
+            privacyPolicyURLToSet = null;
+        }
+
+        if ( termsOfServiceURLToSet != null )
+        {
+            settings.getTermsAndPrivacyPolicyFlowSettings().setTermsOfServiceUri( termsOfServiceURLToSet );
+            termsOfServiceURLToSet = null;
+        }
+
+        if ( AppLovinSdkUtils.isValidString( debugUserGeographyToSet ) )
+        {
+            settings.getTermsAndPrivacyPolicyFlowSettings().setDebugUserGeography( getAppLovinConsentFlowUserGeography( debugUserGeographyToSet ) );
+            debugUserGeographyToSet = null;
         }
 
         // Set test device ids if needed
         if ( testDeviceAdvertisingIdsToSet != null )
         {
-            sdk.getSettings().setTestDeviceAdvertisingIds( testDeviceAdvertisingIdsToSet );
+            settings.setTestDeviceAdvertisingIds( testDeviceAdvertisingIdsToSet );
             testDeviceAdvertisingIdsToSet = null;
         }
 
         // Set verbose logging state if needed
         if ( verboseLoggingToSet != null )
         {
-            sdk.getSettings().setVerboseLogging( verboseLoggingToSet );
+            settings.setVerboseLogging( verboseLoggingToSet );
             verboseLoggingToSet = null;
         }
 
         // Set creative debugger enabled if needed.
         if ( creativeDebuggerEnabledToSet != null )
         {
-            sdk.getSettings().setCreativeDebuggerEnabled( creativeDebuggerEnabledToSet );
+            settings.setCreativeDebuggerEnabled( creativeDebuggerEnabledToSet );
             creativeDebuggerEnabledToSet = null;
         }
 
         // Set location collection enabled if needed
         if ( locationCollectionEnabledToSet != null )
         {
-            sdk.getSettings().setLocationCollectionEnabled( locationCollectionEnabledToSet );
+            settings.setLocationCollectionEnabled( locationCollectionEnabledToSet );
             locationCollectionEnabledToSet = null;
+        }
+
+        setPendingExtraParametersIfNeeded( settings );
+
+        // Initialize SDK
+        sdk = AppLovinSdk.getInstance( sdkKeyToUse, settings, context );
+        sdk.setPluginVersion( "React-Native-" + pluginVersion );
+        sdk.setMediationProvider( AppLovinMediationProvider.MAX );
+
+        // Set user id if needed
+        if ( AppLovinSdkUtils.isValidString( userIdToSet ) )
+        {
+            sdk.setUserIdentifier( userIdToSet );
+            userIdToSet = null;
         }
 
         if ( targetingYearOfBirthToSet != null )
@@ -378,8 +415,6 @@ public class AppLovinMAXModule
             targetingInterestsToSet = null;
         }
 
-        setPendingExtraParametersIfNeeded( sdk.getSettings() );
-
         sdk.initializeSdk( new AppLovinSdk.SdkInitializationListener()
         {
             @Override
@@ -414,6 +449,8 @@ public class AppLovinMAXModule
 
                 WritableMap sdkConfiguration = Arguments.createMap();
                 sdkConfiguration.putString( "countryCode", configuration.getCountryCode() );
+                sdkConfiguration.putString( "consentFlowUserGeography", getRawAppLovinConsentFlowUserGeography( configuration.getConsentFlowUserGeography() ) );
+                sdkConfiguration.putBoolean( "isTestModeEnabled", configuration.isTestModeEnabled() );
                 promise.resolve( sdkConfiguration );
             }
         } );
@@ -588,14 +625,34 @@ public class AppLovinMAXModule
         }
     }
 
+    // MAX Terms and Privacy Policy Flow
+
     @ReactMethod
     public void setConsentFlowEnabled(final boolean enabled) { }
 
     @ReactMethod
-    public void setPrivacyPolicyUrl(final String urlString) { }
+    public void setTermsAndPrivacyPolicyFlowEnabled(final boolean enabled)
+    {
+        termsAndPrivacyPolicyFlowEnabledToSet = enabled;
+    }
 
     @ReactMethod
-    public void setTermsOfServiceUrl(final String urlString) { }
+    public void setPrivacyPolicyUrl(final String urlString)
+    {
+        privacyPolicyURLToSet = Uri.parse( urlString );
+    }
+
+    @ReactMethod
+    public void setTermsOfServiceUrl(final String urlString)
+    {
+        termsOfServiceURLToSet = Uri.parse( urlString );
+    }
+
+    @ReactMethod
+    public void setConsentFlowDebugUserGeography(final String userGeography)
+    {
+        debugUserGeographyToSet = userGeography;
+    }
 
     // Data Passing
 
@@ -1428,7 +1485,7 @@ public class AppLovinMAXModule
             name = ( MaxAdFormat.MREC == adFormat ) ? ON_MREC_AD_LOADED_EVENT : ON_BANNER_AD_LOADED_EVENT;
 
             String adViewPosition = mAdViewPositions.get( ad.getAdUnitId() );
-            if ( !TextUtils.isEmpty( adViewPosition ) )
+            if ( AppLovinSdkUtils.isValidString( adViewPosition ) )
             {
                 // Only position ad if not native UI component
                 positionAdView( ad );
@@ -2443,18 +2500,46 @@ public class AppLovinMAXModule
         return AppLovinAdContentRating.NONE;
     }
 
+    private static ConsentFlowUserGeography getAppLovinConsentFlowUserGeography(final String userGeography)
+    {
+        if ( USER_GEOGRAPHY_GDPR.equalsIgnoreCase( userGeography ) )
+        {
+            return ConsentFlowUserGeography.GDPR;
+        }
+        else if ( USER_GEOGRAPHY_OTHER.equalsIgnoreCase( userGeography ) )
+        {
+            return ConsentFlowUserGeography.OTHER;
+        }
+
+        return ConsentFlowUserGeography.UNKNOWN;
+    }
+
+    private static String getRawAppLovinConsentFlowUserGeography(final ConsentFlowUserGeography userGeography)
+    {
+        if ( ConsentFlowUserGeography.GDPR == userGeography )
+        {
+            return USER_GEOGRAPHY_GDPR;
+        }
+        else if ( ConsentFlowUserGeography.OTHER == userGeography )
+        {
+            return USER_GEOGRAPHY_OTHER;
+        }
+
+        return USER_GEOGRAPHY_UNKNOWN;
+    }
+
     // AD INFO
 
     public WritableMap getAdInfo(final MaxAd ad)
     {
         WritableMap adInfo = Arguments.createMap();
         adInfo.putString( "adUnitId", ad.getAdUnitId() );
-        adInfo.putString( "creativeId", !TextUtils.isEmpty( ad.getCreativeId() ) ? ad.getCreativeId() : "" );
+        adInfo.putString( "creativeId", AppLovinSdkUtils.isValidString( ad.getCreativeId() ) ? ad.getCreativeId() : "" );
         adInfo.putString( "networkName", ad.getNetworkName() );
-        adInfo.putString( "placement", !TextUtils.isEmpty( ad.getPlacement() ) ? ad.getPlacement() : "" );
+        adInfo.putString( "placement", AppLovinSdkUtils.isValidString( ad.getPlacement() ) ? ad.getPlacement() : "" );
         adInfo.putDouble( "revenue", ad.getRevenue() );
         adInfo.putMap( "waterfall", createAdWaterfallInfo( ad.getWaterfall() ) );
-        adInfo.putString( "dspName", !TextUtils.isEmpty( ad.getDspName() ) ? ad.getDspName() : "" );
+        adInfo.putString( "dspName", AppLovinSdkUtils.isValidString( ad.getDspName() ) ? ad.getDspName() : "" );
 
         return adInfo;
     }

@@ -1,3 +1,5 @@
+import type { ConsentFlowUserGeography } from '../Privacy';
+
 export type PrivacyType = {
     /**********************************************************************************/
     /* Privacy */
@@ -44,11 +46,20 @@ export type PrivacyType = {
     /**********************************************************************************/
 
     /**
+     * @deprecated Use {@link setTermsAndPrivacyPolicyFlowEnabled()} instead.
+     *
      * Enables the MAX Terms Flow.
      *
      * @param enabled true to enable the MAX Terms Flow.
      */
-    setConsentFlowEnabled(enabled: boolean): Promise<void>;
+    setConsentFlowEnabled(enabled: boolean): void;
+
+    /**
+     * Enables the MAX Terms and Privacy Policy Flow.
+     *
+     * @param enabled true to enable the MAX Terms and Privacy Policy Flow.
+     */
+    setTermsAndPrivacyPolicyFlowEnabled(enabled: boolean): void;
 
     /**
      * The URL of your company’s privacy policy, as a string. This is required in order to enable
@@ -56,7 +67,7 @@ export type PrivacyType = {
      *
      * @param urlString The URL string to point your company’s privacy policy.
      */
-    setPrivacyPolicyUrl(urlString: string): Promise<void>;
+    setPrivacyPolicyUrl(urlString: string): void;
 
     /**
      * The URL of your company’s terms of service, as a string. This is optional; you can enable
@@ -64,5 +75,12 @@ export type PrivacyType = {
      *
      * @param urlString The URL string to point your company’s terms of service.
      */
-    setTermsOfServiceUrl(urlString: string): Promise<void>;
+    setTermsOfServiceUrl(urlString: string): void;
+
+    /**
+     * Set debug user geography. You may use this to test CMP flow by setting this to {@link ConsentFlowUserGeography.GDPR}.
+     *
+     * @note The debug geography is used only when the app is in debug mode.
+     */
+    setConsentFlowDebugUserGeography(userGeography: ConsentFlowUserGeography): void;
 };

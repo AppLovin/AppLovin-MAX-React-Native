@@ -46,8 +46,10 @@
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSString *> *extraParametersToSet;
 
 @property (nonatomic, strong, nullable) NSNumber *consentFlowEnabledToSet;
+@property (nonatomic, strong, nullable) NSNumber *termsAndPrivacyPolicyFlowEnabledToSet;
 @property (nonatomic, strong, nullable) NSURL *privacyPolicyURLToSet;
 @property (nonatomic, strong, nullable) NSURL *termsOfServiceURLToSet;
+@property (nonatomic,   copy, nullable) NSString *debugUserGeographyToSet;
 
 @property (nonatomic, strong, nullable) NSNumber *targetingYearOfBirthToSet;
 @property (nonatomic,   copy, nullable) NSString *targetingGenderToSet;
@@ -82,6 +84,16 @@
 @implementation AppLovinMAX
 static NSString *const SDK_TAG = @"AppLovinSdk";
 static NSString *const TAG = @"AppLovinMAX";
+
+static NSString *const USER_GEOGRAPHY_GDPR = @"G";
+static NSString *const USER_GEOGRAPHY_OTHER = @"O";
+static NSString *const USER_GEOGRAPHY_UNKNOWN = @"U";
+
+static NSString *const APP_TRACKING_STATUS_NOTDETERMINED = @"N";
+static NSString *const APP_TRACKING_STATUS_RESTRICTED = @"R";
+static NSString *const APP_TRACKING_STATUS_DENIED = @"D";
+static NSString *const APP_TRACKING_STATUS_AUTHORIZED = @"A";
+static NSString *const APP_TRACKING_STATUS_UNAVAILABLE = @"U";
 
 static NSString *const ON_BANNER_AD_LOADED_EVENT = @"OnBannerAdLoadedEvent";
 static NSString *const ON_BANNER_AD_LOAD_FAILED_EVENT = @"OnBannerAdLoadFailedEvent";
@@ -215,17 +227,86 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     ALSdkSettings *settings = [[ALSdkSettings alloc] init];
 
     // Selective init
-    settings.initializationAdUnitIdentifiers = self.initializationAdUnitIdentifiersToSet;
-    self.initializationAdUnitIdentifiersToSet = nil;
+    if ( self.initializationAdUnitIdentifiersToSet )
+    {
+        settings.initializationAdUnitIdentifiers = self.initializationAdUnitIdentifiersToSet;
+        self.initializationAdUnitIdentifiersToSet = nil;
+    }
 
-    settings.consentFlowSettings.enabled = self.consentFlowEnabledToSet.boolValue;
-    settings.consentFlowSettings.privacyPolicyURL = self.privacyPolicyURLToSet;
-    settings.consentFlowSettings.termsOfServiceURL = self.termsOfServiceURLToSet;
+    // Deprecated consent flow which automatically moves to the new flow
+    if ( self.consentFlowEnabledToSet )
+    {
+        settings.consentFlowSettings.enabled = self.consentFlowEnabledToSet.boolValue;
+        self.consentFlowEnabledToSet = nil;
+
+        if ( self.privacyPolicyURLToSet )
+        {
+            settings.consentFlowSettings.privacyPolicyURL = self.privacyPolicyURLToSet;
+            self.privacyPolicyURLToSet = nil;
+        }
+
+        if (self.termsOfServiceURLToSet )
+        {
+            settings.consentFlowSettings.termsOfServiceURL = self.termsOfServiceURLToSet;
+            self.termsOfServiceURLToSet = nil;
+        }
+    }
+
+    // New terms and privacy policy flow
+    if ( self.termsAndPrivacyPolicyFlowEnabledToSet )
+    {
+        settings.termsAndPrivacyPolicyFlowSettings.enabled = self.termsAndPrivacyPolicyFlowEnabledToSet.boolValue;
+        self.termsAndPrivacyPolicyFlowEnabledToSet = nil;
+
+        if ( self.privacyPolicyURLToSet )
+        {
+            settings.termsAndPrivacyPolicyFlowSettings.privacyPolicyURL = self.privacyPolicyURLToSet;
+            self.privacyPolicyURLToSet = nil;
+        }
+
+        if ( self.termsOfServiceURLToSet )
+        {
+            settings.termsAndPrivacyPolicyFlowSettings.termsOfServiceURL = self.termsOfServiceURLToSet;
+            self.termsOfServiceURLToSet = nil;
+        }
+
+        if ( self.debugUserGeographyToSet )
+        {
+            settings.termsAndPrivacyPolicyFlowSettings.debugUserGeography = [self toAppLovinConsentFlowUserGeography: self.debugUserGeographyToSet];
+            self.debugUserGeographyToSet = nil;
+        }
+    }
+
+    // Set test device ids if needed
+    if ( self.testDeviceIdentifiersToSet )
+    {
+        settings.testDeviceAdvertisingIdentifiers = self.testDeviceIdentifiersToSet;
+        self.testDeviceIdentifiersToSet = nil;
+    }
     
-    self.consentFlowEnabledToSet = nil;
-    self.privacyPolicyURLToSet = nil;
-    self.termsOfServiceURLToSet = nil;
+    // Set verbose logging state if needed
+    if ( self.verboseLoggingToSet )
+    {
+        settings.verboseLoggingEnabled = self.verboseLoggingToSet.boolValue;
+        self.verboseLoggingToSet = nil;
+    }
     
+    // Set creative debugger enabled if needed.
+    if ( self.creativeDebuggerEnabledToSet )
+    {
+        settings.creativeDebuggerEnabled = self.creativeDebuggerEnabledToSet.boolValue;
+        self.creativeDebuggerEnabledToSet = nil;
+    }
+    
+    // Set location collection enabled if needed
+    if ( self.locationCollectionEnabledToSet )
+    {
+        settings.locationCollectionEnabled = self.locationCollectionEnabledToSet.boolValue;
+        self.locationCollectionEnabledToSet = nil;
+    }
+    
+    [self setPendingExtraParametersIfNeeded: settings];
+
     // Initialize SDK
     self.sdk = [ALSdk sharedWithKey: sdkKey settings: settings];
     [self.sdk setPluginVersion: [@"React-Native-" stringByAppendingString: pluginVersion]];
@@ -236,34 +317,6 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     {
         self.sdk.userIdentifier = self.userIdentifierToSet;
         self.userIdentifierToSet = nil;
-    }
-    
-    // Set test device ids if needed
-    if ( self.testDeviceIdentifiersToSet )
-    {
-        self.sdk.settings.testDeviceAdvertisingIdentifiers = self.testDeviceIdentifiersToSet;
-        self.testDeviceIdentifiersToSet = nil;
-    }
-    
-    // Set verbose logging state if needed
-    if ( self.verboseLoggingToSet )
-    {
-        self.sdk.settings.verboseLoggingEnabled = self.verboseLoggingToSet.boolValue;
-        self.verboseLoggingToSet = nil;
-    }
-    
-    // Set creative debugger enabled if needed.
-    if ( self.creativeDebuggerEnabledToSet )
-    {
-        self.sdk.settings.creativeDebuggerEnabled = self.creativeDebuggerEnabledToSet.boolValue;
-        self.creativeDebuggerEnabledToSet = nil;
-    }
-    
-    // Set location collection enabled if needed
-    if ( self.locationCollectionEnabledToSet )
-    {
-        self.sdk.settings.locationCollectionEnabled = self.locationCollectionEnabledToSet.boolValue;
-        self.locationCollectionEnabledToSet = nil;
     }
     
     if ( self.targetingYearOfBirthToSet )
@@ -308,8 +361,6 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         self.targetingInterestsToSet = nil;
     }
     
-    [self setPendingExtraParametersIfNeeded: self.sdk.settings];
-    
     [self.sdk initializeSdkWithCompletionHandler:^(ALSdkConfiguration *configuration) {
         
         [self log: @"SDK initialized"];
@@ -317,7 +368,10 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         self.sdkConfiguration = configuration;
         self.sdkInitialized = YES;
         
-        resolve(@{@"countryCode" : self.sdk.configuration.countryCode});
+        resolve(@{@"countryCode" : self.sdk.configuration.countryCode,
+                  @"appTrackingStatus" : [self fromAppLovinAppTrackingStatus: self.sdk.configuration.appTrackingTransparencyStatus],
+                  @"consentFlowUserGeography" : [self fromAppLovinConsentFlowUserGeography: self.sdk.configuration.consentFlowUserGeography],
+                  @"isTestModeEnabled" : @(self.sdk.configuration.isTestModeEnabled)});
     }];
 }
 
@@ -458,17 +512,31 @@ RCT_EXPORT_METHOD(setInitializationAdUnitIds:(NSArray<NSString *> *)adUnitIds)
     self.initializationAdUnitIdentifiersToSet = adUnitIds;
 }
 
+#pragma mark - MAX Terms and Privacy Policy Flow
+
 RCT_EXPORT_METHOD(setConsentFlowEnabled:(BOOL)enabled)
 {
     self.consentFlowEnabledToSet = @(enabled);
 }
+
+RCT_EXPORT_METHOD(setTermsAndPrivacyPolicyFlowEnabled:(BOOL)enabled)
+{
+    self.termsAndPrivacyPolicyFlowEnabledToSet = @(enabled);
+}
+
 RCT_EXPORT_METHOD(setPrivacyPolicyUrl:(NSString *)urlString)
 {
     self.privacyPolicyURLToSet = [NSURL URLWithString: urlString];
 }
+
 RCT_EXPORT_METHOD(setTermsOfServiceUrl:(NSString *)urlString)
 {
     self.termsOfServiceURLToSet = [NSURL URLWithString: urlString];
+}
+
+RCT_EXPORT_METHOD(setConsentFlowDebugUserGeography:(NSString *)userGeography)
+{
+    self.debugUserGeographyToSet = userGeography;
 }
 
 #pragma mark - Data Passing
@@ -1980,6 +2048,56 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
     }
     
     return ALAdContentRatingNone;
+}
+
+- (ALConsentFlowUserGeography)toAppLovinConsentFlowUserGeography:(NSString *)userGeography
+{
+    if ( [USER_GEOGRAPHY_GDPR al_isEqualToStringIgnoringCase: userGeography] )
+    {
+        return ALConsentFlowUserGeographyGDPR;
+    }
+    else if ( [USER_GEOGRAPHY_OTHER al_isEqualToStringIgnoringCase: userGeography] )
+    {
+        return ALConsentFlowUserGeographyOther;
+    }
+
+    return ALConsentFlowUserGeographyUnknown;
+}
+
+- (NSString *)fromAppLovinConsentFlowUserGeography:(ALConsentFlowUserGeography)userGeography
+{
+    if ( ALConsentFlowUserGeographyGDPR == userGeography )
+    {
+        return USER_GEOGRAPHY_GDPR;
+    }
+    else if ( ALConsentFlowUserGeographyOther == userGeography )
+    {
+        return USER_GEOGRAPHY_OTHER;
+    }
+
+    return USER_GEOGRAPHY_UNKNOWN;
+}
+
+- (NSString *)fromAppLovinAppTrackingStatus:(ALAppTrackingTransparencyStatus)status
+{
+    if ( ALAppTrackingTransparencyStatusNotDetermined == status )
+    {
+        return APP_TRACKING_STATUS_NOTDETERMINED;
+    }
+    else if ( ALAppTrackingTransparencyStatusRestricted == status )
+    {
+        return APP_TRACKING_STATUS_RESTRICTED;
+    }
+    else if ( ALAppTrackingTransparencyStatusDenied == status )
+    {
+        return APP_TRACKING_STATUS_DENIED;
+    }
+    else if ( ALAppTrackingTransparencyStatusAuthorized == status )
+    {
+        return APP_TRACKING_STATUS_AUTHORIZED;
+    }
+
+    return APP_TRACKING_STATUS_UNAVAILABLE;
 }
 
 #pragma mark - Ad Info

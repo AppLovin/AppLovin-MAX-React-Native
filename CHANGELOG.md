@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+* Add support for Terms and Privacy Policy Flow. For more info, check out our [docs](https://dash.applovin.com/documentation/mediation/react-native/getting-started/terms-and-privacy-policy-flow).
 * Add APIs for Selective Init. For more info, check out our [docs](https://dash.applovin.com/documentation/mediation/react-native/getting-started/advanced-settings#selective-init).
 * Fix TypeScript compilation errors. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/271)
 ## 6.0.2
