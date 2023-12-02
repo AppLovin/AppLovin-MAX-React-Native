@@ -72,10 +72,10 @@ export const TargetingData: TargetingDataType = {
      */
     set gender(value: UserGender | Promise<UserGender>) {
         if (
-            value === UserGender.Unknown ||
-            value === UserGender.Female ||
-            value === UserGender.Male ||
-            value === UserGender.Other
+            value === UserGender.UNKNOWN ||
+            value === UserGender.FEMALE ||
+            value === UserGender.MALE ||
+            value === UserGender.OTHER
         ) {
             nativeMethods.setTargetingDataGender(value);
         } else {
@@ -99,10 +99,10 @@ export const TargetingData: TargetingDataType = {
      */
     set maximumAdContentRating(value: AdContentRating | Promise<AdContentRating>) {
         if (
-            value === AdContentRating.None ||
-            value === AdContentRating.AllAudiences ||
-            value === AdContentRating.EveryoneOverTwelve ||
-            value === AdContentRating.MatureAudiences
+            value === AdContentRating.NONE ||
+            value === AdContentRating.ALL_AUDIENCES ||
+            value === AdContentRating.EVERYONE_OVER_TWELVE ||
+            value === AdContentRating.MATURE_AUDIENCES
         ) {
             nativeMethods.setTargetingDataMaximumAdContentRating(value);
         } else {
