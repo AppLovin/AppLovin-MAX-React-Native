@@ -27,20 +27,20 @@ const nativeMethods: NativeTargetingDataType = AppLovinMAX;
  * This enumeration represents content ratings for the ads shown to users.
  */
 export enum AdContentRating {
-    None = 0,
-    AllAudiences = 1,
-    EveryoneOverTwelve = 2,
-    MatureAudiences = 3,
+    NONE = 0,
+    ALL_AUDIENCES = 1,
+    EVERYONE_OVER_TWELVE = 2,
+    MATURE_AUDIENCES = 3,
 }
 
 /**
  * This enumeration represents gender.
  */
 export enum UserGender {
-    Unknown = 'U',
-    Female = 'F',
-    Male = 'M',
-    Other = 'O',
+    UNKNOWN = 'U',
+    FEMALE = 'F',
+    MALE = 'M',
+    OTHER = 'O',
 }
 
 /**
@@ -72,10 +72,10 @@ export const TargetingData: TargetingDataType = {
      */
     set gender(value: UserGender | Promise<UserGender>) {
         if (
-            value === UserGender.Unknown ||
-            value === UserGender.Female ||
-            value === UserGender.Male ||
-            value === UserGender.Other
+            value === UserGender.UNKNOWN ||
+            value === UserGender.FEMALE ||
+            value === UserGender.MALE ||
+            value === UserGender.OTHER
         ) {
             nativeMethods.setTargetingDataGender(value);
         } else {
@@ -99,10 +99,10 @@ export const TargetingData: TargetingDataType = {
      */
     set maximumAdContentRating(value: AdContentRating | Promise<AdContentRating>) {
         if (
-            value === AdContentRating.None ||
-            value === AdContentRating.AllAudiences ||
-            value === AdContentRating.EveryoneOverTwelve ||
-            value === AdContentRating.MatureAudiences
+            value === AdContentRating.NONE ||
+            value === AdContentRating.ALL_AUDIENCES ||
+            value === AdContentRating.EVERYONE_OVER_TWELVE ||
+            value === AdContentRating.MATURE_AUDIENCES
         ) {
             nativeMethods.setTargetingDataMaximumAdContentRating(value);
         } else {

@@ -195,7 +195,8 @@ export const AdView = ({
     useEffect(() => {
         if (!isInitialized) return;
         const [width, height] = getOutlineViewSize(style);
-        // @ts-expect-error: width and height should be of type DimensionValue in react-native 0.72.0 and above
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore: width and height should be of type DimensionValue in react-native 0.72.0 and above
         sizeAdViewDimensions(adFormat, adaptiveBannerEnabled, width, height).then((value: Record<string, number>) => {
             setDimensions(value);
         });

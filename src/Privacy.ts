@@ -38,7 +38,7 @@ export enum AppTrackingStatus {
      * The user has not yet received an authorization request to authorize access to app-related
      * data that can be used for tracking the user or the device.
      */
-    NOTDETERMINED = 'N',
+    NOT_DETERMINED = 'N',
 
     /**
      * Authorization to access app-related data that can be used for tracking the user or the device
