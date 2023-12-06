@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 6.1.1
 * Depend on Android SDK 12.1.0 and iOS SDK 12.1.0.
 ## 6.1.0
 * Fix inconsistent naming for enum fields.
