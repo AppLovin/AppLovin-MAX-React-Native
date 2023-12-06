@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Depend on Android SDK 12.1.0 and iOS SDK 12.1.0.
 ## 6.1.0
 * Fix inconsistent naming for enum fields.
 * Add support for Terms and Privacy Policy Flow. For more info, check out our [docs](https://dash.applovin.com/documentation/mediation/react-native/getting-started/terms-and-privacy-policy-flow).
