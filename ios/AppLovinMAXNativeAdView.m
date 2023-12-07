@@ -31,6 +31,7 @@
 @property (nonatomic, strong, nullable) MANativeAdLoader *adLoader;
 @property (nonatomic, strong, nullable) MAAd *nativeAd;
 @property (nonatomic, strong) ALAtomicBoolean *isLoading; // Guard against repeated ad loads
+@property (nonatomic, strong) ALAtomicBoolean *isAdUnitIdSet;
 
 // JavaScript properties
 @property (nonatomic, copy) NSString *adUnitId;
@@ -59,6 +60,7 @@
     {
         self.bridge = bridge;
         self.isLoading = [[ALAtomicBoolean alloc] init];
+        self.isAdUnitIdSet = [[ALAtomicBoolean alloc] init];
         self.clickableViews = [NSMutableArray array];
     }
     return self;
@@ -95,10 +97,7 @@
     
     _adUnitId = adUnitId;
     
-    // Explicitly invoke ad load now that Ad Unit ID is set, but do so after 0.25s to allow other props to set
-    dispatchOnMainQueueAfter(0.25, ^{
-        [self loadAd];
-    });
+    [self.isAdUnitIdSet set: YES];
 }
 
 // Called when Ad Unit ID is set, and via RN layer
@@ -267,6 +266,26 @@
     [self.nativeAd.nativeAd.mediaView al_pinToSuperview];
 }
 
+/**
+ * Invoked:
+ * 1. after all the JavaScript properties are set when mounting NativeAdView
+ * 2. after all the user's asset views are mounted, following the 1st event
+ */
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
+{
+    if ( [self.isAdUnitIdSet compareAndSet:YES update: NO] )
+    {
+        [self loadAd];
+    }
+    else
+    {
+        if ( !self.adLoader ) return;     
+
+        [self.adLoader registerClickableViews: self.clickableViews withContainer: self forAd: self.nativeAd];
+        [self.adLoader handleNativeAdViewRenderedForAd: self.nativeAd];
+    }
+}
+
 #pragma mark - Ad Loader Delegate
 
 - (void)didLoadNativeAd:(nullable MANativeAdView *)nativeAdView forAd:(MAAd *)ad
@@ -291,14 +310,7 @@
     // Notify `AppLovinNativeAdView.js`
     [self sendAdLoadedReactNativeEventForAd: ad.nativeAd];
     
-    // After notifying the RN layer - have slight delay to let views bind to this layer in `clickableViews` before registering
-    dispatchOnMainQueueAfter(0.5, ^{
-        
-        [self.adLoader registerClickableViews: self.clickableViews withContainer: self forAd: ad];
-        [self.adLoader handleNativeAdViewRenderedForAd: ad];
-        
-        [self.isLoading set: NO];
-    });
+    [self.isLoading set: NO];
 }
 
 - (void)sendAdLoadedReactNativeEventForAd:(MANativeAd *)ad

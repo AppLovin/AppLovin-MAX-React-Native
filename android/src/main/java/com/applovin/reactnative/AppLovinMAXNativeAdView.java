@@ -1,6 +1,8 @@
 package com.applovin.reactnative;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,8 +31,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.Nullable;
 
-import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThreadDelayed;
-
 public class AppLovinMAXNativeAdView
         extends ReactViewGroup
         implements MaxAdRevenueListener, View.OnLayoutChangeListener, ViewGroup.OnHierarchyChangeListener
@@ -42,12 +42,15 @@ public class AppLovinMAXNativeAdView
     private static final int CALL_TO_ACTION_VIEW_TAG  = 5;
     private static final int ADVERTISER_VIEW_TAG      = 8;
 
-    private final ReactContext      reactContext;
+    private final ReactContext       reactContext;
     @Nullable
-    private       MaxNativeAdLoader adLoader;
+    private       MaxNativeAdLoader  adLoader;
     @Nullable
-    private       MaxAd             nativeAd;
-    private final AtomicBoolean     isLoading = new AtomicBoolean(); // Guard against repeated ad loads
+    private       MaxAd              nativeAd;
+    private final AtomicBoolean      isLoading             = new AtomicBoolean(); // Guard against repeated ad loads
+    private final AtomicBoolean      isAdUnitIdSet         = new AtomicBoolean();
+    private final Handler            renderNativeAdHandler = new Handler( Looper.getMainLooper() );
+    private final RenderNativeAdTask renderNativeAdTask    = new RenderNativeAdTask( this );
 
     @Nullable
     private View mediaView;
@@ -91,8 +94,7 @@ public class AppLovinMAXNativeAdView
 
         adUnitId = value;
 
-        // Explicitly invoke ad load now that Ad Unit ID is set, but do so after 0.25s to allow other props to set
-        postDelayed( this::loadAd, 250 );
+        isAdUnitIdSet.set( true );
     }
 
     public void setPlacement(@Nullable final String value)
@@ -197,25 +199,7 @@ public class AppLovinMAXNativeAdView
             // Notify `AppLovinNativeAdView.js`
             sendAdLoadedReactNativeEventForAd( ad.getNativeAd() );
 
-            // After notifying the RN layer - have slight delay to let views bind to this layer in `clickableViews` before registering
-            runOnUiThreadDelayed( () -> {
-
-                // Loader can be null when the user hides before the properties are fully set
-                if ( adLoader != null )
-                {
-                    adLoader.a( clickableViews, AppLovinMAXNativeAdView.this, ad );
-                    adLoader.b( ad );
-                }
-
-                // Reassure the size of `mediaView` and its children for the networks, such as
-                // LINE, where the actual ad contents are loaded after `mediaView` is sized.
-                if ( mediaView != null && mediaView.getParent() != null )
-                {
-                    sizeToFit( mediaView, (View) mediaView.getParent() );
-                }
-
-                isLoading.set( false );
-            }, 500L );
+            isLoading.set( false );
         }
 
         @Override
@@ -418,6 +402,48 @@ public class AppLovinMAXNativeAdView
         if ( mediaView instanceof ViewGroup )
         {
             ( (ViewGroup) mediaView ).setOnHierarchyChangeListener( this );
+        }
+    }
+
+    static class RenderNativeAdTask
+            implements Runnable
+    {
+        private AppLovinMAXNativeAdView nativeAdView;
+
+        RenderNativeAdTask(AppLovinMAXNativeAdView nativeAdView) { this.nativeAdView = nativeAdView; }
+
+        @Override
+        public void run()
+        {
+            if ( nativeAdView.adLoader == null ) return;
+
+            nativeAdView.adLoader.a( nativeAdView.clickableViews, nativeAdView, nativeAdView.nativeAd );
+            nativeAdView.adLoader.b( nativeAdView.nativeAd );
+
+            // LINE needs to be sized a while after its mediaView is attached to the React Native
+            if ( nativeAdView.mediaView != null && nativeAdView.mediaView.getParent() != null )
+            {
+                nativeAdView.renderNativeAdHandler.postDelayed( () -> sizeToFit( nativeAdView.mediaView, (View) nativeAdView.mediaView.getParent() ), 500 );
+            }
+        }
+    }
+
+    /**
+     * Invoked via ViewManager.onAfterUpdateTransaction():
+     * 1. after all the JavaScript properties are set when mounting NativeAdView
+     * 2. every time one of the asset views is mounted, following the 1st event
+     */
+    public void onSetProps()
+    {
+        if ( isAdUnitIdSet.compareAndSet( true, false ) )
+        {
+            loadAd();
+        }
+        else
+        {
+            // Renders the ad only after the last asset view is set
+            renderNativeAdHandler.removeCallbacksAndMessages( null );
+            renderNativeAdHandler.postDelayed( renderNativeAdTask, 1 );
         }
     }
 
