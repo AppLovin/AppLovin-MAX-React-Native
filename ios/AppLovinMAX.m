@@ -39,6 +39,7 @@
 // Store these values if pub attempts to set it before initializing
 @property (nonatomic, strong, nullable) NSArray<NSString *> *initializationAdUnitIdentifiersToSet;
 @property (nonatomic,   copy, nullable) NSString *userIdentifierToSet;
+@property (nonatomic, strong, nullable) NSNumber *mutedToSet;
 @property (nonatomic, strong, nullable) NSArray<NSString *> *testDeviceIdentifiersToSet;
 @property (nonatomic, strong, nullable) NSNumber *verboseLoggingToSet;
 @property (nonatomic, strong, nullable) NSNumber *creativeDebuggerEnabledToSet;
@@ -277,6 +278,13 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         }
     }
 
+    // Set muted if needed
+    if ( self.mutedToSet )
+    {
+        settings.muted = self.mutedToSet;
+        self.mutedToSet = nil;
+    }
+
     // Set test device ids if needed
     if ( self.testDeviceIdentifiersToSet )
     {
@@ -438,9 +446,15 @@ RCT_EXPORT_METHOD(setUserId:(NSString *)userId)
 
 RCT_EXPORT_METHOD(setMuted:(BOOL)muted)
 {
-    if ( ![self isPluginInitialized] ) return;
-    
-    self.sdk.settings.muted = muted;
+    if ( [self isPluginInitialized] )
+    {
+        self.sdk.settings.muted = muted;
+        self.mutedToSet = nil;
+    }
+    else
+    {
+        self.mutedToSet = @(muted);
+    }
 }
 
 RCT_EXPORT_METHOD(isMuted:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
