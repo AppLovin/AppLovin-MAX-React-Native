@@ -1,7 +1,7 @@
 ## Versions
 
 ## x.x.x
-* Allow calling `setMuted()` before SDK is initialized.
+* Allow calls to `AppLovinMAX.setMuted(...)` before SDK is initialized.
 * Improve loading time for native ads. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/273)
 * Depend on Android SDK 12.1.0 and iOS SDK 12.1.0.
 ## 6.1.0
