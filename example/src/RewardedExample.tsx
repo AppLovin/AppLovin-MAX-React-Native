@@ -3,6 +3,8 @@ import { RewardedAd } from '../../src/index';
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from '../../src/index';
 import AppButton from './components/AppButton';
 
+const MAX_EXPONENTIAL_RETRY_COUNT = 6;
+
 enum AdLoadState {
     notLoaded = 'NOT_LOADED',
     loading = 'LOADING',
@@ -37,15 +39,21 @@ const RewardedExample = ({ adUnitId, isInitialized, log }: Props) => {
         RewardedAd.addAdLoadFailedEventListener((errorInfo: AdLoadFailedInfo) => {
             setAdLoadState(AdLoadState.notLoaded);
 
+            if (retryAttempt.current > MAX_EXPONENTIAL_RETRY_COUNT) {
+                log('Rewarded ad failed to load with code ' + errorInfo.code);
+                return;
+            }
+
             // Rewarded ad failed to load
             // We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds)
             retryAttempt.current += 1;
 
-            const retryDelay = Math.pow(2, Math.min(6, retryAttempt.current));
+            const retryDelay = Math.pow(2, Math.min(MAX_EXPONENTIAL_RETRY_COUNT, retryAttempt.current));
             log('Rewarded ad failed to load with code ' + errorInfo.code + ' - retrying in ' + retryDelay + 's');
 
             setTimeout(() => {
                 setAdLoadState(AdLoadState.loading);
+                log('Rewarded ad retrying to load...');
                 RewardedAd.loadAd(adUnitId);
             }, retryDelay * 1000);
         });
