@@ -3,6 +3,8 @@ import { InterstitialAd } from '../../src/index';
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from '../../src/index';
 import AppButton from './components/AppButton';
 
+const MAX_EXPONENTIAL_RETRY_COUNT = 6;
+
 enum AdLoadState {
     notLoaded = 'NOT_LOADED',
     loading = 'LOADING',
@@ -37,15 +39,21 @@ const InterExample = ({ adUnitId, isInitialized, log }: Props) => {
         InterstitialAd.addAdLoadFailedEventListener((errorInfo: AdLoadFailedInfo) => {
             setAdLoadState(AdLoadState.notLoaded);
 
+            if (retryAttempt.current > MAX_EXPONENTIAL_RETRY_COUNT) {
+                log('Interstitial ad failed to load with code ' + errorInfo.code);
+                return;
+            }
+
             // Interstitial ad failed to load
             // We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds)
             retryAttempt.current += 1;
 
-            const retryDelay = Math.pow(2, Math.min(6, retryAttempt.current));
+            const retryDelay = Math.pow(2, Math.min(MAX_EXPONENTIAL_RETRY_COUNT, retryAttempt.current));
             log('Interstitial ad failed to load with code ' + errorInfo.code + ' - retrying in ' + retryDelay + 's');
 
             setTimeout(() => {
                 setAdLoadState(AdLoadState.loading);
+                log('Interstitial ad retrying to load...');
                 InterstitialAd.loadAd(adUnitId);
             }, retryDelay * 1000);
         });
