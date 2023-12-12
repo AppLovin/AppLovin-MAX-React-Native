@@ -1081,11 +1081,8 @@ RCT_EXPORT_METHOD(setInterstitialExtraParameter:(NSString *)adUnitIdentifier :(N
     [interstitial setExtraParameterForKey: key value: value];
 }
 
-RCT_EXPORT_METHOD(setInterstitialLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)parameterDict)
+RCT_EXPORT_METHOD(setInterstitialLocalExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable id)value)
 {
-    NSString *key = parameterDict.allKeys.firstObject;
-    id value = parameterDict.allValues.firstObject;
-    
     MAInterstitialAd *interstitial = [self retrieveInterstitialForAdUnitIdentifier: adUnitIdentifier];
     [interstitial setLocalExtraParameterForKey: key value: value];
 }

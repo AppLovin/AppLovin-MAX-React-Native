@@ -33,7 +33,7 @@ const setExtraParameter = (adUnitId: string, key: string, value: string | null):
 };
 
 const setLocalExtraParameter = (adUnitId: string, key: string, value: LocalExtraParameterValue): void => {
-    AppLovinMAX.setInterstitialLocalExtraParameter(adUnitId, { [key]: value });
+    AppLovinMAX.setInterstitialLocalExtraParameter(adUnitId, key, value);
 };
 
 const addAdLoadedEventListener = (listener: (adInfo: AdInfo) => void) => {
