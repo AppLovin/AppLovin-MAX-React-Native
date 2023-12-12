@@ -1318,7 +1318,7 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod
-    public void setInterstitialLocalExtraParameter(final String adUnitId, final ReadableMap parameterMap)
+    public void setInterstitialLocalExtraParameter(final String adUnitId, final String key, final Object value)
     {
         if ( sdk == null )
         {
@@ -1329,8 +1329,7 @@ public class AppLovinMAXModule
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId, "setInterstitialLocalExtraParameter" );
         if ( interstitial == null ) return;
 
-        Map.Entry<String, Object> entry = parameterMap.getEntryIterator().next();
-        interstitial.setLocalExtraParameter( entry.getKey(), entry.getValue() );
+        interstitial.setLocalExtraParameter( key, value );
     }
 
     // REWARDED
