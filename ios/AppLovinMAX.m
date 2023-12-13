@@ -848,10 +848,11 @@ RCT_EXPORT_METHOD(setBannerExtraParameter:(NSString *)adUnitIdentifier :(NSStrin
     [self setAdViewExtraParameterForAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT key: key value: value];
 }
 
+// NOTE: Even though iOS is ok with `id` generic types, Android is not - so we wrap it via JSON/ReadableMap
 RCT_EXPORT_METHOD(setBannerLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)parameterDict)
 {    
     NSString *key = parameterDict.allKeys.firstObject;
-    id value = parameterDict.allValues.firstObject;
+    id value = parameterDict.allValues.firstObject != [NSNull null] ? parameterDict.allValues.firstObject : nil;
     
     [self setAdViewLocalExtraParameterForAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT key: key value: value];
 }
@@ -967,10 +968,11 @@ RCT_EXPORT_METHOD(setMRecExtraParameter:(NSString *)adUnitIdentifier :(NSString 
     [self setAdViewExtraParameterForAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec key: key value: value];
 }
 
+// NOTE: Even though iOS is ok with `id` generic types, Android is not - so we wrap it via JSON/ReadableMap
 RCT_EXPORT_METHOD(setMRecLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)parameterDict)
 {
     NSString *key = parameterDict.allKeys.firstObject;
-    id value = parameterDict.allValues.firstObject;
+    id value = parameterDict.allValues.firstObject != [NSNull null] ? parameterDict.allValues.firstObject : nil;
     
     [self setAdViewLocalExtraParameterForAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec key: key value: value];
 }
@@ -1081,10 +1083,11 @@ RCT_EXPORT_METHOD(setInterstitialExtraParameter:(NSString *)adUnitIdentifier :(N
     [interstitial setExtraParameterForKey: key value: value];
 }
 
+// NOTE: Even though iOS is ok with `id` generic types, Android is not - so we wrap it via JSON/ReadableMap
 RCT_EXPORT_METHOD(setInterstitialLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)parameterDict)
 {
     NSString *key = parameterDict.allKeys.firstObject;
-    id value = parameterDict.allValues.firstObject;
+    id value = parameterDict.allValues.firstObject != [NSNull null] ? parameterDict.allValues.firstObject : nil;
     
     MAInterstitialAd *interstitial = [self retrieveInterstitialForAdUnitIdentifier: adUnitIdentifier];
     [interstitial setLocalExtraParameterForKey: key value: value];
@@ -1141,10 +1144,11 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
     [rewardedAd setExtraParameterForKey: key value: value];
 }
 
+// NOTE: Even though iOS is ok with `id` generic types, Android is not - so we wrap it via JSON/ReadableMap
 RCT_EXPORT_METHOD(setRewardedAdLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)parameterDict)
 {
     NSString *key = parameterDict.allKeys.firstObject;
-    id value = parameterDict.allValues.firstObject;
+    id value = parameterDict.allValues.firstObject != [NSNull null] ? parameterDict.allValues.firstObject : nil;
     
     MARewardedAd *rewardedAd = [self retrieveRewardedAdForAdUnitIdentifier: adUnitIdentifier];
     [rewardedAd setLocalExtraParameterForKey: key value: value];
@@ -1201,10 +1205,11 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
     [appOpenAd setExtraParameterForKey: key value: value];
 }
 
+// NOTE: Even though iOS is ok with `id` generic types, Android is not - so we wrap it via JSON/ReadableMap
 RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)parameterDict)
 {
     NSString *key = parameterDict.allKeys.firstObject;
-    id value = parameterDict.allValues.firstObject;
+    id value = parameterDict.allValues.firstObject != [NSNull null] ? parameterDict.allValues.firstObject : nil;
     
     MAAppOpenAd *appOpenAd = [self retrieveAppOpenAdForAdUnitIdentifier: adUnitIdentifier];
     [appOpenAd setLocalExtraParameterForKey: key value: value];

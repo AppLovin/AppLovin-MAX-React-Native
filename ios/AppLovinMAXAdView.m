@@ -176,7 +176,8 @@
         
         for ( NSString *key in self.localExtraParameters )
         {
-            [self.adView setLocalExtraParameterForKey: key value: self.localExtraParameters[key]];
+            id value = self.localExtraParameters[key];
+            [self.adView setLocalExtraParameterForKey: key value: (value != [NSNull null] ? value : nil)];
         }
         
         if ( [self isAutoRefresh] )
