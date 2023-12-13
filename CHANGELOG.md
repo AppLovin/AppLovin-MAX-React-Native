@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Update iOS to pass `nil` to `setLocalExtraParameter(...)` instead of `NSNull`.
 ## 6.1.1
 * Allow calls to `AppLovinMAX.setMuted(...)` before SDK is initialized.
 * Improve loading time for native ads. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/273)

@@ -123,7 +123,8 @@
         
         for ( NSString *key in self.localExtraParameters )
         {
-            [self.adLoader setLocalExtraParameterForKey: key value: self.localExtraParameters[key]];
+            id value = self.localExtraParameters[key];
+            [self.adLoader setLocalExtraParameterForKey: key value: (value != [NSNull null] ? value : nil)];
         }
         
         [self.adLoader loadAd];
