@@ -226,65 +226,65 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     }
     
     ALSdkSettings *settings = [[ALSdkSettings alloc] init];
-
+    
     // Selective init
     if ( self.initializationAdUnitIdentifiersToSet )
     {
         settings.initializationAdUnitIdentifiers = self.initializationAdUnitIdentifiersToSet;
         self.initializationAdUnitIdentifiersToSet = nil;
     }
-
+    
     // Deprecated consent flow which automatically moves to the new flow
     if ( self.consentFlowEnabledToSet )
     {
         settings.consentFlowSettings.enabled = self.consentFlowEnabledToSet.boolValue;
         self.consentFlowEnabledToSet = nil;
-
+        
         if ( self.privacyPolicyURLToSet )
         {
             settings.consentFlowSettings.privacyPolicyURL = self.privacyPolicyURLToSet;
             self.privacyPolicyURLToSet = nil;
         }
-
+        
         if (self.termsOfServiceURLToSet )
         {
             settings.consentFlowSettings.termsOfServiceURL = self.termsOfServiceURLToSet;
             self.termsOfServiceURLToSet = nil;
         }
     }
-
+    
     // New terms and privacy policy flow
     if ( self.termsAndPrivacyPolicyFlowEnabledToSet )
     {
         settings.termsAndPrivacyPolicyFlowSettings.enabled = self.termsAndPrivacyPolicyFlowEnabledToSet.boolValue;
         self.termsAndPrivacyPolicyFlowEnabledToSet = nil;
-
+        
         if ( self.privacyPolicyURLToSet )
         {
             settings.termsAndPrivacyPolicyFlowSettings.privacyPolicyURL = self.privacyPolicyURLToSet;
             self.privacyPolicyURLToSet = nil;
         }
-
+        
         if ( self.termsOfServiceURLToSet )
         {
             settings.termsAndPrivacyPolicyFlowSettings.termsOfServiceURL = self.termsOfServiceURLToSet;
             self.termsOfServiceURLToSet = nil;
         }
-
+        
         if ( self.debugUserGeographyToSet )
         {
             settings.termsAndPrivacyPolicyFlowSettings.debugUserGeography = [self toAppLovinConsentFlowUserGeography: self.debugUserGeographyToSet];
             self.debugUserGeographyToSet = nil;
         }
     }
-
+    
     // Set muted if needed
     if ( self.mutedToSet )
     {
         settings.muted = self.mutedToSet;
         self.mutedToSet = nil;
     }
-
+    
     // Set test device ids if needed
     if ( self.testDeviceIdentifiersToSet )
     {
@@ -314,7 +314,7 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     }
     
     [self setPendingExtraParametersIfNeeded: settings];
-
+    
     // Initialize SDK
     self.sdk = [ALSdk sharedWithKey: sdkKey settings: settings];
     [self.sdk setPluginVersion: [@"React-Native-" stringByAppendingString: pluginVersion]];
@@ -850,7 +850,7 @@ RCT_EXPORT_METHOD(setBannerExtraParameter:(NSString *)adUnitIdentifier :(NSStrin
 
 // NOTE: Even though iOS is ok with `id` generic types, Android is not - so we wrap it via JSON/ReadableMap
 RCT_EXPORT_METHOD(setBannerLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)parameterDict)
-{    
+{
     NSString *key = parameterDict.allKeys.firstObject;
     id value = parameterDict.allValues.firstObject != [NSNull null] ? parameterDict.allValues.firstObject : nil;
     
@@ -964,7 +964,7 @@ RCT_EXPORT_METHOD(updateMRecPosition:(NSString *)mrecPosition :(NSString *)adUni
 }
 
 RCT_EXPORT_METHOD(setMRecExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
-{   
+{
     [self setAdViewExtraParameterForAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec key: key value: value];
 }
 
@@ -2079,7 +2079,7 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
     {
         return ALConsentFlowUserGeographyOther;
     }
-
+    
     return ALConsentFlowUserGeographyUnknown;
 }
 
@@ -2093,7 +2093,7 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
     {
         return USER_GEOGRAPHY_OTHER;
     }
-
+    
     return USER_GEOGRAPHY_UNKNOWN;
 }
 
@@ -2115,7 +2115,7 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
     {
         return APP_TRACKING_STATUS_AUTHORIZED;
     }
-
+    
     return APP_TRACKING_STATUS_UNAVAILABLE;
 }
 
@@ -2226,6 +2226,69 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
     networkResponseDict[@"latencyMillis"] = @(latencySeconds);
     
     return networkResponseDict;
+}
+
+#pragma mark - Amazon
+
+- (void)setAmazonResult:(id)result forBannerAdUnitIdentifier:(NSString *)adUnitIdentifier
+{
+    [self setAmazonResult: result forAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.banner];
+}
+
+- (void)setAmazonResult:(id)result forMRecAdUnitIdentifier:(NSString *)adUnitIdentifier
+{
+    [self setAmazonResult: result forAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
+}
+
+- (void)setAmazonResult:(id)result forInterstitialAdUnitIdentifier:(NSString *)adUnitIdentifier
+{
+    [self setAmazonResult: result forAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.interstitial];
+}
+
+- (void)setAmazonResult:(id /* DTBAdResponse or DTBAdErrorInfo */)result forAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat
+{
+    if ( ![self isValidToProceedForAdUnitIdentifier: adUnitIdentifier result: result] ) return;
+    
+    if ( adFormat == MAAdFormat.interstitial )
+    {
+        MAInterstitialAd *interstitial = [self retrieveInterstitialForAdUnitIdentifier: adUnitIdentifier];
+        [self setAmazonResult: result forAdObject: interstitial];
+    }
+    else
+    {
+        MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
+        [self setAmazonResult: result forAdObject: adView];
+    }
+}
+
+- (BOOL)isValidToProceedForAdUnitIdentifier:(NSString *)adUnitIdentifier result:(id)result
+{
+    if ( !self.sdk )
+    {
+        NSString *errorMessage = [NSString stringWithFormat: @"Failed to set Amazon result - SDK not initialized: %@", adUnitIdentifier];
+        [self logUninitializedAccessError: errorMessage];
+        return NO;
+    }
+    
+    if ( !result )
+    {
+        [self log: @"Failed to set Amazon result - nil value"];
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (void)setAmazonResult:(id /* DTBAdResponse or DTBAdErrorInfo */)result forAdObject:(id /* MAInterstitialAd or MAAdView */)adObject
+{
+    NSString *key = [self localExtraParameterKeyForAmazonResult: result];
+    [adObject setLocalExtraParameterForKey: key value: result];
+}
+
+- (NSString *)localExtraParameterKeyForAmazonResult:(id /* DTBAdResponse or DTBAdErrorInfo */)result
+{
+    NSString *className = NSStringFromClass([result class]);
+    return [@"DTBAdResponse" isEqualToString: className] ? @"amazon_ad_response" : @"amazon_ad_error";
 }
 
 #pragma mark - React Native Event Bridge
