@@ -2673,6 +2673,76 @@ public class AppLovinMAXModule
         return networkResponseObject;
     }
 
+    // Amazon
+
+    public void setAmazonBannerResult(final Object result, final String adUnitId)
+    {
+        setAmazonResult( result, adUnitId, MaxAdFormat.BANNER );
+    }
+
+    public void setAmazonMRecResult(final Object result, final String adUnitId)
+    {
+        setAmazonResult( result, adUnitId, MaxAdFormat.MREC );
+    }
+
+    public void setAmazonInterstitialResult(final Object result, final String adUnitId)
+    {
+        setAmazonResult( result, adUnitId, MaxAdFormat.INTERSTITIAL );
+    }
+
+    private void setAmazonResult(final Object result, final String adUnitId, final MaxAdFormat adFormat)
+    {
+        if ( !isValidToProceedForAdUnitId( adUnitId, result ) ) return;
+
+        if ( adFormat == MaxAdFormat.INTERSTITIAL )
+        {
+            MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId, "setAmazonResult" );
+            setAmazonResult( result, interstitial );
+        }
+        else
+        {
+            MaxAdView adView = retrieveAdView( adUnitId, adFormat );
+            setAmazonResult( result, adView );
+        }
+    }
+
+    private boolean isValidToProceedForAdUnitId(final String adUnitId, final Object result)
+    {
+        if ( sdk == null )
+        {
+            e( "Failed to set Amazon result - SDK not initialized: " + adUnitId );
+            return false;
+        }
+
+        if ( result == null )
+        {
+            e( "Failed to set Amazon result - null value" );
+            return false;
+        }
+
+        return true;
+    }
+
+    private void setAmazonResult(final Object /* DTBAdResponse or DTBAdErrorInfo */ result, final Object /* MAInterstitialAd or MAAdView */ adObject)
+    {
+        String key = localExtraParameterKeyForAmazonResult( result );
+
+        if ( adObject instanceof MaxInterstitialAd )
+        {
+            ( (MaxInterstitialAd) adObject ).setLocalExtraParameter( key, result );
+        }
+        else if ( adObject instanceof MaxAdView )
+        {
+            ( (MaxAdView) adObject ).setLocalExtraParameter( key, result );
+        }
+    }
+
+    private String localExtraParameterKeyForAmazonResult(final Object /* DTBAdResponse or DTBAdErrorInfo */ result)
+    {
+        String className = result.getClass().getSimpleName();
+        return "DTBAdResponse".equalsIgnoreCase( className ) ? "amazon_ad_response" : "amazon_ad_error";
+    }
+
     // Lifecycle Events
 
     @Override
