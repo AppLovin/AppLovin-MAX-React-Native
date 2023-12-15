@@ -2247,7 +2247,19 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
 
 - (void)setAmazonResult:(id /* DTBAdResponse or DTBAdErrorInfo */)result forAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat
 {
-    if ( ![self isValidToProceedForAdUnitIdentifier: adUnitIdentifier result: result] ) return;
+    if ( !self.sdk )
+    {
+        NSString *errorMessage = [NSString stringWithFormat: @"Failed to set Amazon result - SDK not initialized: %@", adUnitIdentifier];
+        [self logUninitializedAccessError: errorMessage];
+        
+        return;
+    }
+    
+    if ( !result )
+    {
+        [self log: @"Failed to set Amazon result - nil value"];
+        return;
+    }
     
     if ( adFormat == MAAdFormat.interstitial )
     {
@@ -2261,31 +2273,13 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
     }
 }
 
-- (BOOL)isValidToProceedForAdUnitIdentifier:(NSString *)adUnitIdentifier result:(id)result
-{
-    if ( !self.sdk )
-    {
-        NSString *errorMessage = [NSString stringWithFormat: @"Failed to set Amazon result - SDK not initialized: %@", adUnitIdentifier];
-        [self logUninitializedAccessError: errorMessage];
-        return NO;
-    }
-    
-    if ( !result )
-    {
-        [self log: @"Failed to set Amazon result - nil value"];
-        return NO;
-    }
-    
-    return YES;
-}
-
 - (void)setAmazonResult:(id /* DTBAdResponse or DTBAdErrorInfo */)result forAdObject:(id /* MAInterstitialAd or MAAdView */)adObject
 {
     NSString *key = [self localExtraParameterKeyForAmazonResult: result];
     [adObject setLocalExtraParameterForKey: key value: result];
 }
 
-- (NSString *)localExtraParameterKeyForAmazonResult:(id /* DTBAdResponse or DTBAdErrorInfo */)result
+- (NSString *)localExtraParameterKeyForAmazonResult:(id /* DTBAdResponse or AdError */)result
 {
     NSString *className = NSStringFromClass([result class]);
     return [@"DTBAdResponse" isEqualToString: className] ? @"amazon_ad_response" : @"amazon_ad_error";

@@ -2692,52 +2692,39 @@ public class AppLovinMAXModule
 
     private void setAmazonResult(final Object result, final String adUnitId, final MaxAdFormat adFormat)
     {
-        if ( !isValidToProceedForAdUnitId( adUnitId, result ) ) return;
-
-        if ( adFormat == MaxAdFormat.INTERSTITIAL )
-        {
-            MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId, "setAmazonResult" );
-            setAmazonResult( result, interstitial );
-        }
-        else
-        {
-            MaxAdView adView = retrieveAdView( adUnitId, adFormat );
-            setAmazonResult( result, adView );
-        }
-    }
-
-    private boolean isValidToProceedForAdUnitId(final String adUnitId, final Object result)
-    {
         if ( sdk == null )
         {
-            e( "Failed to set Amazon result - SDK not initialized: " + adUnitId );
-            return false;
+            logUninitializedAccessError( "Failed to set Amazon result - SDK not initialized: " + adUnitId );
+            return;
         }
 
         if ( result == null )
         {
             e( "Failed to set Amazon result - null value" );
-            return false;
+            return;
         }
 
-        return true;
+        String key = getLocalExtraParameterKeyForAmazonResult( result );
+
+        if ( adFormat == MaxAdFormat.INTERSTITIAL )
+        {
+            MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId, "setAmazonResult" );
+            if ( interstitial == null )
+            {
+                e( "Unable to set Amazon result - unable to retrieve interstitial" );
+                return;
+            }
+
+            interstitial.setLocalExtraParameter( key, result );
+        }
+        else
+        {
+            MaxAdView adView = retrieveAdView( adUnitId, adFormat );
+            adView.setLocalExtraParameter( key, result );
+        }
     }
 
-    private void setAmazonResult(final Object /* DTBAdResponse or DTBAdErrorInfo */ result, final Object /* MAInterstitialAd or MAAdView */ adObject)
-    {
-        String key = localExtraParameterKeyForAmazonResult( result );
-
-        if ( adObject instanceof MaxInterstitialAd )
-        {
-            ( (MaxInterstitialAd) adObject ).setLocalExtraParameter( key, result );
-        }
-        else if ( adObject instanceof MaxAdView )
-        {
-            ( (MaxAdView) adObject ).setLocalExtraParameter( key, result );
-        }
-    }
-
-    private String localExtraParameterKeyForAmazonResult(final Object /* DTBAdResponse or DTBAdErrorInfo */ result)
+    private String getLocalExtraParameterKeyForAmazonResult(final Object /* DTBAdResponse or AdError */ result)
     {
         String className = result.getClass().getSimpleName();
         return "DTBAdResponse".equalsIgnoreCase( className ) ? "amazon_ad_response" : "amazon_ad_error";
