@@ -2279,7 +2279,7 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
     [adObject setLocalExtraParameterForKey: key value: result];
 }
 
-- (NSString *)localExtraParameterKeyForAmazonResult:(id /* DTBAdResponse or AdError */)result
+- (NSString *)localExtraParameterKeyForAmazonResult:(id /* DTBAdResponse or DTBAdErrorInfo */)result
 {
     NSString *className = NSStringFromClass([result class]);
     return [@"DTBAdResponse" isEqualToString: className] ? @"amazon_ad_response" : @"amazon_ad_error";
