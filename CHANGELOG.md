@@ -1,6 +1,7 @@
 ## Versions
 
-## x.x.x
+## 6.2.0
+* Add better support for Amazon bidding. 
 * Update iOS to pass `nil` to `setLocalExtraParameter(...)` instead of `NSNull`.
 ## 6.1.1
 * Allow calls to `AppLovinMAX.setMuted(...)` before SDK is initialized.
