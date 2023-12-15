@@ -2261,22 +2261,18 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
         return;
     }
     
+    NSString *key = [self localExtraParameterKeyForAmazonResult: result];
+    
     if ( adFormat == MAAdFormat.interstitial )
     {
         MAInterstitialAd *interstitial = [self retrieveInterstitialForAdUnitIdentifier: adUnitIdentifier];
-        [self setAmazonResult: result forAdObject: interstitial];
+        [interstitial setLocalExtraParameterForKey: key value: result];
     }
     else
     {
         MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
-        [self setAmazonResult: result forAdObject: adView];
+        [adView setLocalExtraParameterForKey: key value: result];
     }
-}
-
-- (void)setAmazonResult:(id /* DTBAdResponse or DTBAdErrorInfo */)result forAdObject:(id /* MAInterstitialAd or MAAdView */)adObject
-{
-    NSString *key = [self localExtraParameterKeyForAmazonResult: result];
-    [adObject setLocalExtraParameterForKey: key value: result];
 }
 
 - (NSString *)localExtraParameterKeyForAmazonResult:(id /* DTBAdResponse or DTBAdErrorInfo */)result
