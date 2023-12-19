@@ -7,6 +7,7 @@ import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.Nullable;
@@ -17,6 +18,8 @@ import androidx.annotation.Nullable;
 class AppLovinMAXAdViewManager
         extends SimpleViewManager<AppLovinMAXAdView>
 {
+    private final static Map<String, AppLovinMAXAdView> mAdViews = new HashMap<>( 2 );
+
     public AppLovinMAXAdViewManager(final ReactApplicationContext reactApplicationContext) { }
 
     @Override
@@ -51,6 +54,8 @@ class AppLovinMAXAdViewManager
     @ReactProp(name = "adUnitId")
     public void setAdUnitId(final AppLovinMAXAdView view, final String adUnitId)
     {
+        mAdViews.put( adUnitId, view );
+
         view.setAdUnitId( adUnitId );
     }
 
@@ -99,8 +104,15 @@ class AppLovinMAXAdViewManager
     @Override
     public void onDropViewInstance(AppLovinMAXAdView view)
     {
+        mAdViews.values().remove( view );
+
         view.destroy();
 
         super.onDropViewInstance( view );
+    }
+
+    public static AppLovinMAXAdView getAppLovinMAXAdView(final String adUnitId)
+    {
+        return mAdViews.get( adUnitId );
     }
 }

@@ -343,4 +343,27 @@ class AppLovinMAXAdView
 
     @Override
     public void onAdHidden(final MaxAd ad) { }
+
+    /// Amazon
+
+    public void setAmazonResult(final Object result, final String adUnitId)
+    {
+        if ( adView == null )
+        {
+            AppLovinMAXModule.e( "Failed to set Amazon result -  MaxAdView not created: " + adUnitId );
+            return;
+        }
+
+        if ( !this.adUnitId.equals( adUnitId ) )
+        {
+            AppLovinMAXModule.e( "Failed to set Amazon result -  incompatible Ad Unit ID: " + adUnitId );
+            return;
+        }
+
+        String className = result.getClass().getSimpleName();
+        String key = "DTBAdResponse".equalsIgnoreCase( className ) ? "amazon_ad_response" : "amazon_ad_error";
+
+        adView.setLocalExtraParameter( key, result );
+    }
+
 }
