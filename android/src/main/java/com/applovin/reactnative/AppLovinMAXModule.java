@@ -2724,6 +2724,32 @@ public class AppLovinMAXModule
         }
     }
 
+    public void setAmazonResult(final Object result, final Object adView)
+    {
+        if ( result == null )
+        {
+            e( "Failed to set Amazon result - null value" );
+            return;
+        }
+
+        if ( adView == null )
+        {
+            e( "Failed to set Amazon result - null adView" );
+            return;
+        }
+
+        String key = getLocalExtraParameterKeyForAmazonResult( result );
+
+        if ( adView instanceof MaxAdView )
+        {
+            ( (MaxAdView) adView ).setLocalExtraParameter( key, result );
+        }
+        else
+        {
+            e( "Failed to set Amazon result - not supported object: " + adView.toString() );
+        }
+    }
+
     private String getLocalExtraParameterKeyForAmazonResult(final Object /* DTBAdResponse or AdError */ result)
     {
         String className = result.getClass().getSimpleName();

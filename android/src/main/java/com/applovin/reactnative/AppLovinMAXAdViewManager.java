@@ -1,5 +1,6 @@
 package com.applovin.reactnative;
 
+import com.applovin.mediation.ads.MaxAdView;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
@@ -18,7 +19,7 @@ import androidx.annotation.Nullable;
 class AppLovinMAXAdViewManager
         extends SimpleViewManager<AppLovinMAXAdView>
 {
-    private final static Map<String, AppLovinMAXAdView> mAdViews = new HashMap<>( 2 );
+    private static final Map<String, AppLovinMAXAdView> ALL_AD_VIEWS = new HashMap<>( 2 );
 
     public AppLovinMAXAdViewManager(final ReactApplicationContext reactApplicationContext) { }
 
@@ -54,7 +55,7 @@ class AppLovinMAXAdViewManager
     @ReactProp(name = "adUnitId")
     public void setAdUnitId(final AppLovinMAXAdView view, final String adUnitId)
     {
-        mAdViews.put( adUnitId, view );
+        ALL_AD_VIEWS.put( adUnitId, view );
 
         view.setAdUnitId( adUnitId );
     }
@@ -104,15 +105,17 @@ class AppLovinMAXAdViewManager
     @Override
     public void onDropViewInstance(AppLovinMAXAdView view)
     {
-        mAdViews.values().remove( view );
+        ALL_AD_VIEWS.values().remove( view );
 
         view.destroy();
 
         super.onDropViewInstance( view );
     }
 
-    public static AppLovinMAXAdView getAppLovinMAXAdView(final String adUnitId)
+    public static MaxAdView getAppLovinMAXAdView(final String adUnitId)
     {
-        return mAdViews.get( adUnitId );
+        AppLovinMAXAdView adView = ALL_AD_VIEWS.get( adUnitId );
+
+        return ( adView != null ) ? adView.getMaxAdView() : null;
     }
 }
