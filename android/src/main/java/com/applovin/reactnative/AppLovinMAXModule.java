@@ -2717,36 +2717,23 @@ public class AppLovinMAXModule
 
             interstitial.setLocalExtraParameter( key, result );
         }
-        else
+        else // MaxAdFormat.BANNER or MaxAdFormat.MREC
         {
-            MaxAdView adView = retrieveAdView( adUnitId, adFormat );
-            adView.setLocalExtraParameter( key, result );
-        }
-    }
+            MaxAdView adView = AppLovinMAXAdView.getInstance( adUnitId );
 
-    public void setAmazonResult(final Object result, final Object adView)
-    {
-        if ( result == null )
-        {
-            e( "Failed to set Amazon result - null value" );
-            return;
-        }
+            if ( adView == null )
+            {
+                adView = retrieveAdView( adUnitId, adFormat );
+            }
 
-        if ( adView == null )
-        {
-            e( "Failed to set Amazon result - null adView" );
-            return;
-        }
-
-        String key = getLocalExtraParameterKeyForAmazonResult( result );
-
-        if ( adView instanceof MaxAdView )
-        {
-            ( (MaxAdView) adView ).setLocalExtraParameter( key, result );
-        }
-        else
-        {
-            e( "Failed to set Amazon result - not supported object: " + adView.toString() );
+            if ( adView != null )
+            {
+                adView.setLocalExtraParameter( key, result );
+            }
+            else
+            {
+                e( "Unable to set Amazon result - unable to retrieve " + adFormat.getLabel().toLowerCase() );
+            }
         }
     }
 

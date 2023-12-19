@@ -16,6 +16,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.view.ReactViewGroup;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.Nullable;
@@ -45,15 +46,12 @@ class AppLovinMAXAdView
     @Nullable
     private Map<String, Object> localExtraParameters;
 
+    private static final Map<String, MaxAdView> ADVIEW_INSTANCES = new HashMap<>( 2 );
+
     public AppLovinMAXAdView(final Context context)
     {
         super( context );
         reactContext = (ThemedReactContext) context;
-    }
-
-    public MaxAdView getMaxAdView()
-    {
-        return adView;
     }
 
     public void setAdUnitId(final String value)
@@ -273,6 +271,8 @@ class AppLovinMAXAdView
             adView.loadAd();
 
             addView( adView );
+
+            ADVIEW_INSTANCES.put( adUnitId, adView );
         }, 250 );
     }
 
@@ -281,6 +281,8 @@ class AppLovinMAXAdView
         if ( adView != null )
         {
             AppLovinMAXModule.d( "Unmounting MaxAdView: " + adView );
+
+            ADVIEW_INSTANCES.values().remove( adView );
 
             removeView( adView );
 
@@ -348,4 +350,11 @@ class AppLovinMAXAdView
 
     @Override
     public void onAdHidden(final MaxAd ad) { }
+
+    /// Static Instance for Amazon
+
+    public static MaxAdView getInstance(final String adUnitId)
+    {
+        return ADVIEW_INSTANCES.get( adUnitId );
+    }
 }

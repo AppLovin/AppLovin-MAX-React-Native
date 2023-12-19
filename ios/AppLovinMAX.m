@@ -7,6 +7,7 @@
 //
 
 #import "AppLovinMAX.h"
+#import "AppLovinMAXAdView.h"
 #import "AppLovinMAXNativeAdView.h"
 
 #define ROOT_VIEW_CONTROLLER (UIApplication.sharedApplication.keyWindow.rootViewController)
@@ -2266,12 +2267,33 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
     if ( adFormat == MAAdFormat.interstitial )
     {
         MAInterstitialAd *interstitial = [self retrieveInterstitialForAdUnitIdentifier: adUnitIdentifier];
-        [interstitial setLocalExtraParameterForKey: key value: result];
+        
+        if (interstitial)
+        {
+            [interstitial setLocalExtraParameterForKey: key value: result];
+        }
+        else
+        {
+            [self log: @"Failed to set Amazon result - unable to find interstitial"];
+        }
     }
-    else
+    else  // MAAdFormat.banner or MAAdFormat.mrec
     {
-        MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
-        [adView setLocalExtraParameterForKey: key value: result];
+        MAAdView *adView = [AppLovinMAXAdView sharedWithAdUnitIdentifier: adUnitIdentifier];
+
+        if ( !adView )
+        {
+            adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
+        }
+        
+        if ( adView )
+        {
+            [adView setLocalExtraParameterForKey: key value: result];
+        }
+        else
+        {
+            [self log: @"Failed to set Amazon result - unable to find %@", [[adFormat label] lowercaseString]];
+        }
     }
 }
 

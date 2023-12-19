@@ -9,7 +9,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class MAAdView;
+
 @interface AppLovinMAXAdView : UIView
+
++ (MAAdView *)sharedWithAdUnitIdentifier:(NSString *)adUnitIdentifier;
 
 @end
 
