@@ -35,11 +35,16 @@
 
 @implementation AppLovinMAXAdView
 
-static NSMutableDictionary<NSString *, MAAdView *> *MAAdViewInstances;
+static NSMutableDictionary<NSString *, MAAdView *> *adViewInstances; // Static Instance for Amazon
+
++ (MAAdView *)sharedWithAdUnitIdentifier:(NSString *)adUnitIdentifier
+{
+    return adViewInstances[adUnitIdentifier];
+}
 
 + (void)initialize
 {
-    MAAdViewInstances = [NSMutableDictionary dictionary];
+    adViewInstances = [NSMutableDictionary dictionary];
 }
 
 - (void)setAdUnitId:(NSString *)adUnitId
@@ -205,7 +210,7 @@ static NSMutableDictionary<NSString *, MAAdView *> *MAAdViewInstances;
                                                    [self.adView.centerXAnchor constraintEqualToAnchor: self.centerXAnchor],
                                                    [self.adView.centerYAnchor constraintEqualToAnchor: self.centerYAnchor]]];
 
-        MAAdViewInstances[adUnitId] = self.adView;
+        adViewInstances[adUnitId] = self.adView;
     });
 }
 
@@ -220,7 +225,7 @@ static NSMutableDictionary<NSString *, MAAdView *> *MAAdViewInstances;
         {
             [[AppLovinMAX shared] log: @"Unmounting MAAdView: %@", self.adView];
             
-            [MAAdViewInstances removeObjectForKey: self.adUnitId];
+            [adViewInstances removeObjectForKey: self.adUnitId];
 
             self.adView.delegate = nil;
             self.adView.revenueDelegate = nil;
@@ -277,12 +282,5 @@ static NSMutableDictionary<NSString *, MAAdView *> *MAAdViewInstances;
 
 - (void)didDisplayAd:(MAAd *)ad {}
 - (void)didHideAd:(MAAd *)ad {}
-
-#pragma mark - Static Instance for Amazon
-
-+ (MAAdView *)sharedWithAdUnitIdentifier:(NSString *)adUnitIdentifier
-{
-    return MAAdViewInstances[adUnitIdentifier];
-}
 
 @end

@@ -46,7 +46,13 @@ class AppLovinMAXAdView
     @Nullable
     private Map<String, Object> localExtraParameters;
 
-    private static final Map<String, MaxAdView> ADVIEW_INSTANCES = new HashMap<>( 2 );
+    /// Static Instance for Amazon
+    private static final Map<String, MaxAdView> adViewInstances = new HashMap<>( 2 );
+
+    public static MaxAdView getInstance(final String adUnitId)
+    {
+        return adViewInstances.get( adUnitId );
+    }
 
     public AppLovinMAXAdView(final Context context)
     {
@@ -272,7 +278,7 @@ class AppLovinMAXAdView
 
             addView( adView );
 
-            ADVIEW_INSTANCES.put( adUnitId, adView );
+            adViewInstances.put( adUnitId, adView );
         }, 250 );
     }
 
@@ -282,7 +288,7 @@ class AppLovinMAXAdView
         {
             AppLovinMAXModule.d( "Unmounting MaxAdView: " + adView );
 
-            ADVIEW_INSTANCES.values().remove( adView );
+            adViewInstances.values().remove( adView );
 
             removeView( adView );
 
@@ -350,11 +356,4 @@ class AppLovinMAXAdView
 
     @Override
     public void onAdHidden(final MaxAd ad) { }
-
-    /// Static Instance for Amazon
-
-    public static MaxAdView getInstance(final String adUnitId)
-    {
-        return ADVIEW_INSTANCES.get( adUnitId );
-    }
 }

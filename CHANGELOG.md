@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Update support for Amazon bidding with the banner and Mrec native methods.
 ## 6.2.0
 * Add better support for Amazon bidding. 
 * Update iOS to pass `nil` to `setLocalExtraParameter(...)` instead of `NSNull`.
