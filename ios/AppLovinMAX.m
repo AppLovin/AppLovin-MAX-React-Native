@@ -2267,15 +2267,13 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
     if ( adFormat == MAAdFormat.interstitial )
     {
         MAInterstitialAd *interstitial = [self retrieveInterstitialForAdUnitIdentifier: adUnitIdentifier];
-        
-        if (interstitial)
-        {
-            [interstitial setLocalExtraParameterForKey: key value: result];
-        }
-        else
+        if ( !interstitial )
         {
             [self log: @"Failed to set Amazon result - unable to find interstitial"];
+            return;
         }
+
+        [interstitial setLocalExtraParameterForKey: key value: result];
     }
     else  // MAAdFormat.banner or MAAdFormat.mrec
     {
