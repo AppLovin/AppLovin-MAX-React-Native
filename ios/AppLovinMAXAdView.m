@@ -37,14 +37,15 @@
 
 static NSMutableDictionary<NSString *, MAAdView *> *adViewInstances; // Static Instance for Amazon
 
++ (void)initialize
+{
+    [super initialize];
+    adViewInstances = [NSMutableDictionary dictionary];
+}
+
 + (MAAdView *)sharedWithAdUnitIdentifier:(NSString *)adUnitIdentifier
 {
     return adViewInstances[adUnitIdentifier];
-}
-
-+ (void)initialize
-{
-    adViewInstances = [NSMutableDictionary dictionary];
 }
 
 - (void)setAdUnitId:(NSString *)adUnitId

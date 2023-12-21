@@ -2292,7 +2292,7 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
         }
         else
         {
-            [self log: @"Failed to set Amazon result - unable to find %@", [[adFormat label] lowercaseString]];
+            [self log: @"Failed to set Amazon result - unable to find %@", adFormat];
         }
     }
 }

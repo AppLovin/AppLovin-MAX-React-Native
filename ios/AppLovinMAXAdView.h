@@ -7,9 +7,9 @@
 
 #import <React/RCTUIManager.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 @class MAAdView;
+
+NS_ASSUME_NONNULL_BEGIN
 
 @interface AppLovinMAXAdView : UIView
 
