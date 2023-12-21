@@ -287,7 +287,7 @@ class AppLovinMAXAdView
         {
             AppLovinMAXModule.d( "Unmounting MaxAdView: " + adView );
 
-            adViewInstances.values().remove( adView );
+            adViewInstances.remove( adView.getAdUnitId() );
 
             removeView( adView );
 
