@@ -35,12 +35,12 @@
 
 @implementation AppLovinMAXAdView
 
-static NSMutableDictionary<NSString *, MAAdView *> *adViewInstances; // Static Instance for Amazon
+static NSMutableDictionary<NSString *, MAAdView *> *adViewInstances;
 
 + (void)initialize
 {
     [super initialize];
-    adViewInstances = [NSMutableDictionary dictionary];
+    adViewInstances = [NSMutableDictionary dictionaryWithCapacity: 2];
 }
 
 + (MAAdView *)sharedWithAdUnitIdentifier:(NSString *)adUnitIdentifier

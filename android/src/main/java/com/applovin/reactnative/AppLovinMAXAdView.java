@@ -28,7 +28,6 @@ class AppLovinMAXAdView
         extends ReactViewGroup
         implements MaxAdListener, MaxAdViewAdListener, MaxAdRevenueListener
 {
-    /// Static Instance for Amazon
     private static final Map<String, MaxAdView> adViewInstances = new HashMap<>( 2 );
 
     private final ThemedReactContext reactContext;
