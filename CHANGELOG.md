@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 6.2.1
 * Add support for Amazon bidding for native UI component banners and MRECs.
 ## 6.2.0
 * Add better support for Amazon bidding. 
