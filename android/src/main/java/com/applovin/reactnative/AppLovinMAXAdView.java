@@ -16,6 +16,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.view.ReactViewGroup;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.Nullable;
@@ -27,6 +28,8 @@ class AppLovinMAXAdView
         extends ReactViewGroup
         implements MaxAdListener, MaxAdViewAdListener, MaxAdRevenueListener
 {
+    private static final Map<String, MaxAdView> adViewInstances = new HashMap<>( 2 );
+
     private final ThemedReactContext reactContext;
 
     @Nullable
@@ -44,6 +47,11 @@ class AppLovinMAXAdView
     private Map<String, Object> extraParameters;
     @Nullable
     private Map<String, Object> localExtraParameters;
+
+    public static MaxAdView getInstance(final String adUnitId)
+    {
+        return adViewInstances.get( adUnitId );
+    }
 
     public AppLovinMAXAdView(final Context context)
     {
@@ -268,6 +276,8 @@ class AppLovinMAXAdView
             adView.loadAd();
 
             addView( adView );
+
+            adViewInstances.put( adUnitId, adView );
         }, 250 );
     }
 
@@ -276,6 +286,8 @@ class AppLovinMAXAdView
         if ( adView != null )
         {
             AppLovinMAXModule.d( "Unmounting MaxAdView: " + adView );
+
+            adViewInstances.remove( adView.getAdUnitId() );
 
             removeView( adView );
 

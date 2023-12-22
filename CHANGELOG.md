@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Add support for Amazon bidding for native UI component banners and MRECs.
 ## 6.2.0
 * Add better support for Amazon bidding. 
 * Update iOS to pass `nil` to `setLocalExtraParameter(...)` instead of `NSNull`.

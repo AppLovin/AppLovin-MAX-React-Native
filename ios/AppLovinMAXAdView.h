@@ -7,9 +7,13 @@
 
 #import <React/RCTUIManager.h>
 
+@class MAAdView;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface AppLovinMAXAdView : UIView
+
++ (MAAdView *)sharedWithAdUnitIdentifier:(NSString *)adUnitIdentifier;
 
 @end
 

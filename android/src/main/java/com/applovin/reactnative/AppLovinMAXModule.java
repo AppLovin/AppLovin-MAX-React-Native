@@ -2711,16 +2711,29 @@ public class AppLovinMAXModule
             MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId, "setAmazonResult" );
             if ( interstitial == null )
             {
-                e( "Unable to set Amazon result - unable to retrieve interstitial" );
+                e( "Failed to set Amazon result - unable to retrieve interstitial" );
                 return;
             }
 
             interstitial.setLocalExtraParameter( key, result );
         }
-        else
+        else // MaxAdFormat.BANNER or MaxAdFormat.MREC
         {
-            MaxAdView adView = retrieveAdView( adUnitId, adFormat );
-            adView.setLocalExtraParameter( key, result );
+            MaxAdView adView = AppLovinMAXAdView.getInstance( adUnitId );
+
+            if ( adView == null )
+            {
+                adView = retrieveAdView( adUnitId, adFormat );
+            }
+
+            if ( adView != null )
+            {
+                adView.setLocalExtraParameter( key, result );
+            }
+            else
+            {
+                e( "Failed to set Amazon result - unable to retrieve " + adFormat );
+            }
         }
     }
 

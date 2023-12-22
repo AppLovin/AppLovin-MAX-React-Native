@@ -35,6 +35,19 @@
 
 @implementation AppLovinMAXAdView
 
+static NSMutableDictionary<NSString *, MAAdView *> *adViewInstances;
+
++ (void)initialize
+{
+    [super initialize];
+    adViewInstances = [NSMutableDictionary dictionaryWithCapacity: 2];
+}
+
++ (MAAdView *)sharedWithAdUnitIdentifier:(NSString *)adUnitIdentifier
+{
+    return adViewInstances[adUnitIdentifier];
+}
+
 - (void)setAdUnitId:(NSString *)adUnitId
 {
     // Ad Unit ID must be set prior to creating MAAdView
@@ -197,6 +210,8 @@
                                                    [self.adView.heightAnchor constraintEqualToAnchor: self.heightAnchor],
                                                    [self.adView.centerXAnchor constraintEqualToAnchor: self.centerXAnchor],
                                                    [self.adView.centerYAnchor constraintEqualToAnchor: self.centerYAnchor]]];
+
+        adViewInstances[adUnitId] = self.adView;
     });
 }
 
@@ -211,6 +226,8 @@
         {
             [[AppLovinMAX shared] log: @"Unmounting MAAdView: %@", self.adView];
             
+            [adViewInstances removeObjectForKey: self.adUnitId];
+
             self.adView.delegate = nil;
             self.adView.revenueDelegate = nil;
             
