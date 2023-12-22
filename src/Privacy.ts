@@ -59,4 +59,29 @@ export enum AppTrackingStatus {
     AUTHORIZED = 'A',
 }
 
+/**
+ * Represents errors for CMP flow.
+ */
+export enum CmpError {
+    /**
+     * Indicates that an unspecified error has occurred.
+     */
+    UNSPECIFIED = -1,
+
+    /**
+     * Indicates that the CMP has not been integrated correctly.
+     */
+    INTEGRATION_ERROR = 1,
+
+    /**
+     * Indicates that the CMP form is unavailable.
+     */
+    FORM_UNAVAILABLE = 2,
+
+    /**
+     * Indicates that the CMP form is not required.
+     */
+    FORM_NOT_REQUIRED = 3,
+}
+
 export const Privacy: PrivacyType = AppLovinMAX;

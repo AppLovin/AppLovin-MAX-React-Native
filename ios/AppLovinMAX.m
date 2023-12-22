@@ -554,6 +554,40 @@ RCT_EXPORT_METHOD(setConsentFlowDebugUserGeography:(NSString *)userGeography)
     self.debugUserGeographyToSet = userGeography;
 }
 
+RCT_EXPORT_METHOD(showCmpForExistingUser:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+{
+    if ( !self.sdk )
+    {
+        reject(RCTErrorUnspecified, @"ERROR: Failed to execute showCmpForExistingUser() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'", nil);
+        return;
+    }
+
+    ALCMPService *cmpService = self.sdk.cmpService;
+    [cmpService showCMPForExistingUserWithCompletion:^(ALCMPError * _Nullable error) {
+        
+        if ( !error )
+        {
+            resolve(nil);
+        }
+        else
+        {
+            resolve(@(error.code));
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(hasSupportedCmp:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+{
+    if ( !self.sdk )
+    {
+        reject(RCTErrorUnspecified, @"ERROR: Failed to execute hasSupportedCmp() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'", nil);
+        return;
+    }
+
+    ALCMPService *cmpService = self.sdk.cmpService;
+    resolve(@([cmpService hasSupportedCMP]));
+}
+
 #pragma mark - Data Passing
 
 RCT_EXPORT_METHOD(setTargetingDataYearOfBirth:(nonnull NSNumber *)yearOfBirth)

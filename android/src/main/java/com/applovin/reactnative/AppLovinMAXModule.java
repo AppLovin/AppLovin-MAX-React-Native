@@ -37,6 +37,8 @@ import com.applovin.mediation.ads.MaxAppOpenAd;
 import com.applovin.mediation.ads.MaxInterstitialAd;
 import com.applovin.mediation.ads.MaxRewardedAd;
 import com.applovin.sdk.AppLovinAdContentRating;
+import com.applovin.sdk.AppLovinCmpError;
+import com.applovin.sdk.AppLovinCmpService;
 import com.applovin.sdk.AppLovinGender;
 import com.applovin.sdk.AppLovinMediationProvider;
 import com.applovin.sdk.AppLovinPrivacySettings;
@@ -666,6 +668,48 @@ public class AppLovinMAXModule
     public void setConsentFlowDebugUserGeography(final String userGeography)
     {
         debugUserGeographyToSet = userGeography;
+    }
+
+    @ReactMethod
+    public void showCmpForExistingUser(final Promise promise)
+    {
+        if ( sdk == null )
+        {
+            promise.reject( new IllegalStateException( "ERROR: Failed to execute showCmpForExistingUser() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'" ) );
+            return;
+        }
+
+        Activity currentActivity = maybeGetCurrentActivity();
+        if ( currentActivity == null )
+        {
+            promise.reject( new IllegalStateException( "ERROR: Failed to execute showCmpForExistingUser() - unable to get current Activity." ) );
+            return;
+        }
+
+        AppLovinCmpService cmpService = sdk.getCmpService();
+        cmpService.showCmpForExistingUser( currentActivity, (@Nullable final AppLovinCmpError error) -> {
+            if ( error == null )
+            {
+                promise.resolve( null );
+            }
+            else
+            {
+                promise.resolve( error.getCmpCode() );
+            }
+        } );
+    }
+
+    @ReactMethod
+    public void hasSupportedCmp(final Promise promise)
+    {
+        if ( sdk == null )
+        {
+            promise.reject( new IllegalStateException( "ERROR: Failed to execute hasSupportedCmp() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'" ) );
+            return;
+        }
+
+        AppLovinCmpService cmpService = sdk.getCmpService();
+        promise.resolve( cmpService.hasSupportedCmp() );
     }
 
     // Data Passing
