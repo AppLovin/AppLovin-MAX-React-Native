@@ -558,7 +558,7 @@ RCT_EXPORT_METHOD(showCmpForExistingUser:(RCTPromiseResolveBlock)resolve :(RCTPr
 {
     if ( !self.sdk )
     {
-        reject(RCTErrorUnspecified, @"ERROR: Failed to execute showCmpForExistingUser() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'", nil);
+        [self logUninitializedAccessError: @"showCmpForExistingUser" withPromiseReject: reject];
         return;
     }
 
@@ -568,11 +568,10 @@ RCT_EXPORT_METHOD(showCmpForExistingUser:(RCTPromiseResolveBlock)resolve :(RCTPr
         if ( !error )
         {
             resolve(nil);
+            return;
         }
-        else
-        {
-            resolve(@(error.code));
-        }
+
+        resolve(@(error.code));
     }];
 }
 
@@ -580,7 +579,7 @@ RCT_EXPORT_METHOD(hasSupportedCmp:(RCTPromiseResolveBlock)resolve :(RCTPromiseRe
 {
     if ( !self.sdk )
     {
-        reject(RCTErrorUnspecified, @"ERROR: Failed to execute hasSupportedCmp() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'", nil);
+        [self logUninitializedAccessError: @"hasSupportedCmp" withPromiseReject: reject];
         return;
     }
 
@@ -2029,7 +2028,20 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
 
 - (void)logUninitializedAccessError:(NSString *)callingMethod
 {
-    [self log: @"ERROR: Failed to execute %@() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!", callingMethod];
+    [self logUninitializedAccessError: callingMethod withPromiseReject: nil];
+}
+
+- (void)logUninitializedAccessError:(NSString *)callingMethod withPromiseReject:(nullable RCTPromiseRejectBlock)reject
+{
+    NSString *message = [NSString stringWithFormat:@"ERROR: Failed to execute %@() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!", callingMethod];
+
+    if (!reject)
+    {
+        NSLog(@"[%@] [%@] %@", SDK_TAG, TAG, message);
+        return;
+    }
+
+    reject(TAG, message, nil);
 }
 
 - (void)log:(NSString *)format, ...

@@ -675,7 +675,7 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            promise.reject( new IllegalStateException( "ERROR: Failed to execute showCmpForExistingUser() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'" ) );
+            logUninitializedAccessError( "showCmpForExistingUser", promise );
             return;
         }
 
@@ -691,11 +691,10 @@ public class AppLovinMAXModule
             if ( error == null )
             {
                 promise.resolve( null );
+                return;
             }
-            else
-            {
-                promise.resolve( error.getCmpCode() );
-            }
+
+            promise.resolve( error.getCmpCode() );
         } );
     }
 
@@ -704,7 +703,7 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            promise.reject( new IllegalStateException( "ERROR: Failed to execute hasSupportedCmp() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'" ) );
+            logUninitializedAccessError( "showCmpForExistingUser", promise );
             return;
         }
 
@@ -2433,7 +2432,20 @@ public class AppLovinMAXModule
 
     public static void logUninitializedAccessError(final String callingMethod)
     {
-        e( "ERROR: Failed to execute " + callingMethod + "() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!" );
+        logUninitializedAccessError( callingMethod, null );
+    }
+
+    public static void logUninitializedAccessError(final String callingMethod, @Nullable final Promise promise)
+    {
+        String message = "ERROR: Failed to execute " + callingMethod + "() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!";
+
+        if ( promise == null )
+        {
+            e(  message );
+            return;
+        }
+
+        promise.reject( new IllegalStateException( message ) );
     }
 
     public static void d(final String message)

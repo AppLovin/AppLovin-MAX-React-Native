@@ -85,22 +85,24 @@ export type PrivacyType = {
     setConsentFlowDebugUserGeography(userGeography: ConsentFlowUserGeography): void;
 
     /**********************************************************************************/
-    /* Google-certified CMP */
+    /* Google UMP Automation */
     /**********************************************************************************/
 
     /**
      * Shows the CMP flow to an existing user.
-     * Note that the user's current consent will be reset before the CMP alert is shown.
+     * Note that this resets the user’s existing consent information.
      *
-     * The function returns when the flow finishes showing.  On success, returns nothing.  On
-     * failure, returns one of the CmpError code.
+     * The function returns when the flow finishes showing. On success, returns null. On failure,
+     * returns one of the {@link CmpError} codes.
      *
      * @return {Promise<CmpError|null>}
      */
     showCmpForExistingUser(): Promise<CmpError | null>;
 
     /**
-     * @return {true} if a supported CMP is integrated.
+     * Returns true if a supported CMP SDK is detected.
+     *
+     * @return {boolean}
      */
     hasSupportedCmp(): Promise<boolean>;
 };
