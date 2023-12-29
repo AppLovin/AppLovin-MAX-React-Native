@@ -554,6 +554,39 @@ RCT_EXPORT_METHOD(setConsentFlowDebugUserGeography:(NSString *)userGeography)
     self.debugUserGeographyToSet = userGeography;
 }
 
+RCT_EXPORT_METHOD(showCmpForExistingUser:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+{
+    if ( !self.sdk )
+    {
+        [self logUninitializedAccessError: @"showCmpForExistingUser" withPromiseReject: reject];
+        return;
+    }
+
+    ALCMPService *cmpService = self.sdk.cmpService;
+    [cmpService showCMPForExistingUserWithCompletion:^(ALCMPError * _Nullable error) {
+        
+        if ( !error )
+        {
+            resolve(nil);
+            return;
+        }
+
+        resolve(@(error.code));
+    }];
+}
+
+RCT_EXPORT_METHOD(hasSupportedCmp:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+{
+    if ( !self.sdk )
+    {
+        [self logUninitializedAccessError: @"hasSupportedCmp" withPromiseReject: reject];
+        return;
+    }
+
+    ALCMPService *cmpService = self.sdk.cmpService;
+    resolve(@([cmpService hasSupportedCMP]));
+}
+
 #pragma mark - Data Passing
 
 RCT_EXPORT_METHOD(setTargetingDataYearOfBirth:(nonnull NSNumber *)yearOfBirth)
@@ -1995,7 +2028,20 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
 
 - (void)logUninitializedAccessError:(NSString *)callingMethod
 {
-    [self log: @"ERROR: Failed to execute %@() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!", callingMethod];
+    [self logUninitializedAccessError: callingMethod withPromiseReject: nil];
+}
+
+- (void)logUninitializedAccessError:(NSString *)callingMethod withPromiseReject:(nullable RCTPromiseRejectBlock)reject
+{
+    NSString *message = [NSString stringWithFormat:@"ERROR: Failed to execute %@() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!", callingMethod];
+
+    if ( !reject )
+    {
+        NSLog(@"[%@] [%@] %@", SDK_TAG, TAG, message);
+        return;
+    }
+
+    reject(TAG, message, nil);
 }
 
 - (void)log:(NSString *)format, ...

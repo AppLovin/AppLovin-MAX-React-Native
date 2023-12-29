@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Add support for showing Google UMP to existing users for integrations using our Google UMP Automation feature. For more info, check out our [docs](https://dash.applovin.com/documentation/mediation/react-native/getting-started/terms-and-privacy-policy-flow#showing-gdpr-flow-to-existing-users).
 ## 6.2.1
 * Add support for Amazon bidding for native UI component banners and MRECs.
 ## 6.2.0

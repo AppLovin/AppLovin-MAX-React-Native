@@ -1,4 +1,4 @@
-import type { ConsentFlowUserGeography } from '../Privacy';
+import type { ConsentFlowUserGeography, CmpError } from '../Privacy';
 
 export type PrivacyType = {
     /**********************************************************************************/
@@ -83,4 +83,26 @@ export type PrivacyType = {
      * @note The debug geography is used only when the app is in debug mode.
      */
     setConsentFlowDebugUserGeography(userGeography: ConsentFlowUserGeography): void;
+
+    /**********************************************************************************/
+    /* Google UMP Automation */
+    /**********************************************************************************/
+
+    /**
+     * Shows the CMP flow to an existing user.
+     * Note that this resets the user’s existing consent information.
+     *
+     * The function returns when the flow finishes showing. On success, returns null. On failure,
+     * returns one of the {@link CmpError} codes.
+     *
+     * @return {Promise<CmpError|null>}
+     */
+    showCmpForExistingUser(): Promise<CmpError | null>;
+
+    /**
+     * Returns true if a supported CMP SDK is detected.
+     *
+     * @return {boolean}
+     */
+    hasSupportedCmp(): Promise<boolean>;
 };
