@@ -1,4 +1,5 @@
 import type { Configuration } from './Configuration';
+import type { CmpError } from '../AppLovinMAX';
 
 /**
  * Represents the AppLovinMAX module.
@@ -90,4 +91,22 @@ export type AppLovinMAXType = {
      * @param enabled Defaults to true.
      */
     setLocationCollectionEnabled(enabled: boolean): void;
+
+    /**
+     * Shows the CMP flow to an existing user.
+     * Note that this resets the user’s existing consent information.
+     *
+     * The function returns when the flow finishes showing. On success, returns null. On failure,
+     * returns one of the {@link CmpError} codes.
+     *
+     * @return {Promise<CmpError|null>}
+     */
+    showCmpForExistingUser(): Promise<CmpError | null>;
+
+    /**
+     * Returns true if a supported CMP SDK is detected.
+     *
+     * @return {boolean}
+     */
+    hasSupportedCmp(): Promise<boolean>;
 };
