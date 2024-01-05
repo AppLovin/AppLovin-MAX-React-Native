@@ -2774,6 +2774,17 @@ public class AppLovinMAXModule
 
             interstitial.setLocalExtraParameter( key, result );
         }
+        else if ( adFormat == MaxAdFormat.REWARDED )
+        {
+            MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId, "setAmazonResult" );
+            if ( rewardedAd == null )
+            {
+                e( "Failed to set Amazon result - unable to retrieve rewarded" );
+                return;
+            }
+
+            rewardedAd.setLocalExtraParameter( key, result );
+        }
         else // MaxAdFormat.BANNER or MaxAdFormat.MREC
         {
             MaxAdView adView = AppLovinMAXAdView.getInstance( adUnitId );
