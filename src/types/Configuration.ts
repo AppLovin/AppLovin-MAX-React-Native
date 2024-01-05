@@ -1,4 +1,4 @@
-import type { ConsentFlowUserGeography, AppTrackingStatus } from '../Privacy';
+import type { ConsentFlowUserGeography, AppTrackingStatus } from '../AppLovinMAX';
 
 /**
  * Encapsulates data for the AppLovinMAX SDK configuration.
