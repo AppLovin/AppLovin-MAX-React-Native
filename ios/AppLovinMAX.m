@@ -2321,6 +2321,17 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
 
         [interstitial setLocalExtraParameterForKey: key value: result];
     }
+    else if ( adFormat == MAAdFormat.rewarded )
+    {
+        MARewardedAd *rewardedAd = [self retrieveRewardedAdForAdUnitIdentifier: adUnitIdentifier];
+        if ( !rewardedAd )
+        {
+            [self log: @"Failed to set Amazon result - unable to find rewarded ad"];
+            return;
+        }
+
+        [rewardedAd setLocalExtraParameterForKey: key value: result];
+    }
     else  // MAAdFormat.banner or MAAdFormat.mrec
     {
         MAAdView *adView = [AppLovinMAXAdView sharedWithAdUnitIdentifier: adUnitIdentifier];

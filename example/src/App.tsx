@@ -70,9 +70,9 @@ const App = () => {
         if (isInitialized) return;
 
         // MAX Consent Flow - https://dash.applovin.com/documentation/mediation/react-native/getting-started/terms-and-privacy-policy-flow
-        Privacy.setTermsAndPrivacyPolicyFlowEnabled(true);
-        Privacy.setPrivacyPolicyUrl('https://your_company_name.com/privacy/'); // mandatory
-        Privacy.setTermsOfServiceUrl('https://your_company_name.com/terms/'); // optional
+        AppLovinMAX.setTermsAndPrivacyPolicyFlowEnabled(true);
+        AppLovinMAX.setPrivacyPolicyUrl('https://your_company_name.com/privacy/'); // mandatory
+        AppLovinMAX.setTermsOfServiceUrl('https://your_company_name.com/terms/'); // optional
 
         AppLovinMAX.setTestDeviceAdvertisingIds([]);
         AppLovinMAX.initialize(SDK_KEY)

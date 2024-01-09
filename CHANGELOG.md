@@ -2,6 +2,8 @@
 
 ## x.x.x
 * Fix NPE in `sizeToFit(...)` for accessing a null parent view.
+* Add support for Amazon bidding for rewarded ads.
+* Move Term Flow APIs from `Privacy` type to `AppLovinMAX`.
 * Add support for showing Google UMP to existing users for integrations using our Google UMP Automation feature. For more info, check out our [docs](https://dash.applovin.com/documentation/mediation/react-native/getting-started/terms-and-privacy-policy-flow#showing-gdpr-flow-to-existing-users).
 ## 6.2.1
 * Add support for Amazon bidding for native UI component banners and MRECs.
