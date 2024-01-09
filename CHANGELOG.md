@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 6.2.2
 * Fix NPE in `sizeToFit(...)` for accessing a null parent view.
 * Add support for Amazon bidding for rewarded ads.
 * Move Term Flow APIs from `Privacy` type to `AppLovinMAX`.
