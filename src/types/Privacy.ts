@@ -1,5 +1,3 @@
-import type { ConsentFlowUserGeography, CmpError } from '../Privacy';
-
 export type PrivacyType = {
     /**********************************************************************************/
     /* Privacy */
@@ -40,69 +38,4 @@ export type PrivacyType = {
      * Checks if the user opted out of the sale of their personal information.
      */
     isDoNotSell(): Promise<boolean>;
-
-    /**********************************************************************************/
-    /* TERM FLow */
-    /**********************************************************************************/
-
-    /**
-     * @deprecated Use {@link setTermsAndPrivacyPolicyFlowEnabled()} instead.
-     *
-     * Enables the MAX Terms Flow.
-     *
-     * @param enabled true to enable the MAX Terms Flow.
-     */
-    setConsentFlowEnabled(enabled: boolean): void;
-
-    /**
-     * Enables the MAX Terms and Privacy Policy Flow.
-     *
-     * @param enabled true to enable the MAX Terms and Privacy Policy Flow.
-     */
-    setTermsAndPrivacyPolicyFlowEnabled(enabled: boolean): void;
-
-    /**
-     * The URL of your company’s privacy policy, as a string. This is required in order to enable
-     * the Terms Flow.
-     *
-     * @param urlString The URL string to point your company’s privacy policy.
-     */
-    setPrivacyPolicyUrl(urlString: string): void;
-
-    /**
-     * The URL of your company’s terms of service, as a string. This is optional; you can enable
-     * the Terms Flow with or without it.
-     *
-     * @param urlString The URL string to point your company’s terms of service.
-     */
-    setTermsOfServiceUrl(urlString: string): void;
-
-    /**
-     * Set debug user geography. You may use this to test CMP flow by setting this to {@link ConsentFlowUserGeography.GDPR}.
-     *
-     * @note The debug geography is used only when the app is in debug mode.
-     */
-    setConsentFlowDebugUserGeography(userGeography: ConsentFlowUserGeography): void;
-
-    /**********************************************************************************/
-    /* Google UMP Automation */
-    /**********************************************************************************/
-
-    /**
-     * Shows the CMP flow to an existing user.
-     * Note that this resets the user’s existing consent information.
-     *
-     * The function returns when the flow finishes showing. On success, returns null. On failure,
-     * returns one of the {@link CmpError} codes.
-     *
-     * @return {Promise<CmpError|null>}
-     */
-    showCmpForExistingUser(): Promise<CmpError | null>;
-
-    /**
-     * Returns true if a supported CMP SDK is detected.
-     *
-     * @return {boolean}
-     */
-    hasSupportedCmp(): Promise<boolean>;
 };
