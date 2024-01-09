@@ -2768,7 +2768,7 @@ public class AppLovinMAXModule
             MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId, "setAmazonResult" );
             if ( interstitial == null )
             {
-                e( "Failed to set Amazon result - unable to retrieve interstitial" );
+                e( "Failed to set Amazon result - unable to find interstitial" );
                 return;
             }
 
@@ -2779,7 +2779,7 @@ public class AppLovinMAXModule
             MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId, "setAmazonResult" );
             if ( rewardedAd == null )
             {
-                e( "Failed to set Amazon result - unable to retrieve rewarded" );
+                e( "Failed to set Amazon result - unable to find rewarded ad" );
                 return;
             }
 
@@ -2800,7 +2800,7 @@ public class AppLovinMAXModule
             }
             else
             {
-                e( "Failed to set Amazon result - unable to retrieve " + adFormat );
+                e( "Failed to set Amazon result - unable to find " + adFormat );
             }
         }
     }

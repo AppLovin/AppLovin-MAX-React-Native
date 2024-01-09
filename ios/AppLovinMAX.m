@@ -2326,7 +2326,7 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
         MARewardedAd *rewardedAd = [self retrieveRewardedAdForAdUnitIdentifier: adUnitIdentifier];
         if ( !rewardedAd )
         {
-            [self log: @"Failed to set Amazon result - unable to find rewarded"];
+            [self log: @"Failed to set Amazon result - unable to find rewarded ad"];
             return;
         }
 
