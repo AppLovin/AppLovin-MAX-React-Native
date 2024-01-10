@@ -1,6 +1,7 @@
 package com.applovin.reactnative;
 
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.SimpleViewManager;
@@ -9,6 +10,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 
 import java.util.Map;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -17,6 +19,8 @@ import androidx.annotation.Nullable;
 class AppLovinMAXAdViewManager
         extends SimpleViewManager<AppLovinMAXAdView>
 {
+    public final int COMMAND_LOAD_AD = 1;
+
     public AppLovinMAXAdViewManager(final ReactApplicationContext reactApplicationContext) { }
 
     @Override
@@ -39,6 +43,26 @@ class AppLovinMAXAdViewManager
                 .put( "onAdCollapsedEvent", MapBuilder.of( "registrationName", "onAdCollapsedEvent" ) )
                 .put( "onAdRevenuePaidEvent", MapBuilder.of( "registrationName", "onAdRevenuePaidEvent" ) )
                 .build();
+    }
+
+    @Nullable
+    @Override
+    public Map<String, Integer> getCommandsMap()
+    {
+        return MapBuilder.of(
+                "loadAd", COMMAND_LOAD_AD
+        );
+    }
+
+    @Override
+    public void receiveCommand(@NonNull final AppLovinMAXAdView root, final int commandId, @Nullable final ReadableArray args)
+    {
+        switch ( commandId )
+        {
+            case COMMAND_LOAD_AD:
+                root.loadAd();
+                break;
+        }
     }
 
     @Override
@@ -82,6 +106,12 @@ class AppLovinMAXAdViewManager
     public void setAutoRefresh(final AppLovinMAXAdView view, final boolean enabled)
     {
         view.setAutoRefresh( enabled );
+    }
+
+    @ReactProp(name = "loadOnMount")
+    public void setLoadOnMount(final AppLovinMAXAdView view, final boolean enabled)
+    {
+        view.setLoadOnMount( enabled );
     }
 
     @ReactProp(name = "extraParameters")

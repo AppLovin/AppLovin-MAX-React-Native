@@ -43,6 +43,7 @@ class AppLovinMAXAdView
     private String              customData;
     private boolean             adaptiveBannerEnabled;
     private boolean             autoRefresh;
+    private boolean             loadOnMount;
     @Nullable
     private Map<String, Object> extraParameters;
     @Nullable
@@ -144,6 +145,11 @@ class AppLovinMAXAdView
                 adView.stopAutoRefresh();
             }
         }
+    }
+
+    public void setLoadOnMount(final boolean enabled)
+    {
+        loadOnMount = enabled;
     }
 
     public void setExtraParameters(@Nullable final ReadableMap readableMap)
@@ -273,12 +279,26 @@ class AppLovinMAXAdView
                 adView.stopAutoRefresh();
             }
 
-            adView.loadAd();
+            if ( loadOnMount )
+            {
+                adView.loadAd();
+            }
 
             addView( adView );
 
             adViewInstances.put( adUnitId, adView );
         }, 250 );
+    }
+
+    public void loadAd()
+    {
+        if ( adView == null )
+        {
+            AppLovinMAXModule.e( "Attempting to load uninitialized MaxAdView for " + adUnitId );
+            return;
+        }
+
+        adView.loadAd();
     }
 
     public void destroy()

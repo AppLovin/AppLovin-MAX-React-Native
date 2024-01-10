@@ -20,6 +20,7 @@
 @property (nonatomic, copy, nullable) NSString *customData;
 @property (nonatomic, assign, readonly, getter=isAdaptiveBannerEnabled) BOOL adaptiveBannerEnabled;
 @property (nonatomic, assign, readonly, getter=isAutoRefresh) BOOL autoRefresh;
+@property (nonatomic, assign, readonly, getter=isLoadOnMount) BOOL loadOnMount;
 @property (nonatomic, copy, nullable) NSDictionary *extraParameters;
 @property (nonatomic, copy, nullable) NSDictionary *localExtraParameters;
 
@@ -135,6 +136,11 @@ static NSMutableDictionary<NSString *, MAAdView *> *adViewInstances;
     }
 }
 
+- (void)setLoadOnMount:(BOOL)loadOnMount
+{
+    _loadOnMount = loadOnMount;
+}
+
 - (void)attachAdViewIfNeeded
 {
     // Re-assign in case of race condition
@@ -202,7 +208,10 @@ static NSMutableDictionary<NSString *, MAAdView *> *adViewInstances;
             [self.adView stopAutoRefresh];
         }
         
-        [self.adView loadAd];
+        if ( [self isLoadOnMount] )
+        {
+            [self.adView loadAd];
+        }
         
         [self addSubview: self.adView];
         
@@ -213,6 +222,17 @@ static NSMutableDictionary<NSString *, MAAdView *> *adViewInstances;
 
         adViewInstances[adUnitId] = self.adView;
     });
+}
+
+- (void)loadAd
+{
+    if ( !self.adView )
+    {
+        [[AppLovinMAX shared] log: @"Attempting to load uninitialized MAAdView for %@", self.adUnitId];
+        return;
+    }
+
+    [self.adView loadAd];
 }
 
 - (void)didMoveToWindow
