@@ -55,12 +55,12 @@ class AppLovinMAXAdViewManager
     }
 
     @Override
-    public void receiveCommand(@NonNull final AppLovinMAXAdView root, final int commandId, @Nullable final ReadableArray args)
+    public void receiveCommand(@NonNull final AppLovinMAXAdView adView, final int commandId, @Nullable final ReadableArray args)
     {
         switch ( commandId )
         {
             case COMMAND_LOAD_AD:
-                root.loadAd();
+                adView.loadAd();
                 break;
         }
     }
