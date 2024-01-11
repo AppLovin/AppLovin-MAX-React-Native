@@ -19,7 +19,7 @@ import androidx.annotation.Nullable;
 class AppLovinMAXAdViewManager
         extends SimpleViewManager<AppLovinMAXAdView>
 {
-    public final int COMMAND_LOAD_AD = 1;
+    private static final int COMMAND_LOAD_AD = 1;
 
     public AppLovinMAXAdViewManager(final ReactApplicationContext reactApplicationContext) { }
 
@@ -55,12 +55,12 @@ class AppLovinMAXAdViewManager
     }
 
     @Override
-    public void receiveCommand(@NonNull final AppLovinMAXAdView adView, final int commandId, @Nullable final ReadableArray args)
+    public void receiveCommand(@NonNull final AppLovinMAXAdView view, final int commandId, @Nullable final ReadableArray args)
     {
         switch ( commandId )
         {
             case COMMAND_LOAD_AD:
-                adView.loadAd();
+                view.loadAd();
                 break;
         }
     }
