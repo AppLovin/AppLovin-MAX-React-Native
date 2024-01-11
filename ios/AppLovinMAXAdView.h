@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (MAAdView *)sharedWithAdUnitIdentifier:(NSString *)adUnitIdentifier;
 
+- (void)loadAd;
+
 @end
 
 NS_ASSUME_NONNULL_END

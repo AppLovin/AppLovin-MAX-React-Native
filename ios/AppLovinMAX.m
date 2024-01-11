@@ -2292,6 +2292,11 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
     [self setAmazonResult: result forAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.interstitial];
 }
 
+- (void)setAmazonResult:(id)result forRewardedAdUnitIdentifier:(NSString *)adUnitIdentifier
+{
+    [self setAmazonResult: result forAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.rewarded];
+}
+
 - (void)setAmazonResult:(id /* DTBAdResponse or DTBAdErrorInfo */)result forAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat
 {
     if ( !self.sdk )
@@ -2320,6 +2325,17 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
         }
 
         [interstitial setLocalExtraParameterForKey: key value: result];
+    }
+    else if ( adFormat == MAAdFormat.rewarded )
+    {
+        MARewardedAd *rewardedAd = [self retrieveRewardedAdForAdUnitIdentifier: adUnitIdentifier];
+        if ( !rewardedAd )
+        {
+            [self log: @"Failed to set Amazon result - unable to find rewarded ad"];
+            return;
+        }
+
+        [rewardedAd setLocalExtraParameterForKey: key value: result];
     }
     else  // MAAdFormat.banner or MAAdFormat.mrec
     {

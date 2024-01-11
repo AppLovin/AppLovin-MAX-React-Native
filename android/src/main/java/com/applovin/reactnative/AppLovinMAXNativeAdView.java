@@ -471,7 +471,7 @@ public class AppLovinMAXNativeAdView
 
     private static void sizeToFit(final @Nullable View view, final View parentView)
     {
-        if ( view != null )
+        if ( view != null && parentView != null )
         {
             view.measure( MeasureSpec.makeMeasureSpec( parentView.getWidth(), MeasureSpec.EXACTLY ),
                           MeasureSpec.makeMeasureSpec( parentView.getHeight(), MeasureSpec.EXACTLY ) );
