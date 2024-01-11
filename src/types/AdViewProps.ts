@@ -7,7 +7,7 @@ import type { AdFormat } from '../AdView';
  */
 export type AdViewHandler = {
     /**
-     * Starts loading ads.
+     * If the {@link loadOnMount} attribute is set to false, you can call this API to start loading ads in this AdView.
      */
     loadAd(): void;
 };
