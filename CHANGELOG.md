@@ -1,5 +1,7 @@
 ## Versions
 
+## 6.2.3
+* Introduced `loadOnMount` property for `<AdView/>`. This boolean attribute, when set to `false`, prevents automatic ad loading upon component mount. You may manually load an ad via the new `loadAd()` method in `AdViewHandler`.
 ## 6.2.2
 * Fix NPE in `sizeToFit(...)` for accessing a null parent view.
 * Add support for Amazon bidding for rewarded ads.
