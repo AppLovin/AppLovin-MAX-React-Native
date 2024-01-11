@@ -3,6 +3,16 @@ import type { AdInfo } from './AdInfo';
 import type { AdFormat } from '../AdView';
 
 /**
+ * A handler of {@link AdView}.
+ */
+export type AdViewHandler = {
+    /**
+     * If the {@link loadOnMount} attribute is set to false, you can call this API to start loading ads in this AdView.
+     */
+    loadAd(): void;
+};
+
+/**
  * Represents an {@link AdView} - Banner / MREC.
  */
 export type AdViewProps = AdProps & {
@@ -22,6 +32,12 @@ export type AdViewProps = AdProps & {
      * enabled by default.
      */
     autoRefresh?: boolean;
+
+    /**
+     * A boolean value representing whether or not to load an ad as soon as {@link AdView} is
+     * mounted. Note that the default value is true.
+     */
+    loadOnMount?: boolean;
 
     /**
      * A callback fuction that {@link AdView} fires when it expands the ad.

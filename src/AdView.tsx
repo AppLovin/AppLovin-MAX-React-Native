@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
-import { NativeModules, requireNativeComponent, StyleSheet } from 'react-native';
-import type { ViewProps, ViewStyle, StyleProp } from 'react-native';
+import { useEffect, useState, useRef, useCallback, useImperativeHandle, forwardRef } from 'react';
+import { NativeModules, requireNativeComponent, StyleSheet, UIManager, findNodeHandle } from 'react-native';
+import type { ViewProps, ViewStyle, StyleProp, NativeMethods } from 'react-native';
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from './types/AdInfo';
 import type { AdNativeEvent } from './types/AdEvent';
-import type { AdViewProps } from './types/AdViewProps';
+import type { AdViewProps, AdViewHandler } from './types/AdViewProps';
 
 const { AppLovinMAX } = NativeModules;
 
@@ -64,6 +64,8 @@ type AdViewNativeEvents = {
 };
 
 const AdViewComponent = requireNativeComponent<AdViewProps & ViewProps & AdViewNativeEvents>('AppLovinMAXAdView');
+
+type AdViewType = React.Component<AdViewProps> & NativeMethods;
 
 const ADVIEW_SIZE = {
     banner: { width: 320, height: 50 },
@@ -161,27 +163,50 @@ const sizeAdViewDimensions = (
  * />
  * ```
  */
-export const AdView = ({
-    adUnitId,
-    adFormat,
-    placement,
-    customData,
-    adaptiveBannerEnabled = true,
-    autoRefresh = true,
-    extraParameters,
-    localExtraParameters,
-    onAdLoaded,
-    onAdLoadFailed,
-    onAdDisplayFailed,
-    onAdClicked,
-    onAdExpanded,
-    onAdCollapsed,
-    onAdRevenuePaid,
-    style,
-    ...otherProps
-}: AdViewProps & ViewProps) => {
+export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(function AdView(
+    {
+        adUnitId,
+        adFormat,
+        placement,
+        customData,
+        adaptiveBannerEnabled = true,
+        autoRefresh = true,
+        loadOnMount = true,
+        extraParameters,
+        localExtraParameters,
+        onAdLoaded,
+        onAdLoadFailed,
+        onAdDisplayFailed,
+        onAdClicked,
+        onAdExpanded,
+        onAdCollapsed,
+        onAdRevenuePaid,
+        style,
+        ...otherProps
+    },
+    ref
+) {
+    const adViewRef = useRef<AdViewType | null>(null);
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
     const [dimensions, setDimensions] = useState({});
+
+    const loadAd = () => {
+        if (adViewRef.current) {
+            UIManager.dispatchViewManagerCommand(
+                findNodeHandle(adViewRef.current),
+                UIManager.getViewManagerConfig('AppLovinMAXAdView').Commands.loadAd,
+                undefined
+            );
+        }
+    };
+
+    useImperativeHandle(ref, () => ({ loadAd }), []);
+
+    const saveElement = useCallback((element: AdViewType | null) => {
+        if (element) {
+            adViewRef.current = element;
+        }
+    }, []);
 
     useEffect(() => {
         AppLovinMAX.isInitialized().then((result: boolean) => {
@@ -244,12 +269,14 @@ export const AdView = ({
 
     return (
         <AdViewComponent
+            ref={saveElement}
             adUnitId={adUnitId}
             adFormat={adFormat}
             placement={placement}
             customData={customData}
             adaptiveBannerEnabled={adaptiveBannerEnabled}
             autoRefresh={autoRefresh}
+            loadOnMount={loadOnMount}
             extraParameters={extraParameters}
             localExtraParameters={localExtraParameters}
             onAdLoadedEvent={onAdLoadedEvent}
@@ -263,4 +290,4 @@ export const AdView = ({
             {...otherProps}
         />
     );
-};
+});
