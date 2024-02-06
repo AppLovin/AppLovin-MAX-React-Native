@@ -1867,7 +1867,7 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
     
     // Deactivate any previous constraints and reset visibility state so that the safe area background can be positioned again.
     [NSLayoutConstraint deactivateConstraints: self.safeAreaBackground.constraints];
-    self.safeAreaBackground.hidden = NO;
+    self.safeAreaBackground.hidden = adView.hidden;
     
     //
     // Determine ad width
