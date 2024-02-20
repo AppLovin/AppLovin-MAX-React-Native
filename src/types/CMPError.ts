@@ -4,7 +4,7 @@ export type CMPError = {
     /**
      * The error code for this error.
      */
-    countryCode: CMPErrorCode;
+    code: CMPErrorCode;
 
     /**
      * The error message for this error.
