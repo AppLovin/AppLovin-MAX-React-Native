@@ -206,7 +206,11 @@ RCT_EXPORT_METHOD(isInitialized:(RCTPromiseResolveBlock)resolve :(RCTPromiseReje
 RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
     // Guard against running init logic multiple times
-    if ( [self isPluginInitialized] ) return;
+    if ( [self isPluginInitialized] )
+    {
+        resolve([self initializationMessage]);
+        return;
+    }
     
     self.pluginInitialized = YES;
     
@@ -377,11 +381,23 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         self.sdkConfiguration = configuration;
         self.sdkInitialized = YES;
         
-        resolve(@{@"countryCode" : self.sdk.configuration.countryCode,
-                  @"appTrackingStatus" : [self fromAppLovinAppTrackingStatus: self.sdk.configuration.appTrackingTransparencyStatus],
-                  @"consentFlowUserGeography" : [self fromAppLovinConsentFlowUserGeography: self.sdk.configuration.consentFlowUserGeography],
-                  @"isTestModeEnabled" : @(self.sdk.configuration.isTestModeEnabled)});
+        resolve([self initializationMessage]);
     }];
+}
+
+- (NSDictionary<NSString *, id> *)initializationMessage
+{
+    NSMutableDictionary<NSString *, id> *message = [NSMutableDictionary dictionaryWithCapacity: 4];
+    
+    if ( self.sdkConfiguration )
+    {
+        message[@"countryCode"] = self.sdkConfiguration.countryCode;
+        message[@"appTrackingStatus"] = [self fromAppLovinAppTrackingStatus: self.sdk.configuration.appTrackingTransparencyStatus];
+        message[@"consentFlowUserGeography"] = [self fromAppLovinConsentFlowUserGeography: self.sdk.configuration.consentFlowUserGeography];
+        message[@"isTestModeEnabled"] = @(self.sdkConfiguration.isTestModeEnabled);
+    }
+    
+    return message;
 }
 
 #pragma mark - General Public API
@@ -1868,7 +1884,7 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
     
     // Deactivate any previous constraints and reset visibility state so that the safe area background can be positioned again.
     [NSLayoutConstraint deactivateConstraints: self.safeAreaBackground.constraints];
-    self.safeAreaBackground.hidden = NO;
+    self.safeAreaBackground.hidden = adView.hidden;
     
     //
     // Determine ad width

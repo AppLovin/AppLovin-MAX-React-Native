@@ -64,8 +64,8 @@ export type AppLovinMAXType = {
     setVerboseLogging(verboseLoggingEnabled: boolean): void;
 
     /**
-     * Enables devices to receive test ads by passing in the advertising identifier (IDFA) of each
-     * test device. Refer to AppLovin logs for the IDFA of your current device.
+     * Enables devices to receive test ads by passing in the advertising identifier (IDFA or IDFV) of
+     * each test device. Refer to AppLovin logs for the IDFA or IDFV of your current device.
      *
      * @param advertisingIds A list of the advertising ids.
      */
