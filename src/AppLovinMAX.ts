@@ -65,7 +65,7 @@ export enum AppTrackingStatus {
 /**
  * Represents errors for CMP flow.
  */
-export enum CmpError {
+export enum CMPErrorCode {
     /**
      * Indicates that an unspecified error has occurred.
      */
