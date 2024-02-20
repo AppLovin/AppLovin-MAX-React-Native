@@ -673,7 +673,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void showCmpForExistingUser(final Promise promise)
     {
-        if ( sdk == null )
+        if ( !isPluginInitialized )
         {
             logUninitializedAccessError( "showCmpForExistingUser", promise );
             return;
@@ -686,8 +686,7 @@ public class AppLovinMAXModule
             return;
         }
 
-        AppLovinCmpService cmpService = sdk.getCmpService();
-        cmpService.showCmpForExistingUser( currentActivity, (@Nullable final AppLovinCmpError error) -> {
+        sdk.getCmpService().showCmpForExistingUser( currentActivity, (@Nullable final AppLovinCmpError error) -> {
 
             if ( error == null )
             {
@@ -695,21 +694,25 @@ public class AppLovinMAXModule
                 return;
             }
 
-            promise.resolve( error.getCmpCode() );
+            WritableMap params = Arguments.createMap();
+            params.putInt( "code", error.getCode().getValue() );
+            params.putString( "message", error.getMessage() );
+            params.putInt( "cmpCode", error.getCmpCode() );
+            params.putString( "cmpMessage", error.getCmpMessage() );
+            promise.resolve( params );
         } );
     }
 
     @ReactMethod
     public void hasSupportedCmp(final Promise promise)
     {
-        if ( sdk == null )
+        if ( !isPluginInitialized )
         {
             logUninitializedAccessError( "showCmpForExistingUser", promise );
             return;
         }
 
-        AppLovinCmpService cmpService = sdk.getCmpService();
-        promise.resolve( cmpService.hasSupportedCmp() );
+        promise.resolve( sdk.getCmpService().hasSupportedCmp() );
     }
 
     // Data Passing

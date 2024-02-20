@@ -1,5 +1,6 @@
 import type { Configuration } from './Configuration';
-import type { ConsentFlowUserGeography, CmpError } from '../AppLovinMAX';
+import type { CMPError } from './CMPError';
+import type { ConsentFlowUserGeography } from '../AppLovinMAX';
 
 /**
  * Represents the AppLovinMAX module.
@@ -136,11 +137,11 @@ export type AppLovinMAXType = {
      * Note that this resets the user’s existing consent information.
      *
      * The function returns when the flow finishes showing. On success, returns null. On failure,
-     * returns one of the {@link CmpError} codes.
+     * returns one of the {@link CMPError} codes.
      *
-     * @return {Promise<CmpError|null>}
+     * @return {Promise<CMPError|null>}
      */
-    showCmpForExistingUser(): Promise<CmpError | null>;
+    showCmpForExistingUser(): Promise<CMPError | null>;
 
     /**
      * Returns true if a supported CMP SDK is detected.

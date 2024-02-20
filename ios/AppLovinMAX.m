@@ -556,14 +556,13 @@ RCT_EXPORT_METHOD(setConsentFlowDebugUserGeography:(NSString *)userGeography)
 
 RCT_EXPORT_METHOD(showCmpForExistingUser:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    if ( !self.sdk )
+    if ( ![self isPluginInitialized] )
     {
         [self logUninitializedAccessError: @"showCmpForExistingUser" withPromiseReject: reject];
         return;
     }
 
-    ALCMPService *cmpService = self.sdk.cmpService;
-    [cmpService showCMPForExistingUserWithCompletion:^(ALCMPError * _Nullable error) {
+    [self.sdk.cmpService showCMPForExistingUserWithCompletion:^(ALCMPError * _Nullable error) {
         
         if ( !error )
         {
@@ -571,20 +570,22 @@ RCT_EXPORT_METHOD(showCmpForExistingUser:(RCTPromiseResolveBlock)resolve :(RCTPr
             return;
         }
 
-        resolve(@(error.code));
+        resolve(@{@"code" : @(error.code),
+                  @"message" : error.message ?: @"",
+                  @"cmpCode" : @(error.cmpCode),
+                  @"cmpMessage" : error.cmpMessage ?: @""});
     }];
 }
 
 RCT_EXPORT_METHOD(hasSupportedCmp:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    if ( !self.sdk )
+    if ( ![self isPluginInitialized] )
     {
         [self logUninitializedAccessError: @"hasSupportedCmp" withPromiseReject: reject];
         return;
     }
 
-    ALCMPService *cmpService = self.sdk.cmpService;
-    resolve(@([cmpService hasSupportedCMP]));
+    resolve(@([self.sdk.cmpService hasSupportedCMP]));
 }
 
 #pragma mark - Data Passing

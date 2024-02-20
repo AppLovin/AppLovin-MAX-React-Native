@@ -1,4 +1,4 @@
-export { default, AppLovinMAX, ConsentFlowUserGeography, AppTrackingStatus, CmpError } from './AppLovinMAX';
+export { default, AppLovinMAX, ConsentFlowUserGeography, AppTrackingStatus, CMPErrorCode } from './AppLovinMAX';
 export { Privacy } from './Privacy';
 export { TargetingData, AdContentRating, UserGender } from './TargetingData';
 export { InterstitialAd } from './InterstitialAd';

@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Add `CMPError` to encapsulate a return object of `AppLovinMAX.showCmpForExistingUser()`. For more info, check out our [docs](https://dash.applovin.com/documentation/mediation/react-native/getting-started/terms-and-privacy-policy-flow#showing-gdpr-flow-to-existing-users).
 ## 6.2.3
 * Introduced `loadOnMount` property for `<AdView/>`. This boolean attribute, when set to `false`, prevents automatic ad loading upon component mount. You may manually load an ad via the new `loadAd()` method in `AdViewHandler`.
 ## 6.2.2
