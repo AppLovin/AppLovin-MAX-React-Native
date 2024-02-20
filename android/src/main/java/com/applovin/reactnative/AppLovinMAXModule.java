@@ -270,7 +270,11 @@ public class AppLovinMAXModule
     private void performInitialization(final String pluginVersion, final String sdkKey, final Context context, final Promise promise)
     {
         // Guard against running init logic multiple times
-        if ( isPluginInitialized ) return;
+        if ( isPluginInitialized )
+        {
+            promise.resolve( getInitializationMessage() );
+            return;
+        }
 
         isPluginInitialized = true;
 
@@ -457,13 +461,23 @@ public class AppLovinMAXModule
                     }
                 }.enable();
 
-                WritableMap sdkConfiguration = Arguments.createMap();
-                sdkConfiguration.putString( "countryCode", configuration.getCountryCode() );
-                sdkConfiguration.putString( "consentFlowUserGeography", getRawAppLovinConsentFlowUserGeography( configuration.getConsentFlowUserGeography() ) );
-                sdkConfiguration.putBoolean( "isTestModeEnabled", configuration.isTestModeEnabled() );
-                promise.resolve( sdkConfiguration );
+                promise.resolve( getInitializationMessage() );
             }
         } );
+    }
+
+    private WritableMap getInitializationMessage()
+    {
+        WritableMap message = Arguments.createMap();
+
+        if ( sdkConfiguration != null )
+        {
+            message.putString( "countryCode", sdkConfiguration.getCountryCode() );
+            message.putString( "consentFlowUserGeography", getRawAppLovinConsentFlowUserGeography( sdkConfiguration.getConsentFlowUserGeography() ) );
+            message.putBoolean( "isTestModeEnabled", sdkConfiguration.isTestModeEnabled() );
+        }
+
+        return message;
     }
 
     // General Public API
