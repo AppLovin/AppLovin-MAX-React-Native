@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { Platform, StyleSheet, Text, View, SafeAreaView, Dimensions } from 'react-native';
-import AppLovinMAX, { Privacy, ConsentFlowUserGeography, AppTrackingStatus } from '../../src/index';
+import AppLovinMAX, { ConsentFlowUserGeography, AppTrackingStatus } from '../../src/index';
 import type { Configuration } from '../../src/index';
 import AppLogo from './components/AppLogo';
 import AppButton from './components/AppButton';
