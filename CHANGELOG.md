@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 6.3.0
 * Depend on Android SDK 12.2.0 and iOS SDK 12.2.1.
 * Add `CMPError` to encapsulate a return object of `AppLovinMAX.showCmpForExistingUser()`. For more info, check out our [docs](https://dash.applovin.com/documentation/mediation/react-native/getting-started/terms-and-privacy-policy-flow#showing-gdpr-flow-to-existing-users).
 * Fix banner/MREC background not hiding. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/308)
