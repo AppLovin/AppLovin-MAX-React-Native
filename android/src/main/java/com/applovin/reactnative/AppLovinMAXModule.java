@@ -1555,7 +1555,7 @@ public class AppLovinMAXModule
     {
         String name;
         MaxAdFormat adFormat = ad.getFormat();
-        if ( MaxAdFormat.BANNER == adFormat || MaxAdFormat.LEADER == adFormat || MaxAdFormat.MREC == adFormat )
+        if ( adFormat.isAdViewAd() )
         {
             name = ( MaxAdFormat.MREC == adFormat ) ? ON_MREC_AD_LOADED_EVENT : ON_BANNER_AD_LOADED_EVENT;
 
@@ -1745,7 +1745,7 @@ public class AppLovinMAXModule
     public void onAdExpanded(final MaxAd ad)
     {
         final MaxAdFormat adFormat = ad.getFormat();
-        if ( adFormat != MaxAdFormat.BANNER && adFormat != MaxAdFormat.LEADER && adFormat != MaxAdFormat.MREC )
+        if ( !adFormat.isAdViewAd() )
         {
             logInvalidAdFormat( adFormat );
             return;
@@ -1758,7 +1758,7 @@ public class AppLovinMAXModule
     public void onAdCollapsed(final MaxAd ad)
     {
         final MaxAdFormat adFormat = ad.getFormat();
-        if ( adFormat != MaxAdFormat.BANNER && adFormat != MaxAdFormat.LEADER && adFormat != MaxAdFormat.MREC )
+        if ( !adFormat.isAdViewAd() )
         {
             logInvalidAdFormat( adFormat );
             return;
