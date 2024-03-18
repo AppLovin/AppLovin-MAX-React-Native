@@ -140,5 +140,5 @@ dependencies {
   // noinspection GradleDynamicVersion
   api 'com.facebook.react:react-native:+'
 
-  implementation 'com.applovin:applovin-sdk:12.2.0'
+  implementation 'com.applovin:applovin-sdk:12.3.1'
 }
