@@ -196,6 +196,9 @@
         return;
     }
     
+    // Workaround for the Google adapter to turn this off on its integration
+    view.userInteractionEnabled = YES;
+
     view.tag = CALL_TO_ACTION_VIEW_TAG;
     
     [self.clickableViews addObject: view];
