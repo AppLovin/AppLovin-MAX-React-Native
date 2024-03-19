@@ -23,6 +23,9 @@ type Props = {
     setIsNativeAdShowing: (showing: boolean) => void;
 };
 
+const MEDIAVIEW_WIDTH = 340;
+const MEDIAVIEW_HEIGHT = 200;
+
 export const NativeAdViewExample = ({
     adUnitId,
     isInitialized,
@@ -40,12 +43,10 @@ export const NativeAdViewExample = ({
 
     // adjust the size of MediaView when `aspectRatio` changes
     useEffect(() => {
-        if (aspectRatio > 1) {
-            // landscape
-            setMediaViewSize({ aspectRatio: aspectRatio, width: '80%', height: undefined });
+        if (aspectRatio * MEDIAVIEW_HEIGHT > MEDIAVIEW_WIDTH) {
+            setMediaViewSize({ aspectRatio: aspectRatio, width: MEDIAVIEW_WIDTH, height: undefined });
         } else {
-            // portrait or square
-            setMediaViewSize({ aspectRatio: aspectRatio, width: undefined, height: 180 });
+            setMediaViewSize({ aspectRatio: aspectRatio, width: undefined, height: MEDIAVIEW_HEIGHT });
         }
     }, [aspectRatio]);
 
@@ -80,18 +81,20 @@ export const NativeAdViewExample = ({
                     log('Native ad revenue paid: ' + adInfo.revenue);
                 }}
             >
-                <View style={{ flex: 1, flexDirection: 'column' }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <View style={{flex: 1, flexDirection: 'column'}}>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                         <IconView style={styles.icon} />
-                        <View style={{ flexDirection: 'column', flexGrow: 1 }}>
-                            <TitleView style={styles.title} />
-                            <AdvertiserView style={styles.advertiser} />
+                        <View style={{width: 4}} />
+                        <View style={{flexDirection: 'column', flexGrow: 1}}>
+                            <TitleView numberOfLines={1} style={styles.title} />
+                            <AdvertiserView numberOfLines={1} style={styles.advertiser} />
                             <StarRatingView style={styles.starRatingView} />
                         </View>
                         <OptionsView style={styles.optionsView} />
                     </View>
-                    <BodyView style={styles.body} />
-                    <MediaView style={{ ...styles.mediaView, ...mediaViewSize }} />
+                    <BodyView numberOfLines={2} style={styles.body} />
+                    <MediaView style={{...styles.mediaView, ...mediaViewSize}} />
+                    <View style={{height: 10}} />
                     <CallToActionView style={styles.callToAction} />
                 </View>
             </NativeAdView>
@@ -133,67 +136,63 @@ export const NativeAdViewExample = ({
 
 const styles = StyleSheet.create({
     container: {
-        flexDirection: 'column',
-        backgroundColor: '#0583aa',
-        position: 'absolute',
-        top: '15%',
+        position: 'absolute', // must have a view behind for touch event propagation
+        top: '30%',
         width: '100%',
-        paddingBottom: 10,
+        padding: 10,
+        backgroundColor: '#0583aa',
         zIndex: 1,
         elevation: Platform.OS === 'android' ? 1 : 0,
     },
     nativead: {
-        margin: 10,
         padding: 10,
+        width: '100%',
+        height: 360,
         backgroundColor: '#EFEFEF',
+    },
+    icon: {
+        width: 48,
+        height: 48,
     },
     title: {
         fontSize: 16,
-        marginTop: 4,
-        marginHorizontal: 5,
         textAlign: 'left',
         fontWeight: 'bold',
         color: 'black',
     },
-    icon: {
-        margin: 5,
-        height: 48,
-        aspectRatio: 1,
-        borderRadius: 5,
-    },
-    optionsView: {
-        height: 20,
-        width: 20,
-        backgroundColor: '#EFEFEF',
+    advertiser: {
+        fontSize: 12,
+        textAlign: 'left',
+        color: 'gray',
     },
     starRatingView: {
-        marginHorizontal: 5,
         fontSize: 10, // size of each star as unicode symbol
         color: '#ffe234',
         backgroundColor: '#EFEFEF',
     },
-    advertiser: {
-        marginHorizontal: 5,
-        textAlign: 'left',
-        fontSize: 12,
-        fontWeight: '400',
-        color: 'gray',
+    optionsView: {
+        width: 20,
+        height: 20,
+        backgroundColor: '#EFEFEF',
     },
     body: {
+        height: 40,
         fontSize: 14,
-        marginVertical: 4,
+        textAlign: 'left',
     },
     mediaView: {
         alignSelf: 'center',
-        height: 200,
-        width: '100%',
+        width: MEDIAVIEW_WIDTH,
+        height: MEDIAVIEW_HEIGHT,
+        maxWidth: MEDIAVIEW_WIDTH,
+        maxHeight: MEDIAVIEW_HEIGHT,
         zIndex: 1,
         elevation: Platform.OS === 'android' ? 1 : 0,
     },
     callToAction: {
-        padding: 5,
+        padding: 8,
         width: '100%',
-        fontSize: 20,
+        fontSize: 18,
         textAlign: 'center',
         fontWeight: 'bold',
         textTransform: 'uppercase',
