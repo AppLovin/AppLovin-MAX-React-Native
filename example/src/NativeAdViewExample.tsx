@@ -81,7 +81,7 @@ export const NativeAdViewExample = ({
                     log('Native ad revenue paid: ' + adInfo.revenue);
                 }}
             >
-                <View style={{flex: 1, flexDirection: 'column'}}>
+                <View style={{flex: 1, flexDirection: 'column', justifyContent: 'space-between'}}>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                         <IconView style={styles.icon} />
                         <View style={{width: 4}} />
@@ -147,7 +147,6 @@ const styles = StyleSheet.create({
     nativead: {
         padding: 10,
         width: '100%',
-        height: 360,
         backgroundColor: '#EFEFEF',
     },
     icon: {
@@ -155,6 +154,7 @@ const styles = StyleSheet.create({
         height: 48,
     },
     title: {
+        width: 260,
         fontSize: 16,
         textAlign: 'left',
         fontWeight: 'bold',
@@ -176,9 +176,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#EFEFEF',
     },
     body: {
-        height: 40,
+        padding: 8,
         fontSize: 14,
-        textAlign: 'left',
+        textAlign: 'center',
+        textAlignVertical: 'center'
     },
     mediaView: {
         alignSelf: 'center',
