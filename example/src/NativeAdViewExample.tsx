@@ -23,8 +23,8 @@ type Props = {
     setIsNativeAdShowing: (showing: boolean) => void;
 };
 
-const MEDIAVIEW_WIDTH = 340;
-const MEDIAVIEW_HEIGHT = 200;
+const NATIVE_AD_MEDIAVIEW_WIDTH = 340;
+const NATIVE_AD_MEDIAVIEW_HEIGHT = 200;
 
 export const NativeAdViewExample = ({
     adUnitId,
@@ -43,10 +43,10 @@ export const NativeAdViewExample = ({
 
     // adjust the size of MediaView when `aspectRatio` changes
     useEffect(() => {
-        if (aspectRatio * MEDIAVIEW_HEIGHT > MEDIAVIEW_WIDTH) {
-            setMediaViewSize({ aspectRatio: aspectRatio, width: MEDIAVIEW_WIDTH, height: undefined });
+        if (aspectRatio * NATIVE_AD_MEDIAVIEW_HEIGHT > NATIVE_AD_MEDIAVIEW_WIDTH) {
+            setMediaViewSize({ aspectRatio: aspectRatio, width: NATIVE_AD_MEDIAVIEW_WIDTH, height: undefined });
         } else {
-            setMediaViewSize({ aspectRatio: aspectRatio, width: undefined, height: MEDIAVIEW_HEIGHT });
+            setMediaViewSize({ aspectRatio: aspectRatio, width: undefined, height: NATIVE_AD_MEDIAVIEW_HEIGHT });
         }
     }, [aspectRatio]);
 
@@ -182,10 +182,10 @@ const styles = StyleSheet.create({
     },
     mediaView: {
         alignSelf: 'center',
-        width: MEDIAVIEW_WIDTH,
-        height: MEDIAVIEW_HEIGHT,
-        maxWidth: MEDIAVIEW_WIDTH,
-        maxHeight: MEDIAVIEW_HEIGHT,
+        width: NATIVE_AD_MEDIAVIEW_WIDTH,
+        height: NATIVE_AD_MEDIAVIEW_HEIGHT,
+        maxWidth: NATIVE_AD_MEDIAVIEW_WIDTH,
+        maxHeight: NATIVE_AD_MEDIAVIEW_HEIGHT,
         zIndex: 1,
         elevation: Platform.OS === 'android' ? 1 : 0,
     },
