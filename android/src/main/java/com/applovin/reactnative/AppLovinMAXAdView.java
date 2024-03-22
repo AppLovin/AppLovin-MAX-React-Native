@@ -10,6 +10,7 @@ import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxAdViewAdListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxAdView;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -323,6 +324,15 @@ class AppLovinMAXAdView
     public void onAdLoaded(final MaxAd ad)
     {
         WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+
+        if ( adaptiveBannerEnabled )
+        {
+            WritableMap sizeObject = Arguments.createMap();
+            sizeObject.putInt( "width", ad.getSize().getWidth() );
+            sizeObject.putInt( "height", ad.getSize().getHeight() );
+            adInfo.putMap( "size", sizeObject );
+        }
+
         reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdLoadedEvent", adInfo );
     }
 

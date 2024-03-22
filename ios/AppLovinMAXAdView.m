@@ -262,7 +262,15 @@ static NSMutableDictionary<NSString *, MAAdView *> *adViewInstances;
 
 - (void)didLoadAd:(MAAd *)ad
 {
-    self.onAdLoadedEvent([[AppLovinMAX shared] adInfoForAd: ad]);
+    NSMutableDictionary *body = [[AppLovinMAX shared] adInfoForAd: ad].mutableCopy;
+
+    if ( [self isAdaptiveBannerEnabled] )
+    {
+        body[@"size"] = @{@"width"  : @(ad.size.width),
+                          @"height" : @(ad.size.height)};
+    }
+
+    self.onAdLoadedEvent(body);
 }
 
 - (void)didFailToLoadAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(MAError *)error
