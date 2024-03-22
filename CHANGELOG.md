@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Fix url icon not clickable in the native ads.
 ## 6.3.1
 * Depend on Android SDK 12.3.1 and iOS SDK 12.3.1.
 ## 6.3.0
