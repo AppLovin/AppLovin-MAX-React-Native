@@ -22,8 +22,6 @@ const NativeBannerExample = ({
     isProgrammaticBannerShowing,
     setIsNativeUIBannerShowing,
 }: Props) => {
-    const adaptiveBannerEnabled = true; // true by default
-
     const [bannerSize, setBannerSize] = useState({});
 
     return (
@@ -39,13 +37,10 @@ const NativeBannerExample = ({
                 <AdView
                     adUnitId={adUnitId}
                     adFormat={AdFormat.BANNER}
-                    style={{...styles.banner, ...bannerSize}}
-                    adaptiveBannerEnabled={adaptiveBannerEnabled}
+                    style={{ ...styles.banner, ...bannerSize }}
                     onAdLoaded={(adInfo: AdInfo) => {
                         log('Banner ad loaded from ' + adInfo.networkName);
-                        if (adaptiveBannerEnabled) {
-                             setBannerSize({width: adInfo.size?.width, height: adInfo.size?.height});
-                        }
+                        setBannerSize({ width: adInfo.size.width, height: adInfo.size.height });
                     }}
                     onAdLoadFailed={(errorInfo: AdLoadFailedInfo) => {
                         log(

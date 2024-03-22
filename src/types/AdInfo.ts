@@ -50,12 +50,12 @@ export type AdInfo = {
     nativeAd?: AdNativeInfo | null;
 
     /**
-     * The size of AdView for adaptive banners.
+     * The size of the AdView format ad, or size with (width: 0, height: 0) otherwise.
      */
-    size?: {
-        width: number; 
-        height: number;        
-    }
+    size: {
+        width: number;
+        height: number;
+    };
 };
 
 /**

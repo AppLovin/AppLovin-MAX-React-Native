@@ -1,6 +1,13 @@
 import * as React from 'react';
-import { useEffect, useState, useRef, useCallback, useImperativeHandle, forwardRef } from 'react';
-import { NativeModules, requireNativeComponent, StyleSheet, UIManager, findNodeHandle } from 'react-native';
+import { useEffect, useState, useRef, useCallback, useImperativeHandle, useReducer, forwardRef } from 'react';
+import {
+    NativeModules,
+    requireNativeComponent,
+    StyleSheet,
+    UIManager,
+    findNodeHandle,
+    useWindowDimensions,
+} from 'react-native';
 import type { ViewProps, ViewStyle, StyleProp, NativeMethods } from 'react-native';
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from './types/AdInfo';
 import type { AdNativeEvent } from './types/AdEvent';
@@ -67,77 +74,65 @@ const AdViewComponent = requireNativeComponent<AdViewProps & ViewProps & AdViewN
 
 type AdViewType = React.Component<AdViewProps> & NativeMethods;
 
+type SizeKey = 'width' | 'height';
+type SizeRecord = Partial<Record<SizeKey, number | string | null>>;
+
 const ADVIEW_SIZE = {
     banner: { width: 320, height: 50 },
     leader: { width: 728, height: 90 },
     mrec: { width: 300, height: 250 },
 };
 
+// Returns 'auto' for unspecified width / height
 const getOutlineViewSize = (style: StyleProp<ViewStyle>) => {
     const viewStyle = StyleSheet.flatten(style || {});
-    return [viewStyle?.width, viewStyle?.height];
+    return [viewStyle?.width ?? 'auto', viewStyle?.height ?? 'auto'];
 };
 
-const sizeAdViewDimensions = (
-    adFormat: AdFormat,
-    adaptiveBannerEnabled?: boolean,
-    width?: number | string | null,
-    height?: number | string | null
-): Promise<Record<string, number>> => {
+const sizeBannerDimensions = (
+    sizeProps: SizeRecord,
+    adaptiveBannerEnabled: boolean,
+    screenWidth: number,
+    bannerFormatSize: SizeRecord
+): Promise<SizeRecord> => {
     const sizeForBannerFormat = async () => {
-        const isTablet = await AppLovinMAX.isTablet();
+        const width = sizeProps.width === 'auto' ? bannerFormatSize.width : sizeProps.width;
 
-        const minWidth = isTablet ? ADVIEW_SIZE.leader.width : ADVIEW_SIZE.banner.width;
-
-        let minHeight;
-        if (adaptiveBannerEnabled) {
-            if (typeof width === 'number' && width > minWidth) {
-                minHeight = await AppLovinMAX.getAdaptiveBannerHeightForWidth(width);
+        let height;
+        if (sizeProps.height === 'auto') {
+            if (adaptiveBannerEnabled) {
+                height = await AppLovinMAX.getAdaptiveBannerHeightForWidth(screenWidth);
             } else {
-                minHeight = await AppLovinMAX.getAdaptiveBannerHeightForWidth(minWidth);
+                height = bannerFormatSize.height;
             }
         } else {
-            minHeight = isTablet ? ADVIEW_SIZE.leader.height : ADVIEW_SIZE.banner.height;
+            height = sizeProps.height;
         }
 
-        return Promise.resolve({
-            ...(width === 'auto'
-                ? {
-                      width: minWidth,
-                  }
-                : {
-                      minWidth: minWidth,
-                  }),
-            ...(height === 'auto'
-                ? {
-                      height: minHeight,
-                  }
-                : {
-                      minHeight: minHeight,
-                  }),
-        });
+        return Promise.resolve({ width: width, height: height });
     };
 
-    if (adFormat === AdFormat.BANNER) {
-        return sizeForBannerFormat();
-    } else {
-        return Promise.resolve({
-            ...(width === 'auto'
-                ? {
-                      width: ADVIEW_SIZE.mrec.width,
-                  }
-                : {
-                      minWidth: ADVIEW_SIZE.mrec.width,
-                  }),
-            ...(height === 'auto'
-                ? {
-                      height: ADVIEW_SIZE.mrec.height,
-                  }
-                : {
-                      minHeight: ADVIEW_SIZE.mrec.height,
-                  }),
-        });
-    }
+    return sizeForBannerFormat();
+};
+
+const useAdFormatSize = (adFormat: AdFormat) => {
+    const [adViewSize, setAdViewSize] = useState<SizeRecord>({});
+
+    useEffect(() => {
+        if (adFormat === AdFormat.BANNER) {
+            AppLovinMAX.isTablet().then((result: boolean) => {
+                if (result) {
+                    setAdViewSize({ width: ADVIEW_SIZE.leader.width, height: ADVIEW_SIZE.leader.height });
+                } else {
+                    setAdViewSize({ width: ADVIEW_SIZE.banner.width, height: ADVIEW_SIZE.banner.height });
+                }
+            });
+        } else {
+            setAdViewSize({ width: ADVIEW_SIZE.mrec.width, height: ADVIEW_SIZE.mrec.height });
+        }
+    }, [adFormat]);
+
+    return adViewSize;
 };
 
 /**
@@ -186,9 +181,14 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
     },
     ref
 ) {
+    const screenWidth = useWindowDimensions().width;
+    const adFormatSize = useAdFormatSize(adFormat); // Default size of Banner or MREC
+    const [, forceUpdate] = useReducer((x) => x + 1, 0); // Render self forcibly
+
     const adViewRef = useRef<AdViewType | null>(null);
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
-    const [dimensions, setDimensions] = useState({});
+    const sizeProps = useRef<SizeRecord>({});
+    const dimensions = useRef<SizeRecord>({});
 
     const loadAd = () => {
         if (adViewRef.current) {
@@ -215,17 +215,37 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
                 console.warn('AdView is mounted before the initialization of the AppLovin MAX React Native module');
             }
         });
-    }, []);
+    }, []); // Run once when mounted
 
     useEffect(() => {
         if (!isInitialized) return;
+
         const [width, height] = getOutlineViewSize(style);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore: width and height should be of type DimensionValue in react-native 0.72.0 and above
-        sizeAdViewDimensions(adFormat, adaptiveBannerEnabled, width, height).then((value: Record<string, number>) => {
-            setDimensions(value);
-        });
-    }, [isInitialized]);
+
+        if (sizeProps.current.width === width && sizeProps.current.height === height) return;
+
+        sizeProps.current = { width: width, height: height };
+
+        if (adFormat === AdFormat.BANNER) {
+            sizeBannerDimensions(sizeProps.current, adaptiveBannerEnabled, screenWidth, adFormatSize).then(
+                (adaptedSize: SizeRecord) => {
+                    if (
+                        dimensions.current.width !== adaptedSize.width ||
+                        dimensions.current.height !== adaptedSize.height
+                    ) {
+                        dimensions.current = adaptedSize;
+                        forceUpdate();
+                    }
+                }
+            );
+        } else {
+            dimensions.current = {
+                width: width === 'auto' ? adFormatSize.width : width,
+                height: height === 'auto' ? adFormatSize.height : height,
+            };
+            forceUpdate();
+        }
+    }); // Run every render
 
     const onAdLoadedEvent = (event: AdNativeEvent<AdInfo>) => {
         if (onAdLoaded) onAdLoaded(event.nativeEvent);
@@ -259,7 +279,7 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
     if (!isInitialized) {
         return null;
     } else {
-        const isDimensionsSet = Object.keys(dimensions).length > 0;
+        const isDimensionsSet = Object.keys(dimensions.current).length > 0;
 
         // Not sized yet
         if (!isDimensionsSet) {
@@ -286,7 +306,7 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
             onAdExpandedEvent={onAdExpandedEvent}
             onAdCollapsedEvent={onAdCollapsedEvent}
             onAdRevenuePaidEvent={onAdRevenuePaidEvent}
-            style={Object.assign({}, style, dimensions)}
+            style={Object.assign({}, style, dimensions.current)}
             {...otherProps}
         />
     );
