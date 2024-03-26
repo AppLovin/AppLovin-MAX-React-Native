@@ -1,7 +1,7 @@
 ## Versions
 
 ## x.x.x
-* Add support for adaptive banners.
+* Add support for adaptive banners. For more info, check out our [docs](https://dash.applovin.com/documentation/mediation/react-native/ad-formats/banners#adaptive-banners).
 ## 6.3.1
 * Depend on Android SDK 12.3.1 and iOS SDK 12.3.1.
 ## 6.3.0

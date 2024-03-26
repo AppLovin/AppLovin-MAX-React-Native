@@ -115,26 +115,6 @@ const sizeBannerDimensions = (
     return sizeForBannerFormat();
 };
 
-const useAdFormatSize = (adFormat: AdFormat) => {
-    const [adViewSize, setAdViewSize] = useState<SizeRecord>({});
-
-    useEffect(() => {
-        if (adFormat === AdFormat.BANNER) {
-            AppLovinMAX.isTablet().then((result: boolean) => {
-                if (result) {
-                    setAdViewSize({ width: ADVIEW_SIZE.leader.width, height: ADVIEW_SIZE.leader.height });
-                } else {
-                    setAdViewSize({ width: ADVIEW_SIZE.banner.width, height: ADVIEW_SIZE.banner.height });
-                }
-            });
-        } else {
-            setAdViewSize({ width: ADVIEW_SIZE.mrec.width, height: ADVIEW_SIZE.mrec.height });
-        }
-    }, [adFormat]);
-
-    return adViewSize;
-};
-
 /**
  * The {@link AdView} component that you use building a banner or an MREC. Phones
  * sizes banners to 320x50 and MRECs to 300x250. Tablets sizes banners to 728x90 and MRECs to
@@ -182,9 +162,8 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
     ref
 ) {
     const screenWidth = useWindowDimensions().width;
-    const adFormatSize = useAdFormatSize(adFormat); // Default size of Banner or MREC
-    const [, forceUpdate] = useReducer((x) => x + 1, 0); // Render self forcibly
-
+    const adFormatSize = useRef<SizeRecord>({});
+    const [, forceUpdate] = useReducer((x) => x + 1, 0);
     const adViewRef = useRef<AdViewType | null>(null);
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
     const sizeProps = useRef<SizeRecord>({});
@@ -209,6 +188,18 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
     }, []);
 
     useEffect(() => {
+        if (adFormat === AdFormat.BANNER) {
+            AppLovinMAX.isTablet().then((result: boolean) => {
+                if (result) {
+                    adFormatSize.current = { width: ADVIEW_SIZE.leader.width, height: ADVIEW_SIZE.leader.height };
+                } else {
+                    adFormatSize.current = { width: ADVIEW_SIZE.banner.width, height: ADVIEW_SIZE.banner.height };
+                }
+            });
+        } else {
+            adFormatSize.current = { width: ADVIEW_SIZE.mrec.width, height: ADVIEW_SIZE.mrec.height };
+        }
+
         AppLovinMAX.isInitialized().then((result: boolean) => {
             setIsInitialized(result);
             if (!result) {
@@ -227,7 +218,7 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
         sizeProps.current = { width: width, height: height };
 
         if (adFormat === AdFormat.BANNER) {
-            sizeBannerDimensions(sizeProps.current, adaptiveBannerEnabled, screenWidth, adFormatSize).then(
+            sizeBannerDimensions(sizeProps.current, adaptiveBannerEnabled, screenWidth, adFormatSize.current).then(
                 (adaptedSize: SizeRecord) => {
                     if (
                         dimensions.current.width !== adaptedSize.width ||
@@ -240,8 +231,8 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
             );
         } else {
             dimensions.current = {
-                width: width === 'auto' ? adFormatSize.width : width,
-                height: height === 'auto' ? adFormatSize.height : height,
+                width: width === 'auto' ? adFormatSize.current.width : width,
+                height: height === 'auto' ? adFormatSize.current.height : height,
             };
             forceUpdate();
         }
