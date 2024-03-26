@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useState } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { AdView, AdFormat } from '../../src/index';
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from '../../src/index';
@@ -22,8 +21,6 @@ const NativeBannerExample = ({
     isProgrammaticBannerShowing,
     setIsNativeUIBannerShowing,
 }: Props) => {
-    const [bannerSize, setBannerSize] = useState({});
-
     return (
         <>
             <AppButton
@@ -37,10 +34,9 @@ const NativeBannerExample = ({
                 <AdView
                     adUnitId={adUnitId}
                     adFormat={AdFormat.BANNER}
-                    style={{ ...styles.banner, ...bannerSize }}
+                    style={styles.banner}
                     onAdLoaded={(adInfo: AdInfo) => {
                         log('Banner ad loaded from ' + adInfo.networkName);
-                        setBannerSize({ width: adInfo.size.width, height: adInfo.size.height });
                     }}
                     onAdLoadFailed={(errorInfo: AdLoadFailedInfo) => {
                         log(
@@ -79,10 +75,9 @@ const styles = StyleSheet.create({
         // Set background color for banners to be fully functional
         backgroundColor: '#000000',
         position: 'absolute',
-        alignSelf: 'center',
+        width: '100%',
         // Automatically sized to 50 on phones and 90 on tablets. When adaptiveBannerEnabled is on,
         // sized to AppLovinMAX.getAdaptiveBannerHeightForWidth().
-        width: 'auto',
         height: 'auto',
         bottom: Platform.select({
             ios: 36, // For bottom safe area
