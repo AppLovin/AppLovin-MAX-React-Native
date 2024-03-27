@@ -18,7 +18,7 @@ const {
 
 const createAd = (adUnitId: string, position: AdViewPosition, xOffset?: number, yOffset?: number): void => {
     AppLovinMAX.createBannerWithOffsets(adUnitId, position, xOffset ?? 0, yOffset ?? 0);
-    AppLovinMAX.setBannerExtraParameter(adUnitId, "adaptive_banner", "true");
+    AppLovinMAX.setBannerExtraParameter(adUnitId, 'adaptive_banner', 'true');
 };
 
 const destroyAd = (adUnitId: string): void => {

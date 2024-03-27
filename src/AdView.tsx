@@ -75,7 +75,7 @@ const AdViewComponent = requireNativeComponent<AdViewProps & ViewProps & AdViewN
 type AdViewType = React.Component<AdViewProps> & NativeMethods;
 
 type SizeKey = 'width' | 'height';
-type SizeRecord = Partial<Record<SizeKey, number | string | null>>;
+type SizeRecord = Partial<Record<SizeKey, number | string>>;
 
 const ADVIEW_SIZE = {
     banner: { width: 320, height: 50 },
@@ -96,7 +96,7 @@ const sizeBannerDimensions = (
     bannerFormatSize: SizeRecord
 ): Promise<SizeRecord> => {
     const sizeForBannerFormat = async () => {
-        const width = sizeProps.width === 'auto' ? bannerFormatSize.width : sizeProps.width;
+        const width = sizeProps.width === 'auto' ? screenWidth : sizeProps.width;
 
         let height;
         if (sizeProps.height === 'auto') {
@@ -161,7 +161,7 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
     },
     ref
 ) {
-    const screenWidth = useWindowDimensions().width;
+    const { width: screenWidth } = useWindowDimensions();
     const adFormatSize = useRef<SizeRecord>({});
     const [, forceUpdate] = useReducer((x) => x + 1, 0);
     const adViewRef = useRef<AdViewType | null>(null);

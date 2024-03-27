@@ -2194,8 +2194,8 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
              @"revenue" : @(ad.revenue),
              @"waterfall": [self createAdWaterfallInfo: ad.waterfall],
              @"dspName" : ad.DSPName ?: @"",
-             @"size": @{@"width"  : @(ad.size.width),
-                        @"height" : @(ad.size.height)}
+             @"size" : @{@"width" : @(ad.size.width),
+                         @"height" : @(ad.size.height)}
             };
 }
 
