@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+* Add `size` to `AdInfo` for adaptive banners. For more info, check out our [docs](https://dash.applovin.com/documentation/mediation/react-native/ad-formats/banners#adaptive-banners).
 * Fix native ad app icons not clickable if set using a url.
 ## 6.3.1
 * Depend on Android SDK 12.3.1 and iOS SDK 12.3.1.

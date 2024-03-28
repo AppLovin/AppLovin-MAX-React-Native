@@ -48,6 +48,14 @@ export type AdInfo = {
      * The native ad info.
      */
     nativeAd?: AdNativeInfo | null;
+
+    /**
+     * The size of the AdView format ad, or size with (width: 0, height: 0) otherwise.
+     */
+    size: {
+        width: number;
+        height: number;
+    };
 };
 
 /**

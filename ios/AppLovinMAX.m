@@ -2193,7 +2193,10 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
              @"placement" : ad.placement ?: @"",
              @"revenue" : @(ad.revenue),
              @"waterfall": [self createAdWaterfallInfo: ad.waterfall],
-             @"dspName" : ad.DSPName ?: @""};
+             @"dspName" : ad.DSPName ?: @"",
+             @"size" : @{@"width" : @(ad.size.width),
+                         @"height" : @(ad.size.height)}
+            };
 }
 
 - (NSDictionary<NSString *, id> *)adLoadFailedInfoForAd:(NSString *)adUnitIdentifier withError:(MAError *)error

@@ -2629,6 +2629,11 @@ public class AppLovinMAXModule
         adInfo.putMap( "waterfall", createAdWaterfallInfo( ad.getWaterfall() ) );
         adInfo.putString( "dspName", AppLovinSdkUtils.isValidString( ad.getDspName() ) ? ad.getDspName() : "" );
 
+        WritableMap sizeObject = Arguments.createMap();
+        sizeObject.putInt( "width", ad.getSize().getWidth() );
+        sizeObject.putInt( "height", ad.getSize().getHeight() );
+        adInfo.putMap( "size", sizeObject );
+
         return adInfo;
     }
 
