@@ -88,7 +88,7 @@ export const IconView = (props: Omit<ImageProps, 'source'>) => {
     const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
 
     useEffect(() => {
-        if (!nativeAd.image || !imageRef.current) return;
+        if (!(nativeAd.image || nativeAd.url) || !imageRef.current) return;
 
         nativeAdView?.setNativeProps({
             iconView: findNodeHandle(imageRef.current),
@@ -96,7 +96,7 @@ export const IconView = (props: Omit<ImageProps, 'source'>) => {
     }, [nativeAd]);
 
     return nativeAd.url ? (
-        <Image {...props} source={{ uri: nativeAd.url }} />
+        <Image {...props} ref={imageRef} source={{ uri: nativeAd.url }} />
     ) : nativeAd.image ? (
         <Image {...props} ref={imageRef} source={0} />
     ) : (

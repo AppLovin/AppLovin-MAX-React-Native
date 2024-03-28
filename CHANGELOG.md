@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Fix native ad app icons not clickable if set using a url.
 ## 6.3.1
 * Depend on Android SDK 12.3.1 and iOS SDK 12.3.1.
 ## 6.3.0
