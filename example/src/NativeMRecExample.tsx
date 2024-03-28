@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     mrec: {
         position: 'absolute',
         width: '100%',
-        height: 250,
+        height: 'auto',
         bottom: Platform.select({
             ios: 36, // For bottom safe area
             android: 0,

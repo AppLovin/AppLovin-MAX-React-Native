@@ -177,7 +177,6 @@ const styles = StyleSheet.create({
         }),
     },
     statusText: {
-        marginBottom: 10,
         backgroundColor: 'green',
         padding: 10,
         fontSize: 20,
