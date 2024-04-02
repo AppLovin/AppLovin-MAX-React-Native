@@ -36,10 +36,7 @@ import com.applovin.mediation.ads.MaxAdView;
 import com.applovin.mediation.ads.MaxAppOpenAd;
 import com.applovin.mediation.ads.MaxInterstitialAd;
 import com.applovin.mediation.ads.MaxRewardedAd;
-import com.applovin.sdk.AppLovinAdContentRating;
 import com.applovin.sdk.AppLovinCmpError;
-import com.applovin.sdk.AppLovinCmpService;
-import com.applovin.sdk.AppLovinGender;
 import com.applovin.sdk.AppLovinMediationProvider;
 import com.applovin.sdk.AppLovinPrivacySettings;
 import com.applovin.sdk.AppLovinSdk;
@@ -47,6 +44,8 @@ import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkConfiguration.ConsentFlowUserGeography;
 import com.applovin.sdk.AppLovinSdkSettings;
 import com.applovin.sdk.AppLovinSdkUtils;
+import com.applovin.sdk.AppLovinTargetingData.AdContentRating;
+import com.applovin.sdk.AppLovinTargetingData.Gender;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
@@ -2459,7 +2458,7 @@ public class AppLovinMAXModule
 
         if ( promise == null )
         {
-            e(  message );
+            e( message );
             return;
         }
 
@@ -2531,38 +2530,38 @@ public class AppLovinMAXModule
         return new Point( AppLovinSdkUtils.dpToPx( context, (int) xDp ), AppLovinSdkUtils.dpToPx( context, (int) yDp ) );
     }
 
-    private static AppLovinGender getAppLovinGender(@Nullable final String gender)
+    private static Gender getAppLovinGender(@Nullable final String gender)
     {
         if ( gender != null )
         {
             if ( "F".equalsIgnoreCase( gender ) )
             {
-                return AppLovinGender.FEMALE;
+                return Gender.FEMALE;
             }
             else if ( "M".equalsIgnoreCase( gender ) )
             {
-                return AppLovinGender.MALE;
+                return Gender.MALE;
             }
             else if ( "O".equalsIgnoreCase( gender ) )
             {
-                return AppLovinGender.OTHER;
+                return Gender.OTHER;
             }
         }
 
-        return AppLovinGender.UNKNOWN;
+        return Gender.UNKNOWN;
     }
 
-    private static String getRawAppLovinGender(final AppLovinGender gender)
+    private static String getRawAppLovinGender(final Gender gender)
     {
-        if ( gender == AppLovinGender.FEMALE )
+        if ( gender == Gender.FEMALE )
         {
             return "F";
         }
-        else if ( gender == AppLovinGender.MALE )
+        else if ( gender == Gender.MALE )
         {
             return "M";
         }
-        else if ( gender == AppLovinGender.OTHER )
+        else if ( gender == Gender.OTHER )
         {
             return "O";
         }
@@ -2570,22 +2569,22 @@ public class AppLovinMAXModule
         return "U";
     }
 
-    private static AppLovinAdContentRating getAppLovinAdContentRating(final int maximumAdContentRating)
+    private static AdContentRating getAppLovinAdContentRating(final int maximumAdContentRating)
     {
         if ( maximumAdContentRating == 1 )
         {
-            return AppLovinAdContentRating.ALL_AUDIENCES;
+            return AdContentRating.ALL_AUDIENCES;
         }
         else if ( maximumAdContentRating == 2 )
         {
-            return AppLovinAdContentRating.EVERYONE_OVER_TWELVE;
+            return AdContentRating.EVERYONE_OVER_TWELVE;
         }
         else if ( maximumAdContentRating == 3 )
         {
-            return AppLovinAdContentRating.MATURE_AUDIENCES;
+            return AdContentRating.MATURE_AUDIENCES;
         }
 
-        return AppLovinAdContentRating.NONE;
+        return AdContentRating.NONE;
     }
 
     private static ConsentFlowUserGeography getAppLovinConsentFlowUserGeography(final String userGeography)
