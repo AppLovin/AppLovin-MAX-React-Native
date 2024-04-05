@@ -20,6 +20,7 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.applovin.impl.sdk.AppLovinSdkInitializationConfigurationImpl;
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxAdListener;
@@ -42,8 +43,9 @@ import com.applovin.sdk.AppLovinPrivacySettings;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkConfiguration.ConsentFlowUserGeography;
-import com.applovin.sdk.AppLovinSdkSettings;
+import com.applovin.sdk.AppLovinSdkInitializationConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
+import com.applovin.sdk.AppLovinTargetingData;
 import com.applovin.sdk.AppLovinTargetingData.AdContentRating;
 import com.applovin.sdk.AppLovinTargetingData.Gender;
 import com.facebook.react.bridge.Arguments;
@@ -146,31 +148,14 @@ public class AppLovinMAXModule
     private boolean                  isSdkInitialized;
     private AppLovinSdkConfiguration sdkConfiguration;
 
+    private final AppLovinTargetingData.Builder                  targetingDataBuilder;
+    private final AppLovinSdkInitializationConfiguration.Builder initConfigurationBuilder;
+
     private WindowManager windowManager;
     private int           lastRotation;
 
     // Store these values if pub attempts to set it before initializing
-    private       List<String>        initializationAdUnitIdsToSet;
-    private       String              userIdToSet;
-    private       Boolean             mutedToSet;
-    private       List<String>        testDeviceAdvertisingIdsToSet;
-    private       Boolean             verboseLoggingToSet;
-    private       Boolean             creativeDebuggerEnabledToSet;
-    private       Boolean             locationCollectionEnabledToSet;
     private final Map<String, String> extraParametersToSet = new HashMap<>( 8 );
-
-    private Boolean termsAndPrivacyPolicyFlowEnabledToSet;
-    private Uri     privacyPolicyURLToSet;
-    private Uri     termsOfServiceURLToSet;
-    private String  debugUserGeographyToSet;
-
-    private Integer targetingYearOfBirthToSet;
-    private String  targetingGenderToSet;
-    private Integer targetingMaximumAdContentRatingToSet;
-    private String  targetingEmailToSet;
-    private String  targetingPhoneNumberToSet;
-    private List    targetingKeywordsToSet;
-    private List    targetingInterestsToSet;
 
     // Fullscreen Ad Fields
     private final Map<String, MaxInterstitialAd> mInterstitials = new HashMap<>( 2 );
@@ -205,6 +190,8 @@ public class AppLovinMAXModule
 
         instance = this;
         sCurrentActivity = reactContext.getCurrentActivity();
+        targetingDataBuilder = AppLovinTargetingData.builder();
+        initConfigurationBuilder = AppLovinSdkInitializationConfiguration.builder( "", reactContext );
 
         // Listening to Lifecycle Events
         reactContext.addLifecycleEventListener( this );
@@ -304,164 +291,48 @@ public class AppLovinMAXModule
             }
         }
 
-        AppLovinSdkSettings settings = new AppLovinSdkSettings( getReactApplicationContext() );
+        ( (AppLovinSdkInitializationConfigurationImpl.BuilderImpl) initConfigurationBuilder ).setSdkKey( sdkKeyToUse );
 
-        // Selective init
-        if ( initializationAdUnitIdsToSet != null )
-        {
-            settings.setInitializationAdUnitIds( initializationAdUnitIdsToSet );
-            initializationAdUnitIdsToSet = null;
-        }
+        initConfigurationBuilder.setPluginVersion( "React-Native-" + pluginVersion );
+        initConfigurationBuilder.setMediationProvider( AppLovinMediationProvider.MAX );
 
-        if ( termsAndPrivacyPolicyFlowEnabledToSet != null )
-        {
-            settings.getTermsAndPrivacyPolicyFlowSettings().setEnabled( termsAndPrivacyPolicyFlowEnabledToSet );
-            termsAndPrivacyPolicyFlowEnabledToSet = null;
-        }
+        AppLovinTargetingData targetingData = targetingDataBuilder.build();
+        initConfigurationBuilder.setTargetingData( targetingData );
 
-        if ( privacyPolicyURLToSet != null )
-        {
-            settings.getTermsAndPrivacyPolicyFlowSettings().setPrivacyPolicyUri( privacyPolicyURLToSet );
-            privacyPolicyURLToSet = null;
-        }
-
-        if ( termsOfServiceURLToSet != null )
-        {
-            settings.getTermsAndPrivacyPolicyFlowSettings().setTermsOfServiceUri( termsOfServiceURLToSet );
-            termsOfServiceURLToSet = null;
-        }
-
-        if ( AppLovinSdkUtils.isValidString( debugUserGeographyToSet ) )
-        {
-            settings.getTermsAndPrivacyPolicyFlowSettings().setDebugUserGeography( getAppLovinConsentFlowUserGeography( debugUserGeographyToSet ) );
-            debugUserGeographyToSet = null;
-        }
-
-        // Set muted if needed
-        if ( mutedToSet != null )
-        {
-            settings.setMuted( mutedToSet );
-            mutedToSet = null;
-        }
-
-        // Set test device ids if needed
-        if ( testDeviceAdvertisingIdsToSet != null )
-        {
-            settings.setTestDeviceAdvertisingIds( testDeviceAdvertisingIdsToSet );
-            testDeviceAdvertisingIdsToSet = null;
-        }
-
-        // Set verbose logging state if needed
-        if ( verboseLoggingToSet != null )
-        {
-            settings.setVerboseLogging( verboseLoggingToSet );
-            verboseLoggingToSet = null;
-        }
-
-        // Set creative debugger enabled if needed.
-        if ( creativeDebuggerEnabledToSet != null )
-        {
-            settings.setCreativeDebuggerEnabled( creativeDebuggerEnabledToSet );
-            creativeDebuggerEnabledToSet = null;
-        }
-
-        // Set location collection enabled if needed
-        if ( locationCollectionEnabledToSet != null )
-        {
-            settings.setLocationCollectionEnabled( locationCollectionEnabledToSet );
-            locationCollectionEnabledToSet = null;
-        }
-
-        setPendingExtraParametersIfNeeded( settings );
+        AppLovinSdkInitializationConfiguration initConfig = initConfigurationBuilder.build();
 
         // Initialize SDK
-        sdk = AppLovinSdk.getInstance( sdkKeyToUse, settings, context );
-        sdk.setPluginVersion( "React-Native-" + pluginVersion );
-        sdk.setMediationProvider( AppLovinMediationProvider.MAX );
+        sdk = AppLovinSdk.getInstance( context );
 
-        // Set user id if needed
-        if ( AppLovinSdkUtils.isValidString( userIdToSet ) )
-        {
-            sdk.setUserIdentifier( userIdToSet );
-            userIdToSet = null;
-        }
+        sdk.initialize( initConfig, configuration -> {
+            d( "SDK initialized" );
 
-        if ( targetingYearOfBirthToSet != null )
-        {
-            sdk.getTargetingData().setYearOfBirth( targetingYearOfBirthToSet <= 0 ? null : targetingYearOfBirthToSet );
-            targetingYearOfBirthToSet = null;
-        }
+            sdkConfiguration = configuration;
+            isSdkInitialized = true;
 
-        if ( targetingGenderToSet != null )
-        {
-            sdk.getTargetingData().setGender( getAppLovinGender( targetingGenderToSet ) );
-            targetingGenderToSet = null;
-        }
+            windowManager = (WindowManager) context.getSystemService( Context.WINDOW_SERVICE );
 
-        if ( targetingMaximumAdContentRatingToSet != null )
-        {
-            sdk.getTargetingData().setMaximumAdContentRating( getAppLovinAdContentRating( targetingMaximumAdContentRatingToSet ) );
-            targetingMaximumAdContentRatingToSet = null;
-        }
+            lastRotation = windowManager.getDefaultDisplay().getRotation();
 
-        if ( targetingEmailToSet != null )
-        {
-            sdk.getTargetingData().setEmail( targetingEmailToSet );
-            targetingEmailToSet = null;
-        }
-
-        if ( targetingPhoneNumberToSet != null )
-        {
-            sdk.getTargetingData().setPhoneNumber( targetingPhoneNumberToSet );
-            targetingPhoneNumberToSet = null;
-        }
-
-        if ( targetingKeywordsToSet != null )
-        {
-            sdk.getTargetingData().setKeywords( targetingKeywordsToSet );
-            targetingKeywordsToSet = null;
-        }
-
-        if ( targetingInterestsToSet != null )
-        {
-            sdk.getTargetingData().setInterests( targetingInterestsToSet );
-            targetingInterestsToSet = null;
-        }
-
-        sdk.initializeSdk( new AppLovinSdk.SdkInitializationListener()
-        {
-            @Override
-            public void onSdkInitialized(final AppLovinSdkConfiguration configuration)
+            // Enable orientation change listener, so that the ad view positions can be updated when the device is rotated.
+            new OrientationEventListener( context )
             {
-                d( "SDK initialized" );
-
-                sdkConfiguration = configuration;
-                isSdkInitialized = true;
-
-                windowManager = (WindowManager) context.getSystemService( Context.WINDOW_SERVICE );
-
-                lastRotation = windowManager.getDefaultDisplay().getRotation();
-
-                // Enable orientation change listener, so that the ad view positions can be updated when the device is rotated.
-                new OrientationEventListener( context )
+                @Override
+                public void onOrientationChanged(final int orientation)
                 {
-                    @Override
-                    public void onOrientationChanged(final int orientation)
+                    int newRotation = windowManager.getDefaultDisplay().getRotation();
+                    if ( newRotation != lastRotation )
                     {
-                        int newRotation = windowManager.getDefaultDisplay().getRotation();
-                        if ( newRotation != lastRotation )
+                        lastRotation = newRotation;
+                        for ( final Map.Entry<String, MaxAdFormat> adUnitFormats : mAdViewAdFormats.entrySet() )
                         {
-                            lastRotation = newRotation;
-                            for ( final Map.Entry<String, MaxAdFormat> adUnitFormats : mAdViewAdFormats.entrySet() )
-                            {
-                                positionAdView( adUnitFormats.getKey(), adUnitFormats.getValue() );
-                            }
+                            positionAdView( adUnitFormats.getKey(), adUnitFormats.getValue() );
                         }
                     }
-                }.enable();
+                }
+            }.enable();
 
-                promise.resolve( getInitializationMessage() );
-            }
+            promise.resolve( getInitializationMessage() );
         } );
     }
 
@@ -543,11 +414,10 @@ public class AppLovinMAXModule
         if ( isPluginInitialized )
         {
             sdk.setUserIdentifier( userId );
-            userIdToSet = null;
         }
         else
         {
-            userIdToSet = userId;
+            initConfigurationBuilder.getSettings().setUserIdentifier( userId );
         }
     }
 
@@ -557,11 +427,10 @@ public class AppLovinMAXModule
         if ( isPluginInitialized )
         {
             sdk.getSettings().setMuted( muted );
-            mutedToSet = null;
         }
         else
         {
-            mutedToSet = muted;
+            initConfigurationBuilder.getSettings().setMuted( muted );
         }
     }
 
@@ -577,11 +446,10 @@ public class AppLovinMAXModule
         if ( isPluginInitialized )
         {
             sdk.getSettings().setVerboseLogging( enabled );
-            verboseLoggingToSet = null;
         }
         else
         {
-            verboseLoggingToSet = enabled;
+            initConfigurationBuilder.getSettings().setVerboseLogging( enabled );
         }
     }
 
@@ -591,11 +459,10 @@ public class AppLovinMAXModule
         if ( isPluginInitialized )
         {
             sdk.getSettings().setCreativeDebuggerEnabled( enabled );
-            creativeDebuggerEnabledToSet = null;
         }
         else
         {
-            creativeDebuggerEnabledToSet = enabled;
+            initConfigurationBuilder.getSettings().setCreativeDebuggerEnabled( enabled );
         }
     }
 
@@ -610,15 +477,7 @@ public class AppLovinMAXModule
             advertisingIds.add( (String) rawAdvertisingId );
         }
 
-        if ( isPluginInitialized )
-        {
-            sdk.getSettings().setTestDeviceAdvertisingIds( advertisingIds );
-            testDeviceAdvertisingIdsToSet = null;
-        }
-        else
-        {
-            testDeviceAdvertisingIdsToSet = advertisingIds;
-        }
+        initConfigurationBuilder.getSettings().setTestDeviceAdvertisingIds( advertisingIds );
     }
 
     @ReactMethod
@@ -632,26 +491,26 @@ public class AppLovinMAXModule
 
         if ( sdk != null )
         {
-            AppLovinSdkSettings settings = sdk.getSettings();
-            settings.setExtraParameter( key, value );
-            setPendingExtraParametersIfNeeded( settings );
+            sdk.getSettings().setExtraParameter( key, value );
         }
         else
         {
-            extraParametersToSet.put( key, value );
+            initConfigurationBuilder.getSettings().setExtraParameter( key, value );
         }
     }
 
     @ReactMethod
     public void setInitializationAdUnitIds(final ReadableArray rawAdUnitIds)
     {
-        initializationAdUnitIdsToSet = new ArrayList<>( rawAdUnitIds.size() );
+        List<String> adUnitIds = new ArrayList<>( rawAdUnitIds.size() );
 
         // Convert to String List
         for ( Object adUnitId : rawAdUnitIds.toArrayList() )
         {
-            initializationAdUnitIdsToSet.add( (String) adUnitId );
+            adUnitIds.add( (String) adUnitId );
         }
+
+        initConfigurationBuilder.getSettings().setInitializationAdUnitIds( adUnitIds );
     }
 
     // MAX Terms and Privacy Policy Flow
@@ -662,25 +521,25 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setTermsAndPrivacyPolicyFlowEnabled(final boolean enabled)
     {
-        termsAndPrivacyPolicyFlowEnabledToSet = enabled;
+        initConfigurationBuilder.getSettings().getTermsAndPrivacyPolicyFlowSettings().setEnabled( enabled );
     }
 
     @ReactMethod
     public void setPrivacyPolicyUrl(final String urlString)
     {
-        privacyPolicyURLToSet = Uri.parse( urlString );
+        initConfigurationBuilder.getSettings().getTermsAndPrivacyPolicyFlowSettings().setPrivacyPolicyUri( Uri.parse( urlString ) );
     }
 
     @ReactMethod
     public void setTermsOfServiceUrl(final String urlString)
     {
-        termsOfServiceURLToSet = Uri.parse( urlString );
+        initConfigurationBuilder.getSettings().getTermsAndPrivacyPolicyFlowSettings().setTermsOfServiceUri( Uri.parse( urlString ) );
     }
 
     @ReactMethod
     public void setConsentFlowDebugUserGeography(final String userGeography)
     {
-        debugUserGeographyToSet = userGeography;
+        initConfigurationBuilder.getSettings().getTermsAndPrivacyPolicyFlowSettings().setDebugUserGeography( getAppLovinConsentFlowUserGeography( userGeography ) );
     }
 
     @ReactMethod
@@ -735,7 +594,7 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            targetingYearOfBirthToSet = yearOfBirth;
+            targetingDataBuilder.setYearOfBirth( yearOfBirth );
             return;
         }
 
@@ -745,13 +604,17 @@ public class AppLovinMAXModule
     @ReactMethod
     public void getTargetingDataYearOfBirth(final Promise promise)
     {
+        Integer yearOfBirth = null;
+
         if ( sdk == null )
         {
-            promise.resolve( targetingYearOfBirthToSet == null ? 0 : targetingYearOfBirthToSet );
-            return;
+            yearOfBirth = targetingDataBuilder.getYearOfBirth();
+        }
+        else
+        {
+            yearOfBirth = sdk.getTargetingData().getYearOfBirth();
         }
 
-        Integer yearOfBirth = sdk.getTargetingData().getYearOfBirth();
         promise.resolve( yearOfBirth != null ? yearOfBirth : 0 );
     }
 
@@ -760,7 +623,7 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            targetingGenderToSet = gender;
+            targetingDataBuilder.setGender( getAppLovinGender( gender ) );
             return;
         }
 
@@ -770,20 +633,18 @@ public class AppLovinMAXModule
     @ReactMethod
     public void getTargetingDataGender(final Promise promise)
     {
+        Gender gender = null;
+
         if ( sdk == null )
         {
-            promise.resolve( targetingGenderToSet == null ? "U" : targetingGenderToSet );
-            return;
-        }
-
-        if ( sdk.getTargetingData().getGender() == null )
-        {
-            promise.resolve( "U" );
+            gender = targetingDataBuilder.getGender();
         }
         else
         {
-            promise.resolve( getRawAppLovinGender( sdk.getTargetingData().getGender() ) );
+            gender = sdk.getTargetingData().getGender();
         }
+
+        promise.resolve( getRawAppLovinGender( gender ) );
     }
 
     @ReactMethod
@@ -791,7 +652,7 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            targetingMaximumAdContentRatingToSet = maximumAdContentRating;
+            targetingDataBuilder.setMaximumAdContentRating( getAppLovinAdContentRating( maximumAdContentRating ) );
             return;
         }
 
@@ -801,20 +662,18 @@ public class AppLovinMAXModule
     @ReactMethod
     public void getTargetingDataMaximumAdContentRating(final Promise promise)
     {
+        AdContentRating adContentRating = null;
+
         if ( sdk == null )
         {
-            promise.resolve( targetingMaximumAdContentRatingToSet == null ? 0 : targetingMaximumAdContentRatingToSet );
-            return;
-        }
-
-        if ( sdk.getTargetingData().getMaximumAdContentRating() == null )
-        {
-            promise.resolve( 0 );
+            adContentRating = targetingDataBuilder.getMaximumAdContentRating();
         }
         else
         {
-            promise.resolve( sdk.getTargetingData().getMaximumAdContentRating().ordinal() );
+            adContentRating = sdk.getTargetingData().getMaximumAdContentRating();
         }
+
+        promise.resolve( adContentRating == null ? 0 : adContentRating.ordinal() );
     }
 
     @ReactMethod
@@ -822,7 +681,7 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            targetingEmailToSet = email;
+            targetingDataBuilder.setEmail( email );
             return;
         }
 
@@ -834,7 +693,7 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            promise.resolve( targetingEmailToSet );
+            promise.resolve( targetingDataBuilder.getEmail() );
             return;
         }
 
@@ -846,7 +705,7 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            targetingPhoneNumberToSet = phoneNumber;
+            targetingDataBuilder.setPhoneNumber( phoneNumber );
             return;
         }
 
@@ -858,7 +717,7 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            promise.resolve( targetingPhoneNumberToSet );
+            promise.resolve( targetingDataBuilder.getPhoneNumber() );
             return;
         }
 
@@ -870,7 +729,7 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            targetingKeywordsToSet = Arguments.toList( rawKeywords );
+            targetingDataBuilder.setKeywords( Arguments.toList( rawKeywords ) );
             return;
         }
 
@@ -880,20 +739,16 @@ public class AppLovinMAXModule
     @ReactMethod
     public void getTargetingDataKeywords(final Promise promise)
     {
+        List<String> keywords = null;
+
         if ( sdk == null )
         {
-            if ( targetingKeywordsToSet == null || targetingKeywordsToSet.size() == 0 )
-            {
-                promise.resolve( null );
-            }
-            else
-            {
-                promise.resolve( Arguments.fromList( targetingKeywordsToSet ) );
-            }
-            return;
+            keywords = targetingDataBuilder.getKeywords();
         }
-
-        List<String> keywords = sdk.getTargetingData().getKeywords();
+        else
+        {
+            keywords = sdk.getTargetingData().getKeywords();
+        }
 
         if ( keywords == null || keywords.size() == 0 )
         {
@@ -910,7 +765,7 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            targetingKeywordsToSet = Arguments.toList( rawInterests );
+            targetingDataBuilder.setInterests( Arguments.toList( rawInterests ) );
             return;
         }
 
@@ -920,20 +775,16 @@ public class AppLovinMAXModule
     @ReactMethod
     public void getTargetingDataInterests(final Promise promise)
     {
+        List<String> interests = null;
+
         if ( sdk == null )
         {
-            if ( targetingInterestsToSet == null || targetingInterestsToSet.size() == 0 )
-            {
-                promise.resolve( null );
-            }
-            else
-            {
-                promise.resolve( Arguments.fromList( targetingInterestsToSet ) );
-            }
-            return;
+            interests = targetingDataBuilder.getInterests();
         }
-
-        List<String> interests = sdk.getTargetingData().getInterests();
+        else
+        {
+            interests = sdk.getTargetingData().getInterests();
+        }
 
         if ( interests == null || interests.size() == 0 )
         {
@@ -950,13 +801,13 @@ public class AppLovinMAXModule
     {
         if ( sdk == null )
         {
-            targetingYearOfBirthToSet = null;
-            targetingGenderToSet = null;
-            targetingMaximumAdContentRatingToSet = null;
-            targetingEmailToSet = null;
-            targetingPhoneNumberToSet = null;
-            targetingKeywordsToSet = null;
-            targetingInterestsToSet = null;
+            targetingDataBuilder.setYearOfBirth( null );
+            targetingDataBuilder.setGender( Gender.UNKNOWN );
+            targetingDataBuilder.setMaximumAdContentRating( AdContentRating.NONE );
+            targetingDataBuilder.setEmail( null );
+            targetingDataBuilder.setPhoneNumber( null );
+            targetingDataBuilder.setKeywords( null );
+            targetingDataBuilder.setInterests( null );
             return;
         }
 
@@ -969,11 +820,10 @@ public class AppLovinMAXModule
         if ( isPluginInitialized )
         {
             sdk.getSettings().setLocationCollectionEnabled( enabled );
-            locationCollectionEnabledToSet = null;
         }
         else
         {
-            locationCollectionEnabledToSet = enabled;
+            initConfigurationBuilder.getSettings().setLocationCollectionEnabled( enabled );
         }
     }
 
@@ -2421,18 +2271,6 @@ public class AppLovinMAXModule
 
         relativeLayout.setGravity( gravity );
         relativeLayout.setPadding( adViewOffset.x, adViewOffset.y, adViewOffset.x, adViewOffset.y );
-    }
-
-    private void setPendingExtraParametersIfNeeded(final AppLovinSdkSettings settings)
-    {
-        if ( extraParametersToSet.size() <= 0 ) return;
-
-        for ( final String key : extraParametersToSet.keySet() )
-        {
-            settings.setExtraParameter( key, extraParametersToSet.get( key ) );
-        }
-
-        extraParametersToSet.clear();
     }
 
     // Utility Methods
