@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 6.4.1
 * Depend on Android SDK 12.4.2 and iOS SDK 12.4.1.
 ## 6.4.0
 * Depend on Android SDK 12.4.0 and iOS SDK 12.4.0.
