@@ -8,7 +8,7 @@ import {
     findNodeHandle,
     useWindowDimensions,
 } from 'react-native';
-import type { ViewProps, ViewStyle, StyleProp, NativeMethods } from 'react-native';
+import type { ViewProps, ViewStyle, StyleProp, NativeMethods, DimensionValue } from 'react-native';
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from './types/AdInfo';
 import type { AdNativeEvent } from './types/AdEvent';
 import type { AdViewProps, AdViewHandler } from './types/AdViewProps';
@@ -75,7 +75,7 @@ const AdViewComponent = requireNativeComponent<AdViewProps & ViewProps & AdViewN
 type AdViewType = React.Component<AdViewProps> & NativeMethods;
 
 type SizeKey = 'width' | 'height';
-type SizeRecord = Partial<Record<SizeKey, number | string>>;
+type SizeRecord = Partial<Record<SizeKey, DimensionValue>>;
 
 const ADVIEW_SIZE = {
     banner: { width: 320, height: 50 },
@@ -173,6 +173,7 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
         if (adViewRef.current) {
             UIManager.dispatchViewManagerCommand(
                 findNodeHandle(adViewRef.current),
+                // @ts-ignore: Issue in RN ts defs
                 UIManager.getViewManagerConfig('AppLovinMAXAdView').Commands.loadAd,
                 undefined
             );

@@ -116,6 +116,7 @@ const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps & Vie
         if (nativeAdViewRef) {
             UIManager.dispatchViewManagerCommand(
                 findNodeHandle(nativeAdViewRef.current),
+                // @ts-ignore: Issue in RN ts defs
                 UIManager.getViewManagerConfig('AppLovinMAXNativeAdView').Commands.loadAd,
                 undefined
             );

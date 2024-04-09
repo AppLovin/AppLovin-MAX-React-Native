@@ -81,11 +81,11 @@ export const NativeAdViewExample = ({
                     log('Native ad revenue paid: ' + adInfo.revenue);
                 }}
             >
-                <View style={{flex: 1, flexDirection: 'column', justifyContent: 'space-between'}}>
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <IconView style={styles.icon} />
-                        <View style={{width: 4}} />
-                        <View style={{flexDirection: 'column', flexGrow: 1}}>
+                        <View style={{ width: 4 }} />
+                        <View style={{ flexDirection: 'column', flexGrow: 1 }}>
                             <TitleView numberOfLines={1} style={styles.title} />
                             <AdvertiserView numberOfLines={1} style={styles.advertiser} />
                             <StarRatingView style={styles.starRatingView} />
@@ -93,8 +93,8 @@ export const NativeAdViewExample = ({
                         <OptionsView style={styles.optionsView} />
                     </View>
                     <BodyView numberOfLines={2} style={styles.body} />
-                    <MediaView style={{...styles.mediaView, ...mediaViewSize}} />
-                    <View style={{height: 10}} />
+                    <MediaView style={{ ...styles.mediaView, ...mediaViewSize }} />
+                    <View style={{ height: 10 }} />
                     <CallToActionView style={styles.callToAction} />
                 </View>
             </NativeAdView>
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
         padding: 8,
         fontSize: 14,
         textAlign: 'center',
-        textAlignVertical: 'center'
+        textAlignVertical: 'center',
     },
     mediaView: {
         alignSelf: 'center',
