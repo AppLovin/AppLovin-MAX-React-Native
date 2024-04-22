@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';
-import { AdView, AdFormat } from '../../src/index';
-import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from '../../src/index';
+import { AdView, AdFormat } from 'react-native-applovin-max';
+import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from 'react-native-applovin-max';
 import AppButton from './components/AppButton';
 
 type Props = {

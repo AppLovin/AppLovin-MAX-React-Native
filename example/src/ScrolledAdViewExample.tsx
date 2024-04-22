@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { StyleSheet, Text, ScrollView, View, Dimensions, Platform } from 'react-native';
-import { AdFormat, AdView } from '../../src/index';
+import { AdFormat, AdView } from 'react-native-applovin-max';
 import AppButton from './components/AppButton';
 
 type Props = {
@@ -53,7 +53,7 @@ const ScrolledAdViewExample = ({ bannerAdUnitId, mrecAdUnitId, isInitialized, is
                                 </Text>
 
                                 {isAdEnabled ? (
-                                    i % 2 == 0 ? (
+                                    i % 2 === 0 ? (
                                         <AdView
                                             adUnitId={bannerAdUnitId}
                                             adFormat={AdFormat.BANNER}

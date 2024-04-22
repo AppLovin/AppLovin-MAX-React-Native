@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
-import { RewardedAd } from '../../src/index';
-import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from '../../src/index';
+import { RewardedAd } from 'react-native-applovin-max';
+import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from 'react-native-applovin-max';
 import AppButton from './components/AppButton';
 
 const MAX_EXPONENTIAL_RETRY_COUNT = 6;
@@ -24,10 +24,6 @@ const RewardedExample = ({ adUnitId, isInitialized, log }: Props) => {
     const retryAttempt = useRef(0);
 
     useEffect(() => {
-        setupEventListeners();
-    }, []);
-
-    const setupEventListeners = () => {
         RewardedAd.addAdLoadedEventListener((adInfo: AdInfo) => {
             setAdLoadState(AdLoadState.loaded);
 
@@ -78,7 +74,7 @@ const RewardedExample = ({ adUnitId, isInitialized, log }: Props) => {
         RewardedAd.addAdRevenuePaidListener((adInfo: AdRevenueInfo) => {
             log('Rewarded ad revenue paid: ' + adInfo.revenue);
         });
-    };
+    }, [adUnitId, log]);
 
     const getRewardedButtonTitle = () => {
         if (adLoadState === AdLoadState.notLoaded) {

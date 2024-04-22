@@ -127,12 +127,15 @@ const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps & Vie
     useImperativeHandle(ref, () => ({ loadAd }), []);
 
     // save the DOM element via the ref callback
-    const saveElement = useCallback((element: NativeAdViewType | null) => {
-        if (element) {
-            nativeAdViewRef.current = element;
-            setNativeAdView(element);
-        }
-    }, []);
+    const saveElement = useCallback(
+        (element: NativeAdViewType | null) => {
+            if (element) {
+                nativeAdViewRef.current = element;
+                setNativeAdView(element);
+            }
+        },
+        [setNativeAdView]
+    );
 
     const onAdLoadedEvent = (event: { nativeEvent: { nativeAd: NativeAd; adInfo: AdInfo } }) => {
         setNativeAd(event.nativeEvent.nativeAd);
