@@ -1,7 +1,9 @@
 ## Versions
 
 ## x.x.x
-* Add support for new initialization APIs with SDK 12.4.0.
+* Add support for new initialization APIs.
+## 6.4.1
+* Depend on Android SDK 12.4.2 and iOS SDK 12.4.1.
 ## 6.4.0
 * Depend on Android SDK 12.4.0 and iOS SDK 12.4.0.
 * Add `size` to `AdInfo` for adaptive banners. For more info, check out our [docs](https://dash.applovin.com/documentation/mediation/react-native/ad-formats/banners#adaptive-banners).
