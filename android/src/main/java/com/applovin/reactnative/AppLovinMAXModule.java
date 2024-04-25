@@ -137,8 +137,7 @@ public class AppLovinMAXModule
 
     private static final Point DEFAULT_AD_VIEW_OFFSET = new Point( 0, 0 );
 
-    public static  AppLovinMAXModule instance;
-    private static Activity          sCurrentActivity;
+    public static AppLovinMAXModule instance;
 
     // Parent Fields
     private AppLovinSdk              sdk;
@@ -204,7 +203,6 @@ public class AppLovinMAXModule
         super( reactContext );
 
         instance = this;
-        sCurrentActivity = reactContext.getCurrentActivity();
 
         // Listening to Lifecycle Events
         reactContext.addLifecycleEventListener( this );
@@ -219,14 +217,7 @@ public class AppLovinMAXModule
     @Nullable
     private Activity maybeGetCurrentActivity()
     {
-        // React Native has a bug where `getCurrentActivity()` returns null: https://github.com/facebook/react-native/issues/18345
-        // To alleviate the issue - we will store as a static reference (WeakReference unfortunately did not suffice)
-        if ( getReactApplicationContext().hasCurrentActivity() )
-        {
-            sCurrentActivity = getReactApplicationContext().getCurrentActivity();
-        }
-
-        return sCurrentActivity;
+        return getReactApplicationContext().getCurrentActivity();
     }
 
     @ReactMethod
@@ -448,13 +439,16 @@ public class AppLovinMAXModule
                     @Override
                     public void onOrientationChanged(final int orientation)
                     {
+                        Activity currentActivity = maybeGetCurrentActivity();
+                        if ( currentActivity == null ) return;
+
                         int newRotation = windowManager.getDefaultDisplay().getRotation();
                         if ( newRotation != lastRotation )
                         {
                             lastRotation = newRotation;
                             for ( final Map.Entry<String, MaxAdFormat> adUnitFormats : mAdViewAdFormats.entrySet() )
                             {
-                                positionAdView( adUnitFormats.getKey(), adUnitFormats.getValue() );
+                                positionAdView( adUnitFormats.getKey(), adUnitFormats.getValue(), currentActivity );
                             }
                         }
                     }
@@ -1007,7 +1001,14 @@ public class AppLovinMAXModule
             return;
         }
 
-        createAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), bannerPosition, DEFAULT_AD_VIEW_OFFSET );
+        Activity currentActivity = maybeGetCurrentActivity();
+        if ( currentActivity == null )
+        {
+            e( "Unable to get current Activity for createBanner()" );
+            return;
+        }
+
+        createAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), bannerPosition, DEFAULT_AD_VIEW_OFFSET, currentActivity );
     }
 
     @ReactMethod // NOTE: No function overloading in JS so we need new method signature
@@ -1019,7 +1020,14 @@ public class AppLovinMAXModule
             return;
         }
 
-        createAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), bannerPosition, getOffsetPixels( x, y, getCurrentActivity() ) );
+        Activity currentActivity = maybeGetCurrentActivity();
+        if ( currentActivity == null )
+        {
+            e( "Unable to get current Activity for createBannerWithOffsets()" );
+            return;
+        }
+
+        createAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), bannerPosition, getOffsetPixels( x, y, currentActivity ), currentActivity );
     }
 
     @ReactMethod
@@ -1067,7 +1075,14 @@ public class AppLovinMAXModule
             return;
         }
 
-        setAdViewWidth( adUnitId, widthDp, getDeviceSpecificBannerAdViewAdFormat() );
+        Activity currentActivity = maybeGetCurrentActivity();
+        if ( currentActivity == null )
+        {
+            e( "Unable to get current Activity for setBannerWidth()" );
+            return;
+        }
+
+        setAdViewWidth( adUnitId, widthDp, getDeviceSpecificBannerAdViewAdFormat(), currentActivity );
     }
 
     @ReactMethod
@@ -1079,7 +1094,14 @@ public class AppLovinMAXModule
             return;
         }
 
-        updateAdViewPosition( adUnitId, bannerPosition, DEFAULT_AD_VIEW_OFFSET, getDeviceSpecificBannerAdViewAdFormat() );
+        Activity currentActivity = maybeGetCurrentActivity();
+        if ( currentActivity == null )
+        {
+            e( "Unable to get current Activity for updateBannerPosition()" );
+            return;
+        }
+
+        updateAdViewPosition( adUnitId, bannerPosition, DEFAULT_AD_VIEW_OFFSET, getDeviceSpecificBannerAdViewAdFormat(), currentActivity );
     }
 
     @ReactMethod
@@ -1091,7 +1113,14 @@ public class AppLovinMAXModule
             return;
         }
 
-        updateAdViewPosition( adUnitId, mAdViewPositions.get( adUnitId ), getOffsetPixels( x, y, getCurrentActivity() ), getDeviceSpecificBannerAdViewAdFormat() );
+        Activity currentActivity = maybeGetCurrentActivity();
+        if ( currentActivity == null )
+        {
+            e( "Unable to get current Activity for updateBannerOffsets()" );
+            return;
+        }
+
+        updateAdViewPosition( adUnitId, mAdViewPositions.get( adUnitId ), getOffsetPixels( x, y, currentActivity ), getDeviceSpecificBannerAdViewAdFormat(), currentActivity );
     }
 
     @ReactMethod
@@ -1103,7 +1132,14 @@ public class AppLovinMAXModule
             return;
         }
 
-        setAdViewExtraParameters( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), key, value );
+        Activity currentActivity = maybeGetCurrentActivity();
+        if ( currentActivity == null )
+        {
+            e( "Unable to get current Activity for setBannerExtraParameter()" );
+            return;
+        }
+
+        setAdViewExtraParameters( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), key, value, currentActivity );
     }
 
     @ReactMethod
@@ -1176,7 +1212,9 @@ public class AppLovinMAXModule
     @ReactMethod
     public void getAdaptiveBannerHeightForWidth(final float width, final Promise promise)
     {
-        promise.resolve( getDeviceSpecificBannerAdViewAdFormat().getAdaptiveSize( (int) width, getCurrentActivity() ).getHeight() );
+        Activity currentActivity = maybeGetCurrentActivity();
+        Context contextToUse = ( currentActivity != null ) ? currentActivity : getReactApplicationContext();
+        promise.resolve( getDeviceSpecificBannerAdViewAdFormat().getAdaptiveSize( (int) width, contextToUse ).getHeight() );
     }
 
     // MRECS
@@ -1190,7 +1228,14 @@ public class AppLovinMAXModule
             return;
         }
 
-        createAdView( adUnitId, MaxAdFormat.MREC, mrecPosition, DEFAULT_AD_VIEW_OFFSET );
+        Activity currentActivity = maybeGetCurrentActivity();
+        if ( currentActivity == null )
+        {
+            e( "Unable to get current Activity for createMRec()" );
+            return;
+        }
+
+        createAdView( adUnitId, MaxAdFormat.MREC, mrecPosition, DEFAULT_AD_VIEW_OFFSET, currentActivity );
     }
 
     @ReactMethod
@@ -1226,13 +1271,27 @@ public class AppLovinMAXModule
             return;
         }
 
-        updateAdViewPosition( adUnitId, mrecPosition, DEFAULT_AD_VIEW_OFFSET, MaxAdFormat.MREC );
+        Activity currentActivity = maybeGetCurrentActivity();
+        if ( currentActivity == null )
+        {
+            e( "Unable to get current Activity for updateMRecPosition()" );
+            return;
+        }
+
+        updateAdViewPosition( adUnitId, mrecPosition, DEFAULT_AD_VIEW_OFFSET, MaxAdFormat.MREC, currentActivity );
     }
 
     @ReactMethod
     public void setMRecExtraParameter(final String adUnitId, final String key, final String value)
     {
-        setAdViewExtraParameters( adUnitId, MaxAdFormat.MREC, key, value );
+        Activity currentActivity = maybeGetCurrentActivity();
+        if ( currentActivity == null )
+        {
+            e( "Unable to get current Activity for setMRecExtraParameter()" );
+            return;
+        }
+
+        setAdViewExtraParameters( adUnitId, MaxAdFormat.MREC, key, value, currentActivity );
     }
 
     @ReactMethod
@@ -1558,11 +1617,15 @@ public class AppLovinMAXModule
         {
             name = ( MaxAdFormat.MREC == adFormat ) ? ON_MREC_AD_LOADED_EVENT : ON_BANNER_AD_LOADED_EVENT;
 
-            String adViewPosition = mAdViewPositions.get( ad.getAdUnitId() );
-            if ( AppLovinSdkUtils.isValidString( adViewPosition ) )
+            Activity currentActivity = maybeGetCurrentActivity();
+            if ( currentActivity != null )
             {
-                // Only position ad if not native UI component
-                positionAdView( ad );
+                String adViewPosition = mAdViewPositions.get( ad.getAdUnitId() );
+                if ( AppLovinSdkUtils.isValidString( adViewPosition ) )
+                {
+                    // Only position ad if not native UI component
+                    positionAdView( ad, currentActivity );
+                }
             }
 
             // Do not auto-refresh by default if the ad view is not showing yet (e.g. first load during app launch and publisher does not automatically show banner upon load success)
@@ -1833,7 +1896,7 @@ public class AppLovinMAXModule
 
     // INTERNAL METHODS
 
-    private void createAdView(final String adUnitId, final MaxAdFormat adFormat, final String adViewPosition, final Point adViewOffsetPixels)
+    private void createAdView(final String adUnitId, final MaxAdFormat adFormat, final String adViewPosition, final Point adViewOffsetPixels, final Activity currentActivity)
     {
         // Run on main thread to ensure there are no concurrency issues with other ad view methods
         getReactApplicationContext().runOnUiQueueThread( new Runnable()
@@ -1859,7 +1922,7 @@ public class AppLovinMAXModule
 
                     // Position ad view immediately so if publisher sets color before ad loads, it will not be the size of the screen
                     mAdViewAdFormats.put( adUnitId, adFormat );
-                    positionAdView( adUnitId, adFormat );
+                    positionAdView( adUnitId, adFormat, currentActivity );
                 }
 
                 adView.loadAd();
@@ -1916,7 +1979,7 @@ public class AppLovinMAXModule
         } );
     }
 
-    private void setAdViewWidth(final String adUnitId, final int widthDp, final MaxAdFormat adFormat)
+    private void setAdViewWidth(final String adUnitId, final int widthDp, final MaxAdFormat adFormat, final Activity currentActivity)
     {
         getReactApplicationContext().runOnUiQueueThread( new Runnable()
         {
@@ -1932,12 +1995,12 @@ public class AppLovinMAXModule
                 }
 
                 mAdViewWidths.put( adUnitId, widthDp );
-                positionAdView( adUnitId, adFormat );
+                positionAdView( adUnitId, adFormat, currentActivity );
             }
         } );
     }
 
-    private void updateAdViewPosition(final String adUnitId, final String adViewPosition, final Point offsetPixels, final MaxAdFormat adFormat)
+    private void updateAdViewPosition(final String adUnitId, final String adViewPosition, final Point offsetPixels, final MaxAdFormat adFormat, final Activity currentActivity)
     {
         getReactApplicationContext().runOnUiQueueThread( new Runnable()
         {
@@ -1956,7 +2019,7 @@ public class AppLovinMAXModule
 
                 mAdViewPositions.put( adUnitId, adViewPosition );
                 mAdViewOffsets.put( adUnitId, offsetPixels );
-                positionAdView( adUnitId, adFormat );
+                positionAdView( adUnitId, adFormat, currentActivity );
             }
         } );
     }
@@ -2067,7 +2130,7 @@ public class AppLovinMAXModule
         } );
     }
 
-    private void setAdViewExtraParameters(final String adUnitId, final MaxAdFormat adFormat, final String key, final String value)
+    private void setAdViewExtraParameters(final String adUnitId, final MaxAdFormat adFormat, final String key, final String value, final Activity currentActivity)
     {
         getReactApplicationContext().runOnUiQueueThread( new Runnable()
         {
@@ -2102,7 +2165,7 @@ public class AppLovinMAXModule
                     }
 
                     mAdViewAdFormats.put( adUnitId, forcedAdFormat );
-                    positionAdView( adUnitId, forcedAdFormat );
+                    positionAdView( adUnitId, forcedAdFormat, currentActivity );
                 }
                 else if ( "adaptive_banner".equalsIgnoreCase( key ) )
                 {
@@ -2116,7 +2179,7 @@ public class AppLovinMAXModule
                         mDisabledAdaptiveBannerAdUnitIds.add( adUnitId );
                     }
 
-                    positionAdView( adUnitId, adFormat );
+                    positionAdView( adUnitId, adFormat, currentActivity );
                 }
             }
         } );
@@ -2288,12 +2351,12 @@ public class AppLovinMAXModule
         return result;
     }
 
-    private void positionAdView(MaxAd ad)
+    private void positionAdView(final MaxAd ad, final Activity currentActivity)
     {
-        positionAdView( ad.getAdUnitId(), ad.getFormat() );
+        positionAdView( ad.getAdUnitId(), ad.getFormat(), currentActivity );
     }
 
-    private void positionAdView(String adUnitId, MaxAdFormat adFormat)
+    private void positionAdView(final String adUnitId, final MaxAdFormat adFormat, final Activity currentActivity)
     {
         final MaxAdView adView = retrieveAdView( adUnitId, adFormat );
         if ( adView == null )
@@ -2328,7 +2391,7 @@ public class AppLovinMAXModule
         else if ( TOP_CENTER.equalsIgnoreCase( adViewPosition ) || BOTTOM_CENTER.equalsIgnoreCase( adViewPosition ) )
         {
             int adViewWidthPx = windowRect.width();
-            adViewWidthDp = AppLovinSdkUtils.pxToDp( getCurrentActivity(), adViewWidthPx );
+            adViewWidthDp = AppLovinSdkUtils.pxToDp( currentActivity, adViewWidthPx );
         }
         // Else use standard widths of 320, 728, or 300
         else
@@ -2343,15 +2406,15 @@ public class AppLovinMAXModule
 
         if ( ( adFormat == MaxAdFormat.BANNER || adFormat == MaxAdFormat.LEADER ) && !isAdaptiveBannerDisabled )
         {
-            adViewHeightDp = adFormat.getAdaptiveSize( adViewWidthDp, getCurrentActivity() ).getHeight();
+            adViewHeightDp = adFormat.getAdaptiveSize( adViewWidthDp, currentActivity ).getHeight();
         }
         else
         {
             adViewHeightDp = adFormat.getSize().getHeight();
         }
 
-        final int widthPx = AppLovinSdkUtils.dpToPx( getCurrentActivity(), adViewWidthDp );
-        final int heightPx = AppLovinSdkUtils.dpToPx( getCurrentActivity(), adViewHeightDp );
+        final int widthPx = AppLovinSdkUtils.dpToPx( currentActivity, adViewWidthDp );
+        final int heightPx = AppLovinSdkUtils.dpToPx( currentActivity, adViewHeightDp );
 
         final RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) adView.getLayoutParams();
         params.height = heightPx;

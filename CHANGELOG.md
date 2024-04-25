@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Fix NPE for accessing a null activity retruned from `getCurrentActivity()` on Android.
 ## 6.4.1
 * Depend on Android SDK 12.4.2 and iOS SDK 12.4.1.
 ## 6.4.0
