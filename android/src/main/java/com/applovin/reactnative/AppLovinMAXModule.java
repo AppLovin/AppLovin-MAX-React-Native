@@ -344,7 +344,7 @@ public class AppLovinMAXModule
         setPendingExtraParametersIfNeeded( settings );
 
         // Initialize SDK
-        sdk = AppLovinSdk.getInstance( sdkKeyToUse, settings, context );
+        sdk = AppLovinSdk.getInstance( sdkKeyToUse, settings, getReactApplicationContext() );
         sdk.setPluginVersion( "React-Native-" + pluginVersion );
         sdk.setMediationProvider( AppLovinMediationProvider.MAX );
 
