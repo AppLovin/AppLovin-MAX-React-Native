@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Fix NPE when accessing current Activity for banners and MRECs. 
 ## 6.4.1
 * Depend on Android SDK 12.4.2 and iOS SDK 12.4.1.
 ## 6.4.0
