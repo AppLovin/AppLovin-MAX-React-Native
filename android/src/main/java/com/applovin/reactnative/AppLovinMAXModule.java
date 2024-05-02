@@ -64,11 +64,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.Nullable;
 
-import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThreadDelayed;
 import static com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
 /**
@@ -138,6 +136,7 @@ public class AppLovinMAXModule
     private static final Point DEFAULT_AD_VIEW_OFFSET = new Point( 0, 0 );
 
     public static  AppLovinMAXModule instance;
+    @Nullable
     private static Activity          sCurrentActivity;
 
     // Parent Fields
@@ -237,36 +236,6 @@ public class AppLovinMAXModule
 
     @ReactMethod
     public void initialize(final String pluginVersion, final String sdkKey, final Promise promise)
-    {
-        // Check if Activity is available
-        Activity currentActivity = maybeGetCurrentActivity();
-        if ( currentActivity != null )
-        {
-            performInitialization( pluginVersion, sdkKey, currentActivity, promise );
-        }
-        else
-        {
-            w( "No current Activity found! Delaying initialization..." );
-
-            runOnUiThreadDelayed( new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    Context contextToUse = maybeGetCurrentActivity();
-                    if ( contextToUse == null )
-                    {
-                        w( "Still unable to find current Activity - initializing SDK with application context" );
-                        contextToUse = getReactApplicationContext();
-                    }
-
-                    performInitialization( pluginVersion, sdkKey, contextToUse, promise );
-                }
-            }, TimeUnit.SECONDS.toMillis( 3 ) );
-        }
-    }
-
-    private void performInitialization(final String pluginVersion, final String sdkKey, final Context context, final Promise promise)
     {
         // Guard against running init logic multiple times
         if ( isPluginInitialized )
@@ -375,7 +344,7 @@ public class AppLovinMAXModule
         setPendingExtraParametersIfNeeded( settings );
 
         // Initialize SDK
-        sdk = AppLovinSdk.getInstance( sdkKeyToUse, settings, context );
+        sdk = AppLovinSdk.getInstance( sdkKeyToUse, settings, getReactApplicationContext() );
         sdk.setPluginVersion( "React-Native-" + pluginVersion );
         sdk.setMediationProvider( AppLovinMediationProvider.MAX );
 
@@ -428,40 +397,36 @@ public class AppLovinMAXModule
             targetingInterestsToSet = null;
         }
 
-        sdk.initializeSdk( new AppLovinSdk.SdkInitializationListener()
-        {
-            @Override
-            public void onSdkInitialized(final AppLovinSdkConfiguration configuration)
+        sdk.initializeSdk( configuration -> {
+
+            d( "SDK initialized" );
+
+            sdkConfiguration = configuration;
+            isSdkInitialized = true;
+
+            windowManager = (WindowManager) getReactApplicationContext().getSystemService( Context.WINDOW_SERVICE );
+
+            lastRotation = windowManager.getDefaultDisplay().getRotation();
+
+            // Enable orientation change listener, so that the ad view positions can be updated when the device is rotated.
+            new OrientationEventListener( getReactApplicationContext() )
             {
-                d( "SDK initialized" );
-
-                sdkConfiguration = configuration;
-                isSdkInitialized = true;
-
-                windowManager = (WindowManager) context.getSystemService( Context.WINDOW_SERVICE );
-
-                lastRotation = windowManager.getDefaultDisplay().getRotation();
-
-                // Enable orientation change listener, so that the ad view positions can be updated when the device is rotated.
-                new OrientationEventListener( context )
+                @Override
+                public void onOrientationChanged(final int orientation)
                 {
-                    @Override
-                    public void onOrientationChanged(final int orientation)
+                    int newRotation = windowManager.getDefaultDisplay().getRotation();
+                    if ( newRotation != lastRotation )
                     {
-                        int newRotation = windowManager.getDefaultDisplay().getRotation();
-                        if ( newRotation != lastRotation )
+                        lastRotation = newRotation;
+                        for ( final Map.Entry<String, MaxAdFormat> adUnitFormats : mAdViewAdFormats.entrySet() )
                         {
-                            lastRotation = newRotation;
-                            for ( final Map.Entry<String, MaxAdFormat> adUnitFormats : mAdViewAdFormats.entrySet() )
-                            {
-                                positionAdView( adUnitFormats.getKey(), adUnitFormats.getValue() );
-                            }
+                            positionAdView( adUnitFormats.getKey(), adUnitFormats.getValue() );
                         }
                     }
-                }.enable();
+                }
+            }.enable();
 
-                promise.resolve( getInitializationMessage() );
-            }
+            promise.resolve( getInitializationMessage() );
         } );
     }
 
@@ -1019,7 +984,7 @@ public class AppLovinMAXModule
             return;
         }
 
-        createAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), bannerPosition, getOffsetPixels( x, y, getCurrentActivity() ) );
+        createAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), bannerPosition, getOffsetPixels( x, y, getReactApplicationContext() ) );
     }
 
     @ReactMethod
@@ -1091,7 +1056,7 @@ public class AppLovinMAXModule
             return;
         }
 
-        updateAdViewPosition( adUnitId, mAdViewPositions.get( adUnitId ), getOffsetPixels( x, y, getCurrentActivity() ), getDeviceSpecificBannerAdViewAdFormat() );
+        updateAdViewPosition( adUnitId, mAdViewPositions.get( adUnitId ), getOffsetPixels( x, y, getReactApplicationContext() ), getDeviceSpecificBannerAdViewAdFormat() );
     }
 
     @ReactMethod
@@ -1176,7 +1141,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void getAdaptiveBannerHeightForWidth(final float width, final Promise promise)
     {
-        promise.resolve( getDeviceSpecificBannerAdViewAdFormat().getAdaptiveSize( (int) width, getCurrentActivity() ).getHeight() );
+        promise.resolve( getDeviceSpecificBannerAdViewAdFormat().getAdaptiveSize( (int) width, getReactApplicationContext() ).getHeight() );
     }
 
     // MRECS
@@ -2328,7 +2293,7 @@ public class AppLovinMAXModule
         else if ( TOP_CENTER.equalsIgnoreCase( adViewPosition ) || BOTTOM_CENTER.equalsIgnoreCase( adViewPosition ) )
         {
             int adViewWidthPx = windowRect.width();
-            adViewWidthDp = AppLovinSdkUtils.pxToDp( getCurrentActivity(), adViewWidthPx );
+            adViewWidthDp = AppLovinSdkUtils.pxToDp( getReactApplicationContext(), adViewWidthPx );
         }
         // Else use standard widths of 320, 728, or 300
         else
@@ -2343,15 +2308,15 @@ public class AppLovinMAXModule
 
         if ( ( adFormat == MaxAdFormat.BANNER || adFormat == MaxAdFormat.LEADER ) && !isAdaptiveBannerDisabled )
         {
-            adViewHeightDp = adFormat.getAdaptiveSize( adViewWidthDp, getCurrentActivity() ).getHeight();
+            adViewHeightDp = adFormat.getAdaptiveSize( adViewWidthDp, getReactApplicationContext() ).getHeight();
         }
         else
         {
             adViewHeightDp = adFormat.getSize().getHeight();
         }
 
-        final int widthPx = AppLovinSdkUtils.dpToPx( getCurrentActivity(), adViewWidthDp );
-        final int heightPx = AppLovinSdkUtils.dpToPx( getCurrentActivity(), adViewHeightDp );
+        final int widthPx = AppLovinSdkUtils.dpToPx( getReactApplicationContext(), adViewWidthDp );
+        final int heightPx = AppLovinSdkUtils.dpToPx( getReactApplicationContext(), adViewHeightDp );
 
         final RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) adView.getLayoutParams();
         params.height = heightPx;
