@@ -3,7 +3,7 @@
 AppLovin MAX React Native Module for Android and iOS.
 
 ## Documentation
-Check out our integration docs [here](https://dash.applovin.com/documentation/mediation/react-native/getting-started/integration).
+Check out our integration docs [here](https://developers.applovin.com/en/react-native/overview/integration).
 
 ## Demo Apps
 The `/example` directory contains the demo app. Gradle and CocoaPods automatically pulls in the React Native module for easier debugging.

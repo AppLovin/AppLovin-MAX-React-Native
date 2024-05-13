@@ -70,7 +70,7 @@ const App = () => {
     const initAppLovinMax = () => {
         if (isInitialized) return;
 
-        // MAX Consent Flow - https://dash.applovin.com/documentation/mediation/react-native/getting-started/terms-and-privacy-policy-flow
+        // MAX Consent Flow - https://developers.applovin.com/en/react-native/overview/terms-and-privacy-policy-flow
         AppLovinMAX.setTermsAndPrivacyPolicyFlowEnabled(true);
         AppLovinMAX.setPrivacyPolicyUrl('https://your_company_name.com/privacy/'); // mandatory
         AppLovinMAX.setTermsOfServiceUrl('https://your_company_name.com/terms/'); // optional
