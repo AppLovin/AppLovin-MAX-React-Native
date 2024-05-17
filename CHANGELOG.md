@@ -1,5 +1,6 @@
 ## Versions
 
+## 6.5.0
 ## 6.4.2
 * Fix NPE when accessing current Activity for banners and MRECs. 
 ## 6.4.1
