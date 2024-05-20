@@ -12,11 +12,11 @@ Pod::Spec.new do |s|
   s.authors      = package["author"]
 
   s.platforms    = { :ios => min_ios_version_supported }
-  s.source       = { :git => "https://github.com/AppLovin/AppLovin-MAX-React-Native.git", :tag => "release_6_4_2" }
+  s.source       = { :git => "https://github.com/AppLovin/AppLovin-MAX-React-Native.git", :tag => "release_6_5_0" }
 
-  s.source_files = "ios/**/*.{h,m}"
+  s.source_files = "ios/AppLovinMAX*.{h,m}"
 
-  s.dependency "AppLovinSDK", "12.4.1"
+  s.dependency "AppLovinSDK", "12.5.0"
 
   # Use install_modules_dependencies helper to install the dependencies if React Native version >=0.71.0.
   # See https://github.com/facebook/react-native/blob/febf6b7f33fdb4904669f99d795eba4c0f95d7bf/scripts/cocoapods/new_architecture.rb#L79.

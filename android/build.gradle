@@ -53,8 +53,8 @@ android {
     minSdkVersion getExtOrIntegerDefault("minSdkVersion")
     targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
 
-    buildConfigField("int", "VERSION_CODE", "6040100")
-    buildConfigField("String", "VERSION_NAME", "\"6.4.1\"")
+    buildConfigField("int", "VERSION_CODE", "6050000")
+    buildConfigField("String", "VERSION_NAME", "\"6.5.0\"")
   }
 
   buildTypes {
@@ -85,6 +85,6 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
 
-  implementation "com.applovin:applovin-sdk:12.4.2"
+  implementation "com.applovin:applovin-sdk:12.5.0"
 }
 
