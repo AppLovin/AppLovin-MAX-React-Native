@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  ApplovinMaxExample
+//  AppLovinMAXExample
 //
 
 import Foundation

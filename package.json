@@ -13,8 +13,8 @@
     "lib",
     "android",
     "ios",
-    "cpp",
-    "*.podspec",
+    "react-native-applovin-max.podspec",
+    "package.json",
     "!ios/build",
     "!android/build",
     "!android/gradle",
@@ -26,20 +26,6 @@
     "!**/__mocks__",
     "!**/.*"
   ],
-  "scripts": {
-    "example": "yarn workspace react-native-applovin-max-example",
-    "test": "jest",
-    "typecheck": "tsc --noEmit",
-    "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
-    "prepare": "bob build",
-    "release": "release-it"
-  },
-  "keywords": [
-    "react-native",
-    "ios",
-    "android"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AppLovin/AppLovin-MAX-React-Native.git"
@@ -49,9 +35,6 @@
     "url": "https://github.com/AppLovin/AppLovin-MAX-React-Native/issues"
   },
   "homepage": "https://github.com/AppLovin/AppLovin-MAX-React-Native#readme",
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
-  },
   "devDependencies": {
     "@commitlint/config-conventional": "^17.0.2",
     "@evilmartians/lefthook": "^1.5.0",
@@ -60,7 +43,6 @@
     "@types/jest": "^29.5.5",
     "@types/react": "^18.2.44",
     "commitlint": "^17.0.2",
-    "del-cli": "^5.1.0",
     "eslint": "^8.51.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.1",
@@ -68,9 +50,6 @@
     "prettier": "^3.0.3",
     "react": "18.2.0",
     "react-native": "0.73.6",
-    "react-native-builder-bob": "^0.20.0",
-    "release-it": "^15.0.0",
-    "turbo": "^1.10.7",
     "typescript": "^5.2.2"
   },
   "resolutions": {
@@ -95,23 +74,6 @@
     "extends": [
       "@commitlint/config-conventional"
     ]
-  },
-  "release-it": {
-    "git": {
-      "commitMessage": "chore: release ${version}",
-      "tagName": "v${version}"
-    },
-    "npm": {
-      "publish": true
-    },
-    "github": {
-      "release": true
-    },
-    "plugins": {
-      "@release-it/conventional-changelog": {
-        "preset": "angular"
-      }
-    }
   },
   "eslintConfig": {
     "root": true,
@@ -146,19 +108,5 @@
     "useTabs": false,
     "printWidth": 120,
     "endOfLine": "auto"
-  },
-  "react-native-builder-bob": {
-    "source": "src",
-    "output": "lib",
-    "targets": [
-      "commonjs",
-      "module",
-      [
-        "typescript",
-        {
-          "project": "tsconfig.build.json"
-        }
-      ]
-    ]
   }
 }
