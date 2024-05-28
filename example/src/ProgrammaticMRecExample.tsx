@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { MRecAd, AdViewPosition } from '../../src/index';
-import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from '../../src/index';
+import { MRecAd, AdViewPosition } from 'react-native-applovin-max';
+import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from 'react-native-applovin-max';
 import AppButton from './components/AppButton';
 
 type Props = {
@@ -24,10 +24,6 @@ const ProgrammaticMRecExample = ({
     const [isProgrammaticMRecCreated, setIsProgrammaticMRecCreated] = useState(false);
 
     useEffect(() => {
-        setupEventListeners();
-    }, []);
-
-    const setupEventListeners = () => {
         MRecAd.addAdLoadedEventListener((adInfo: AdInfo) => {
             log('MRec ad loaded from ' + adInfo.networkName);
         });
@@ -46,7 +42,7 @@ const ProgrammaticMRecExample = ({
         MRecAd.addAdRevenuePaidListener((adInfo: AdRevenueInfo) => {
             log('MRec ad revenue paid: ' + adInfo.revenue);
         });
-    };
+    }, [log]);
 
     return (
         <AppButton

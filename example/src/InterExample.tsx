@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
-import { InterstitialAd } from '../../src/index';
-import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from '../../src/index';
+import { InterstitialAd } from 'react-native-applovin-max';
+import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from 'react-native-applovin-max';
 import AppButton from './components/AppButton';
 
 const MAX_EXPONENTIAL_RETRY_COUNT = 6;
@@ -24,10 +24,6 @@ const InterExample = ({ adUnitId, isInitialized, log }: Props) => {
     const retryAttempt = useRef(0);
 
     useEffect(() => {
-        setupEventListeners();
-    }, []);
-
-    const setupEventListeners = () => {
         InterstitialAd.addAdLoadedEventListener((adInfo: AdInfo) => {
             setAdLoadState(AdLoadState.loaded);
 
@@ -75,7 +71,7 @@ const InterExample = ({ adUnitId, isInitialized, log }: Props) => {
         InterstitialAd.addAdRevenuePaidListener((adInfo: AdRevenueInfo) => {
             log('Interstitial ad revenue paid: ' + adInfo.revenue);
         });
-    };
+    }, [adUnitId, log]);
 
     const getInterstitialButtonTitle = () => {
         if (adLoadState === AdLoadState.notLoaded) {

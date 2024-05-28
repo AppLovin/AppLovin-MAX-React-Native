@@ -207,7 +207,7 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
                 console.warn('AdView is mounted before the initialization of the AppLovin MAX React Native module');
             }
         });
-    }, []); // Run once when mounted
+    }, [adFormat]); // Run once when mounted
 
     useEffect(() => {
         if (!isInitialized) return;

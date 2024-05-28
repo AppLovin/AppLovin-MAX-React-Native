@@ -15,7 +15,7 @@ export const TitleView = (props: TextProps) => {
         nativeAdView?.setNativeProps({
             titleView: findNodeHandle(titleRef.current),
         });
-    }, [nativeAd]);
+    }, [nativeAd, nativeAdView]);
 
     return (
         <Text {...props} ref={titleRef}>
@@ -34,7 +34,7 @@ export const AdvertiserView = (props: TextProps) => {
         nativeAdView?.setNativeProps({
             advertiserView: findNodeHandle(advertiserRef.current),
         });
-    }, [nativeAd]);
+    }, [nativeAd, nativeAdView]);
 
     return (
         <Text {...props} ref={advertiserRef}>
@@ -53,7 +53,7 @@ export const BodyView = (props: TextProps) => {
         nativeAdView?.setNativeProps({
             bodyView: findNodeHandle(bodyRef.current),
         });
-    }, [nativeAd]);
+    }, [nativeAd, nativeAdView]);
 
     return (
         <Text {...props} ref={bodyRef}>
@@ -72,7 +72,7 @@ export const CallToActionView = (props: TextProps) => {
         nativeAdView?.setNativeProps({
             callToActionView: findNodeHandle(callToActionRef.current),
         });
-    }, [nativeAd]);
+    }, [nativeAd, nativeAdView]);
 
     return (
         <TouchableOpacity>
@@ -93,7 +93,7 @@ export const IconView = (props: Omit<ImageProps, 'source'>) => {
         nativeAdView?.setNativeProps({
             iconView: findNodeHandle(imageRef.current),
         });
-    }, [nativeAd]);
+    }, [nativeAd, nativeAdView]);
 
     return nativeAd.url ? (
         <Image {...props} ref={imageRef} source={{ uri: nativeAd.url }} />
@@ -113,7 +113,7 @@ export const OptionsView = (props: ViewProps) => {
         nativeAdView?.setNativeProps({
             optionsView: findNodeHandle(viewRef.current),
         });
-    }, [nativeAd]);
+    }, [nativeAd, nativeAdView]);
 
     return <View {...props} ref={viewRef} />;
 };
@@ -128,7 +128,7 @@ export const MediaView = (props: ViewProps) => {
         nativeAdView?.setNativeProps({
             mediaView: findNodeHandle(viewRef.current),
         });
-    }, [nativeAd]);
+    }, [nativeAd, nativeAdView]);
 
     return <View {...props} ref={viewRef} />;
 };
@@ -142,22 +142,8 @@ export const StarRatingView = (props: ViewProps) => {
 
     const { nativeAd } = useContext(NativeAdViewContext);
 
-    const FilledStar = () => {
-        return (
-            // black star in unicode
-            <Text style={{ fontSize: starSize, color: starColor }}>{String.fromCodePoint(0x2605)}</Text>
-        );
-    };
-
-    const EmptyStar = () => {
-        return (
-            // white star in unicode
-            <Text style={{ fontSize: starSize, color: starColor }}>{String.fromCodePoint(0x2606)}</Text>
-        );
-    };
-
     return (
-        <View {...restProps} style={[style, { flexDirection: 'row', alignItems: 'center' }]}>
+        <View {...restProps} style={[style, styles.starRatingContainer]}>
             {(() => {
                 const stars: ReactNode[] = [];
                 for (let index = 0; index < maxStarCount; index++) {
@@ -165,16 +151,14 @@ export const StarRatingView = (props: ViewProps) => {
                         const width = (nativeAd.starRating - index) * starSize;
                         stars.push(
                             <View key={index}>
-                                <EmptyStar />
+                                <Text style={{ fontSize: starSize, color: starColor }}>
+                                    {String.fromCodePoint(0x2606)}
+                                </Text>
                                 {nativeAd.starRating > index && (
-                                    <View
-                                        style={{
-                                            width: width,
-                                            overflow: 'hidden',
-                                            position: 'absolute',
-                                        }}
-                                    >
-                                        <FilledStar />
+                                    <View style={[{ width: width }, styles.starRating]}>
+                                        <Text style={{ fontSize: starSize, color: starColor }}>
+                                            {String.fromCodePoint(0x2605)}
+                                        </Text>
                                     </View>
                                 )}
                             </View>
@@ -192,3 +176,14 @@ export const StarRatingView = (props: ViewProps) => {
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    starRatingContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    starRating: {
+        overflow: 'hidden',
+        position: 'absolute',
+    },
+});

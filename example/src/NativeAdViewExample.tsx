@@ -11,8 +11,8 @@ import {
     OptionsView,
     MediaView,
     StarRatingView,
-} from '../../src/index';
-import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo, NativeAdViewHandler } from '../../src/index';
+} from 'react-native-applovin-max';
+import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo, NativeAdViewHandler } from 'react-native-applovin-max';
 import AppButton from './components/AppButton';
 
 type Props = {
@@ -81,11 +81,10 @@ export const NativeAdViewExample = ({
                     log('Native ad revenue paid: ' + adInfo.revenue);
                 }}
             >
-                <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-between' }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <View style={styles.assetContainer}>
+                    <View style={styles.assetUpperContainer}>
                         <IconView style={styles.icon} />
-                        <View style={{ width: 4 }} />
-                        <View style={{ flexDirection: 'column', flexGrow: 1 }}>
+                        <View style={styles.assetTitleContainer}>
                             <TitleView numberOfLines={1} style={styles.title} />
                             <AdvertiserView numberOfLines={1} style={styles.advertiser} />
                             <StarRatingView style={styles.starRatingView} />
@@ -94,12 +93,11 @@ export const NativeAdViewExample = ({
                     </View>
                     <BodyView numberOfLines={2} style={styles.body} />
                     <MediaView style={{ ...styles.mediaView, ...mediaViewSize }} />
-                    <View style={{ height: 10 }} />
                     <CallToActionView style={styles.callToAction} />
                 </View>
             </NativeAdView>
         );
-    }, []);
+    }, [adUnitId, log, mediaViewSize]);
 
     return (
         <>
@@ -191,6 +189,7 @@ const styles = StyleSheet.create({
         elevation: Platform.OS === 'android' ? 1 : 0,
     },
     callToAction: {
+        marginTop: 10,
         padding: 8,
         width: '100%',
         fontSize: 18,
@@ -199,6 +198,20 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase',
         color: 'white',
         backgroundColor: '#2d545e',
+    },
+    assetContainer: {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+    },
+    assetUpperContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    assetTitleContainer: {
+        marginLeft: 4,
+        flexDirection: 'column',
+        flexGrow: 1,
     },
 });
 

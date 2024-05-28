@@ -14,14 +14,10 @@ const AppButton = (props: Props & ViewProps) => {
         <View style={[styles.container, style]}>
             <TouchableOpacity
                 disabled={!props.enabled}
-                style={[
-                    styles.button,
-                    props.enabled ? { backgroundColor: '#DDDDDD' } : { backgroundColor: '#EEEEEE' },
-                    style,
-                ]}
+                style={[styles.button, props.enabled ? styles.enabledColor : styles.disabledColor, style]}
                 onPress={props.onPress}
             >
-                <Text style={[styles.text, props.enabled ? { color: 'black' } : { color: 'gray' }, style]}>
+                <Text style={[styles.text, props.enabled ? styles.blackColor : styles.grayColor, style]}>
                     {props.title}
                 </Text>
             </TouchableOpacity>
@@ -43,6 +39,18 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 18,
+    },
+    enabledColor: {
+        backgroundColor: '#DDDDDD',
+    },
+    disabledColor: {
+        backgroundColor: '#EEEEEE',
+    },
+    blackColor: {
+        color: 'black',
+    },
+    grayColor: {
+        color: 'gray',
     },
 });
 

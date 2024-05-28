@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { Platform, StyleSheet, Text, View, SafeAreaView, Dimensions } from 'react-native';
-import AppLovinMAX, { ConsentFlowUserGeography, AppTrackingStatus } from '../../src/index';
-import type { Configuration } from '../../src/index';
+import AppLovinMAX, { ConsentFlowUserGeography, AppTrackingStatus } from 'react-native-applovin-max';
+import type { Configuration } from 'react-native-applovin-max';
 import AppLogo from './components/AppLogo';
 import AppButton from './components/AppButton';
 import InterExample from './InterExample';
@@ -59,18 +59,7 @@ const App = () => {
 
     // Run once after mounting
     useEffect(() => {
-        initAppLovinMax();
-    }, []);
-
-    // Run when statusText has changed
-    useEffect(() => {
-        console.log(statusText);
-    }, [statusText]);
-
-    const initAppLovinMax = () => {
-        if (isInitialized) return;
-
-        // MAX Consent Flow - https://developers.applovin.com/en/react-native/overview/terms-and-privacy-policy-flow
+        // MAX Consent Flow - https://dash.applovin.com/documentation/mediation/react-native/getting-started/terms-and-privacy-policy-flow
         AppLovinMAX.setTermsAndPrivacyPolicyFlowEnabled(true);
         AppLovinMAX.setPrivacyPolicyUrl('https://your_company_name.com/privacy/'); // mandatory
         AppLovinMAX.setTermsOfServiceUrl('https://your_company_name.com/terms/'); // optional
@@ -103,7 +92,12 @@ const App = () => {
             .catch((error) => {
                 setStatusText(error.toString());
             });
-    };
+    }, []);
+
+    // Run when statusText has changed
+    useEffect(() => {
+        console.log(statusText);
+    }, [statusText]);
 
     return (
         <SafeAreaView>

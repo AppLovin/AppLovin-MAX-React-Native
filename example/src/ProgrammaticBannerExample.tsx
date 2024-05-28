@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { BannerAd, AdViewPosition } from '../../src/index';
-import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from '../../src/index';
+import { BannerAd, AdViewPosition } from 'react-native-applovin-max';
+import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from 'react-native-applovin-max';
 import AppButton from './components/AppButton';
 
 type Props = {
@@ -24,10 +24,6 @@ const ProgrammaticBannerExample = ({
     const [isProgrammaticBannerCreated, setIsProgrammaticBannerCreated] = useState(false);
 
     useEffect(() => {
-        setupEventListeners();
-    }, []);
-
-    const setupEventListeners = () => {
         BannerAd.addAdLoadedEventListener((adInfo: AdInfo) => {
             log('Banner ad loaded from ' + adInfo.networkName);
         });
@@ -46,7 +42,7 @@ const ProgrammaticBannerExample = ({
         BannerAd.addAdRevenuePaidListener((adInfo: AdRevenueInfo) => {
             log('Banner ad revenue paid: ' + adInfo.revenue);
         });
-    };
+    }, [log]);
 
     return (
         <AppButton

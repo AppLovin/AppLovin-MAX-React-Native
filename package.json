@@ -1,39 +1,112 @@
 {
   "name": "react-native-applovin-max",
-  "author": "AppLovin Corporation",
+  "author": "AppLovin Corporation <support@applovin.com> (https://applovin.com)",
   "version": "6.5.0",
   "description": "AppLovin MAX React Native Plugin for Android and iOS",
-  "homepage": "https://github.com/AppLovin/AppLovin-MAX-React-Native",
-  "license": "MIT",
-  "main": "src/index",
+  "main": "lib/commonjs/index",
+  "module": "lib/module/index",
+  "types": "lib/typescript/src/index.d.ts",
   "react-native": "src/index",
   "source": "src/index",
-  "module": "lib/module/index",
   "files": [
     "src",
+    "lib",
     "android",
     "ios",
     "react-native-applovin-max.podspec",
-    "package.json"
+    "package.json",
+    "!ios/build",
+    "!android/build",
+    "!android/gradle",
+    "!android/gradlew",
+    "!android/gradlew.bat",
+    "!android/local.properties",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
   ],
-  "scripts": {},
-  "keywords": [
-    "react-native",
-    "applovin",
-    "max"
-  ],
-  "repository": "https://github.com/AppLovin/AppLovin-MAX-React-Native",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AppLovin/AppLovin-MAX-React-Native.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AppLovin/AppLovin-MAX-React-Native/issues"
+  },
+  "homepage": "https://github.com/AppLovin/AppLovin-MAX-React-Native#readme",
   "devDependencies": {
-    "@types/react-native": "^0.63.1",
-    "@typescript-eslint/eslint-plugin": "^6.11.0",
-    "@typescript-eslint/parser": "^6.11.0",
-    "eslint": "^8.53.0",
-    "eslint-plugin-react": "^7.33.2",
-    "react": "^16.13.1",
-    "react-native": "^0.63.1"
+    "@commitlint/config-conventional": "^17.0.2",
+    "@evilmartians/lefthook": "^1.5.0",
+    "@react-native/eslint-config": "^0.73.1",
+    "@release-it/conventional-changelog": "^5.0.0",
+    "@types/jest": "^29.5.5",
+    "@types/react": "^18.2.44",
+    "commitlint": "^17.0.2",
+    "eslint": "^8.51.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "jest": "^29.7.0",
+    "prettier": "^3.0.3",
+    "react": "18.2.0",
+    "react-native": "0.73.6",
+    "typescript": "^5.2.2"
+  },
+  "resolutions": {
+    "@types/react": "^18.2.44"
   },
   "peerDependencies": {
     "react": "*",
     "react-native": "*"
+  },
+  "workspaces": [
+    "example"
+  ],
+  "packageManager": "yarn@3.6.1",
+  "jest": {
+    "preset": "react-native",
+    "modulePathIgnorePatterns": [
+      "<rootDir>/example/node_modules",
+      "<rootDir>/lib/"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@react-native",
+      "prettier"
+    ],
+    "rules": {
+      "prettier/prettier": [
+        "error",
+        {
+          "quoteProps": "consistent",
+          "singleQuote": true,
+          "tabWidth": 4,
+          "trailingComma": "es5",
+          "useTabs": false,
+          "printWidth": 120,
+          "endOfLine": "auto"
+        }
+      ]
+    }
+  },
+  "eslintIgnore": [
+    "node_modules/",
+    "lib/"
+  ],
+  "prettier": {
+    "quoteProps": "consistent",
+    "singleQuote": true,
+    "tabWidth": 4,
+    "trailingComma": "es5",
+    "useTabs": false,
+    "printWidth": 120,
+    "endOfLine": "auto"
   }
 }
