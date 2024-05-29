@@ -250,8 +250,6 @@
 
 - (void)setMediaView:(NSNumber *)tag
 {
-    if ( !self.nativeAd.nativeAd.mediaView ) return;
-    
     UIView *view = [self.bridge.uiManager viewForReactTag: tag];
     if ( !view )
     {
@@ -263,6 +261,8 @@
     
     [self.clickableViews addObject: view];
     
+    if ( !self.nativeAd.nativeAd.mediaView ) return;
+
     [view addSubview: self.nativeAd.nativeAd.mediaView];
     [self.nativeAd.nativeAd.mediaView al_pinToSuperview];
 }
