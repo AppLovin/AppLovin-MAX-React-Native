@@ -1838,13 +1838,13 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
 - (void)logUninitializedAccessError:(NSString *)callingMethod withPromiseReject:(nullable RCTPromiseRejectBlock)reject
 {
     NSString *message = [NSString stringWithFormat:@"ERROR: Failed to execute %@() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!", callingMethod];
-
+    
     if ( !reject )
     {
         NSLog(@"[%@] [%@] %@", SDK_TAG, TAG, message);
         return;
     }
-
+    
     reject(TAG, message, nil);
 }
 
@@ -1983,7 +1983,7 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
              @"dspName" : ad.DSPName ?: @"",
              @"size" : @{@"width" : @(ad.size.width),
                          @"height" : @(ad.size.height)}
-            };
+    };
 }
 
 - (NSDictionary<NSString *, id> *)adLoadFailedInfoForAd:(NSString *)adUnitIdentifier withError:(MAError *)error
@@ -2130,7 +2130,7 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
             [self log: @"Failed to set Amazon result - unable to find interstitial"];
             return;
         }
-
+        
         [interstitial setLocalExtraParameterForKey: key value: result];
     }
     else if ( adFormat == MAAdFormat.rewarded )
@@ -2141,13 +2141,13 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
             [self log: @"Failed to set Amazon result - unable to find rewarded ad"];
             return;
         }
-
+        
         [rewardedAd setLocalExtraParameterForKey: key value: result];
     }
     else  // MAAdFormat.banner or MAAdFormat.mrec
     {
         MAAdView *adView = [AppLovinMAXAdView sharedWithAdUnitIdentifier: adUnitIdentifier];
-
+        
         if ( !adView )
         {
             adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
