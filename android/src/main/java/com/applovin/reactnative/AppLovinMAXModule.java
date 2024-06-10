@@ -73,9 +73,9 @@ import static com.facebook.react.modules.core.DeviceEventManagerModule.RCTDevice
  * Created by Thomas So on July 11 2020
  */
 public class AppLovinMAXModule
-        extends ReactContextBaseJavaModule
-        implements LifecycleEventListener,
-        MaxAdListener, MaxAdViewAdListener, MaxRewardedAdListener, MaxAdRevenueListener
+    extends ReactContextBaseJavaModule
+    implements LifecycleEventListener,
+    MaxAdListener, MaxAdViewAdListener, MaxRewardedAdListener, MaxAdRevenueListener
 {
     private static final String SDK_TAG = "AppLovinSdk";
     private static final String TAG     = "AppLovinMAXModule";
@@ -1512,6 +1512,41 @@ public class AppLovinMAXModule
         appOpenAd.setLocalExtraParameter( entry.getKey(), entry.getValue() );
     }
 
+    // ADVIEW PRELOADING
+
+    @ReactMethod
+    public void preloadNativeUIComponentAdView(final String adUnitId, final String adFormatStr, final String placement, final String customData, final ReadableMap extraParameterMap, final ReadableMap localExtraParameterMap, final Promise promise)
+    {
+        MaxAdFormat adFormat = MaxAdFormat.MREC;
+
+        if ( MaxAdFormat.BANNER.getLabel().equals( adFormatStr ) )
+        {
+            adFormat = getDeviceSpecificBannerAdViewAdFormat();
+        }
+        else if ( MaxAdFormat.MREC.getLabel().equals( adFormatStr ) )
+        {
+            adFormat = MaxAdFormat.MREC;
+        }
+        else
+        {
+            promise.reject( new IllegalStateException( "invalid ad format: " + adFormat ) );
+            return;
+        }
+
+        final MaxAdFormat finalAdFormat = adFormat;
+        final Map<String, Object> extraParameters = ( extraParameterMap != null ) ? extraParameterMap.toHashMap() : null;
+        final Map<String, Object> localExtraParameters = ( localExtraParameterMap != null ) ? localExtraParameterMap.toHashMap() : null;
+
+        getReactApplicationContext().runOnUiQueueThread( new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                AppLovinMAXAdView.preloadNativeUIComponentAdView( adUnitId, finalAdFormat, placement, customData, extraParameters, localExtraParameters, promise, getReactApplicationContext() );
+            }
+        } );
+    }
+
     // AD CALLBACKS
 
     @Override
@@ -2850,8 +2885,8 @@ public class AppLovinMAXModule
     private void sendReactNativeEvent(final String name, @Nullable final WritableMap params)
     {
         getReactApplicationContext()
-                .getJSModule( RCTDeviceEventEmitter.class )
-                .emit( name, params );
+            .getJSModule( RCTDeviceEventEmitter.class )
+            .emit( name, params );
     }
 
     @Override

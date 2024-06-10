@@ -11,7 +11,7 @@ import {
 import type { ViewProps, ViewStyle, StyleProp, NativeMethods, DimensionValue } from 'react-native';
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from './types/AdInfo';
 import type { AdNativeEvent } from './types/AdEvent';
-import type { AdViewProps, AdViewHandler } from './types/AdViewProps';
+import type { AdViewProps, AdViewHandler, NativeUIComponentAdViewOptions } from './types/AdViewProps';
 
 const { AppLovinMAX } = NativeModules;
 
@@ -147,6 +147,7 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
         adaptiveBannerEnabled = true,
         autoRefresh = true,
         loadOnMount = true,
+        deleteNativeUIComponent = false,
         extraParameters,
         localExtraParameters,
         onAdLoaded,
@@ -289,6 +290,7 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
             adaptiveBannerEnabled={adaptiveBannerEnabled}
             autoRefresh={autoRefresh}
             loadOnMount={loadOnMount}
+            deleteNativeUIComponent={deleteNativeUIComponent}
             extraParameters={extraParameters}
             localExtraParameters={localExtraParameters}
             onAdLoadedEvent={onAdLoadedEvent}
@@ -303,3 +305,39 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
         />
     );
 });
+
+/**
+ * Preloads a native UI component for the {@link AdView} component. When mounting an {@link AdView}
+ * component, if the same adUnitId is specified, the preloaded native UI component will be used
+ * internally for the faster realization of the {@link AdView} component. When unmounting the
+ * {@link AdView} component, the preloaded native UI component won't be deleted but saved
+ * for future use.
+ *
+ * If you don't need the preloaded native UI component after unmounting, set the
+ * {@link deleteNativeUIComponent} property on the {@link AdView}, then the native UI component
+ * will be deleted.
+ *
+ * Only one native UI component is created for preloading with the same adUnitId. If you mount
+ * two {@link AdView} components with the same adUnitId, the first {@link AdView} component will
+ * be realized with the preloaded native UI component, but the 2nd {@link AdView} component will
+ * create its own native UI component on the fly and delete it when unmounting.
+ *
+ * @param adUnitId The Ad Unit ID to load ads for.
+ * @param adFormat An enum value representing the ad format to load ads for. Should be either {@link AdFormat.BANNER} or {@link AdFormat.MREC}.
+ * @param options Optional props to load ads for.
+ * @returns {@link AdInfo} for load success, {@link AdLoadFailedInfo} for load error.
+ */
+export const preloadNativeUIComponentAdView = async (
+    adUnitId: string,
+    adFormat: AdFormat,
+    options?: NativeUIComponentAdViewOptions
+): Promise<AdInfo | AdLoadFailedInfo> => {
+    return AppLovinMAX.preloadNativeUIComponentAdView(
+        adUnitId,
+        adFormat,
+        options?.placement,
+        options?.customData,
+        options?.extraParameters,
+        options?.localExtraParameters
+    );
+};

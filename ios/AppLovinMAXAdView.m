@@ -8,10 +8,11 @@
 #import <AppLovinSDK/AppLovinSDK.h>
 #import "AppLovinMAX.h"
 #import "AppLovinMAXAdView.h"
+#import "AppLovinMAXAdViewUIComponent.h"
 
-@interface AppLovinMAXAdView()<MAAdViewAdDelegate, MAAdRevenueDelegate>
+@interface AppLovinMAXAdView()
 
-@property (nonatomic, strong, nullable) MAAdView *adView; // nil when unmounted
+@property (nonatomic, strong, nullable) AppLovinMAXAdViewUIComponent *uiComponent; // nil when unmounted
 
 // The following properties are updated from RN layer via the view manager
 @property (nonatomic, copy) NSString *adUnitId;
@@ -21,38 +22,55 @@
 @property (nonatomic, assign, readonly, getter=isAdaptiveBannerEnabled) BOOL adaptiveBannerEnabled;
 @property (nonatomic, assign, readonly, getter=isAutoRefresh) BOOL autoRefresh;
 @property (nonatomic, assign, readonly, getter=isLoadOnMount) BOOL loadOnMount;
+@property (nonatomic, assign, readonly, getter=isDeleteNativeUIComponent) BOOL deleteNativeUIComponent;
 @property (nonatomic, copy, nullable) NSDictionary *extraParameters;
 @property (nonatomic, copy, nullable) NSDictionary *localExtraParameters;
-
-@property (nonatomic, copy) RCTDirectEventBlock onAdLoadedEvent;
-@property (nonatomic, copy) RCTDirectEventBlock onAdLoadFailedEvent;
-@property (nonatomic, copy) RCTDirectEventBlock onAdDisplayFailedEvent;
-@property (nonatomic, copy) RCTDirectEventBlock onAdClickedEvent;
-@property (nonatomic, copy) RCTDirectEventBlock onAdExpandedEvent;
-@property (nonatomic, copy) RCTDirectEventBlock onAdCollapsedEvent;
-@property (nonatomic, copy) RCTDirectEventBlock onAdRevenuePaidEvent;
 
 @end
 
 @implementation AppLovinMAXAdView
 
-static NSMutableDictionary<NSString *, MAAdView *> *adViewInstances;
+static NSMutableDictionary<NSString *, AppLovinMAXAdViewUIComponent *> *uiComponentInstances;
 
 + (void)initialize
 {
     [super initialize];
-    adViewInstances = [NSMutableDictionary dictionaryWithCapacity: 2];
+    uiComponentInstances = [NSMutableDictionary dictionaryWithCapacity: 2];
 }
 
 + (MAAdView *)sharedWithAdUnitIdentifier:(NSString *)adUnitIdentifier
 {
-    return adViewInstances[adUnitIdentifier];
+    AppLovinMAXAdViewUIComponent *uiComponent = uiComponentInstances[adUnitIdentifier];
+    return uiComponent ? uiComponent.adView : nil;
+}
+
++ (void) preloadNativeUIComponentAdView:(NSString *) adUnitId adFormat:(MAAdFormat *)adFormat placement:(NSString *)placement  customData:(NSString *)customData extraParameters:(NSDictionary<NSString *, NSString *> *)extraParameters localExtraParameters:(NSDictionary<NSString *, NSString *> *)localExtraParameters resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject
+{
+    AppLovinMAXAdViewUIComponent *preloadedUIComponent = uiComponentInstances[ adUnitId];
+    if ( !preloadedUIComponent )
+    {
+        preloadedUIComponent = [[AppLovinMAXAdViewUIComponent alloc] initWithAdUnitIdentifier: adUnitId adFormat: adFormat];
+        uiComponentInstances[adUnitId] = preloadedUIComponent;
+    }
+    
+    preloadedUIComponent.onPromiseResolve = resolve;
+    preloadedUIComponent.onPromiseReject = reject;
+    
+    preloadedUIComponent.placement = placement;
+    preloadedUIComponent.customData = customData;
+    preloadedUIComponent.extraParameters = extraParameters;
+    preloadedUIComponent.localExtraParameters = localExtraParameters;
+    
+    // Disable autoRefresh for the preloaded ad until mounted
+    preloadedUIComponent.autoRefresh = false;
+    
+    [preloadedUIComponent loadAd];
 }
 
 - (void)setAdUnitId:(NSString *)adUnitId
 {
     // Ad Unit ID must be set prior to creating MAAdView
-    if ( self.adView )
+    if ( self.uiComponent )
     {
         [[AppLovinMAX shared] log: @"Attempting to set Ad Unit ID %@ after MAAdView is created", adUnitId];
         return;
@@ -61,12 +79,12 @@ static NSMutableDictionary<NSString *, MAAdView *> *adViewInstances;
     _adUnitId = adUnitId;
     
     [self attachAdViewIfNeeded];
-}  
+}
 
 - (void)setAdFormat:(NSString *)adFormat
 {
     // Ad format must be set prior to creating MAAdView
-    if ( self.adView )
+    if ( self.uiComponent )
     {
         [[AppLovinMAX shared] log: @"Attempting to set ad format %@ after MAAdView is created", adFormat];
         return;
@@ -87,15 +105,15 @@ static NSMutableDictionary<NSString *, MAAdView *> *adViewInstances;
     }
     
     [self attachAdViewIfNeeded];
-}  
+}
 
 - (void)setPlacement:(NSString *)placement
 {
     _placement = placement;
     
-    if ( self.adView )
+    if ( self.uiComponent )
     {
-        self.adView.placement = placement;
+        self.uiComponent.placement = placement;
     }
 }
 
@@ -103,9 +121,9 @@ static NSMutableDictionary<NSString *, MAAdView *> *adViewInstances;
 {
     _customData = customData;
     
-    if ( self.adView )
+    if ( self.uiComponent )
     {
-        self.adView.customData = customData;
+        self.uiComponent.customData = customData;
     }
 }
 
@@ -113,9 +131,9 @@ static NSMutableDictionary<NSString *, MAAdView *> *adViewInstances;
 {
     _adaptiveBannerEnabled = adaptiveBannerEnabled;
     
-    if ( self.adView )
+    if ( self.uiComponent )
     {
-        [self.adView setExtraParameterForKey: @"adaptive_banner" value: adaptiveBannerEnabled ? @"true" : @"false"];
+        self.uiComponent.adaptiveBannerEnabled = adaptiveBannerEnabled;
     }
 }
 
@@ -123,22 +141,20 @@ static NSMutableDictionary<NSString *, MAAdView *> *adViewInstances;
 {
     _autoRefresh = autoRefresh;
     
-    if ( self.adView )
+    if ( self.uiComponent )
     {
-        if ( autoRefresh )
-        {
-            [self.adView startAutoRefresh];
-        }
-        else
-        {
-            [self.adView stopAutoRefresh];
-        }
+        self.uiComponent.autoRefresh = autoRefresh;
     }
 }
 
 - (void)setLoadOnMount:(BOOL)loadOnMount
 {
     _loadOnMount = loadOnMount;
+}
+
+- (void)setDeleteNativeUIComponent:(BOOL)deleteNativeUIComponent
+{
+    _deleteNativeUIComponent = deleteNativeUIComponent;
 }
 
 - (void)attachAdViewIfNeeded
@@ -155,7 +171,7 @@ static NSMutableDictionary<NSString *, MAAdView *> *adViewInstances;
             [[AppLovinMAX shared] logUninitializedAccessError: @"AppLovinMAXAdview.attachAdViewIfNeeded"];
             return;
         }
-
+        
         if ( ![adUnitId al_isValidString] )
         {
             [[AppLovinMAX shared] log: @"Attempting to attach MAAdView without Ad Unit ID"];
@@ -168,71 +184,49 @@ static NSMutableDictionary<NSString *, MAAdView *> *adViewInstances;
             return;
         }
         
-        if ( self.adView )
+        if ( self.uiComponent )
         {
-            [[AppLovinMAX shared] log: @"Attempting to re-attach with existing MAAdView: %@", self.adView];
+            [[AppLovinMAX shared] log: @"Attempting to re-attach with existing MAAdView: %@", self.uiComponent.adView];
             return;
         }
         
         [[AppLovinMAX shared] log: @"Attaching MAAdView for %@", adUnitId];
         
-        self.adView = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitId
-                                                        adFormat: adFormat
-                                                             sdk: [AppLovinMAX shared].sdk];
-        self.adView.frame = (CGRect) { CGPointZero, self.frame.size };
-        self.adView.delegate = self;
-        self.adView.revenueDelegate = self;
-        self.adView.placement = self.placement;
-        self.adView.customData = self.customData;
-        [self.adView setExtraParameterForKey: @"adaptive_banner" value: [self isAdaptiveBannerEnabled] ? @"true" : @"false"];
-        // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
-        [self.adView setExtraParameterForKey: @"allow_pause_auto_refresh_immediately" value: @"true"];
+        self.uiComponent = uiComponentInstances[adUnitId];
         
-        for ( NSString *key in self.extraParameters )
+        if ( self.uiComponent && ![self.uiComponent isAdViewAttached] )
         {
-            [self.adView setExtraParameterForKey: key value: self.extraParameters[key]];
+            self.uiComponent.autoRefresh = self.isAutoRefresh;
+            [self.uiComponent attachAdView: self];
+            return;
         }
         
-        for ( NSString *key in self.localExtraParameters )
-        {
-            id value = self.localExtraParameters[key];
-            [self.adView setLocalExtraParameterForKey: key value: (value != [NSNull null] ? value : nil)];
-        }
+        self.uiComponent = [[AppLovinMAXAdViewUIComponent alloc] initWithAdUnitIdentifier: adUnitId adFormat: adFormat];
+        self.uiComponent.placement = self.placement;
+        self.uiComponent.customData = self.customData;
+        self.uiComponent.extraParameters = self.extraParameters;
+        self.uiComponent.localExtraParameters = self.localExtraParameters;
+        self.uiComponent.adaptiveBannerEnabled = self.isAdaptiveBannerEnabled;
+        self.uiComponent.autoRefresh = self.isAutoRefresh;
         
-        if ( [self isAutoRefresh] )
-        {
-            [self.adView startAutoRefresh];
-        }
-        else
-        {
-            [self.adView stopAutoRefresh];
-        }
+        [self.uiComponent attachAdView: self];
         
         if ( [self isLoadOnMount] )
         {
-            [self.adView loadAd];
+            [self.uiComponent loadAd];
         }
-        
-        [self addSubview: self.adView];
-        
-        [NSLayoutConstraint activateConstraints: @[[self.adView.widthAnchor constraintEqualToAnchor: self.widthAnchor],
-                                                   [self.adView.heightAnchor constraintEqualToAnchor: self.heightAnchor],
-                                                   [self.adView.centerXAnchor constraintEqualToAnchor: self.centerXAnchor],
-                                                   [self.adView.centerYAnchor constraintEqualToAnchor: self.centerYAnchor]]];
-
-        adViewInstances[adUnitId] = self.adView;
     });
 }
 
 - (void)loadAd
 {
-    if ( !self.adView )
+    if ( !self.uiComponent )
     {
         [[AppLovinMAX shared] log: @"Attempting to load uninitialized MAAdView for %@", self.adUnitId];
         return;
     }
-
-    [self.adView loadAd];
+    
+    [self.uiComponent loadAd];
 }
 
 - (void)didMoveToWindow
@@ -242,66 +236,32 @@ static NSMutableDictionary<NSString *, MAAdView *> *adViewInstances;
     // This view is unmounted
     if ( !self.window && !self.superview )
     {
-        if ( self.adView )
+        if ( self.uiComponent )
         {
-            [[AppLovinMAX shared] log: @"Unmounting MAAdView: %@", self.adView];
+            [[AppLovinMAX shared] log: @"Unmounting MAAdView: %@", self.uiComponent.adView];
             
-            [adViewInstances removeObjectForKey: self.adUnitId];
-
-            self.adView.delegate = nil;
-            self.adView.revenueDelegate = nil;
+            [self.uiComponent detachAdView];
             
-            [self.adView removeFromSuperview];
+            AppLovinMAXAdViewUIComponent *preloadedUIComponent = uiComponentInstances[self.adUnitId];
             
-            self.adView = nil;
+            if ( self.uiComponent == preloadedUIComponent )
+            {
+                if ( [self isDeleteNativeUIComponent] ) 
+                {
+                    [uiComponentInstances removeObjectForKey: self.adUnitId];
+                    [self.uiComponent destroy];
+                }
+                else
+                {
+                    self.uiComponent.autoRefresh = NO;
+                }
+            }
+            else
+            {
+                [self.uiComponent destroy];
+            }
         }
     }
 }
-
-#pragma mark - MAAdDelegate Protocol
-
-- (void)didLoadAd:(MAAd *)ad
-{
-    self.onAdLoadedEvent([[AppLovinMAX shared] adInfoForAd: ad]);
-}
-
-- (void)didFailToLoadAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(MAError *)error
-{
-    self.onAdLoadFailedEvent([[AppLovinMAX shared] adLoadFailedInfoForAd: adUnitIdentifier withError: error]);
-}
-
-- (void)didFailToDisplayAd:(MAAd *)ad withError:(MAError *)error
-{
-    self.onAdDisplayFailedEvent([[AppLovinMAX shared] adDisplayFailedInfoForAd: ad withError: error]);
-}
-
-- (void)didClickAd:(MAAd *)ad
-{
-    self.onAdClickedEvent([[AppLovinMAX shared] adInfoForAd: ad]);
-}
-
-#pragma mark - MAAdViewAdDelegate Protocol
-
-- (void)didExpandAd:(MAAd *)ad
-{
-    self.onAdExpandedEvent([[AppLovinMAX shared] adInfoForAd: ad]);
-}
-
-- (void)didCollapseAd:(MAAd *)ad
-{
-    self.onAdCollapsedEvent([[AppLovinMAX shared] adInfoForAd: ad]);
-}
-
-#pragma mark - MAAdRevenueDelegate Protocol
-
-- (void)didPayRevenueForAd:(MAAd *)ad
-{
-    self.onAdRevenuePaidEvent([[AppLovinMAX shared] adRevenueInfoForAd: ad]);
-}
-
-#pragma mark - Deprecated Callbacks
-
-- (void)didDisplayAd:(MAAd *)ad {}
-- (void)didHideAd:(MAAd *)ad {}
 
 @end

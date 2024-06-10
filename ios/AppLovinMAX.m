@@ -577,7 +577,7 @@ RCT_EXPORT_METHOD(showCmpForExistingUser:(RCTPromiseResolveBlock)resolve :(RCTPr
         [self logUninitializedAccessError: @"showCmpForExistingUser" withPromiseReject: reject];
         return;
     }
-
+    
     [self.sdk.cmpService showCMPForExistingUserWithCompletion:^(ALCMPError * _Nullable error) {
         
         if ( !error )
@@ -585,7 +585,7 @@ RCT_EXPORT_METHOD(showCmpForExistingUser:(RCTPromiseResolveBlock)resolve :(RCTPr
             resolve(nil);
             return;
         }
-
+        
         resolve(@{@"code" : @(error.code),
                   @"message" : error.message ?: @"",
                   @"cmpCode" : @(error.cmpCode),
@@ -600,7 +600,7 @@ RCT_EXPORT_METHOD(hasSupportedCmp:(RCTPromiseResolveBlock)resolve :(RCTPromiseRe
         [self logUninitializedAccessError: @"hasSupportedCmp" withPromiseReject: reject];
         return;
     }
-
+    
     resolve(@([self.sdk.cmpService hasSupportedCMP]));
 }
 
@@ -1264,6 +1264,29 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
     
     MAAppOpenAd *appOpenAd = [self retrieveAppOpenAdForAdUnitIdentifier: adUnitIdentifier];
     [appOpenAd setLocalExtraParameterForKey: key value: value];
+}
+
+#pragma mark - AdView Preloading
+
+RCT_EXPORT_METHOD(preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier :(NSString *)adFormatStr :(NSString *)placement :(NSString *)customData :(NSDictionary<NSString *, id> *)extraParameterDict :(NSDictionary<NSString *, id> *)localExtraParameterDict :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+{
+    MAAdFormat *adFormat;
+    
+    if ( [MAAdFormat.banner.label isEqualToString: adFormatStr] )
+    {
+        adFormat = DEVICE_SPECIFIC_ADVIEW_AD_FORMAT;
+    }
+    else if ( [MAAdFormat.mrec.label isEqualToString: adFormatStr] )
+    {
+        adFormat = MAAdFormat.mrec;
+    }
+    else
+    {
+        [self logInvalidAdFormat: adFormat withPromiseReject: reject];
+        return;
+    }
+    
+    [AppLovinMAXAdView preloadNativeUIComponentAdView:adUnitIdentifier adFormat:adFormat placement:placement customData:customData extraParameters:extraParameterDict localExtraParameters:localExtraParameterDict resolve:resolve reject:reject];
 }
 
 #pragma mark - Ad Callbacks
@@ -2040,7 +2063,20 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
 
 - (void)logInvalidAdFormat:(MAAdFormat *)adFormat
 {
-    [self log: @"invalid ad format: %@, from %@", adFormat, [NSThread callStackSymbols]];
+    [self logInvalidAdFormat: adFormat withPromiseReject: nil];
+}
+
+- (void)logInvalidAdFormat:(MAAdFormat *)adFormat withPromiseReject:(nullable RCTPromiseRejectBlock)reject
+{
+    NSString *message = [NSString stringWithFormat:@"invalid ad format: %@, from %@", adFormat, [NSThread callStackSymbols]];
+    
+    if ( !reject )
+    {
+        NSLog(@"[%@] [%@] %@", SDK_TAG, TAG, message);
+        return;
+    }
+    
+    reject(TAG, message, nil);
 }
 
 - (void)logUninitializedAccessError:(NSString *)callingMethod
@@ -2051,13 +2087,13 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
 - (void)logUninitializedAccessError:(NSString *)callingMethod withPromiseReject:(nullable RCTPromiseRejectBlock)reject
 {
     NSString *message = [NSString stringWithFormat:@"ERROR: Failed to execute %@() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!", callingMethod];
-
+    
     if ( !reject )
     {
         NSLog(@"[%@] [%@] %@", SDK_TAG, TAG, message);
         return;
     }
-
+    
     reject(TAG, message, nil);
 }
 
@@ -2196,7 +2232,7 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
              @"dspName" : ad.DSPName ?: @"",
              @"size" : @{@"width" : @(ad.size.width),
                          @"height" : @(ad.size.height)}
-            };
+    };
 }
 
 - (NSDictionary<NSString *, id> *)adLoadFailedInfoForAd:(NSString *)adUnitIdentifier withError:(MAError *)error
@@ -2343,7 +2379,7 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
             [self log: @"Failed to set Amazon result - unable to find interstitial"];
             return;
         }
-
+        
         [interstitial setLocalExtraParameterForKey: key value: result];
     }
     else if ( adFormat == MAAdFormat.rewarded )
@@ -2354,13 +2390,13 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
             [self log: @"Failed to set Amazon result - unable to find rewarded ad"];
             return;
         }
-
+        
         [rewardedAd setLocalExtraParameterForKey: key value: result];
     }
     else  // MAAdFormat.banner or MAAdFormat.mrec
     {
         MAAdView *adView = [AppLovinMAXAdView sharedWithAdUnitIdentifier: adUnitIdentifier];
-
+        
         if ( !adView )
         {
             adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];

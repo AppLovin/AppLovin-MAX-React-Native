@@ -114,6 +114,12 @@ class AppLovinMAXAdViewManager
         view.setLoadOnMount( enabled );
     }
 
+    @ReactProp(name = "deleteNativeUIComponent")
+    public void setDeleteNativeUIComponent(final AppLovinMAXAdView view, final boolean enabled)
+    {
+        view.setDeleteNativeUIComponent( enabled );
+    }
+
     @ReactProp(name = "extraParameters")
     public void setExtraParameters(final AppLovinMAXAdView view, @Nullable final ReadableMap value)
     {
