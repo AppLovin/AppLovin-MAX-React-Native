@@ -1,6 +1,5 @@
 package com.applovin.reactnative;
 
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
@@ -14,13 +13,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class AppLovinMAXNativeAdViewManager
-        extends ViewGroupManager<AppLovinMAXNativeAdView>
+    extends ViewGroupManager<AppLovinMAXNativeAdView>
 {
     public static final String REACT_CLASS = "AppLovinMAXNativeAdView";
 
     public final int COMMAND_LOAD_AD = 1;
 
-    public AppLovinMAXNativeAdViewManager(final ReactApplicationContext callerContext) { }
+    public AppLovinMAXNativeAdViewManager() { }
 
     @NonNull
     @Override
@@ -44,11 +43,11 @@ public class AppLovinMAXNativeAdViewManager
     {
         // mapping Android events to JavaScript events
         return MapBuilder.<String, Object>builder()
-                .put( "onAdLoadedEvent", MapBuilder.of( "registrationName", "onAdLoadedEvent" ) )
-                .put( "onAdLoadFailedEvent", MapBuilder.of( "registrationName", "onAdLoadFailedEvent" ) )
-                .put( "onAdClickedEvent", MapBuilder.of( "registrationName", "onAdClickedEvent" ) )
-                .put( "onAdRevenuePaidEvent", MapBuilder.of( "registrationName", "onAdRevenuePaidEvent" ) )
-                .build();
+            .put( "onAdLoadedEvent", MapBuilder.of( "registrationName", "onAdLoadedEvent" ) )
+            .put( "onAdLoadFailedEvent", MapBuilder.of( "registrationName", "onAdLoadFailedEvent" ) )
+            .put( "onAdClickedEvent", MapBuilder.of( "registrationName", "onAdClickedEvent" ) )
+            .put( "onAdRevenuePaidEvent", MapBuilder.of( "registrationName", "onAdRevenuePaidEvent" ) )
+            .build();
     }
 
     /// Call from JavaScript
@@ -58,7 +57,7 @@ public class AppLovinMAXNativeAdViewManager
     public Map<String, Integer> getCommandsMap()
     {
         return MapBuilder.of(
-                "loadAd", COMMAND_LOAD_AD
+            "loadAd", COMMAND_LOAD_AD
         );
     }
 
@@ -66,11 +65,9 @@ public class AppLovinMAXNativeAdViewManager
     @Override
     public void receiveCommand(@NonNull final AppLovinMAXNativeAdView root, final int commandId, @Nullable final ReadableArray args)
     {
-        switch ( commandId )
+        if ( commandId == COMMAND_LOAD_AD )
         {
-            case COMMAND_LOAD_AD:
-                root.loadAd();
-                break;
+            root.loadAd();
         }
     }
 
@@ -149,7 +146,7 @@ public class AppLovinMAXNativeAdViewManager
     }
 
     @Override
-    public void onAfterUpdateTransaction(final AppLovinMAXNativeAdView view)
+    public void onAfterUpdateTransaction(@NonNull final AppLovinMAXNativeAdView view)
     {
         super.onAfterUpdateTransaction( view );
 
