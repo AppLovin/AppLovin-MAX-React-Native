@@ -29,11 +29,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class AppLovinMAXNativeAdView
-        extends ReactViewGroup
-        implements MaxAdRevenueListener, View.OnLayoutChangeListener, ViewGroup.OnHierarchyChangeListener
+    extends ReactViewGroup
+    implements MaxAdRevenueListener, View.OnLayoutChangeListener, ViewGroup.OnHierarchyChangeListener
 {
     private static final int TITLE_LABEL_TAG          = 1;
     private static final int MEDIA_VIEW_CONTAINER_TAG = 2;
@@ -172,10 +173,10 @@ public class AppLovinMAXNativeAdView
     /// Ad Loader Listener
 
     private class NativeAdListener
-            extends MaxNativeAdListener
+        extends MaxNativeAdListener
     {
         @Override
-        public void onNativeAdLoaded(@Nullable final MaxNativeAdView nativeAdView, final MaxAd ad)
+        public void onNativeAdLoaded(@Nullable final MaxNativeAdView nativeAdView, @NonNull final MaxAd ad)
         {
             AppLovinMAXModule.d( "Native ad loaded: " + ad );
 
@@ -203,7 +204,7 @@ public class AppLovinMAXNativeAdView
         }
 
         @Override
-        public void onNativeAdLoadFailed(final String adUnitId, final MaxError error)
+        public void onNativeAdLoadFailed(@NonNull final String adUnitId, @NonNull final MaxError error)
         {
             isLoading.set( false );
 
@@ -214,7 +215,7 @@ public class AppLovinMAXNativeAdView
         }
 
         @Override
-        public void onNativeAdClicked(final MaxAd ad)
+        public void onNativeAdClicked(@NonNull final MaxAd ad)
         {
             WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
             reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdClickedEvent", adInfo );
@@ -224,7 +225,7 @@ public class AppLovinMAXNativeAdView
     /// Ad Revenue Listener
 
     @Override
-    public void onAdRevenuePaid(final MaxAd ad)
+    public void onAdRevenuePaid(@NonNull final MaxAd ad)
     {
         WritableMap adRevenueInfo = AppLovinMAXModule.getInstance().getAdRevenueInfo( ad );
         reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdRevenuePaidEvent", adRevenueInfo );
@@ -406,9 +407,9 @@ public class AppLovinMAXNativeAdView
     }
 
     static class RenderNativeAdTask
-            implements Runnable
+        implements Runnable
     {
-        private AppLovinMAXNativeAdView nativeAdView;
+        private final AppLovinMAXNativeAdView nativeAdView;
 
         RenderNativeAdTask(AppLovinMAXNativeAdView nativeAdView) { this.nativeAdView = nativeAdView; }
 
@@ -493,7 +494,7 @@ public class AppLovinMAXNativeAdView
 
         if ( ad.getStarRating() != null )
         {
-            nativeAdInfo.putDouble( "starRating", ad.getStarRating().doubleValue() );
+            nativeAdInfo.putDouble( "starRating", ad.getStarRating() );
         }
 
         // The aspect ratio can be 0.0f when it is not provided by the network.
@@ -520,7 +521,7 @@ public class AppLovinMAXNativeAdView
 
         if ( ad.getStarRating() != null )
         {
-            jsNativeAd.putDouble( "starRating", ad.getStarRating().doubleValue() );
+            jsNativeAd.putDouble( "starRating", ad.getStarRating() );
         }
 
         MaxNativeAdImage icon = ad.getIcon();

@@ -19,14 +19,15 @@ import com.facebook.react.views.view.ReactViewGroup;
 import java.util.HashMap;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
  * Created by Thomas So on September 27 2020
  */
 class AppLovinMAXAdView
-        extends ReactViewGroup
-        implements MaxAdListener, MaxAdViewAdListener, MaxAdRevenueListener
+    extends ReactViewGroup
+    implements MaxAdListener, MaxAdViewAdListener, MaxAdRevenueListener
 {
     private static final Map<String, MaxAdView> adViewInstances = new HashMap<>( 2 );
 
@@ -181,8 +182,8 @@ class AppLovinMAXAdView
             int currentHeightPx = getHeight();
 
             adView.measure(
-                    MeasureSpec.makeMeasureSpec( currentWidthPx, MeasureSpec.EXACTLY ),
-                    MeasureSpec.makeMeasureSpec( currentHeightPx, MeasureSpec.EXACTLY )
+                MeasureSpec.makeMeasureSpec( currentWidthPx, MeasureSpec.EXACTLY ),
+                MeasureSpec.makeMeasureSpec( currentHeightPx, MeasureSpec.EXACTLY )
             );
             adView.layout( 0, 0, currentWidthPx, currentHeightPx );
         }
@@ -320,49 +321,49 @@ class AppLovinMAXAdView
     }
 
     @Override
-    public void onAdLoaded(final MaxAd ad)
+    public void onAdLoaded(@NonNull final MaxAd ad)
     {
         WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
         reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdLoadedEvent", adInfo );
     }
 
     @Override
-    public void onAdLoadFailed(final String adUnitId, final MaxError error)
+    public void onAdLoadFailed(@NonNull final String adUnitId, @NonNull final MaxError error)
     {
         WritableMap adLoadFailedInfo = AppLovinMAXModule.getInstance().getAdLoadFailedInfo( adUnitId, error );
         reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdLoadFailedEvent", adLoadFailedInfo );
     }
 
     @Override
-    public void onAdDisplayFailed(final MaxAd ad, final MaxError error)
+    public void onAdDisplayFailed(@NonNull final MaxAd ad, @NonNull final MaxError error)
     {
         WritableMap adDisplayFailedInfo = AppLovinMAXModule.getInstance().getAdDisplayFailedInfo( ad, error );
         reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdDisplayFailedEvent", adDisplayFailedInfo );
     }
 
     @Override
-    public void onAdClicked(final MaxAd ad)
+    public void onAdClicked(@NonNull final MaxAd ad)
     {
         WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
         reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdClickedEvent", adInfo );
     }
 
     @Override
-    public void onAdExpanded(final MaxAd ad)
+    public void onAdExpanded(@NonNull final MaxAd ad)
     {
         WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
         reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdExpandedEvent", adInfo );
     }
 
     @Override
-    public void onAdCollapsed(final MaxAd ad)
+    public void onAdCollapsed(@NonNull final MaxAd ad)
     {
         WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
         reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdCollapsedEvent", adInfo );
     }
 
     @Override
-    public void onAdRevenuePaid(final MaxAd ad)
+    public void onAdRevenuePaid(@NonNull final MaxAd ad)
     {
         WritableMap adRevenueInfo = AppLovinMAXModule.getInstance().getAdRevenueInfo( ad );
         reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdRevenuePaidEvent", adRevenueInfo );
@@ -371,8 +372,8 @@ class AppLovinMAXAdView
     /// Deprecated Callbacks
 
     @Override
-    public void onAdDisplayed(final MaxAd ad) { }
+    public void onAdDisplayed(@NonNull final MaxAd ad) { }
 
     @Override
-    public void onAdHidden(final MaxAd ad) { }
+    public void onAdHidden(@NonNull final MaxAd ad) { }
 }

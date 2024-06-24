@@ -1,6 +1,5 @@
 package com.applovin.reactnative;
 
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
@@ -17,12 +16,13 @@ import androidx.annotation.Nullable;
  * Created by Thomas So on September 26 2020
  */
 class AppLovinMAXAdViewManager
-        extends SimpleViewManager<AppLovinMAXAdView>
+    extends SimpleViewManager<AppLovinMAXAdView>
 {
     private static final int COMMAND_LOAD_AD = 1;
 
-    public AppLovinMAXAdViewManager(final ReactApplicationContext reactApplicationContext) { }
+    public AppLovinMAXAdViewManager() { }
 
+    @NonNull
     @Override
     public String getName()
     {
@@ -35,14 +35,14 @@ class AppLovinMAXAdViewManager
     {
         // mapping Android events to JavaScript events
         return MapBuilder.<String, Object>builder()
-                .put( "onAdLoadedEvent", MapBuilder.of( "registrationName", "onAdLoadedEvent" ) )
-                .put( "onAdLoadFailedEvent", MapBuilder.of( "registrationName", "onAdLoadFailedEvent" ) )
-                .put( "onAdDisplayFailedEvent", MapBuilder.of( "registrationName", "onAdDisplayFailedEvent" ) )
-                .put( "onAdClickedEvent", MapBuilder.of( "registrationName", "onAdClickedEvent" ) )
-                .put( "onAdExpandedEvent", MapBuilder.of( "registrationName", "onAdExpandedEvent" ) )
-                .put( "onAdCollapsedEvent", MapBuilder.of( "registrationName", "onAdCollapsedEvent" ) )
-                .put( "onAdRevenuePaidEvent", MapBuilder.of( "registrationName", "onAdRevenuePaidEvent" ) )
-                .build();
+            .put( "onAdLoadedEvent", MapBuilder.of( "registrationName", "onAdLoadedEvent" ) )
+            .put( "onAdLoadFailedEvent", MapBuilder.of( "registrationName", "onAdLoadFailedEvent" ) )
+            .put( "onAdDisplayFailedEvent", MapBuilder.of( "registrationName", "onAdDisplayFailedEvent" ) )
+            .put( "onAdClickedEvent", MapBuilder.of( "registrationName", "onAdClickedEvent" ) )
+            .put( "onAdExpandedEvent", MapBuilder.of( "registrationName", "onAdExpandedEvent" ) )
+            .put( "onAdCollapsedEvent", MapBuilder.of( "registrationName", "onAdCollapsedEvent" ) )
+            .put( "onAdRevenuePaidEvent", MapBuilder.of( "registrationName", "onAdRevenuePaidEvent" ) )
+            .build();
     }
 
     @Nullable
@@ -50,23 +50,22 @@ class AppLovinMAXAdViewManager
     public Map<String, Integer> getCommandsMap()
     {
         return MapBuilder.of(
-                "loadAd", COMMAND_LOAD_AD
+            "loadAd", COMMAND_LOAD_AD
         );
     }
 
     @Override
     public void receiveCommand(@NonNull final AppLovinMAXAdView view, final int commandId, @Nullable final ReadableArray args)
     {
-        switch ( commandId )
+        if ( commandId == COMMAND_LOAD_AD )
         {
-            case COMMAND_LOAD_AD:
-                view.loadAd();
-                break;
+            view.loadAd();
         }
     }
 
+    @NonNull
     @Override
-    protected AppLovinMAXAdView createViewInstance(final ThemedReactContext reactContext)
+    protected AppLovinMAXAdView createViewInstance(@NonNull final ThemedReactContext reactContext)
     {
         // NOTE: Do not set frame or backgroundColor as RN will overwrite the values set by your custom class in order to match your JavaScript component's layout props - hence wrapper
         return new AppLovinMAXAdView( reactContext );
