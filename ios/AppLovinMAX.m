@@ -29,16 +29,11 @@
 @property (nonatomic, assign, readonly, getter=al_isValidString) BOOL al_validString;
 @end
 
-@interface ALSdkInitializationConfigurationBuilder (ALUtils)
-- (void)setSdkKey:(NSString *)sdkKey;
-@end
-
 @interface AppLovinMAX()
 
 // Parent Fields
 @property (nonatomic,  weak) ALSdk *sdk;
 @property (nonatomic, strong) ALTargetingDataBuilder *targetingDataBuilder;
-@property (nonatomic, strong) ALSdkInitializationConfigurationBuilder *sdkInitConfigurationBuilder;
 @property (nonatomic, assign, getter=isPluginInitialized) BOOL pluginInitialized;
 @property (nonatomic, assign, getter=isSDKInitialized) BOOL sdkInitialized;
 @property (nonatomic, strong) ALSdkConfiguration *sdkConfiguration;
@@ -164,7 +159,6 @@ RCT_EXPORT_MODULE()
         
         self.sdk = [ALSdk shared];
         self.targetingDataBuilder = [ALTargetingData builder];
-        self.sdkInitConfigurationBuilder = [ALSdkInitializationConfiguration builderWithSdkKey: @""];
         
         self.interstitials = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.rewardedAds = [NSMutableDictionary dictionaryWithCapacity: 2];
@@ -209,29 +203,19 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     // If SDK key passed in is empty, check Info.plist
     if ( ![sdkKey al_isValidString] )
     {
-        if ( [[NSBundle mainBundle].infoDictionary al_containsValueForKey: @"AppLovinSdkKey"] )
-        {
-            sdkKey = [NSBundle mainBundle].infoDictionary[@"AppLovinSdkKey"];
-        }
-        else
-        {
-            reject(RCTErrorUnspecified, @"Unable to initialize AppLovin SDK - no SDK key provided and not found in Info.plist!", nil);
-            return;
-        }
-        
-        [self log: @"AppLovinSdkKey is obsolte - set an SDK key programmatically"];
+        reject(RCTErrorUnspecified, @"Unable to initialize AppLovin SDK - no SDK key provided and not found in Info.plist!", nil);
+        return;
     }
     
-    [self.sdkInitConfigurationBuilder setSdkKey: sdkKey];
-    
-    self.sdkInitConfigurationBuilder.mediationProvider = ALMediationProviderMAX;
-    self.sdkInitConfigurationBuilder.pluginVersion = [@"React-Native-" stringByAppendingString: pluginVersion];
-    
-    ALTargetingData *targetingData = [self.targetingDataBuilder build];
-    self.sdkInitConfigurationBuilder.targetingData = targetingData;
-    
-    ALSdkInitializationConfiguration *initConfig = [self.sdkInitConfigurationBuilder build];
-    
+    ALSdkInitializationConfiguration *initConfig = [ALSdkInitializationConfiguration configurationWithSdkKey: sdkKey builderBlock:^(ALSdkInitializationConfigurationBuilder *builder) {
+
+        builder.mediationProvider = ALMediationProviderMAX;
+        builder.pluginVersion = [@"React-Native-" stringByAppendingString: pluginVersion];
+        
+        ALTargetingData *targetingData = [self.targetingDataBuilder build];
+        builder.targetingData = targetingData;
+    }];
+
     // Initialize SDK
     [self.sdk initializeWithConfiguration: initConfig completionHandler:^(ALSdkConfiguration *configuration) {
         
@@ -268,7 +252,7 @@ RCT_EXPORT_METHOD(isTablet:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlo
 
 RCT_EXPORT_METHOD(showMediationDebugger)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"showMediationDebugger"];
         return;
@@ -386,7 +370,7 @@ RCT_EXPORT_METHOD(setConsentFlowDebugUserGeography:(NSString *)userGeography)
 
 RCT_EXPORT_METHOD(showCmpForExistingUser:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"showCmpForExistingUser" withPromiseReject: reject];
         return;
@@ -409,7 +393,7 @@ RCT_EXPORT_METHOD(showCmpForExistingUser:(RCTPromiseResolveBlock)resolve :(RCTPr
 
 RCT_EXPORT_METHOD(hasSupportedCmp:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"hasSupportedCmp" withPromiseReject: reject];
         return;
@@ -422,7 +406,7 @@ RCT_EXPORT_METHOD(hasSupportedCmp:(RCTPromiseResolveBlock)resolve :(RCTPromiseRe
 
 RCT_EXPORT_METHOD(setTargetingDataYearOfBirth:(nonnull NSNumber *)yearOfBirth)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         self.targetingDataBuilder.yearOfBirth = yearOfBirth;
         return;
@@ -433,7 +417,7 @@ RCT_EXPORT_METHOD(setTargetingDataYearOfBirth:(nonnull NSNumber *)yearOfBirth)
 
 RCT_EXPORT_METHOD(getTargetingDataYearOfBirth:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         resolve(self.targetingDataBuilder.yearOfBirth ? self.targetingDataBuilder.yearOfBirth : @0);
         return;
@@ -444,7 +428,7 @@ RCT_EXPORT_METHOD(getTargetingDataYearOfBirth:(RCTPromiseResolveBlock)resolve :(
 
 RCT_EXPORT_METHOD(setTargetingDataGender:(nullable NSString *)gender)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         self.targetingDataBuilder.gender = [self toAppLovinGender: gender];
         return;
@@ -455,7 +439,7 @@ RCT_EXPORT_METHOD(setTargetingDataGender:(nullable NSString *)gender)
 
 RCT_EXPORT_METHOD(getTargetingDataGender:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         resolve([self fromAppLovinGender: self.targetingDataBuilder.gender]);
         return;
@@ -466,7 +450,7 @@ RCT_EXPORT_METHOD(getTargetingDataGender:(RCTPromiseResolveBlock)resolve :(RCTPr
 
 RCT_EXPORT_METHOD(setTargetingDataMaximumAdContentRating:(nonnull NSNumber *)maximumAdContentRating)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         self.targetingDataBuilder.maximumAdContentRating = [self toAppLovinAdContentRating: maximumAdContentRating];
         return;
@@ -477,7 +461,7 @@ RCT_EXPORT_METHOD(setTargetingDataMaximumAdContentRating:(nonnull NSNumber *)max
 
 RCT_EXPORT_METHOD(getTargetingDataMaximumAdContentRating:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         resolve(@(self.targetingDataBuilder.maximumAdContentRating));
         return;
@@ -488,7 +472,7 @@ RCT_EXPORT_METHOD(getTargetingDataMaximumAdContentRating:(RCTPromiseResolveBlock
 
 RCT_EXPORT_METHOD(setTargetingDataEmail:(nullable NSString *)email)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         self.targetingDataBuilder.email = email;
         return;
@@ -499,7 +483,7 @@ RCT_EXPORT_METHOD(setTargetingDataEmail:(nullable NSString *)email)
 
 RCT_EXPORT_METHOD(getTargetingDataEmail:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         resolve(self.targetingDataBuilder.email);
         return;
@@ -510,7 +494,7 @@ RCT_EXPORT_METHOD(getTargetingDataEmail:(RCTPromiseResolveBlock)resolve :(RCTPro
 
 RCT_EXPORT_METHOD(setTargetingDataPhoneNumber:(nullable NSString *)phoneNumber)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         self.targetingDataBuilder.phoneNumber = phoneNumber;
         return;
@@ -521,7 +505,7 @@ RCT_EXPORT_METHOD(setTargetingDataPhoneNumber:(nullable NSString *)phoneNumber)
 
 RCT_EXPORT_METHOD(getTargetingDataPhoneNumber:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         resolve(self.targetingDataBuilder.phoneNumber);
         return;
@@ -532,7 +516,7 @@ RCT_EXPORT_METHOD(getTargetingDataPhoneNumber:(RCTPromiseResolveBlock)resolve :(
 
 RCT_EXPORT_METHOD(setTargetingDataKeywords:(nullable NSArray<NSString *> *)keywords)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         self.targetingDataBuilder.keywords = keywords;
         return;
@@ -543,7 +527,7 @@ RCT_EXPORT_METHOD(setTargetingDataKeywords:(nullable NSArray<NSString *> *)keywo
 
 RCT_EXPORT_METHOD(getTargetingDataKeywords:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         resolve(self.targetingDataBuilder.keywords);
         return;
@@ -554,7 +538,7 @@ RCT_EXPORT_METHOD(getTargetingDataKeywords:(RCTPromiseResolveBlock)resolve :(RCT
 
 RCT_EXPORT_METHOD(setTargetingDataInterests:(nullable NSArray<NSString *> *)interests)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         self.targetingDataBuilder.interests = interests;
         return;
@@ -565,7 +549,7 @@ RCT_EXPORT_METHOD(setTargetingDataInterests:(nullable NSArray<NSString *> *)inte
 
 RCT_EXPORT_METHOD(getTargetingDataInterests:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         resolve(self.targetingDataBuilder.interests);
         return;
@@ -576,7 +560,7 @@ RCT_EXPORT_METHOD(getTargetingDataInterests:(RCTPromiseResolveBlock)resolve :(RC
 
 RCT_EXPORT_METHOD(clearAllTargetingData)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         self.targetingDataBuilder.yearOfBirth = nil;
         self.targetingDataBuilder.gender = ALGenderUnknown;
@@ -607,7 +591,7 @@ RCT_EXPORT_METHOD(trackEvent:(NSString *)event :(NSDictionary<NSString *, id> *)
 
 RCT_EXPORT_METHOD(createBanner:(NSString *)adUnitIdentifier :(NSString *)bannerPosition)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"createBanner"];
         return;
@@ -619,7 +603,7 @@ RCT_EXPORT_METHOD(createBanner:(NSString *)adUnitIdentifier :(NSString *)bannerP
 // NOTE: No function overloading in JS so we need new method signature
 RCT_EXPORT_METHOD(createBannerWithOffsets:(NSString *)adUnitIdentifier :(NSString *)bannerPosition :(CGFloat)xOffset :(CGFloat)yOffset)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"createBannerWithOffsets"];
         return;
@@ -630,7 +614,7 @@ RCT_EXPORT_METHOD(createBannerWithOffsets:(NSString *)adUnitIdentifier :(NSStrin
 
 RCT_EXPORT_METHOD(setBannerBackgroundColor:(NSString *)adUnitIdentifier :(NSString *)hexColorCode)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"setBannerBackgroundColor"];
         return;
@@ -641,7 +625,7 @@ RCT_EXPORT_METHOD(setBannerBackgroundColor:(NSString *)adUnitIdentifier :(NSStri
 
 RCT_EXPORT_METHOD(setBannerPlacement:(NSString *)adUnitIdentifier :(nullable NSString *)placement)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"setBannerPlacement"];
         return;
@@ -652,7 +636,7 @@ RCT_EXPORT_METHOD(setBannerPlacement:(NSString *)adUnitIdentifier :(nullable NSS
 
 RCT_EXPORT_METHOD(setBannerCustomData:(NSString *)adUnitIdentifier :(nullable NSString *)customData)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"setBannerCustomData"];
         return;
@@ -663,7 +647,7 @@ RCT_EXPORT_METHOD(setBannerCustomData:(NSString *)adUnitIdentifier :(nullable NS
 
 RCT_EXPORT_METHOD(updateBannerPosition:(NSString *)adUnitIdentifier :(NSString *)bannerPosition)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"updateBannerPosition"];
         return;
@@ -674,7 +658,7 @@ RCT_EXPORT_METHOD(updateBannerPosition:(NSString *)adUnitIdentifier :(NSString *
 
 RCT_EXPORT_METHOD(updateBannerOffsets:(NSString *)adUnitIdentifier :(CGFloat)xOffset :(CGFloat)yOffset)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"updateBannerOffsets"];
         return;
@@ -685,7 +669,7 @@ RCT_EXPORT_METHOD(updateBannerOffsets:(NSString *)adUnitIdentifier :(CGFloat)xOf
 
 RCT_EXPORT_METHOD(setBannerWidth:(NSString *)adUnitIdentifier :(CGFloat)width)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"setBannerWidth"];
         return;
@@ -696,7 +680,7 @@ RCT_EXPORT_METHOD(setBannerWidth:(NSString *)adUnitIdentifier :(CGFloat)width)
 
 RCT_EXPORT_METHOD(setBannerExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"setBannerExtraParameter"];
         return;
@@ -716,7 +700,7 @@ RCT_EXPORT_METHOD(setBannerLocalExtraParameter:(NSString *)adUnitIdentifier :(NS
 
 RCT_EXPORT_METHOD(startBannerAutoRefresh:(NSString *)adUnitIdentifier)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"startBannerAutoRefresh"];
         return;
@@ -727,7 +711,7 @@ RCT_EXPORT_METHOD(startBannerAutoRefresh:(NSString *)adUnitIdentifier)
 
 RCT_EXPORT_METHOD(stopBannerAutoRefresh:(NSString *)adUnitIdentifier)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"stopBannerAutoRefresh"];
         return;
@@ -738,7 +722,7 @@ RCT_EXPORT_METHOD(stopBannerAutoRefresh:(NSString *)adUnitIdentifier)
 
 RCT_EXPORT_METHOD(showBanner:(NSString *)adUnitIdentifier)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"showBanner"];
         return;
@@ -749,7 +733,7 @@ RCT_EXPORT_METHOD(showBanner:(NSString *)adUnitIdentifier)
 
 RCT_EXPORT_METHOD(hideBanner:(NSString *)adUnitIdentifier)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"hideBanner"];
         return;
@@ -760,7 +744,7 @@ RCT_EXPORT_METHOD(hideBanner:(NSString *)adUnitIdentifier)
 
 RCT_EXPORT_METHOD(destroyBanner:(NSString *)adUnitIdentifier)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"destroyBanner"];
         return;
@@ -778,7 +762,7 @@ RCT_EXPORT_METHOD(getAdaptiveBannerHeightForWidth:(CGFloat)width :(RCTPromiseRes
 
 RCT_EXPORT_METHOD(createMRec:(NSString *)adUnitIdentifier :(NSString *)mrecPosition)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"createMRec"];
         return;
@@ -789,7 +773,7 @@ RCT_EXPORT_METHOD(createMRec:(NSString *)adUnitIdentifier :(NSString *)mrecPosit
 
 RCT_EXPORT_METHOD(setMRecPlacement:(NSString *)adUnitIdentifier :(nullable NSString *)placement)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"setMRecPlacement"];
         return;
@@ -800,7 +784,7 @@ RCT_EXPORT_METHOD(setMRecPlacement:(NSString *)adUnitIdentifier :(nullable NSStr
 
 RCT_EXPORT_METHOD(setMRecCustomData:(NSString *)adUnitIdentifier :(nullable NSString *)customData)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"setMRecCustomData"];
         return;
@@ -811,7 +795,7 @@ RCT_EXPORT_METHOD(setMRecCustomData:(NSString *)adUnitIdentifier :(nullable NSSt
 
 RCT_EXPORT_METHOD(updateMRecPosition:(NSString *)mrecPosition :(NSString *)adUnitIdentifier)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"updateMRecPosition"];
         return;
@@ -836,7 +820,7 @@ RCT_EXPORT_METHOD(setMRecLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDi
 
 RCT_EXPORT_METHOD(startMRecAutoRefresh:(NSString *)adUnitIdentifier)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"startMRecAutoRefresh"];
         return;
@@ -847,7 +831,7 @@ RCT_EXPORT_METHOD(startMRecAutoRefresh:(NSString *)adUnitIdentifier)
 
 RCT_EXPORT_METHOD(stopMRecAutoRefresh:(NSString *)adUnitIdentifier)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"stopMRecAutoRefresh"];
         return;
@@ -858,7 +842,7 @@ RCT_EXPORT_METHOD(stopMRecAutoRefresh:(NSString *)adUnitIdentifier)
 
 RCT_EXPORT_METHOD(showMRec:(NSString *)adUnitIdentifier)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"showMRec"];
         return;
@@ -869,7 +853,7 @@ RCT_EXPORT_METHOD(showMRec:(NSString *)adUnitIdentifier)
 
 RCT_EXPORT_METHOD(hideMRec:(NSString *)adUnitIdentifier)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"hideMRec"];
         return;
@@ -880,7 +864,7 @@ RCT_EXPORT_METHOD(hideMRec:(NSString *)adUnitIdentifier)
 
 RCT_EXPORT_METHOD(destroyMRec:(NSString *)adUnitIdentifier)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"destroyMRec"];
         return;
@@ -893,7 +877,7 @@ RCT_EXPORT_METHOD(destroyMRec:(NSString *)adUnitIdentifier)
 
 RCT_EXPORT_METHOD(loadInterstitial:(NSString *)adUnitIdentifier)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"loadInterstitial"];
         return;
@@ -905,7 +889,7 @@ RCT_EXPORT_METHOD(loadInterstitial:(NSString *)adUnitIdentifier)
 
 RCT_EXPORT_METHOD(isInterstitialReady:(NSString *)adUnitIdentifier :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"isInterstitialReady"];
         resolve(@(NO));
@@ -918,7 +902,7 @@ RCT_EXPORT_METHOD(isInterstitialReady:(NSString *)adUnitIdentifier :(RCTPromiseR
 
 RCT_EXPORT_METHOD(showInterstitial:(NSString *)adUnitIdentifier :(nullable NSString *)placement :(nullable NSString *)customData)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"showInterstitial"];
         return;
@@ -930,7 +914,7 @@ RCT_EXPORT_METHOD(showInterstitial:(NSString *)adUnitIdentifier :(nullable NSStr
 
 RCT_EXPORT_METHOD(setInterstitialExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"setInterstitialExtraParameter"];
         return;
@@ -954,7 +938,7 @@ RCT_EXPORT_METHOD(setInterstitialLocalExtraParameter:(NSString *)adUnitIdentifie
 
 RCT_EXPORT_METHOD(loadRewardedAd:(NSString *)adUnitIdentifier)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"loadRewardedAd"];
         return;
@@ -966,7 +950,7 @@ RCT_EXPORT_METHOD(loadRewardedAd:(NSString *)adUnitIdentifier)
 
 RCT_EXPORT_METHOD(isRewardedAdReady:(NSString *)adUnitIdentifier :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"isRewardedAdReady"];
         resolve(@(NO));
@@ -979,7 +963,7 @@ RCT_EXPORT_METHOD(isRewardedAdReady:(NSString *)adUnitIdentifier :(RCTPromiseRes
 
 RCT_EXPORT_METHOD(showRewardedAd:(NSString *)adUnitIdentifier :(nullable NSString *)placement :(nullable NSString *)customData)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"showRewardedAd"];
         return;
@@ -991,7 +975,7 @@ RCT_EXPORT_METHOD(showRewardedAd:(NSString *)adUnitIdentifier :(nullable NSStrin
 
 RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"setRewardedAdExtraParameter"];
         return;
@@ -1015,7 +999,7 @@ RCT_EXPORT_METHOD(setRewardedAdLocalExtraParameter:(NSString *)adUnitIdentifier 
 
 RCT_EXPORT_METHOD(loadAppOpenAd:(NSString *)adUnitIdentifier)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"loadAppOpenAd"];
         return;
@@ -1027,7 +1011,7 @@ RCT_EXPORT_METHOD(loadAppOpenAd:(NSString *)adUnitIdentifier)
 
 RCT_EXPORT_METHOD(isAppOpenAdReady:(NSString *)adUnitIdentifier :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"isAppOpenAdReady"];
         resolve(@(NO));
@@ -1040,7 +1024,7 @@ RCT_EXPORT_METHOD(isAppOpenAdReady:(NSString *)adUnitIdentifier :(RCTPromiseReso
 
 RCT_EXPORT_METHOD(showAppOpenAd:(NSString *)adUnitIdentifier placement:(nullable NSString *)placement customData:(nullable NSString *)customData)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"showAppOpenAd"];
         return;
@@ -1052,7 +1036,7 @@ RCT_EXPORT_METHOD(showAppOpenAd:(NSString *)adUnitIdentifier placement:(nullable
 
 RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(NSString *)key value:(nullable NSString *)value)
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         [self logUninitializedAccessError: @"setAppOpenAdExtraParameter"];
         return;
@@ -2113,7 +2097,7 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
 
 - (void)setAmazonResult:(id /* DTBAdResponse or DTBAdErrorInfo */)result forAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat
 {
-    if ( !self.sdkInitialized )
+    if ( ![self isInitialized] )
     {
         NSString *errorMessage = [NSString stringWithFormat: @"Failed to set Amazon result - SDK not initialized: %@", adUnitIdentifier];
         [self logUninitializedAccessError: errorMessage];

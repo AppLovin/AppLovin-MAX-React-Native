@@ -2,8 +2,6 @@ package com.applovin.reactnative;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -20,7 +18,6 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import com.applovin.impl.sdk.AppLovinSdkInitializationConfigurationImpl;
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxAdListener;
@@ -142,9 +139,8 @@ public class AppLovinMAXModule
     private static Activity          currentActivity;
 
     // Parent Fields
-    private final AppLovinSdk                                    sdk;
-    private final AppLovinTargetingData.Builder                  targetingDataBuilder;
-    private final AppLovinSdkInitializationConfiguration.Builder initConfigurationBuilder;
+    private final AppLovinSdk                   sdk;
+    private final AppLovinTargetingData.Builder targetingDataBuilder;
 
     private boolean                  isPluginInitialized;
     private boolean                  isSdkInitialized;
@@ -192,7 +188,6 @@ public class AppLovinMAXModule
 
         sdk = AppLovinSdk.getInstance( reactContext );
         targetingDataBuilder = AppLovinTargetingData.builder();
-        initConfigurationBuilder = AppLovinSdkInitializationConfiguration.builder( null, reactContext );
 
         // Listening to Lifecycle Events
         reactContext.addLifecycleEventListener( this );
@@ -239,41 +234,19 @@ public class AppLovinMAXModule
         d( "Initializing AppLovin MAX React Native v" + pluginVersion + "..." );
 
         // If SDK key passed in is empty, check Android Manifest
-        String sdkKeyToUse = sdkKey;
         if ( TextUtils.isEmpty( sdkKey ) )
         {
-            try
-            {
-                PackageManager packageManager = getReactApplicationContext().getPackageManager();
-                String packageName = getReactApplicationContext().getPackageName();
-                ApplicationInfo applicationInfo = packageManager.getApplicationInfo( packageName, PackageManager.GET_META_DATA );
-                Bundle metaData = applicationInfo.metaData;
-
-                sdkKeyToUse = metaData.getString( "applovin.sdk.key", "" );
-            }
-            catch ( Throwable th )
-            {
-                e( "Unable to retrieve SDK key from Android Manifest: " + th );
-            }
-
-            if ( TextUtils.isEmpty( sdkKeyToUse ) )
-            {
-                promise.reject( new IllegalStateException( "Unable to initialize AppLovin SDK - no SDK key provided and not found in Android Manifest!" ) );
-                return;
-            }
-
-            w( "\"applovin.sdk.key\" in Android Manifest is obsolete - set \"sdkKey\" programmatically" );
+            promise.reject( new IllegalStateException( "Unable to initialize AppLovin SDK - no SDK key provided!" ) );
+            return;
         }
 
-        ( (AppLovinSdkInitializationConfigurationImpl.BuilderImpl) initConfigurationBuilder ).setSdkKey( sdkKeyToUse );
-
-        initConfigurationBuilder.setPluginVersion( "React-Native-" + pluginVersion );
-        initConfigurationBuilder.setMediationProvider( AppLovinMediationProvider.MAX );
-
         AppLovinTargetingData targetingData = targetingDataBuilder.build();
-        initConfigurationBuilder.setTargetingData( targetingData );
 
-        AppLovinSdkInitializationConfiguration initConfig = initConfigurationBuilder.build();
+        AppLovinSdkInitializationConfiguration initConfig = AppLovinSdkInitializationConfiguration.builder( sdkKey, currentActivity )
+            .setPluginVersion( "React-Native-" + pluginVersion )
+            .setMediationProvider( AppLovinMediationProvider.MAX )
+            .setTargetingData( targetingData )
+            .build();
 
         // Initialize SDK
         sdk.initialize( initConfig, configuration -> {
@@ -335,7 +308,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void showMediationDebugger()
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "showMediationDebugger" );
             return;
@@ -482,7 +455,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void showCmpForExistingUser(final Promise promise)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "showCmpForExistingUser", promise );
             return;
@@ -515,7 +488,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void hasSupportedCmp(final Promise promise)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "showCmpForExistingUser", promise );
             return;
@@ -531,7 +504,7 @@ public class AppLovinMAXModule
     {
         Integer yearOfBirth = numYearOfBirth <= 0 ? null : numYearOfBirth;
 
-        if ( isSdkInitialized )
+        if ( isInitialized() )
         {
             sdk.getTargetingData().setYearOfBirth( yearOfBirth );
         }
@@ -546,7 +519,7 @@ public class AppLovinMAXModule
     {
         Integer yearOfBirth;
 
-        if ( isSdkInitialized )
+        if ( isInitialized() )
         {
             yearOfBirth = sdk.getTargetingData().getYearOfBirth();
         }
@@ -563,7 +536,7 @@ public class AppLovinMAXModule
     {
         Gender gender = getAppLovinGender( strGender );
 
-        if ( isSdkInitialized )
+        if ( isInitialized() )
         {
             sdk.getTargetingData().setGender( gender );
         }
@@ -578,7 +551,7 @@ public class AppLovinMAXModule
     {
         Gender gender;
 
-        if ( isSdkInitialized )
+        if ( isInitialized() )
         {
             gender = sdk.getTargetingData().getGender();
         }
@@ -595,7 +568,7 @@ public class AppLovinMAXModule
     {
         AdContentRating maximumAdContentRating = getAppLovinAdContentRating( numMaximumAdContentRating );
 
-        if ( isSdkInitialized )
+        if ( isInitialized() )
         {
             sdk.getTargetingData().setMaximumAdContentRating( maximumAdContentRating );
         }
@@ -610,7 +583,7 @@ public class AppLovinMAXModule
     {
         AdContentRating adContentRating;
 
-        if ( isSdkInitialized )
+        if ( isInitialized() )
         {
             adContentRating = sdk.getTargetingData().getMaximumAdContentRating();
         }
@@ -625,7 +598,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setTargetingDataEmail(@Nullable final String email)
     {
-        if ( isSdkInitialized )
+        if ( isInitialized() )
         {
             sdk.getTargetingData().setEmail( email );
         }
@@ -640,7 +613,7 @@ public class AppLovinMAXModule
     {
         String email;
 
-        if ( isSdkInitialized )
+        if ( isInitialized() )
         {
             email = sdk.getTargetingData().getEmail();
         }
@@ -655,7 +628,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setTargetingDataPhoneNumber(@Nullable final String phoneNumber)
     {
-        if ( isSdkInitialized )
+        if ( isInitialized() )
         {
             sdk.getTargetingData().setPhoneNumber( phoneNumber );
         }
@@ -670,7 +643,7 @@ public class AppLovinMAXModule
     {
         String phoneNumber;
 
-        if ( isSdkInitialized )
+        if ( isInitialized() )
         {
             phoneNumber = sdk.getTargetingData().getPhoneNumber();
         }
@@ -687,7 +660,7 @@ public class AppLovinMAXModule
     {
         ArrayList keywords = Arguments.toList( rawKeywords );
 
-        if ( isSdkInitialized )
+        if ( isInitialized() )
         {
             sdk.getTargetingData().setKeywords( keywords );
         }
@@ -702,7 +675,7 @@ public class AppLovinMAXModule
     {
         List<String> keywords;
 
-        if ( isSdkInitialized )
+        if ( isInitialized() )
         {
             keywords = sdk.getTargetingData().getKeywords();
         }
@@ -726,7 +699,7 @@ public class AppLovinMAXModule
     {
         ArrayList interests = Arguments.toList( rawInterests );
 
-        if ( isSdkInitialized )
+        if ( isInitialized() )
         {
             sdk.getTargetingData().setInterests( interests );
         }
@@ -741,7 +714,7 @@ public class AppLovinMAXModule
     {
         List<String> interests;
 
-        if ( isSdkInitialized )
+        if ( isInitialized() )
         {
             interests = sdk.getTargetingData().getInterests();
         }
@@ -763,7 +736,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void clearAllTargetingData()
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             targetingDataBuilder.setYearOfBirth( null );
             targetingDataBuilder.setGender( Gender.UNKNOWN );
@@ -808,7 +781,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void createBanner(final String adUnitId, final String bannerPosition)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "createBanner" );
             return;
@@ -820,7 +793,7 @@ public class AppLovinMAXModule
     @ReactMethod // NOTE: No function overloading in JS so we need new method signature
     public void createBannerWithOffsets(final String adUnitId, final String bannerPosition, final float x, final float y)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "createBannerWithOffsets" );
             return;
@@ -832,7 +805,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setBannerBackgroundColor(final String adUnitId, final String hexColorCode)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "setBannerBackgroundColor" );
             return;
@@ -844,7 +817,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setBannerPlacement(final String adUnitId, final String placement)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "setBannerPlacement" );
             return;
@@ -856,7 +829,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setBannerCustomData(final String adUnitId, final String customData)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "setBannerCustomData" );
             return;
@@ -868,7 +841,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setBannerWidth(final String adUnitId, final int widthDp)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "setBannerWidth" );
             return;
@@ -880,7 +853,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void updateBannerPosition(final String adUnitId, final String bannerPosition)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "updateBannerPosition" );
             return;
@@ -892,7 +865,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void updateBannerOffsets(final String adUnitId, final float x, final float y)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "updateBannerOffsets" );
             return;
@@ -904,7 +877,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setBannerExtraParameter(final String adUnitId, final String key, final String value)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "setBannerExtraParameter" );
             return;
@@ -923,7 +896,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void startBannerAutoRefresh(final String adUnitId)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "startBannerAutoRefresh" );
             return;
@@ -935,7 +908,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void stopBannerAutoRefresh(final String adUnitId)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "stopBannerAutoRefresh" );
             return;
@@ -947,7 +920,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void showBanner(final String adUnitId)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "showBanner" );
             return;
@@ -959,7 +932,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void hideBanner(final String adUnitId)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "hideBanner" );
             return;
@@ -971,7 +944,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void destroyBanner(final String adUnitId)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "destroyBanner" );
             return;
@@ -991,7 +964,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void createMRec(final String adUnitId, final String mrecPosition)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "createMRec" );
             return;
@@ -1003,7 +976,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setMRecPlacement(final String adUnitId, final String placement)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "setMRecPlacement" );
             return;
@@ -1015,7 +988,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setMRecCustomData(final String adUnitId, final String customData)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "setMRecCustomData" );
             return;
@@ -1027,7 +1000,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void updateMRecPosition(final String adUnitId, final String mrecPosition)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "updateMRecPosition" );
             return;
@@ -1052,7 +1025,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void startMRecAutoRefresh(final String adUnitId)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "startMRecAutoRefresh" );
             return;
@@ -1064,7 +1037,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void stopMRecAutoRefresh(final String adUnitId)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "stopMRecAutoRefresh" );
             return;
@@ -1076,7 +1049,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void showMRec(final String adUnitId)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "showMRec" );
             return;
@@ -1088,7 +1061,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void hideMRec(final String adUnitId)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "hideMRec" );
             return;
@@ -1100,7 +1073,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void destroyMRec(final String adUnitId)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "destroyMRec" );
             return;
@@ -1114,7 +1087,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void loadInterstitial(final String adUnitId)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "loadInterstitial" );
             return;
@@ -1133,7 +1106,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void isInterstitialReady(final String adUnitId, final Promise promise)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "isInterstitialReady" );
             promise.resolve( false );
@@ -1153,7 +1126,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void showInterstitial(final String adUnitId, final String placement, final String customData)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "showInterstitial" );
             return;
@@ -1172,7 +1145,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setInterstitialExtraParameter(final String adUnitId, final String key, final String value)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "setInterstitialExtraParameter" );
             return;
@@ -1187,7 +1160,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setInterstitialLocalExtraParameter(final String adUnitId, final ReadableMap parameterMap)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "setInterstitialLocalExtraParameter" );
             return;
@@ -1205,7 +1178,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void loadRewardedAd(final String adUnitId)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "loadRewardedAd" );
             return;
@@ -1224,7 +1197,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void isRewardedAdReady(final String adUnitId, final Promise promise)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "isRewardedAdReady" );
             promise.resolve( false );
@@ -1244,7 +1217,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void showRewardedAd(final String adUnitId, final String placement, final String customData)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "showRewardedAd" );
             return;
@@ -1263,7 +1236,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setRewardedAdExtraParameter(final String adUnitId, final String key, final String value)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "setRewardedAdExtraParameter" );
             return;
@@ -1278,7 +1251,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setRewardedAdLocalExtraParameter(final String adUnitId, final ReadableMap parameterMap)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "setRewardedAdLocalExtraParameter" );
             return;
@@ -1296,7 +1269,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void loadAppOpenAd(final String adUnitId)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "loadAppOpenAd" );
             return;
@@ -1309,7 +1282,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void isAppOpenAdReady(final String adUnitId, final Promise promise)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "isAppOpenAdReady" );
             promise.resolve( false );
@@ -1323,7 +1296,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void showAppOpenAd(final String adUnitId, @Nullable final String placement, @Nullable final String customData)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "showAppOpenAd" );
             return;
@@ -1336,7 +1309,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void setAppOpenAdExtraParameter(final String adUnitId, final String key, final String value)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "setAppOpenAdExtraParameter" );
             return;
@@ -2493,7 +2466,7 @@ public class AppLovinMAXModule
 
     private void setAmazonResult(final Object result, final String adUnitId, final MaxAdFormat adFormat)
     {
-        if ( !isSdkInitialized )
+        if ( !isInitialized() )
         {
             logUninitializedAccessError( "Failed to set Amazon result - SDK not initialized: " + adUnitId );
             return;
