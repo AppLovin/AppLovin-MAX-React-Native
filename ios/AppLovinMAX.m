@@ -2199,7 +2199,7 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
             };
 }
 
-- (NSDictionary<NSString *, id> *)adLoadFailedInfoForAd:(NSString *)adUnitIdentifier withError:(MAError *)error
+- (NSDictionary<NSString *, id> *)adLoadFailedInfoForAd:(NSString *)adUnitIdentifier withError:(nullable MAError *)error
 {
     return ( error ) ?
     @{@"adUnitId": adUnitIdentifier,
