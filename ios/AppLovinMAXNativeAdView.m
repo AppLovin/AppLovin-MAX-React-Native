@@ -103,7 +103,7 @@
 // Called when Ad Unit ID is set, and via RN layer
 - (void)loadAd
 {
-    if ( ![AppLovinMAX shared].sdk )
+    if ( ![[AppLovinMAX shared] isInitialized] )
     {
         [[AppLovinMAX shared] logUninitializedAccessError: @"AppLovinMAXNativeAdview.loadAd"];
         return;

@@ -32,6 +32,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak, readonly) ALSdk *sdk;
 
 /**
+ * Whether or not the plugin is initialized.
+ */
+- (BOOL)isInitialized;
+
+/**
  * Convenience method for unified logging in the AppLovin module.
  */
 - (void)log:(NSString *)format, ...;

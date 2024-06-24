@@ -126,7 +126,7 @@ public class AppLovinMAXNativeAdView
 
     public void loadAd()
     {
-        if ( AppLovinMAXModule.getInstance().getSdk() == null )
+        if ( !AppLovinMAXModule.getInstance().isInitialized() )
         {
             AppLovinMAXModule.logUninitializedAccessError( "AppLovinMAXNativeAdView.loadAd" );
             return;
