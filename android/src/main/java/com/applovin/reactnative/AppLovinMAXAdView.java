@@ -220,7 +220,7 @@ class AppLovinMAXAdView
         // Run after 0.25 sec delay to allow all properties to set
         postDelayed( () -> {
 
-            if ( AppLovinMAXModule.getInstance().getSdk() == null )
+            if ( !AppLovinMAXModule.getInstance().isInitialized() )
             {
                 AppLovinMAXModule.logUninitializedAccessError( "AppLovinMAXAdView.maybeAttachAdView" );
                 return;
