@@ -59,8 +59,6 @@ static NSMutableDictionary<NSString *, MAAdView *> *adViewInstances;
     }
     
     _adUnitId = adUnitId;
-    
-    [self attachAdViewIfNeeded];
 }  
 
 - (void)setAdFormat:(NSString *)adFormat
@@ -83,10 +81,7 @@ static NSMutableDictionary<NSString *, MAAdView *> *adViewInstances;
     else
     {
         [[AppLovinMAX shared] log: @"Attempting to set an invalid ad format of \"%@\" for %@", adFormat, self.adUnitId];
-        return;
     }
-    
-    [self attachAdViewIfNeeded];
 }  
 
 - (void)setPlacement:(NSString *)placement
@@ -141,14 +136,19 @@ static NSMutableDictionary<NSString *, MAAdView *> *adViewInstances;
     _loadOnMount = loadOnMount;
 }
 
+// Invoked after all the JavaScript properties are set when mounting AdView
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
+{
+    [self attachAdViewIfNeeded];
+}
+
 - (void)attachAdViewIfNeeded
 {
     // Re-assign in case of race condition
     NSString *adUnitId = self.adUnitId;
     MAAdFormat *adFormat = self.adFormat;
     
-    // Run after 0.25 sec delay to allow all properties to set
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
         
         if ( ![AppLovinMAX shared].sdk )
         {
