@@ -200,10 +200,9 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     
     [self log: @"Initializing AppLovin MAX React Native v%@...", pluginVersion];
     
-    // If SDK key passed in is empty, check Info.plist
     if ( ![sdkKey al_isValidString] )
     {
-        reject(RCTErrorUnspecified, @"Unable to initialize AppLovin SDK - no SDK key provided and not found in Info.plist!", nil);
+        reject(RCTErrorUnspecified, @"Unable to initialize AppLovin SDK - no SDK key provided!", nil);
         return;
     }
     

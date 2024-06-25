@@ -240,7 +240,7 @@ public class AppLovinMAXModule
             return;
         }
 
-        AppLovinSdkInitializationConfiguration initConfig = AppLovinSdkInitializationConfiguration.builder( sdkKey, currentActivity )
+        AppLovinSdkInitializationConfiguration initConfig = AppLovinSdkInitializationConfiguration.builder( sdkKey, getReactApplicationContext() )
             .setPluginVersion( "React-Native-" + pluginVersion )
             .setMediationProvider( AppLovinMediationProvider.MAX )
             .setTargetingData( targetingDataBuilder.build() )
