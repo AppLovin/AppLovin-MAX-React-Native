@@ -211,9 +211,7 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
 
         builder.mediationProvider = ALMediationProviderMAX;
         builder.pluginVersion = [@"React-Native-" stringByAppendingString: pluginVersion];
-        
-        ALTargetingData *targetingData = [self.targetingDataBuilder build];
-        builder.targetingData = targetingData;
+        builder.targetingData = [self.targetingDataBuilder build];
     }];
 
     // Initialize SDK
