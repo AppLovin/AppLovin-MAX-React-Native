@@ -1515,7 +1515,7 @@ public class AppLovinMAXModule
     @ReactMethod
     public void preloadNativeUIComponentAdView(final String adUnitId, final String adFormatStr, final String placement, final String customData, final ReadableMap extraParameterMap, final ReadableMap localExtraParameterMap, final Promise promise)
     {
-        MaxAdFormat adFormat = MaxAdFormat.MREC;
+        MaxAdFormat adFormat;
 
         if ( MaxAdFormat.BANNER.getLabel().equals( adFormatStr ) )
         {
@@ -1527,7 +1527,7 @@ public class AppLovinMAXModule
         }
         else
         {
-            promise.reject( new IllegalStateException( "invalid ad format: " + adFormat ) );
+            promise.reject( new IllegalStateException( "invalid ad format: " + adFormatStr ) );
             return;
         }
 
@@ -1535,14 +1535,7 @@ public class AppLovinMAXModule
         final Map<String, Object> extraParameters = ( extraParameterMap != null ) ? extraParameterMap.toHashMap() : null;
         final Map<String, Object> localExtraParameters = ( localExtraParameterMap != null ) ? localExtraParameterMap.toHashMap() : null;
 
-        getReactApplicationContext().runOnUiQueueThread( new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                AppLovinMAXAdView.preloadNativeUIComponentAdView( adUnitId, finalAdFormat, placement, customData, extraParameters, localExtraParameters, promise, getReactApplicationContext() );
-            }
-        } );
+        getReactApplicationContext().runOnUiQueueThread( () -> AppLovinMAXAdView.preloadNativeUIComponentAdView( adUnitId, finalAdFormat, placement, customData, extraParameters, localExtraParameters, promise, getReactApplicationContext() ) );
     }
 
     // AD CALLBACKS

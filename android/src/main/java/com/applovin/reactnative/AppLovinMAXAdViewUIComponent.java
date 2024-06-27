@@ -16,6 +16,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 import java.util.Map;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 class AppLovinMAXAdViewUIComponent
@@ -25,7 +26,7 @@ class AppLovinMAXAdViewUIComponent
     private final MaxAdView    adView;
 
     @Nullable
-    private AppLovinMAXAdView containerReactView;
+    private AppLovinMAXAdView containerView;
     @Nullable
     private Promise           promiseCallback;
 
@@ -43,19 +44,14 @@ class AppLovinMAXAdViewUIComponent
         adView.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
     }
 
-    public void setPromise(Promise promise)
-    {
-        this.promiseCallback = promise;
-    }
-
     public MaxAdView getAdView()
     {
         return adView;
     }
 
-    public boolean isAdViewAttached()
+    public void setPromise(Promise promise)
     {
-        return containerReactView != null;
+        promiseCallback = promise;
     }
 
     public void setPlacement(@Nullable final String value)
@@ -105,18 +101,23 @@ class AppLovinMAXAdViewUIComponent
         }
     }
 
+    public boolean isAttached()
+    {
+        return containerView != null;
+    }
+
     public void attachAdView(AppLovinMAXAdView view)
     {
-        containerReactView = view;
-        containerReactView.addView( adView );
+        containerView = view;
+        containerView.addView( adView );
     }
 
     public void detachAdView()
     {
-        if ( containerReactView != null )
+        if ( containerView != null )
         {
-            containerReactView.removeView( adView );
-            containerReactView = null;
+            containerView.removeView( adView );
+            containerView = null;
         }
     }
 
@@ -147,7 +148,7 @@ class AppLovinMAXAdViewUIComponent
     }
 
     @Override
-    public void onAdLoaded(final MaxAd ad)
+    public void onAdLoaded(@NonNull final MaxAd ad)
     {
         WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
 
@@ -157,14 +158,14 @@ class AppLovinMAXAdViewUIComponent
             promiseCallback = null;
         }
 
-        if ( containerReactView != null )
+        if ( containerView != null )
         {
-            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerReactView.getId(), "onAdLoadedEvent", adInfo );
+            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerView.getId(), "onAdLoadedEvent", adInfo );
         }
     }
 
     @Override
-    public void onAdLoadFailed(final String adUnitId, final MaxError error)
+    public void onAdLoadFailed(@NonNull final String adUnitId, @NonNull final MaxError error)
     {
         WritableMap adLoadFailedInfo = AppLovinMAXModule.getInstance().getAdLoadFailedInfo( adUnitId, error );
 
@@ -174,67 +175,67 @@ class AppLovinMAXAdViewUIComponent
             promiseCallback = null;
         }
 
-        if ( containerReactView != null )
+        if ( containerView != null )
         {
-            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerReactView.getId(), "onAdLoadFailedEvent", adLoadFailedInfo );
+            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerView.getId(), "onAdLoadFailedEvent", adLoadFailedInfo );
         }
     }
 
     @Override
-    public void onAdDisplayFailed(final MaxAd ad, final MaxError error)
+    public void onAdDisplayFailed(@NonNull final MaxAd ad, @NonNull final MaxError error)
     {
-        if ( containerReactView != null )
+        if ( containerView != null )
         {
             WritableMap adDisplayFailedInfo = AppLovinMAXModule.getInstance().getAdDisplayFailedInfo( ad, error );
-            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerReactView.getId(), "onAdDisplayFailedEvent", adDisplayFailedInfo );
+            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerView.getId(), "onAdDisplayFailedEvent", adDisplayFailedInfo );
         }
     }
 
     @Override
-    public void onAdClicked(final MaxAd ad)
+    public void onAdClicked(@NonNull final MaxAd ad)
     {
-        if ( containerReactView != null )
+        if ( containerView != null )
         {
             WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
-            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerReactView.getId(), "onAdClickedEvent", adInfo );
+            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerView.getId(), "onAdClickedEvent", adInfo );
         }
     }
 
     @Override
-    public void onAdExpanded(final MaxAd ad)
+    public void onAdExpanded(@NonNull final MaxAd ad)
     {
-        if ( containerReactView != null )
+        if ( containerView != null )
         {
             WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
-            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerReactView.getId(), "onAdExpandedEvent", adInfo );
+            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerView.getId(), "onAdExpandedEvent", adInfo );
         }
     }
 
     @Override
-    public void onAdCollapsed(final MaxAd ad)
+    public void onAdCollapsed(@NonNull final MaxAd ad)
     {
-        if ( containerReactView != null )
+        if ( containerView != null )
         {
             WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
-            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerReactView.getId(), "onAdCollapsedEvent", adInfo );
+            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerView.getId(), "onAdCollapsedEvent", adInfo );
         }
     }
 
     @Override
-    public void onAdRevenuePaid(final MaxAd ad)
+    public void onAdRevenuePaid(@NonNull final MaxAd ad)
     {
-        if ( containerReactView != null )
+        if ( containerView != null )
         {
             WritableMap adRevenueInfo = AppLovinMAXModule.getInstance().getAdRevenueInfo( ad );
-            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerReactView.getId(), "onAdRevenuePaidEvent", adRevenueInfo );
+            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerView.getId(), "onAdRevenuePaidEvent", adRevenueInfo );
         }
     }
 
     /// Deprecated Callbacks
 
     @Override
-    public void onAdDisplayed(final MaxAd ad) { }
+    public void onAdDisplayed(@NonNull final MaxAd ad) { }
 
     @Override
-    public void onAdHidden(final MaxAd ad) { }
+    public void onAdHidden(@NonNull final MaxAd ad) { }
 }

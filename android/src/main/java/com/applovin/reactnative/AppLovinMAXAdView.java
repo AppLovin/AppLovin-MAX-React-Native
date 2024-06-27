@@ -52,19 +52,20 @@ class AppLovinMAXAdView
     public static void preloadNativeUIComponentAdView(final String adUnitId, final MaxAdFormat adFormat, final String placement, final String customData, final Map<String, Object> extraParameters, final Map<String, Object> localExtraParameters, final Promise promise, final ReactContext context)
     {
         AppLovinMAXAdViewUIComponent preloadedUIComponent = uiComponentInstances.get( adUnitId );
-        if ( preloadedUIComponent == null )
+        if ( preloadedUIComponent != null )
         {
-            preloadedUIComponent = new AppLovinMAXAdViewUIComponent( adUnitId, adFormat, context );
-            uiComponentInstances.put( adUnitId, preloadedUIComponent );
+            promise.reject( new IllegalStateException( "Cannot preload more than one for a single Ad Unit ID" ) );
+            return;
         }
 
-        preloadedUIComponent.setPromise( promise );
+        preloadedUIComponent = new AppLovinMAXAdViewUIComponent( adUnitId, adFormat, context );
+        uiComponentInstances.put( adUnitId, preloadedUIComponent );
 
+        preloadedUIComponent.setPromise( promise );
         preloadedUIComponent.setPlacement( placement );
         preloadedUIComponent.setCustomData( customData );
         preloadedUIComponent.setExtraParameters( extraParameters );
         preloadedUIComponent.setLocalExtraParameters( localExtraParameters );
-
         // Disable autoRefresh in the beginning until it is mounted
         preloadedUIComponent.setAutoRefresh( false );
 
@@ -215,7 +216,7 @@ class AppLovinMAXAdView
     // set when mounting AdView
     public void onSetProps()
     {
-        maybeAttachAdView();
+        reactContext.runOnUiQueueThread( this::maybeAttachAdView );
     }
 
     private void maybeAttachAdView()
@@ -246,12 +247,16 @@ class AppLovinMAXAdView
 
         uiComponent = uiComponentInstances.get( adUnitId );
 
-        // Use a preloaded adview when it is available (i.e. not attached to any view)
-        if ( uiComponent != null && !uiComponent.isAdViewAttached() )
+        if ( uiComponent != null )
         {
-            uiComponent.setAutoRefresh( autoRefresh );
-            uiComponent.attachAdView( this );
-            return;
+            // Attach if uiComponent is available, otherwise create a new uiComponent that won't be
+            // cached for later use.
+            if ( !uiComponent.isAttached() )
+            {
+                uiComponent.setAutoRefresh( autoRefresh );
+                uiComponent.attachAdView( this );
+                return;
+            }
         }
 
         uiComponent = new AppLovinMAXAdViewUIComponent( adUnitId, adFormat, reactContext );
@@ -285,7 +290,6 @@ class AppLovinMAXAdView
     {
         if ( uiComponent != null )
         {
-
             AppLovinMAXModule.d( "Unmounting MaxAdView: " + uiComponent.getAdView() );
 
             uiComponent.detachAdView();

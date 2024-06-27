@@ -47,20 +47,20 @@ static NSMutableDictionary<NSString *, AppLovinMAXAdViewUIComponent *> *uiCompon
 + (void) preloadNativeUIComponentAdView:(NSString *) adUnitId adFormat:(MAAdFormat *)adFormat placement:(NSString *)placement  customData:(NSString *)customData extraParameters:(NSDictionary<NSString *, NSString *> *)extraParameters localExtraParameters:(NSDictionary<NSString *, NSString *> *)localExtraParameters resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject
 {
     AppLovinMAXAdViewUIComponent *preloadedUIComponent = uiComponentInstances[ adUnitId];
-    if ( !preloadedUIComponent )
+    if ( preloadedUIComponent )
     {
-        preloadedUIComponent = [[AppLovinMAXAdViewUIComponent alloc] initWithAdUnitIdentifier: adUnitId adFormat: adFormat];
-        uiComponentInstances[adUnitId] = preloadedUIComponent;
+        reject(RCTErrorUnspecified, @"Cannot preload more than one for a single Ad Unit ID.", nil);
+        return;
     }
-    
-    preloadedUIComponent.onPromiseResolve = resolve;
-    preloadedUIComponent.onPromiseReject = reject;
-    
+
+    preloadedUIComponent = [[AppLovinMAXAdViewUIComponent alloc] initWithAdUnitIdentifier: adUnitId adFormat: adFormat];
+    uiComponentInstances[adUnitId] = preloadedUIComponent;
+
+    preloadedUIComponent.promiseResolve = resolve;
     preloadedUIComponent.placement = placement;
     preloadedUIComponent.customData = customData;
     preloadedUIComponent.extraParameters = extraParameters;
     preloadedUIComponent.localExtraParameters = localExtraParameters;
-    
     // Disable autoRefresh for the preloaded ad until mounted
     preloadedUIComponent.autoRefresh = false;
     
@@ -194,11 +194,16 @@ static NSMutableDictionary<NSString *, AppLovinMAXAdViewUIComponent *> *uiCompon
         
         self.uiComponent = uiComponentInstances[adUnitId];
         
-        if ( self.uiComponent && ![self.uiComponent isAdViewAttached] )
+        if ( self.uiComponent )
         {
-            self.uiComponent.autoRefresh = self.isAutoRefresh;
-            [self.uiComponent attachAdView: self];
-            return;
+            // Attach if uiComponent is available, otherwise create a new uiComponent that won't be
+            // cached for later use.
+            if ( ![self.uiComponent isAttached] )
+            {
+                self.uiComponent.autoRefresh = self.isAutoRefresh;
+                [self.uiComponent attachAdView: self];
+                return;
+            }
         }
         
         self.uiComponent = [[AppLovinMAXAdViewUIComponent alloc] initWithAdUnitIdentifier: adUnitId adFormat: adFormat];

@@ -7,18 +7,19 @@ NS_ASSUME_NONNULL_BEGIN
 @interface AppLovinMAXAdViewUIComponent : NSObject
 
 @property (nonatomic, strong, readonly) MAAdView *adView;
+
 @property (nonatomic, copy, nullable) NSString *placement;
 @property (nonatomic, copy, nullable) NSString *customData;
 @property (nonatomic, copy, nullable) NSDictionary *extraParameters;
 @property (nonatomic, copy, nullable) NSDictionary *localExtraParameters;
 @property (nonatomic, assign) BOOL adaptiveBannerEnabled;
 @property (nonatomic, assign) BOOL autoRefresh;
-@property (nonatomic, copy, nullable) RCTPromiseResolveBlock onPromiseResolve;
-@property (nonatomic, copy, nullable) RCTPromiseRejectBlock onPromiseReject;
+
+@property (nonatomic, copy, nullable) RCTPromiseResolveBlock promiseResolve;
 
 - (instancetype)initWithAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat;
 - (void)loadAd;
-- (BOOL)isAdViewAttached;
+- (BOOL)isAttached;
 - (void)attachAdView:(AppLovinMAXAdView *)view;
 - (void)detachAdView;
 - (void)destroy;

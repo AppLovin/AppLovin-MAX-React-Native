@@ -6,8 +6,7 @@
 @interface AppLovinMAXAdViewUIComponent()<MAAdViewAdDelegate, MAAdRevenueDelegate>
 
 @property (nonatomic, strong) MAAdView *adView;
-
-@property (nonatomic, weak, nullable) AppLovinMAXAdView *containerReactView;
+@property (nonatomic, weak, nullable) AppLovinMAXAdView *containerView;
 
 @end
 
@@ -27,15 +26,10 @@
         // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
         [self.adView setExtraParameterForKey: @"allow_pause_auto_refresh_immediately" value: @"true"];
         
-        // Set frame to supprss an error of zero Adview area
+        // Set a frame size to suppress an error of zero area for MAAdView
         self.adView.frame = (CGRect) { CGPointZero, adFormat.size };
     }
     return self;
-}
-
-- (BOOL)isAdViewAttached
-{
-    return self.containerReactView != nil;
 }
 
 - (void)setPlacement:(NSString *)placement
@@ -83,9 +77,14 @@
     }
 }
 
+- (BOOL)isAttached
+{
+    return self.containerView != nil;
+}
+
 - (void)attachAdView:(AppLovinMAXAdView *)view
 {
-    self.containerReactView = view;
+    self.containerView = view;
     
     self.adView.frame = (CGRect) { CGPointZero, view.frame.size };
     
@@ -99,7 +98,7 @@
 
 - (void)detachAdView
 {
-    self.containerReactView = nil;
+    self.containerView = nil;
     
     [self.adView removeFromSuperview];
 }
@@ -123,15 +122,15 @@
 {
     NSDictionary *adInfo = [[AppLovinMAX shared] adInfoForAd: ad];
     
-    if ( self.onPromiseResolve )
+    if ( self.promiseResolve )
     {
-        self.onPromiseResolve(adInfo);
-        self.onPromiseResolve = nil;
+        self.promiseResolve(adInfo);
+        self.promiseResolve = nil;
     }
     
-    if ( self.containerReactView )
+    if ( self.containerView )
     {
-        self.containerReactView.onAdLoadedEvent(adInfo);
+        self.containerView.onAdLoadedEvent(adInfo);
     }
 }
 
@@ -139,31 +138,31 @@
 {
     NSDictionary *adLoadFailedInfo = [[AppLovinMAX shared] adLoadFailedInfoForAd: adUnitIdentifier withError: error];
     
-    if ( self.onPromiseResolve )
+    if ( self.promiseResolve )
     {
-        self.onPromiseResolve(adLoadFailedInfo);
-        self.onPromiseResolve = nil;
+        self.promiseResolve(adLoadFailedInfo);
+        self.promiseResolve = nil;
     }
     
-    if ( self.containerReactView )
+    if ( self.containerView )
     {
-        self.containerReactView.onAdLoadFailedEvent(adLoadFailedInfo);
+        self.containerView.onAdLoadFailedEvent(adLoadFailedInfo);
     }
 }
 
 - (void)didFailToDisplayAd:(MAAd *)ad withError:(MAError *)error
 {
-    if ( self.containerReactView )
+    if ( self.containerView )
     {
-        self.containerReactView.onAdDisplayFailedEvent([[AppLovinMAX shared] adDisplayFailedInfoForAd: ad withError: error]);
+        self.containerView.onAdDisplayFailedEvent([[AppLovinMAX shared] adDisplayFailedInfoForAd: ad withError: error]);
     }
 }
 
 - (void)didClickAd:(MAAd *)ad
 {
-    if ( self.containerReactView )
+    if ( self.containerView )
     {
-        self.containerReactView.onAdClickedEvent([[AppLovinMAX shared] adInfoForAd: ad]);
+        self.containerView.onAdClickedEvent([[AppLovinMAX shared] adInfoForAd: ad]);
     }
 }
 
@@ -171,17 +170,17 @@
 
 - (void)didExpandAd:(MAAd *)ad
 {
-    if ( self.containerReactView )
+    if ( self.containerView )
     {
-        self.containerReactView.onAdExpandedEvent([[AppLovinMAX shared] adInfoForAd: ad]);
+        self.containerView.onAdExpandedEvent([[AppLovinMAX shared] adInfoForAd: ad]);
     }
 }
 
 - (void)didCollapseAd:(MAAd *)ad
 {
-    if ( self.containerReactView )
+    if ( self.containerView )
     {
-        self.containerReactView.onAdCollapsedEvent([[AppLovinMAX shared] adInfoForAd: ad]);
+        self.containerView.onAdCollapsedEvent([[AppLovinMAX shared] adInfoForAd: ad]);
     }
 }
 
@@ -189,9 +188,9 @@
 
 - (void)didPayRevenueForAd:(MAAd *)ad
 {
-    if ( self.containerReactView )
+    if ( self.containerView )
     {
-        self.containerReactView.onAdRevenuePaidEvent([[AppLovinMAX shared] adRevenueInfoForAd: ad]);
+        self.containerView.onAdRevenuePaidEvent([[AppLovinMAX shared] adRevenueInfoForAd: ad]);
     }
 }
 
