@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Returns a dictionay value of adLoadFailedInfo for the specified error.
  */
-- (NSDictionary<NSString *, id> *)adLoadFailedInfoForAd:(NSString *)adUnitIdentifier withError:(MAError *)error;
+- (NSDictionary<NSString *, id> *)adLoadFailedInfoForAd:(NSString *)adUnitIdentifier withError:(nullable MAError *)error;
 
 /**
  * Returns a dictionay value of adDisplayFailedInfo for the specified ad and error.

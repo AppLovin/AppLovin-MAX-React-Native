@@ -2,6 +2,7 @@
 
 ## x.x.x
 * Add support for preloading native UI components for AdView. - [docs](https://developers.applovin.com/en/react-native/ad-formats/banner-and-mrec-ads#native-ui-component-method).
+* Improve loading time for `<AdView/>`.
 * Upgrade the build platform to support React Native 0.7x.
 ## 6.5.0
 * Depend on Android SDK 12.5.0 and iOS SDK 12.5.0.

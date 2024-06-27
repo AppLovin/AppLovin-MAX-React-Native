@@ -87,8 +87,6 @@ class AppLovinMAXAdView
         }
 
         adUnitId = value;
-
-        maybeAttachAdView();
     }
 
     public void setAdFormat(final String value)
@@ -111,10 +109,7 @@ class AppLovinMAXAdView
         else
         {
             AppLovinMAXModule.e( "Attempting to set an invalid ad format of \"" + value + "\" for " + adUnitId );
-            return;
         }
-
-        maybeAttachAdView();
     }
 
     public void setPlacement(@Nullable final String value)
@@ -216,66 +211,63 @@ class AppLovinMAXAdView
         }
     }
 
+    // Invoked via ViewManager.onAfterUpdateTransaction() after all the JavaScript properties are
+    // set when mounting AdView
+    public void onSetProps()
+    {
+        maybeAttachAdView();
+    }
+
     private void maybeAttachAdView()
     {
-        // Re-assign in case of race condition
-        final String adUnitId = this.adUnitId;
-        final MaxAdFormat adFormat = this.adFormat;
+        if ( AppLovinMAXModule.getInstance().getSdk() == null )
+        {
+            AppLovinMAXModule.logUninitializedAccessError( "AppLovinMAXAdView.maybeAttachAdView" );
+            return;
+        }
 
-        // Run after 0.25 sec delay to allow all properties to set
-        postDelayed( () -> {
+        if ( TextUtils.isEmpty( adUnitId ) )
+        {
+            AppLovinMAXModule.e( "Attempting to attach MaxAdView without Ad Unit ID" );
+            return;
+        }
 
-            if ( AppLovinMAXModule.getInstance().getSdk() == null )
-            {
-                AppLovinMAXModule.logUninitializedAccessError( "AppLovinMAXAdView.maybeAttachAdView" );
-                return;
-            }
+        if ( adFormat == null )
+        {
+            AppLovinMAXModule.e( "Attempting to attach MaxAdView without ad format" );
+            return;
+        }
 
-            if ( TextUtils.isEmpty( adUnitId ) )
-            {
-                AppLovinMAXModule.e( "Attempting to attach MaxAdView without Ad Unit ID" );
-                return;
-            }
+        if ( uiComponent != null )
+        {
+            AppLovinMAXModule.e( "Attempting to re-attach with existing MaxAdView: " + uiComponent.getAdView() );
+            return;
+        }
 
-            if ( adFormat == null )
-            {
-                AppLovinMAXModule.e( "Attempting to attach MaxAdView without ad format" );
-                return;
-            }
+        uiComponent = uiComponentInstances.get( adUnitId );
 
-            if ( uiComponent != null )
-            {
-                AppLovinMAXModule.e( "Attempting to re-attach with existing MaxAdView: " + uiComponent.getAdView() );
-                return;
-            }
-
-            AppLovinMAXModule.d( "Attaching MaxAdView for " + adUnitId );
-
-            uiComponent = uiComponentInstances.get( adUnitId );
-
-            // Use a preloaded adview when it is available (i.e. not attached to any view)
-            if ( uiComponent != null && !uiComponent.isAdViewAttached() )
-            {
-                uiComponent.setAutoRefresh( autoRefresh );
-                uiComponent.attachAdView( this );
-                return;
-            }
-
-            uiComponent = new AppLovinMAXAdViewUIComponent( adUnitId, adFormat, reactContext );
-            uiComponent.setPlacement( placement );
-            uiComponent.setCustomData( customData );
-            uiComponent.setExtraParameters( extraParameters );
-            uiComponent.setLocalExtraParameters( localExtraParameters );
-            uiComponent.setAdaptiveBannerEnabled( adaptiveBannerEnabled );
+        // Use a preloaded adview when it is available (i.e. not attached to any view)
+        if ( uiComponent != null && !uiComponent.isAdViewAttached() )
+        {
             uiComponent.setAutoRefresh( autoRefresh );
-
             uiComponent.attachAdView( this );
+            return;
+        }
 
-            if ( loadOnMount )
-            {
-                uiComponent.loadAd();
-            }
-        }, 250 );
+        uiComponent = new AppLovinMAXAdViewUIComponent( adUnitId, adFormat, reactContext );
+        uiComponent.setPlacement( placement );
+        uiComponent.setCustomData( customData );
+        uiComponent.setExtraParameters( extraParameters );
+        uiComponent.setLocalExtraParameters( localExtraParameters );
+        uiComponent.setAdaptiveBannerEnabled( adaptiveBannerEnabled );
+        uiComponent.setAutoRefresh( autoRefresh );
+
+        uiComponent.attachAdView( this );
+
+        if ( loadOnMount )
+        {
+            uiComponent.loadAd();
+        }
     }
 
     public void loadAd()

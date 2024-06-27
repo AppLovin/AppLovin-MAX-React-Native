@@ -14,7 +14,7 @@ import androidx.annotation.NonNull;
  * Created by Thomas So on July 11 2020
  */
 public class AppLovinMAXPackage
-        implements ReactPackage
+    implements ReactPackage
 {
     @Override
     public @NonNull List<NativeModule> createNativeModules(@NonNull final ReactApplicationContext reactContext)
@@ -28,8 +28,8 @@ public class AppLovinMAXPackage
     public @NonNull List<ViewManager> createViewManagers(@NonNull final ReactApplicationContext reactContext)
     {
         List<ViewManager> viewManagers = new ArrayList<>( 2 );
-        viewManagers.add( new AppLovinMAXAdViewManager( reactContext ) );
-        viewManagers.add( new AppLovinMAXNativeAdViewManager( reactContext ) );
+        viewManagers.add( new AppLovinMAXAdViewManager() );
+        viewManagers.add( new AppLovinMAXNativeAdViewManager() );
         return viewManagers;
     }
 }
