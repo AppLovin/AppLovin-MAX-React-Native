@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+* Improve loading time for `<AdView/>`.
 * Upgrade the build platform to support React Native 0.7x.
 ## 6.5.0
 * Depend on Android SDK 12.5.0 and iOS SDK 12.5.0.
