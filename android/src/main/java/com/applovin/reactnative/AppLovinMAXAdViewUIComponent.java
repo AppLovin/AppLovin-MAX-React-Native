@@ -93,7 +93,7 @@ class AppLovinMAXAdViewUIComponent
         }
     }
 
-    public boolean isAttached()
+    public boolean hasContainerView()
     {
         return containerView != null;
     }

@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat;
 - (void)loadAd;
-- (BOOL)isAttached;
+- (BOOL)hasContainerView;
 - (void)attachAdView:(AppLovinMAXAdView *)view;
 - (void)detachAdView;
 - (void)destroy;

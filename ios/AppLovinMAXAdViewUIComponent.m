@@ -78,7 +78,7 @@
     }
 }
 
-- (BOOL)isAttached
+- (BOOL)hasContainerView
 {
     return self.containerView != nil;
 }

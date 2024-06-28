@@ -77,7 +77,7 @@ static NSMutableDictionary<NSString *, AppLovinMAXAdViewUIComponent *> *preloade
         return;
     }
     
-    if ( [preloadedUIComponent isAttached] )
+    if ( [preloadedUIComponent hasContainerView] )
     {
         reject(RCTErrorUnspecified, @"Cannot destroy - currently in use", nil);
         return;
@@ -216,7 +216,7 @@ static NSMutableDictionary<NSString *, AppLovinMAXAdViewUIComponent *> *preloade
         {
             // Attach the preloaded uiComponent if possible, otherwise create a new one for the
             // same adUnitId
-            if ( ![self.uiComponent isAttached] )
+            if ( ![self.uiComponent hasContainerView] )
             {
                 self.uiComponent.autoRefresh = self.isAutoRefresh;
                 [self.uiComponent attachAdView: self];

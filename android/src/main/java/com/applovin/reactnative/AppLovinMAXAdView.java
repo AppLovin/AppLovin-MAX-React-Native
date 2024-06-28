@@ -81,7 +81,7 @@ class AppLovinMAXAdView
             return;
         }
 
-        if ( preloadedUIComponent.isAttached() )
+        if ( preloadedUIComponent.hasContainerView() )
         {
             promise.reject( new IllegalStateException( "Cannot destroy - currently in use" ) );
             return;
@@ -276,7 +276,7 @@ class AppLovinMAXAdView
             {
                 // Attach the preloaded uiComponent if possible, otherwise create a new one for the
                 // same adUnitId
-                if ( !uiComponent.isAttached() )
+                if ( !uiComponent.hasContainerView() )
                 {
                     uiComponent.setAutoRefresh( autoRefresh );
                     uiComponent.attachAdView( AppLovinMAXAdView.this );
