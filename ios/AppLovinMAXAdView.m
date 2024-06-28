@@ -22,7 +22,6 @@
 @property (nonatomic, assign, readonly, getter=isAdaptiveBannerEnabled) BOOL adaptiveBannerEnabled;
 @property (nonatomic, assign, readonly, getter=isAutoRefresh) BOOL autoRefresh;
 @property (nonatomic, assign, readonly, getter=isLoadOnMount) BOOL loadOnMount;
-@property (nonatomic, assign, readonly, getter=isDeleteNativeUIComponent) BOOL deleteNativeUIComponent;
 @property (nonatomic, copy, nullable) NSDictionary *extraParameters;
 @property (nonatomic, copy, nullable) NSDictionary *localExtraParameters;
 
@@ -31,40 +30,65 @@
 @implementation AppLovinMAXAdView
 
 static NSMutableDictionary<NSString *, AppLovinMAXAdViewUIComponent *> *uiComponentInstances;
+static NSMutableDictionary<NSString *, AppLovinMAXAdViewUIComponent *> *preloadedUIComponentInstances;
 
 + (void)initialize
 {
     [super initialize];
     uiComponentInstances = [NSMutableDictionary dictionaryWithCapacity: 2];
+    preloadedUIComponentInstances = [NSMutableDictionary dictionaryWithCapacity: 2];
 }
 
 + (MAAdView *)sharedWithAdUnitIdentifier:(NSString *)adUnitIdentifier
 {
-    AppLovinMAXAdViewUIComponent *uiComponent = uiComponentInstances[adUnitIdentifier];
+    AppLovinMAXAdViewUIComponent *uiComponent = preloadedUIComponentInstances[adUnitIdentifier];
+    if ( !uiComponent ) uiComponent = uiComponentInstances[adUnitIdentifier];
     return uiComponent ? uiComponent.adView : nil;
 }
 
-+ (void) preloadNativeUIComponentAdView:(NSString *) adUnitId adFormat:(MAAdFormat *)adFormat placement:(NSString *)placement  customData:(NSString *)customData extraParameters:(NSDictionary<NSString *, NSString *> *)extraParameters localExtraParameters:(NSDictionary<NSString *, NSString *> *)localExtraParameters resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject
++ (void) preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat placement:(NSString *)placement  customData:(NSString *)customData extraParameters:(NSDictionary<NSString *, NSString *> *)extraParameters localExtraParameters:(NSDictionary<NSString *, NSString *> *)localExtraParameters withPromiseResolver:(RCTPromiseResolveBlock)resolve withPromiseRejecter:(RCTPromiseRejectBlock)reject
 {
-    AppLovinMAXAdViewUIComponent *preloadedUIComponent = uiComponentInstances[ adUnitId];
+    AppLovinMAXAdViewUIComponent *preloadedUIComponent = preloadedUIComponentInstances[ adUnitIdentifier];
     if ( preloadedUIComponent )
     {
         reject(RCTErrorUnspecified, @"Cannot preload more than one for a single Ad Unit ID.", nil);
         return;
     }
-
-    preloadedUIComponent = [[AppLovinMAXAdViewUIComponent alloc] initWithAdUnitIdentifier: adUnitId adFormat: adFormat];
-    uiComponentInstances[adUnitId] = preloadedUIComponent;
-
-    preloadedUIComponent.promiseResolve = resolve;
+    
+    preloadedUIComponent = [[AppLovinMAXAdViewUIComponent alloc] initWithAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
+    preloadedUIComponentInstances[adUnitIdentifier] = preloadedUIComponent;
+    
     preloadedUIComponent.placement = placement;
     preloadedUIComponent.customData = customData;
     preloadedUIComponent.extraParameters = extraParameters;
     preloadedUIComponent.localExtraParameters = localExtraParameters;
-    // Disable autoRefresh for the preloaded ad until mounted
-    preloadedUIComponent.autoRefresh = false;
     
     [preloadedUIComponent loadAd];
+    
+    resolve(nil);
+}
+
++ (void) deleteNativeUIComponentAdView:(NSString *)adUnitIdentifier withPromiseResolver:(RCTPromiseResolveBlock)resolve withPromiseRejecter:(RCTPromiseRejectBlock)reject
+{
+    AppLovinMAXAdViewUIComponent *preloadedUIComponent = preloadedUIComponentInstances[adUnitIdentifier];
+    if ( !preloadedUIComponent )
+    {
+        reject(RCTErrorUnspecified, @"No native UI component found to delete", nil);
+        return;
+    }
+    
+    if ( [preloadedUIComponent isAttached] )
+    {
+        reject(RCTErrorUnspecified, @"Cannot delete - currently in use", nil);
+        return;
+    }
+    
+    [preloadedUIComponentInstances removeObjectForKey: adUnitIdentifier];
+    
+    [preloadedUIComponent detachAdView];
+    [preloadedUIComponent destroy];
+    
+    resolve(nil);
 }
 
 - (void)setAdUnitId:(NSString *)adUnitId
@@ -72,19 +96,19 @@ static NSMutableDictionary<NSString *, AppLovinMAXAdViewUIComponent *> *uiCompon
     // Ad Unit ID must be set prior to creating MAAdView
     if ( self.uiComponent )
     {
-        [[AppLovinMAX shared] log: @"Attempting to set Ad Unit ID %@ after MAAdView is created", adUnitId];
+        [[AppLovinMAX shared] log: @"Attempting to set Ad Unit ID %@ after the native UI component is created", adUnitId];
         return;
     }
     
     _adUnitId = adUnitId;
-}  
+}
 
 - (void)setAdFormat:(NSString *)adFormat
 {
     // Ad format must be set prior to creating MAAdView
     if ( self.uiComponent )
     {
-        [[AppLovinMAX shared] log: @"Attempting to set ad format %@ after MAAdView is created", adFormat];
+        [[AppLovinMAX shared] log: @"Attempting to set ad format %@ after the native UI component is created", adFormat];
         return;
     }
     
@@ -100,7 +124,7 @@ static NSMutableDictionary<NSString *, AppLovinMAXAdViewUIComponent *> *uiCompon
     {
         [[AppLovinMAX shared] log: @"Attempting to set an invalid ad format of \"%@\" for %@", adFormat, self.adUnitId];
     }
-}  
+}
 
 - (void)setPlacement:(NSString *)placement
 {
@@ -147,11 +171,6 @@ static NSMutableDictionary<NSString *, AppLovinMAXAdViewUIComponent *> *uiCompon
     _loadOnMount = loadOnMount;
 }
 
-- (void)setDeleteNativeUIComponent:(BOOL)deleteNativeUIComponent
-{
-    _deleteNativeUIComponent = deleteNativeUIComponent;
-}
-
 // Invoked after all the JavaScript properties are set when mounting AdView
 - (void)didSetProps:(NSArray<NSString *> *)changedProps
 {
@@ -174,30 +193,29 @@ static NSMutableDictionary<NSString *, AppLovinMAXAdViewUIComponent *> *uiCompon
         
         if ( ![adUnitId al_isValidString] )
         {
-            [[AppLovinMAX shared] log: @"Attempting to attach MAAdView without Ad Unit ID"];
+            [[AppLovinMAX shared] log: @"Attempting to attach a native UI component without Ad Unit ID"];
             return;
         }
         
         if ( !adFormat )
         {
-            [[AppLovinMAX shared] log: @"Attempting to attach MAAdView without ad format"];
+            [[AppLovinMAX shared] log: @"Attempting to attach a native UI component without ad format"];
             return;
         }
         
         if ( self.uiComponent )
         {
-            [[AppLovinMAX shared] log: @"Attempting to re-attach with existing MAAdView: %@", self.uiComponent.adView];
+            [[AppLovinMAX shared] log: @"Attempting to re-attach with existing native UI component: %@", self.uiComponent.adView];
             return;
         }
         
-        [[AppLovinMAX shared] log: @"Attaching MAAdView for %@", adUnitId];
+        [[AppLovinMAX shared] log: @"Attaching a native UI component for %@", adUnitId];
         
-        self.uiComponent = uiComponentInstances[adUnitId];
-        
+        self.uiComponent = preloadedUIComponentInstances[adUnitId];
         if ( self.uiComponent )
         {
-            // Attach if uiComponent is available, otherwise create a new uiComponent that won't be
-            // cached for later use.
+            // Attach the preloaded uiComponent if possible, otherwise create a new one for the
+            // same adUnitId
             if ( ![self.uiComponent isAttached] )
             {
                 self.uiComponent.autoRefresh = self.isAutoRefresh;
@@ -207,6 +225,8 @@ static NSMutableDictionary<NSString *, AppLovinMAXAdViewUIComponent *> *uiCompon
         }
         
         self.uiComponent = [[AppLovinMAXAdViewUIComponent alloc] initWithAdUnitIdentifier: adUnitId adFormat: adFormat];
+        uiComponentInstances[adUnitId] = self.uiComponent;
+        
         self.uiComponent.placement = self.placement;
         self.uiComponent.customData = self.customData;
         self.uiComponent.extraParameters = self.extraParameters;
@@ -227,7 +247,7 @@ static NSMutableDictionary<NSString *, AppLovinMAXAdViewUIComponent *> *uiCompon
 {
     if ( !self.uiComponent )
     {
-        [[AppLovinMAX shared] log: @"Attempting to load uninitialized MAAdView for %@", self.adUnitId];
+        [[AppLovinMAX shared] log: @"Attempting to load uninitialized native UI component for %@", self.adUnitId];
         return;
     }
     
@@ -243,26 +263,19 @@ static NSMutableDictionary<NSString *, AppLovinMAXAdViewUIComponent *> *uiCompon
     {
         if ( self.uiComponent )
         {
-            [[AppLovinMAX shared] log: @"Unmounting MAAdView: %@", self.uiComponent.adView];
+            [[AppLovinMAX shared] log: @"Unmounting the native UI component: %@", self.uiComponent.adView];
             
             [self.uiComponent detachAdView];
             
-            AppLovinMAXAdViewUIComponent *preloadedUIComponent = uiComponentInstances[self.adUnitId];
+            AppLovinMAXAdViewUIComponent *preloadedUIComponent = preloadedUIComponentInstances[self.adUnitId];
             
             if ( self.uiComponent == preloadedUIComponent )
             {
-                if ( [self isDeleteNativeUIComponent] ) 
-                {
-                    [uiComponentInstances removeObjectForKey: self.adUnitId];
-                    [self.uiComponent destroy];
-                }
-                else
-                {
-                    self.uiComponent.autoRefresh = NO;
-                }
+                self.uiComponent.autoRefresh = NO;
             }
             else
             {
+                [uiComponentInstances removeObjectForKey: self.adUnitId];
                 [self.uiComponent destroy];
             }
         }

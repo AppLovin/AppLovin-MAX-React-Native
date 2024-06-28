@@ -123,6 +123,9 @@ public class AppLovinMAXModule
     private static final String ON_APPOPEN_AD_HIDDEN_EVENT            = "OnAppOpenAdHiddenEvent";
     private static final String ON_APPOPEN_AD_REVENUE_PAID            = "OnAppOpenAdRevenuePaid";
 
+    private static final String ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT      = "OnNativeUIComponentAdviewAdLoadedEvent";
+    private static final String ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT = "OnNativeUIComponentAdviewAdLoadFailedEvent";
+
     private static final String TOP_CENTER    = "top_center";
     private static final String TOP_LEFT      = "top_left";
     private static final String TOP_RIGHT     = "top_right";
@@ -1538,6 +1541,12 @@ public class AppLovinMAXModule
         getReactApplicationContext().runOnUiQueueThread( () -> AppLovinMAXAdView.preloadNativeUIComponentAdView( adUnitId, finalAdFormat, placement, customData, extraParameters, localExtraParameters, promise, getReactApplicationContext() ) );
     }
 
+    @ReactMethod
+    public void deleteNativeUIComponentAdView(final String adUnitId, final Promise promise)
+    {
+        getReactApplicationContext().runOnUiQueueThread( () -> AppLovinMAXAdView.deleteNativeUIComponentAdView( adUnitId, promise ) );
+    }
+
     // AD CALLBACKS
 
     @Override
@@ -2796,7 +2805,7 @@ public class AppLovinMAXModule
 
     // React Native Bridge
 
-    private void sendReactNativeEvent(final String name, @Nullable final WritableMap params)
+    public void sendReactNativeEvent(final String name, @Nullable final WritableMap params)
     {
         getReactApplicationContext()
             .getJSModule( RCTDeviceEventEmitter.class )
@@ -2847,6 +2856,9 @@ public class AppLovinMAXModule
         constants.put( "ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT", ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT );
         constants.put( "ON_APPOPEN_AD_HIDDEN_EVENT", ON_APPOPEN_AD_HIDDEN_EVENT );
         constants.put( "ON_APPOPEN_AD_REVENUE_PAID", ON_APPOPEN_AD_REVENUE_PAID );
+
+        constants.put( "ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT", ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT );
+        constants.put( "ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT", ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT );
 
         constants.put( "TOP_CENTER_POSITION", TOP_CENTER );
         constants.put( "TOP_LEFT_POSITION", TOP_LEFT );

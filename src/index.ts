@@ -6,7 +6,15 @@ export { RewardedAd } from './RewardedAd';
 export { AppOpenAd } from './AppOpenAd';
 export { BannerAd } from './BannerAd';
 export { MRecAd } from './MRecAd';
-export { AdView, AdFormat, AdViewPosition, preloadNativeUIComponentAdView } from './AdView';
+export { AdView, AdFormat, AdViewPosition } from './AdView';
+export {
+    preloadNativeUIComponentAdView,
+    deleteNativeUIComponentAdView,
+    addNativeUIComponentAdViewAdLoadFailedEventListener,
+    removeNativeUIComponentAdViewAdLoadedEventListener,
+    addNativeUIComponentAdViewAdLoadedEventListener,
+    removeNativeUIComponentAdViewAdLoadFailedEventListener,
+} from './AdView';
 export { NativeAdView } from './nativeAd/NativeAdView';
 export {
     TitleView,

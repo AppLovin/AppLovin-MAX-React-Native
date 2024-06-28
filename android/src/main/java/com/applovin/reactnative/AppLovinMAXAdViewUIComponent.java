@@ -9,7 +9,6 @@ import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxAdViewAdListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxAdView;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
@@ -27,8 +26,6 @@ class AppLovinMAXAdViewUIComponent
 
     @Nullable
     private AppLovinMAXAdView containerView;
-    @Nullable
-    private Promise           promiseCallback;
 
     public AppLovinMAXAdViewUIComponent(final String adUnitId, final MaxAdFormat adFormat, final ReactContext context)
     {
@@ -47,11 +44,6 @@ class AppLovinMAXAdViewUIComponent
     public MaxAdView getAdView()
     {
         return adView;
-    }
-
-    public void setPromise(Promise promise)
-    {
-        promiseCallback = promise;
     }
 
     public void setPlacement(@Nullable final String value)
@@ -152,15 +144,11 @@ class AppLovinMAXAdViewUIComponent
     {
         WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
 
-        if ( promiseCallback != null )
-        {
-            promiseCallback.resolve( adInfo );
-            promiseCallback = null;
-        }
+        AppLovinMAXModule.getInstance().sendReactNativeEvent( "OnNativeUIComponentAdviewAdLoadedEvent", adInfo );
 
         if ( containerView != null )
         {
-            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerView.getId(), "onAdLoadedEvent", adInfo );
+            sendReactNativeCallbackEvent( "onAdLoadedEvent", adInfo );
         }
     }
 
@@ -169,15 +157,11 @@ class AppLovinMAXAdViewUIComponent
     {
         WritableMap adLoadFailedInfo = AppLovinMAXModule.getInstance().getAdLoadFailedInfo( adUnitId, error );
 
-        if ( promiseCallback != null )
-        {
-            promiseCallback.resolve( adLoadFailedInfo );
-            promiseCallback = null;
-        }
+        AppLovinMAXModule.getInstance().sendReactNativeEvent( "OnNativeUIComponentAdviewAdLoadFailedEvent", adLoadFailedInfo );
 
         if ( containerView != null )
         {
-            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerView.getId(), "onAdLoadFailedEvent", adLoadFailedInfo );
+            sendReactNativeCallbackEvent( "onAdLoadFailedEvent", adLoadFailedInfo );
         }
     }
 
@@ -187,7 +171,7 @@ class AppLovinMAXAdViewUIComponent
         if ( containerView != null )
         {
             WritableMap adDisplayFailedInfo = AppLovinMAXModule.getInstance().getAdDisplayFailedInfo( ad, error );
-            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerView.getId(), "onAdDisplayFailedEvent", adDisplayFailedInfo );
+            sendReactNativeCallbackEvent( "onAdDisplayFailedEvent", adDisplayFailedInfo );
         }
     }
 
@@ -197,7 +181,7 @@ class AppLovinMAXAdViewUIComponent
         if ( containerView != null )
         {
             WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
-            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerView.getId(), "onAdClickedEvent", adInfo );
+            sendReactNativeCallbackEvent( "onAdClickedEvent", adInfo );
         }
     }
 
@@ -207,7 +191,7 @@ class AppLovinMAXAdViewUIComponent
         if ( containerView != null )
         {
             WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
-            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerView.getId(), "onAdExpandedEvent", adInfo );
+            sendReactNativeCallbackEvent( "onAdExpandedEvent", adInfo );
         }
     }
 
@@ -217,7 +201,7 @@ class AppLovinMAXAdViewUIComponent
         if ( containerView != null )
         {
             WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
-            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerView.getId(), "onAdCollapsedEvent", adInfo );
+            sendReactNativeCallbackEvent( "onAdCollapsedEvent", adInfo );
         }
     }
 
@@ -227,7 +211,7 @@ class AppLovinMAXAdViewUIComponent
         if ( containerView != null )
         {
             WritableMap adRevenueInfo = AppLovinMAXModule.getInstance().getAdRevenueInfo( ad );
-            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerView.getId(), "onAdRevenuePaidEvent", adRevenueInfo );
+            sendReactNativeCallbackEvent( "onAdRevenuePaidEvent", adRevenueInfo );
         }
     }
 
@@ -238,4 +222,14 @@ class AppLovinMAXAdViewUIComponent
 
     @Override
     public void onAdHidden(@NonNull final MaxAd ad) { }
+
+    /// Utilities
+
+    private void sendReactNativeCallbackEvent(final String name, @Nullable final WritableMap params)
+    {
+        if ( containerView != null )
+        {
+            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerView.getId(), name, params );
+        }
+    }
 }

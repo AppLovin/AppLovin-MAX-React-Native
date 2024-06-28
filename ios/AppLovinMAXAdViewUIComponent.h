@@ -15,8 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL adaptiveBannerEnabled;
 @property (nonatomic, assign) BOOL autoRefresh;
 
-@property (nonatomic, copy, nullable) RCTPromiseResolveBlock promiseResolve;
-
 - (instancetype)initWithAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat;
 - (void)loadAd;
 - (BOOL)isAttached;

@@ -6,6 +6,7 @@
 @interface AppLovinMAXAdViewUIComponent()<MAAdViewAdDelegate, MAAdRevenueDelegate>
 
 @property (nonatomic, strong) MAAdView *adView;
+
 @property (nonatomic, weak, nullable) AppLovinMAXAdView *containerView;
 
 @end
@@ -122,11 +123,7 @@
 {
     NSDictionary *adInfo = [[AppLovinMAX shared] adInfoForAd: ad];
     
-    if ( self.promiseResolve )
-    {
-        self.promiseResolve(adInfo);
-        self.promiseResolve = nil;
-    }
+    [[AppLovinMAX shared] sendEventWithName:@"OnNativeUIComponentAdviewAdLoadedEvent" body: adInfo];
     
     if ( self.containerView )
     {
@@ -138,11 +135,7 @@
 {
     NSDictionary *adLoadFailedInfo = [[AppLovinMAX shared] adLoadFailedInfoForAd: adUnitIdentifier withError: error];
     
-    if ( self.promiseResolve )
-    {
-        self.promiseResolve(adLoadFailedInfo);
-        self.promiseResolve = nil;
-    }
+    [[AppLovinMAX shared] sendEventWithName:@"OnNativeUIComponentAdviewAdLoadFailedEvent" body: adLoadFailedInfo];
     
     if ( self.containerView )
     {

@@ -21,7 +21,6 @@ RCT_EXPORT_VIEW_PROPERTY(customData, NSString)
 RCT_EXPORT_VIEW_PROPERTY(adaptiveBannerEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(autoRefresh, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(loadOnMount, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(deleteNativeUIComponent, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(extraParameters, NSDictionary)
 RCT_EXPORT_VIEW_PROPERTY(localExtraParameters, NSDictionary)
 

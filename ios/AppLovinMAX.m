@@ -136,6 +136,9 @@ static NSString *const ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT = @"OnAppOpenAdFail
 static NSString *const ON_APPOPEN_AD_HIDDEN_EVENT = @"OnAppOpenAdHiddenEvent";
 static NSString *const ON_APPOPEN_AD_REVENUE_PAID = @"OnAppOpenAdRevenuePaid";
 
+static NSString *const ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT = @"OnNativeUIComponentAdviewAdLoadedEvent";
+static NSString *const ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT = @"OnNativeUIComponentAdviewAdLoadFailedEvent";
+
 static NSString *const TOP_CENTER = @"top_center";
 static NSString *const TOP_LEFT = @"top_left";
 static NSString *const TOP_RIGHT = @"top_right";
@@ -1286,7 +1289,12 @@ RCT_EXPORT_METHOD(preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier :(
         return;
     }
     
-    [AppLovinMAXAdView preloadNativeUIComponentAdView:adUnitIdentifier adFormat:adFormat placement:placement customData:customData extraParameters:extraParameterDict localExtraParameters:localExtraParameterDict resolve:resolve reject:reject];
+    [AppLovinMAXAdView preloadNativeUIComponentAdView:adUnitIdentifier adFormat:adFormat placement:placement customData:customData extraParameters:extraParameterDict localExtraParameters:localExtraParameterDict withPromiseResolver:resolve withPromiseRejecter:reject];
+}
+
+RCT_EXPORT_METHOD(deleteNativeUIComponentAdView:(NSString *)adUnitIdentifier :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+{
+    [AppLovinMAXAdView deleteNativeUIComponentAdView:adUnitIdentifier withPromiseResolver:resolve withPromiseRejecter:reject];
 }
 
 #pragma mark - Ad Callbacks
@@ -2466,7 +2474,10 @@ RCT_EXPORT_METHOD(preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier :(
              ON_APPOPEN_AD_DISPLAYED_EVENT,
              ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT,
              ON_APPOPEN_AD_HIDDEN_EVENT,
-             ON_APPOPEN_AD_REVENUE_PAID];
+             ON_APPOPEN_AD_REVENUE_PAID,
+
+             ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT,
+             ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT];
 }
 
 - (NSDictionary *)constantsToExport
@@ -2510,6 +2521,9 @@ RCT_EXPORT_METHOD(preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier :(
              @"ON_APPOPEN_AD_HIDDEN_EVENT" : ON_APPOPEN_AD_HIDDEN_EVENT,
              @"ON_APPOPEN_AD_REVENUE_PAID" : ON_APPOPEN_AD_REVENUE_PAID,
              
+             @"ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT" : ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT,
+             @"ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT" : ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT,
+
              @"TOP_CENTER_POSITION" : TOP_CENTER,
              @"TOP_LEFT_POSITION" : TOP_LEFT,
              @"TOP_RIGHT_POSITION" : TOP_RIGHT,
