@@ -72,18 +72,18 @@ class AppLovinMAXAdView
         promise.resolve( null );
     }
 
-    public static void deleteNativeUIComponentAdView(final String adUnitId, final Promise promise)
+    public static void destroyNativeUIComponentAdView(final String adUnitId, final Promise promise)
     {
         AppLovinMAXAdViewUIComponent preloadedUIComponent = preloadedUIComponentInstances.get( adUnitId );
         if ( preloadedUIComponent == null )
         {
-            promise.reject( new IllegalStateException( "No native UI component found to delete" ) );
+            promise.reject( new IllegalStateException( "No native UI component found to destroy" ) );
             return;
         }
 
         if ( preloadedUIComponent.isAttached() )
         {
-            promise.reject( new IllegalStateException( "Cannot delete - currently in use" ) );
+            promise.reject( new IllegalStateException( "Cannot destroy - currently in use" ) );
             return;
         }
 

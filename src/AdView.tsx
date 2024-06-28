@@ -312,18 +312,18 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
  * Preloads a native UI component for the {@link AdView} component. When mounting an {@link AdView}
  * component, if the same adUnitId is specified, the preloaded native UI component will be used
  * internally for the faster realization of the {@link AdView} component. When unmounting the
- * {@link AdView} component, the preloaded native UI component won't be deleted but saved
+ * {@link AdView} component, the preloaded native UI component won't be destroyed but saved
  * for future use.
  *
  * Only one native UI component is created for preloading with the same adUnitId. If you mount
  * two {@link AdView} components with the same adUnitId, the first {@link AdView} component will
  * be realized with the preloaded native UI component, but the 2nd {@link AdView} component will
- * create its own native UI component on the fly and delete it when unmounting.
+ * create its own native UI component on the fly and destroy it when unmounting.
  *
  * @param adUnitId The Ad Unit ID to load ads for.
  * @param adFormat An enum value representing the ad format to load ads for. Should be either {@link AdFormat.BANNER} or {@link AdFormat.MREC}.
  * @param options Optional props to load ads for.
- * @returns {@link AdInfo} for load success, {@link AdLoadFailedInfo} for load error.
+ * @returns none if preloading is started, or an {@link Error} if preloading cannot be started.
  */
 export const preloadNativeUIComponentAdView = async (
     adUnitId: string,
@@ -340,18 +340,39 @@ export const preloadNativeUIComponentAdView = async (
     );
 };
 
-export const deleteNativeUIComponentAdView = async (adUnitId: string): Promise<void> => {
-    return AppLovinMAX.deleteNativeUIComponentAdView(adUnitId);
+/**
+ * Destroys the native UI component.
+ *
+ * @param adUnitId The ad unit ID of the ad to destroy.
+ * @returns none if successfully destroyed, or an {@link Error} if cannot be destroyed.
+ */
+export const destroyNativeUIComponentAdView = async (adUnitId: string): Promise<void> => {
+    return AppLovinMAX.destroyNativeUIComponentAdView(adUnitId);
 };
 
+/**
+ * Adds the specified event listener to receive {@link AdInfo} when a native UI component loads a
+ * new ad.
+ *
+ * @param listener Listener to be notified.
+ */
 export const addNativeUIComponentAdViewAdLoadedEventListener = (listener: (adInfo: AdInfo) => void) => {
     addEventListener(ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT, (adInfo: AdInfo) => listener(adInfo));
 };
 
+/**
+ * Removes the event listener to receive {@link AdInfo} when a native UI component loads a new ad.
+ */
 export const removeNativeUIComponentAdViewAdLoadedEventListener = () => {
     removeEventListener(ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT);
 };
 
+/**
+ * Adds the specified event listener to receive {@link AdLoadFailedInfo} when a native UI component
+ * could not load a new ad.
+ *
+ * @param listener Listener to be notified.
+ */
 export const addNativeUIComponentAdViewAdLoadFailedEventListener = (
     listener: (errorInfo: AdLoadFailedInfo) => void
 ) => {
@@ -360,6 +381,10 @@ export const addNativeUIComponentAdViewAdLoadFailedEventListener = (
     );
 };
 
+/**
+ * Removes the event listener to receive {@link AdLoadFailedInfo} when a native UI component could
+ * not load a new ad.
+ */
 export const removeNativeUIComponentAdViewAdLoadFailedEventListener = () => {
     removeEventListener(ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT);
 };

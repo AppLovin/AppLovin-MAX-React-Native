@@ -9,7 +9,7 @@ export { MRecAd } from './MRecAd';
 export { AdView, AdFormat, AdViewPosition } from './AdView';
 export {
     preloadNativeUIComponentAdView,
-    deleteNativeUIComponentAdView,
+    destroyNativeUIComponentAdView,
     addNativeUIComponentAdViewAdLoadFailedEventListener,
     removeNativeUIComponentAdViewAdLoadedEventListener,
     addNativeUIComponentAdViewAdLoadedEventListener,

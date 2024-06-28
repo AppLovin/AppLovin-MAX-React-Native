@@ -40,13 +40,6 @@ export type AdViewProps = AdProps & {
     loadOnMount?: boolean;
 
     /**
-     * A boolean value representing whether or not to delete the native UI component that is
-     *  internally allocated by {@link preloadNativeUIComponentAdView()} when {@link AdView} is
-     *  unmounted. Note that the default value is false, where the native UI component will be reused.
-     */
-    deleteNativeUIComponent?: boolean;
-
-    /**
      * A callback fuction that {@link AdView} fires when it expands the ad.
      */
     onAdExpanded?: (adInfo: AdInfo) => void;

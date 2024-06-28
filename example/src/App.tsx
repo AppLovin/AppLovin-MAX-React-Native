@@ -5,7 +5,7 @@ import AppLovinMAX, {
     ConsentFlowUserGeography,
     AppTrackingStatus,
     preloadNativeUIComponentAdView,
-    deleteNativeUIComponentAdView,
+    destroyNativeUIComponentAdView,
     addNativeUIComponentAdViewAdLoadFailedEventListener,
     removeNativeUIComponentAdViewAdLoadedEventListener,
     addNativeUIComponentAdViewAdLoadedEventListener,
@@ -172,20 +172,20 @@ const App = () => {
             removeNativeUIComponentAdViewAdLoadedEventListener();
             removeNativeUIComponentAdViewAdLoadFailedEventListener();
 
-            deleteNativeUIComponentAdView(BANNER_AD_UNIT_ID)
+            destroyNativeUIComponentAdView(BANNER_AD_UNIT_ID)
                 .then(() => {
-                    console.log('Deleted the preloaded banner ad');
+                    console.log('Destroyed the preloaded banner ad');
                 })
                 .catch((error: any) => {
-                    console.log('Cannot delete the preloaded banner ad: ' + error.toString());
+                    console.log('Cannot destroy the preloaded banner ad: ' + error.toString());
                 });
 
-            deleteNativeUIComponentAdView(MREC_AD_UNIT_ID)
+            destroyNativeUIComponentAdView(MREC_AD_UNIT_ID)
                 .then(() => {
-                    console.log('Deleted the preloaded MREC ad');
+                    console.log('Destroyed the preloaded MREC ad');
                 })
                 .catch((error: any) => {
-                    console.log('Cannot delete the preloaded MREC ad: ' + error.toString());
+                    console.log('Cannot destroy the preloaded MREC ad: ' + error.toString());
                 });
         };
 

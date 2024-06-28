@@ -1292,9 +1292,9 @@ RCT_EXPORT_METHOD(preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier :(
     [AppLovinMAXAdView preloadNativeUIComponentAdView:adUnitIdentifier adFormat:adFormat placement:placement customData:customData extraParameters:extraParameterDict localExtraParameters:localExtraParameterDict withPromiseResolver:resolve withPromiseRejecter:reject];
 }
 
-RCT_EXPORT_METHOD(deleteNativeUIComponentAdView:(NSString *)adUnitIdentifier :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    [AppLovinMAXAdView deleteNativeUIComponentAdView:adUnitIdentifier withPromiseResolver:resolve withPromiseRejecter:reject];
+    [AppLovinMAXAdView destroyNativeUIComponentAdView:adUnitIdentifier withPromiseResolver:resolve withPromiseRejecter:reject];
 }
 
 #pragma mark - Ad Callbacks

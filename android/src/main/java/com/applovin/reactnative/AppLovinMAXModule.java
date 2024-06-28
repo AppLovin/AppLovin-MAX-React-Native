@@ -1542,9 +1542,9 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod
-    public void deleteNativeUIComponentAdView(final String adUnitId, final Promise promise)
+    public void destroyNativeUIComponentAdView(final String adUnitId, final Promise promise)
     {
-        getReactApplicationContext().runOnUiQueueThread( () -> AppLovinMAXAdView.deleteNativeUIComponentAdView( adUnitId, promise ) );
+        getReactApplicationContext().runOnUiQueueThread( () -> AppLovinMAXAdView.destroyNativeUIComponentAdView( adUnitId, promise ) );
     }
 
     // AD CALLBACKS

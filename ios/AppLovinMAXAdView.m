@@ -68,18 +68,18 @@ static NSMutableDictionary<NSString *, AppLovinMAXAdViewUIComponent *> *preloade
     resolve(nil);
 }
 
-+ (void) deleteNativeUIComponentAdView:(NSString *)adUnitIdentifier withPromiseResolver:(RCTPromiseResolveBlock)resolve withPromiseRejecter:(RCTPromiseRejectBlock)reject
++ (void) destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier withPromiseResolver:(RCTPromiseResolveBlock)resolve withPromiseRejecter:(RCTPromiseRejectBlock)reject
 {
     AppLovinMAXAdViewUIComponent *preloadedUIComponent = preloadedUIComponentInstances[adUnitIdentifier];
     if ( !preloadedUIComponent )
     {
-        reject(RCTErrorUnspecified, @"No native UI component found to delete", nil);
+        reject(RCTErrorUnspecified, @"No native UI component found to destroy", nil);
         return;
     }
     
     if ( [preloadedUIComponent isAttached] )
     {
-        reject(RCTErrorUnspecified, @"Cannot delete - currently in use", nil);
+        reject(RCTErrorUnspecified, @"Cannot destroy - currently in use", nil);
         return;
     }
     
