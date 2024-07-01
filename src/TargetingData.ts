@@ -71,12 +71,7 @@ export const TargetingData: TargetingDataType = {
      * Sets the gender of the user. Set this to {@link UserGender.Unknown} to clear this value.
      */
     set gender(value: UserGender | Promise<UserGender>) {
-        if (
-            value === UserGender.UNKNOWN ||
-            value === UserGender.FEMALE ||
-            value === UserGender.MALE ||
-            value === UserGender.OTHER
-        ) {
+        if (value === UserGender.UNKNOWN || value === UserGender.FEMALE || value === UserGender.MALE || value === UserGender.OTHER) {
             nativeMethods.setTargetingDataGender(value);
         } else {
             printError('TargetingData.gender', 'UserGender', typeof value);
@@ -213,13 +208,5 @@ const isStringArray = (strs: object): boolean => {
 };
 
 const printError = (fieldName: string, correctType: string, wrongType: string) => {
-    console.error(
-        'Cannot set value to ' +
-            fieldName +
-            ' with unsupported type: ' +
-            wrongType +
-            '.  Value has to be of type ' +
-            correctType +
-            '.'
-    );
+    console.error('Cannot set value to ' + fieldName + ' with unsupported type: ' + wrongType + '.  Value has to be of type ' + correctType + '.');
 };

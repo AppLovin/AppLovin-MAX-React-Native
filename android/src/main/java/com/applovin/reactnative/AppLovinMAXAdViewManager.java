@@ -126,7 +126,7 @@ class AppLovinMAXAdViewManager
     }
 
     @Override
-    public void onAfterUpdateTransaction(final AppLovinMAXAdView view)
+    public void onAfterUpdateTransaction(@NonNull final AppLovinMAXAdView view)
     {
         super.onAfterUpdateTransaction( view );
 

@@ -151,14 +151,10 @@ export const StarRatingView = (props: ViewProps) => {
                         const width = (nativeAd.starRating - index) * starSize;
                         stars.push(
                             <View key={index}>
-                                <Text style={{ fontSize: starSize, color: starColor }}>
-                                    {String.fromCodePoint(0x2606)}
-                                </Text>
+                                <Text style={{ fontSize: starSize, color: starColor }}>{String.fromCodePoint(0x2606)}</Text>
                                 {nativeAd.starRating > index && (
                                     <View style={[{ width: width }, styles.starRating]}>
-                                        <Text style={{ fontSize: starSize, color: starColor }}>
-                                            {String.fromCodePoint(0x2605)}
-                                        </Text>
+                                        <Text style={{ fontSize: starSize, color: starColor }}>{String.fromCodePoint(0x2605)}</Text>
                                     </View>
                                 )}
                             </View>

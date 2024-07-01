@@ -13,14 +13,7 @@ type Props = {
     setIsNativeUIBannerShowing: (showing: boolean) => void;
 };
 
-const NativeBannerExample = ({
-    adUnitId,
-    isInitialized,
-    log,
-    isNativeUIBannerShowing,
-    isProgrammaticBannerShowing,
-    setIsNativeUIBannerShowing,
-}: Props) => {
+const NativeBannerExample = ({ adUnitId, isInitialized, log, isNativeUIBannerShowing, isProgrammaticBannerShowing, setIsNativeUIBannerShowing }: Props) => {
     return (
         <>
             <AppButton
@@ -39,12 +32,7 @@ const NativeBannerExample = ({
                         log('Banner ad loaded from ' + adInfo.networkName);
                     }}
                     onAdLoadFailed={(errorInfo: AdLoadFailedInfo) => {
-                        log(
-                            'Banner ad failed to load with error code ' +
-                                errorInfo.code +
-                                ' and message: ' +
-                                errorInfo.message
-                        );
+                        log('Banner ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
                     }}
                     onAdClicked={
                         (/* adInfo: AdInfo */) => {

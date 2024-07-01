@@ -13,14 +13,7 @@ type Props = {
     setIsProgrammaticBannerShowing: (showing: boolean) => void;
 };
 
-const ProgrammaticBannerExample = ({
-    adUnitId,
-    isInitialized,
-    log,
-    isNativeUIBannerShowing,
-    isProgrammaticBannerShowing,
-    setIsProgrammaticBannerShowing,
-}: Props) => {
+const ProgrammaticBannerExample = ({ adUnitId, isInitialized, log, isNativeUIBannerShowing, isProgrammaticBannerShowing, setIsProgrammaticBannerShowing }: Props) => {
     const [isProgrammaticBannerCreated, setIsProgrammaticBannerCreated] = useState(false);
 
     useEffect(() => {

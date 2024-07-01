@@ -18,9 +18,7 @@ type NativeAdViewNativeEvents = {
     onAdRevenuePaidEvent(event: AdNativeEvent<AdRevenueInfo>): void;
 };
 
-const NativeAdViewComponent = requireNativeComponent<NativeAdViewProps & ViewProps & NativeAdViewNativeEvents>(
-    'AppLovinMAXNativeAdView'
-);
+const NativeAdViewComponent = requireNativeComponent<NativeAdViewProps & ViewProps & NativeAdViewNativeEvents>('AppLovinMAXNativeAdView');
 
 /**
  * The {@link NativeAdView} component that you use building a native ad. This loads a native ad and
@@ -59,50 +57,33 @@ const NativeAdViewComponent = requireNativeComponent<NativeAdViewProps & ViewPro
  * </NativeAdView>
  * ```
  */
-export const NativeAdView = forwardRef<NativeAdViewHandler, NativeAdViewProps & ViewProps>(
-    function NativeAdView(props, ref) {
-        const [isInitialized, setIsInitialized] = useState<boolean>(false);
+export const NativeAdView = forwardRef<NativeAdViewHandler, NativeAdViewProps & ViewProps>(function NativeAdView(props, ref) {
+    const [isInitialized, setIsInitialized] = useState<boolean>(false);
 
-        useEffect(() => {
-            // check that AppLovinMAX has been initialized
-            AppLovinMAX.isInitialized().then((result: boolean) => {
-                setIsInitialized(result);
-                if (!result) {
-                    console.warn(
-                        'NativeAdView is mounted before the initialization of the AppLovin MAX React Native module'
-                    );
-                }
-            });
-        }, []);
+    useEffect(() => {
+        // check that AppLovinMAX has been initialized
+        AppLovinMAX.isInitialized().then((result: boolean) => {
+            setIsInitialized(result);
+            if (!result) {
+                console.warn('NativeAdView is mounted before the initialization of the AppLovin MAX React Native module');
+            }
+        });
+    }, []);
 
-        // Not ready to render NativeAdView
-        if (!isInitialized) {
-            return null;
-        }
-
-        return (
-            <NativeAdViewProvider>
-                <NativeAdViewImpl {...props} ref={ref} />
-            </NativeAdViewProvider>
-        );
+    // Not ready to render NativeAdView
+    if (!isInitialized) {
+        return null;
     }
-);
+
+    return (
+        <NativeAdViewProvider>
+            <NativeAdViewImpl {...props} ref={ref} />
+        </NativeAdViewProvider>
+    );
+});
 
 const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps & ViewProps>(function NativeAdViewImpl(
-    {
-        adUnitId,
-        placement,
-        customData,
-        extraParameters,
-        localExtraParameters,
-        onAdLoaded,
-        onAdLoadFailed,
-        onAdClicked,
-        onAdRevenuePaid,
-        children,
-        style,
-        ...otherProps
-    },
+    { adUnitId, placement, customData, extraParameters, localExtraParameters, onAdLoaded, onAdLoadFailed, onAdClicked, onAdRevenuePaid, children, style, ...otherProps },
     ref
 ) {
     // context from NativeAdViewProvider
