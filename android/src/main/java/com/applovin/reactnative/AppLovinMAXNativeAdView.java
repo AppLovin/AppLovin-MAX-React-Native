@@ -444,7 +444,7 @@ public class AppLovinMAXNativeAdView
         {
             // Renders the ad only after the last asset view is set
             renderNativeAdHandler.removeCallbacksAndMessages( null );
-            renderNativeAdHandler.postDelayed( renderNativeAdTask, 1 );
+            renderNativeAdHandler.postDelayed( renderNativeAdTask, 50 );
         }
     }
 
