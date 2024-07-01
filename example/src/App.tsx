@@ -12,12 +12,7 @@ import AppLovinMAX, {
     removeNativeUIComponentAdViewAdLoadFailedEventListener,
     AdFormat,
 } from 'react-native-applovin-max';
-import type {
-    Configuration,
-    AdInfo,
-    AdLoadFailedInfo,
-    NativeUIComponentAdViewOptions,
-} from 'react-native-applovin-max';
+import type { Configuration, AdInfo, AdLoadFailedInfo, NativeUIComponentAdViewOptions } from 'react-native-applovin-max';
 import AppLogo from './components/AppLogo';
 import AppButton from './components/AppButton';
 import InterExample from './InterExample';
@@ -87,21 +82,11 @@ const App = () => {
 
                 console.log('isTestModeEnabled: ' + conf.isTestModeEnabled);
 
-                console.log(
-                    'consentFlowUserGeography: ' +
-                        Object.keys(ConsentFlowUserGeography)[
-                            Object.values(ConsentFlowUserGeography).indexOf(conf.consentFlowUserGeography)
-                        ]
-                );
+                console.log('consentFlowUserGeography: ' + Object.keys(ConsentFlowUserGeography)[Object.values(ConsentFlowUserGeography).indexOf(conf.consentFlowUserGeography)]);
 
                 // AppTrackingStatus for iOS
                 if (conf.appTrackingStatus) {
-                    console.log(
-                        'appTrackingStatus: ' +
-                            Object.keys(AppTrackingStatus)[
-                                Object.values(AppTrackingStatus).indexOf(conf.appTrackingStatus)
-                            ]
-                    );
+                    console.log('appTrackingStatus: ' + Object.keys(AppTrackingStatus)[Object.values(AppTrackingStatus).indexOf(conf.appTrackingStatus)]);
                 }
             })
             .catch((error) => {
@@ -130,16 +115,9 @@ const App = () => {
 
         addNativeUIComponentAdViewAdLoadFailedEventListener((errorInfo: AdLoadFailedInfo) => {
             if (errorInfo.adUnitId === BANNER_AD_UNIT_ID) {
-                console.log(
-                    'Banner ad failed to preload with error code ' +
-                        errorInfo.code +
-                        ' and message: ' +
-                        errorInfo.message
-                );
+                console.log('Banner ad failed to preload with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
             } else if (errorInfo.adUnitId === MREC_AD_UNIT_ID) {
-                console.log(
-                    'MREC ad failed to preload with error code ' + errorInfo.code + ' and message: ' + errorInfo.message
-                );
+                console.log('MREC ad failed to preload with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
             } else {
                 console.log('Error: unexpected ad failed to preload for ' + errorInfo.adUnitId);
             }
@@ -245,12 +223,7 @@ const App = () => {
                     isNativeAdShowing={isNativeAdShowing}
                     setIsNativeAdShowing={setIsNativeAdShowing}
                 />
-                <ScrolledAdViewExample
-                    bannerAdUnitId={BANNER_AD_UNIT_ID}
-                    mrecAdUnitId={MREC_AD_UNIT_ID}
-                    isInitialized={isInitialized}
-                    isNativeAdShowing={isNativeAdShowing}
-                />
+                <ScrolledAdViewExample bannerAdUnitId={BANNER_AD_UNIT_ID} mrecAdUnitId={MREC_AD_UNIT_ID} isInitialized={isInitialized} isNativeAdShowing={isNativeAdShowing} />
             </View>
         </SafeAreaView>
     );

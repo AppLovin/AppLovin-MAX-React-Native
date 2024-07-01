@@ -1,17 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
-import {
-    NativeAdView,
-    TitleView,
-    AdvertiserView,
-    BodyView,
-    CallToActionView,
-    IconView,
-    OptionsView,
-    MediaView,
-    StarRatingView,
-} from 'react-native-applovin-max';
+import { NativeAdView, TitleView, AdvertiserView, BodyView, CallToActionView, IconView, OptionsView, MediaView, StarRatingView } from 'react-native-applovin-max';
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo, NativeAdViewHandler } from 'react-native-applovin-max';
 import AppButton from './components/AppButton';
 
@@ -26,13 +16,7 @@ type Props = {
 const NATIVE_AD_MEDIAVIEW_WIDTH = 340;
 const NATIVE_AD_MEDIAVIEW_HEIGHT = 200;
 
-export const NativeAdViewExample = ({
-    adUnitId,
-    isInitialized,
-    log,
-    isNativeAdShowing,
-    setIsNativeAdShowing,
-}: Props) => {
+export const NativeAdViewExample = ({ adUnitId, isInitialized, log, isNativeAdShowing, setIsNativeAdShowing }: Props) => {
     const DEFAULT_ASPECT_RATIO = 16 / 9;
     const [aspectRatio, setAspectRatio] = useState(DEFAULT_ASPECT_RATIO);
     const [mediaViewSize, setMediaViewSize] = useState({});
@@ -66,12 +50,7 @@ export const NativeAdViewExample = ({
                     setIsNativeAdLoading(false);
                 }}
                 onAdLoadFailed={(errorInfo: AdLoadFailedInfo) => {
-                    log(
-                        'Native ad failed to load with error code ' +
-                            errorInfo.code +
-                            ' and message: ' +
-                            errorInfo.message
-                    );
+                    log('Native ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
                     setIsNativeAdLoading(false);
                 }}
                 onAdClicked={(adInfo: AdInfo) => {

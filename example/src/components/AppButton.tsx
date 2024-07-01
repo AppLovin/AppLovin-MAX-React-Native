@@ -12,14 +12,8 @@ const AppButton = (props: Props & ViewProps) => {
     const { style } = props;
     return (
         <View style={[styles.container, style]}>
-            <TouchableOpacity
-                disabled={!props.enabled}
-                style={[styles.button, props.enabled ? styles.enabledColor : styles.disabledColor, style]}
-                onPress={props.onPress}
-            >
-                <Text style={[styles.text, props.enabled ? styles.blackColor : styles.grayColor, style]}>
-                    {props.title}
-                </Text>
+            <TouchableOpacity disabled={!props.enabled} style={[styles.button, props.enabled ? styles.enabledColor : styles.disabledColor, style]} onPress={props.onPress}>
+                <Text style={[styles.text, props.enabled ? styles.blackColor : styles.grayColor, style]}>{props.title}</Text>
             </TouchableOpacity>
         </View>
     );

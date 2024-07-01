@@ -16,14 +16,5 @@ export {
     removeNativeUIComponentAdViewAdLoadFailedEventListener,
 } from './AdView';
 export { NativeAdView } from './nativeAd/NativeAdView';
-export {
-    TitleView,
-    AdvertiserView,
-    BodyView,
-    CallToActionView,
-    IconView,
-    OptionsView,
-    MediaView,
-    StarRatingView,
-} from './nativeAd/NativeAdViewComponents';
+export { TitleView, AdvertiserView, BodyView, CallToActionView, IconView, OptionsView, MediaView, StarRatingView } from './nativeAd/NativeAdViewComponents';
 export * from './types';

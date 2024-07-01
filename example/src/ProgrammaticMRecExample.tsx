@@ -13,14 +13,7 @@ type Props = {
     setIsProgrammaticMRecShowing: (showing: boolean) => void;
 };
 
-const ProgrammaticMRecExample = ({
-    adUnitId,
-    isInitialized,
-    log,
-    isNativeUIMRecShowing,
-    isProgrammaticMRecShowing,
-    setIsProgrammaticMRecShowing,
-}: Props) => {
+const ProgrammaticMRecExample = ({ adUnitId, isInitialized, log, isNativeUIMRecShowing, isProgrammaticMRecShowing, setIsProgrammaticMRecShowing }: Props) => {
     const [isProgrammaticMRecCreated, setIsProgrammaticMRecCreated] = useState(false);
 
     useEffect(() => {

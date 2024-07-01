@@ -1,13 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState, useRef, useCallback, useImperativeHandle, useReducer, forwardRef } from 'react';
-import {
-    NativeModules,
-    requireNativeComponent,
-    StyleSheet,
-    UIManager,
-    findNodeHandle,
-    useWindowDimensions,
-} from 'react-native';
+import { NativeModules, requireNativeComponent, StyleSheet, UIManager, findNodeHandle, useWindowDimensions } from 'react-native';
 import type { ViewProps, ViewStyle, StyleProp, NativeMethods, DimensionValue } from 'react-native';
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from './types/AdInfo';
 import type { AdNativeEvent } from './types/AdEvent';
@@ -93,12 +86,7 @@ const getOutlineViewSize = (style: StyleProp<ViewStyle>) => {
     return [viewStyle?.width ?? 'auto', viewStyle?.height ?? 'auto'];
 };
 
-const sizeBannerDimensions = (
-    sizeProps: SizeRecord,
-    adaptiveBannerEnabled: boolean,
-    screenWidth: number,
-    bannerFormatSize: SizeRecord
-): Promise<SizeRecord> => {
+const sizeBannerDimensions = (sizeProps: SizeRecord, adaptiveBannerEnabled: boolean, screenWidth: number, bannerFormatSize: SizeRecord): Promise<SizeRecord> => {
     const sizeForBannerFormat = async () => {
         const width = sizeProps.width === 'auto' ? screenWidth : sizeProps.width;
 
@@ -223,17 +211,12 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
         sizeProps.current = { width: width, height: height };
 
         if (adFormat === AdFormat.BANNER) {
-            sizeBannerDimensions(sizeProps.current, adaptiveBannerEnabled, screenWidth, adFormatSize.current).then(
-                (adaptedSize: SizeRecord) => {
-                    if (
-                        dimensions.current.width !== adaptedSize.width ||
-                        dimensions.current.height !== adaptedSize.height
-                    ) {
-                        dimensions.current = adaptedSize;
-                        forceUpdate();
-                    }
+            sizeBannerDimensions(sizeProps.current, adaptiveBannerEnabled, screenWidth, adFormatSize.current).then((adaptedSize: SizeRecord) => {
+                if (dimensions.current.width !== adaptedSize.width || dimensions.current.height !== adaptedSize.height) {
+                    dimensions.current = adaptedSize;
+                    forceUpdate();
                 }
-            );
+            });
         } else {
             dimensions.current = {
                 width: width === 'auto' ? adFormatSize.current.width : width,
@@ -325,19 +308,8 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
  * @param options Optional props to load ads for.
  * @returns none if preloading is started, or an {@link Error} if preloading cannot be started.
  */
-export const preloadNativeUIComponentAdView = async (
-    adUnitId: string,
-    adFormat: AdFormat,
-    options?: NativeUIComponentAdViewOptions
-): Promise<void> => {
-    return AppLovinMAX.preloadNativeUIComponentAdView(
-        adUnitId,
-        adFormat,
-        options?.placement,
-        options?.customData,
-        options?.extraParameters,
-        options?.localExtraParameters
-    );
+export const preloadNativeUIComponentAdView = async (adUnitId: string, adFormat: AdFormat, options?: NativeUIComponentAdViewOptions): Promise<void> => {
+    return AppLovinMAX.preloadNativeUIComponentAdView(adUnitId, adFormat, options?.placement, options?.customData, options?.extraParameters, options?.localExtraParameters);
 };
 
 /**
@@ -373,12 +345,8 @@ export const removeNativeUIComponentAdViewAdLoadedEventListener = () => {
  *
  * @param listener Listener to be notified.
  */
-export const addNativeUIComponentAdViewAdLoadFailedEventListener = (
-    listener: (errorInfo: AdLoadFailedInfo) => void
-) => {
-    addEventListener(ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT, (errorInfo: AdLoadFailedInfo) =>
-        listener(errorInfo)
-    );
+export const addNativeUIComponentAdViewAdLoadFailedEventListener = (listener: (errorInfo: AdLoadFailedInfo) => void) => {
+    addEventListener(ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT, (errorInfo: AdLoadFailedInfo) => listener(errorInfo));
 };
 
 /**

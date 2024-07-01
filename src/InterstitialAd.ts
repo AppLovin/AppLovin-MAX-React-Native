@@ -69,9 +69,7 @@ const removeAdDisplayedEventListener = () => {
 };
 
 const addAdFailedToDisplayEventListener = (listener: (errorInfo: AdDisplayFailedInfo) => void) => {
-    addEventListener(ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT, (errorInfo: AdDisplayFailedInfo) =>
-        listener(errorInfo)
-    );
+    addEventListener(ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT, (errorInfo: AdDisplayFailedInfo) => listener(errorInfo));
 };
 
 const removeAdFailedToDisplayEventListener = () => {
