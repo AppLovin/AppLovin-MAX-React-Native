@@ -18,7 +18,7 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-class AppLovinMAXAdViewUIComponent
+class AppLovinMAXAdViewUiComponent
     implements MaxAdListener, MaxAdViewAdListener, MaxAdRevenueListener
 {
     private final ReactContext reactContext;
@@ -27,7 +27,7 @@ class AppLovinMAXAdViewUIComponent
     @Nullable
     private AppLovinMAXAdView containerView;
 
-    public AppLovinMAXAdViewUIComponent(final String adUnitId, final MaxAdFormat adFormat, final ReactContext context)
+    public AppLovinMAXAdViewUiComponent(final String adUnitId, final MaxAdFormat adFormat, final ReactContext context)
     {
         reactContext = context;
 
