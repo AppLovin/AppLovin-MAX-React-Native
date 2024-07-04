@@ -292,16 +292,16 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
 });
 
 /**
- * Preloads a native UI component for the {@link AdView} component. When mounting an {@link AdView}
- * component, if the same adUnitId is specified, the preloaded native UI component will be used
- * internally for the faster realization of the {@link AdView} component. When unmounting the
- * {@link AdView} component, the preloaded native UI component won't be destroyed but saved
- * for future use.
+ * Preloads a native UI component for {@link AdView}. When you mount {@link AdView} with the Ad Unit
+ * ID you preloaded, it will be constructed with the preloaded native UI component, allowing the ads
+ * to be displayed quickly. When you unmount {@link AdView}, the preloaded native UI component won't
+ * be destroyed. Instead, it will be reused for the next mount. You must manually destroy it when it
+ * is no longer needed.
  *
- * Only one native UI component is created for preloading with the same adUnitId. If you mount
- * two {@link AdView} components with the same adUnitId, the first {@link AdView} component will
- * be realized with the preloaded native UI component, but the 2nd {@link AdView} component will
- * create its own native UI component on the fly and destroy it when unmounting.
+ * You can preload only one native UI component for a single Ad Unit ID. If you mount two of {@link
+ * AdView} with the same Ad Unit ID, the first {@link AdView} will be constructed with the preloaded
+ * native UI component, but the second {@link AdView} will create its own native UI component and
+ * destroy it when unmounting.
  *
  * @param adUnitId The Ad Unit ID to load ads for.
  * @param adFormat An enum value representing the ad format to load ads for. Should be either {@link AdFormat.BANNER} or {@link AdFormat.MREC}.
