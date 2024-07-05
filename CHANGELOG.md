@@ -1,7 +1,8 @@
 ## Versions
 
 ## x.x.x
-* Add APIs for preloading native UI components AdView banners/MRECs. - [docs](https://developers.applovin.com/en/react-native/ad-formats/banner-and-mrec-ads#native-ui-component-method).
+* Add APIs for preloading native UI components AdView banners/MRECs. - [docs](https://developers.applovin.com/en/react-native/ad-formats/banner-and-mrec-ads#preloading-native-ui-component).
+* Fix native ads rendering multiple times after updating all the asset views.
 * Improve loading time for `<AdView/>`.
 * Upgrade the build platform to support React Native 0.7x.
 ## 6.5.0
