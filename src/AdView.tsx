@@ -298,15 +298,17 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
  * be destroyed. Instead, it will be reused for the next mount. You must manually destroy it when it
  * is no longer needed.
  *
- * You can preload only one native UI component for a single Ad Unit ID. If you mount two of {@link
- * AdView} with the same Ad Unit ID, the first {@link AdView} will be constructed with the preloaded
- * native UI component, but the second {@link AdView} will create its own native UI component and
- * destroy it when unmounting.
+ * You can preload only one native UI component for a single Ad Unit ID. If you mount two of
+ * {@link AdView} with the same Ad Unit ID, the first {@link AdView} will be constructed with the
+ * preloaded native UI component, but the second {@link AdView} will create its own native UI
+ * component and destroy it when unmounting.
  *
  * @param adUnitId The Ad Unit ID to load ads for.
- * @param adFormat An enum value representing the ad format to load ads for. Should be either {@link AdFormat.BANNER} or {@link AdFormat.MREC}.
- * @param options Optional props to load ads for.
- * @returns none if preloading is started, or an {@link Error} if preloading cannot be started.
+ * @param adFormat An enum value representing the ad format to load ads for. Should be either
+ * {@link AdFormat.BANNER} or {@link AdFormat.MREC}.
+ * @param options Optional props used to construct a native UI component.
+ * @returns A promise that resolves when preload starts. The resolved object contains void.
+ * @throws Throws an error if the request fails.
  */
 export const preloadNativeUIComponentAdView = async (adUnitId: string, adFormat: AdFormat, options?: NativeUIComponentAdViewOptions): Promise<void> => {
     return AppLovinMAX.preloadNativeUIComponentAdView(adUnitId, adFormat, options?.placement, options?.customData, options?.extraParameters, options?.localExtraParameters);
@@ -315,8 +317,10 @@ export const preloadNativeUIComponentAdView = async (adUnitId: string, adFormat:
 /**
  * Destroys the native UI component.
  *
- * @param adUnitId The ad unit ID of the ad to destroy.
- * @returns none if successfully destroyed, or an {@link Error} if cannot be destroyed.
+ * @param adUnitId The ad unit ID of the native UI component to destroy.
+ * @returns A promise that resolves upon the destruction of the native UI component. The resolved
+ * object contains void.
+ * @throws Throws an error if the request fails.
  */
 export const destroyNativeUIComponentAdView = async (adUnitId: string): Promise<void> => {
     return AppLovinMAX.destroyNativeUIComponentAdView(adUnitId);
