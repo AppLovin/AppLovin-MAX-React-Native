@@ -13,14 +13,7 @@ type Props = {
     setIsNativeUIMRecShowing: (showing: boolean) => void;
 };
 
-const NativeMRecExample = ({
-    adUnitId,
-    isInitialized,
-    log,
-    isNativeUIMRecShowing,
-    isProgrammaticMRecShowing,
-    setIsNativeUIMRecShowing,
-}: Props) => {
+const NativeMRecExample = ({ adUnitId, isInitialized, log, isNativeUIMRecShowing, isProgrammaticMRecShowing, setIsNativeUIMRecShowing }: Props) => {
     return (
         <>
             <AppButton
@@ -39,12 +32,7 @@ const NativeMRecExample = ({
                         log('MREC ad loaded from ' + adInfo.networkName);
                     }}
                     onAdLoadFailed={(errorInfo: AdLoadFailedInfo) => {
-                        log(
-                            'MREC ad failed to load with error code ' +
-                                errorInfo.code +
-                                ' and message: ' +
-                                errorInfo.message
-                        );
+                        log('MREC ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
                     }}
                     onAdClicked={
                         (/* adInfo: AdInfo */) => {

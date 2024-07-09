@@ -3,23 +3,16 @@ package com.applovin.reactnative;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdFormat;
-import com.applovin.mediation.MaxAdListener;
-import com.applovin.mediation.MaxAdRevenueListener;
-import com.applovin.mediation.MaxAdViewAdListener;
-import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxAdView;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.view.ReactViewGroup;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -27,14 +20,14 @@ import androidx.annotation.Nullable;
  */
 class AppLovinMAXAdView
     extends ReactViewGroup
-    implements MaxAdListener, MaxAdViewAdListener, MaxAdRevenueListener
 {
-    private static final Map<String, MaxAdView> adViewInstances = new HashMap<>( 2 );
+    private static final Map<String, AppLovinMAXAdViewUiComponent> uiComponentInstances          = new HashMap<>( 2 );
+    private static final Map<String, AppLovinMAXAdViewUiComponent> preloadedUiComponentInstances = new HashMap<>( 2 );
 
-    private final ThemedReactContext reactContext;
+    private final ReactContext reactContext;
 
     @Nullable
-    private MaxAdView adView;
+    private AppLovinMAXAdViewUiComponent uiComponent;
 
     private String              adUnitId;
     private MaxAdFormat         adFormat;
@@ -52,21 +45,68 @@ class AppLovinMAXAdView
 
     public static MaxAdView getInstance(final String adUnitId)
     {
-        return adViewInstances.get( adUnitId );
+        AppLovinMAXAdViewUiComponent uiComponent = preloadedUiComponentInstances.get( adUnitId );
+        if ( uiComponent == null ) uiComponent = uiComponentInstances.get( adUnitId );
+        return ( uiComponent != null ) ? uiComponent.getAdView() : null;
+    }
+
+    public static void preloadNativeUIComponentAdView(final String adUnitId, final MaxAdFormat adFormat, final String placement, final String customData, final Map<String, Object> extraParameters, final Map<String, Object> localExtraParameters, final Promise promise, final ReactContext context)
+    {
+        AppLovinMAXAdViewUiComponent preloadedUiComponent = preloadedUiComponentInstances.get( adUnitId );
+        if ( preloadedUiComponent != null )
+        {
+            promise.reject( new IllegalStateException( "Cannot preload more than one for a single Ad Unit ID" ) );
+            return;
+        }
+
+        preloadedUiComponent = new AppLovinMAXAdViewUiComponent( adUnitId, adFormat, context );
+        preloadedUiComponentInstances.put( adUnitId, preloadedUiComponent );
+
+        preloadedUiComponent.setPlacement( placement );
+        preloadedUiComponent.setCustomData( customData );
+        preloadedUiComponent.setExtraParameters( extraParameters );
+        preloadedUiComponent.setLocalExtraParameters( localExtraParameters );
+
+        preloadedUiComponent.loadAd();
+
+        promise.resolve( null );
+    }
+
+    public static void destroyNativeUIComponentAdView(final String adUnitId, final Promise promise)
+    {
+        AppLovinMAXAdViewUiComponent preloadedUiComponent = preloadedUiComponentInstances.get( adUnitId );
+        if ( preloadedUiComponent == null )
+        {
+            promise.reject( new IllegalStateException( "No native UI component found to destroy" ) );
+            return;
+        }
+
+        if ( preloadedUiComponent.hasContainerView() )
+        {
+            promise.reject( new IllegalStateException( "Cannot destroy - currently in use" ) );
+            return;
+        }
+
+        preloadedUiComponentInstances.remove( adUnitId );
+
+        preloadedUiComponent.detachAdView();
+        preloadedUiComponent.destroy();
+
+        promise.resolve( null );
     }
 
     public AppLovinMAXAdView(final Context context)
     {
         super( context );
-        reactContext = (ThemedReactContext) context;
+        reactContext = (ReactContext) context;
     }
 
     public void setAdUnitId(final String value)
     {
         // Ad Unit ID must be set prior to creating MaxAdView
-        if ( adView != null )
+        if ( uiComponent != null )
         {
-            AppLovinMAXModule.e( "Attempting to set Ad Unit ID " + value + " after MaxAdView is created" );
+            AppLovinMAXModule.e( "Attempting to set Ad Unit ID " + value + " after the native UI component is created" );
             return;
         }
 
@@ -76,9 +116,9 @@ class AppLovinMAXAdView
     public void setAdFormat(final String value)
     {
         // Ad format must be set prior to creating MaxAdView
-        if ( adView != null )
+        if ( uiComponent != null )
         {
-            AppLovinMAXModule.e( "Attempting to set ad format " + value + " after MaxAdView is created" );
+            AppLovinMAXModule.e( "Attempting to set ad format " + value + " after the native UI component is created" );
             return;
         }
 
@@ -100,9 +140,9 @@ class AppLovinMAXAdView
     {
         placement = value;
 
-        if ( adView != null )
+        if ( uiComponent != null )
         {
-            adView.setPlacement( placement );
+            uiComponent.setPlacement( placement );
         }
     }
 
@@ -110,9 +150,9 @@ class AppLovinMAXAdView
     {
         customData = value;
 
-        if ( adView != null )
+        if ( uiComponent != null )
         {
-            adView.setCustomData( customData );
+            uiComponent.setCustomData( customData );
         }
     }
 
@@ -120,9 +160,9 @@ class AppLovinMAXAdView
     {
         adaptiveBannerEnabled = enabled;
 
-        if ( adView != null )
+        if ( uiComponent != null )
         {
-            adView.setExtraParameter( "adaptive_banner", Boolean.toString( enabled ) );
+            uiComponent.setAdaptiveBannerEnabled( adaptiveBannerEnabled );
         }
     }
 
@@ -130,16 +170,9 @@ class AppLovinMAXAdView
     {
         autoRefresh = enabled;
 
-        if ( adView != null )
+        if ( uiComponent != null )
         {
-            if ( autoRefresh )
-            {
-                adView.startAutoRefresh();
-            }
-            else
-            {
-                adView.stopAutoRefresh();
-            }
+            uiComponent.setAutoRefresh( enabled );
         }
     }
 
@@ -169,18 +202,9 @@ class AppLovinMAXAdView
     {
         super.requestLayout();
 
-        // https://stackoverflow.com/a/39838774/5477988
-        // This is required to ensure ad refreshes render correctly in RN Android due to known issue where `getWidth()` and `getHeight()` return 0 on attach
-        if ( adView != null )
+        if ( uiComponent != null )
         {
-            int currentWidthPx = getWidth();
-            int currentHeightPx = getHeight();
-
-            adView.measure(
-                MeasureSpec.makeMeasureSpec( currentWidthPx, MeasureSpec.EXACTLY ),
-                MeasureSpec.makeMeasureSpec( currentHeightPx, MeasureSpec.EXACTLY )
-            );
-            adView.layout( 0, 0, currentWidthPx, currentHeightPx );
+            uiComponent.measureAndLayout( 0, 0, getWidth(), getHeight() );
         }
     }
 
@@ -189,9 +213,9 @@ class AppLovinMAXAdView
     {
         super.onDetachedFromWindow();
 
-        if ( adView != null )
+        if ( uiComponent != null )
         {
-            adView.stopAutoRefresh();
+            uiComponent.setAutoRefresh( false );
         }
     }
 
@@ -200,9 +224,9 @@ class AppLovinMAXAdView
     {
         super.onAttachedToWindow();
 
-        if ( adView != null )
+        if ( uiComponent != null )
         {
-            adView.startAutoRefresh();
+            uiComponent.setAutoRefresh( autoRefresh );
         }
     }
 
@@ -215,159 +239,100 @@ class AppLovinMAXAdView
 
     private void maybeAttachAdView()
     {
-        if ( AppLovinMAXModule.getInstance().getSdk() == null )
-        {
-            AppLovinMAXModule.logUninitializedAccessError( "AppLovinMAXAdView.maybeAttachAdView" );
-            return;
-        }
+        // Re-assign in case of race condition
+        final String adUnitId = this.adUnitId;
+        final MaxAdFormat adFormat = this.adFormat;
 
-        if ( TextUtils.isEmpty( adUnitId ) )
-        {
-            AppLovinMAXModule.e( "Attempting to attach MaxAdView without Ad Unit ID" );
-            return;
-        }
+        reactContext.runOnUiQueueThread( () -> {
 
-        if ( adFormat == null )
-        {
-            AppLovinMAXModule.e( "Attempting to attach MaxAdView without ad format" );
-            return;
-        }
-
-        if ( adView != null )
-        {
-            AppLovinMAXModule.e( "Attempting to re-attach with existing MaxAdView: " + adView );
-            return;
-        }
-
-        AppLovinMAXModule.d( "Attaching MaxAdView for " + adUnitId );
-
-        adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), reactContext );
-        adView.setListener( this );
-        adView.setRevenueListener( this );
-        adView.setPlacement( placement );
-        adView.setCustomData( customData );
-        adView.setExtraParameter( "adaptive_banner", Boolean.toString( adaptiveBannerEnabled ) );
-        // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
-        adView.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
-
-        if ( extraParameters != null )
-        {
-            for ( Map.Entry<String, Object> entry : extraParameters.entrySet() )
+            if ( AppLovinMAXModule.getInstance().getSdk() == null )
             {
-                adView.setExtraParameter( entry.getKey(), (String) entry.getValue() );
+                AppLovinMAXModule.logUninitializedAccessError( "AppLovinMAXAdView.maybeAttachAdView" );
+                return;
             }
-        }
 
-        if ( localExtraParameters != null )
-        {
-            for ( Map.Entry<String, Object> entry : localExtraParameters.entrySet() )
+            if ( TextUtils.isEmpty( adUnitId ) )
             {
-                adView.setLocalExtraParameter( entry.getKey(), entry.getValue() );
+                AppLovinMAXModule.e( "Attempting to attach a native UI component without Ad Unit ID" );
+                return;
             }
-        }
 
-        if ( autoRefresh )
-        {
-            adView.startAutoRefresh();
-        }
-        else
-        {
-            adView.stopAutoRefresh();
-        }
+            if ( adFormat == null )
+            {
+                AppLovinMAXModule.e( "Attempting to attach a native UI component without ad format" );
+                return;
+            }
 
-        if ( loadOnMount )
-        {
-            adView.loadAd();
-        }
+            if ( uiComponent != null )
+            {
+                AppLovinMAXModule.e( "Attempting to re-attach with existing native UI component: " + uiComponent.getAdView() );
+                return;
+            }
 
-        addView( adView );
+            AppLovinMAXModule.d( "Attaching a native UI component for " + adUnitId );
 
-        adViewInstances.put( adUnitId, adView );
+            uiComponent = preloadedUiComponentInstances.get( adUnitId );
+            if ( uiComponent != null )
+            {
+                // Attach the preloaded uiComponent if possible, otherwise create a new one for the
+                // same adUnitId
+                if ( !uiComponent.hasContainerView() )
+                {
+                    uiComponent.setAutoRefresh( autoRefresh );
+                    uiComponent.attachAdView( AppLovinMAXAdView.this );
+                    return;
+                }
+            }
+
+            uiComponent = new AppLovinMAXAdViewUiComponent( adUnitId, adFormat, reactContext );
+            uiComponentInstances.put( adUnitId, uiComponent );
+
+            uiComponent.setPlacement( placement );
+            uiComponent.setCustomData( customData );
+            uiComponent.setExtraParameters( extraParameters );
+            uiComponent.setLocalExtraParameters( localExtraParameters );
+            uiComponent.setAdaptiveBannerEnabled( adaptiveBannerEnabled );
+            uiComponent.setAutoRefresh( autoRefresh );
+
+            uiComponent.attachAdView( AppLovinMAXAdView.this );
+
+            if ( loadOnMount )
+            {
+                uiComponent.loadAd();
+            }
+        } );
     }
 
     public void loadAd()
     {
-        if ( adView == null )
+        if ( uiComponent == null )
         {
-            AppLovinMAXModule.e( "Attempting to load uninitialized MaxAdView for " + adUnitId );
+            AppLovinMAXModule.e( "Attempting to load uninitialized native UI component for " + adUnitId );
             return;
         }
 
-        adView.loadAd();
+        uiComponent.loadAd();
     }
 
     public void destroy()
     {
-        if ( adView != null )
+        if ( uiComponent != null )
         {
-            AppLovinMAXModule.d( "Unmounting MaxAdView: " + adView );
+            AppLovinMAXModule.d( "Unmounting the native UI component: " + uiComponent.getAdView() );
 
-            adViewInstances.remove( adView.getAdUnitId() );
+            uiComponent.detachAdView();
 
-            removeView( adView );
+            AppLovinMAXAdViewUiComponent preloadedUiComponent = preloadedUiComponentInstances.get( adUnitId );
 
-            adView.setListener( null );
-            adView.setRevenueListener( null );
-            adView.destroy();
-
-            adView = null;
+            if ( uiComponent == preloadedUiComponent )
+            {
+                uiComponent.setAutoRefresh( false );
+            }
+            else
+            {
+                uiComponentInstances.remove( adUnitId );
+                uiComponent.destroy();
+            }
         }
     }
-
-    @Override
-    public void onAdLoaded(@NonNull final MaxAd ad)
-    {
-        WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
-        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdLoadedEvent", adInfo );
-    }
-
-    @Override
-    public void onAdLoadFailed(@NonNull final String adUnitId, @NonNull final MaxError error)
-    {
-        WritableMap adLoadFailedInfo = AppLovinMAXModule.getInstance().getAdLoadFailedInfo( adUnitId, error );
-        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdLoadFailedEvent", adLoadFailedInfo );
-    }
-
-    @Override
-    public void onAdDisplayFailed(@NonNull final MaxAd ad, @NonNull final MaxError error)
-    {
-        WritableMap adDisplayFailedInfo = AppLovinMAXModule.getInstance().getAdDisplayFailedInfo( ad, error );
-        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdDisplayFailedEvent", adDisplayFailedInfo );
-    }
-
-    @Override
-    public void onAdClicked(@NonNull final MaxAd ad)
-    {
-        WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
-        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdClickedEvent", adInfo );
-    }
-
-    @Override
-    public void onAdExpanded(@NonNull final MaxAd ad)
-    {
-        WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
-        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdExpandedEvent", adInfo );
-    }
-
-    @Override
-    public void onAdCollapsed(@NonNull final MaxAd ad)
-    {
-        WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
-        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdCollapsedEvent", adInfo );
-    }
-
-    @Override
-    public void onAdRevenuePaid(@NonNull final MaxAd ad)
-    {
-        WritableMap adRevenueInfo = AppLovinMAXModule.getInstance().getAdRevenueInfo( ad );
-        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), "onAdRevenuePaidEvent", adRevenueInfo );
-    }
-
-    /// Deprecated Callbacks
-
-    @Override
-    public void onAdDisplayed(@NonNull final MaxAd ad) { }
-
-    @Override
-    public void onAdHidden(@NonNull final MaxAd ad) { }
 }

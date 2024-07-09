@@ -91,17 +91,13 @@ const RewardedExample = ({ adUnitId, isInitialized, log }: Props) => {
             title={getRewardedButtonTitle()}
             enabled={isInitialized && adLoadState !== AdLoadState.loading}
             onPress={async () => {
-                try {
-                    const isRewardedReady = await RewardedAd.isAdReady(adUnitId);
-                    if (isRewardedReady) {
-                        RewardedAd.showAd(adUnitId);
-                    } else {
-                        log('Loading rewarded ad...');
-                        setAdLoadState(AdLoadState.loading);
-                        RewardedAd.loadAd(adUnitId);
-                    }
-                } catch (error: unknown) {
-                    if (error instanceof Error) log(error.toString());
+                const isRewardedReady = await RewardedAd.isAdReady(adUnitId);
+                if (isRewardedReady) {
+                    RewardedAd.showAd(adUnitId);
+                } else {
+                    log('Loading rewarded ad...');
+                    setAdLoadState(AdLoadState.loading);
+                    RewardedAd.loadAd(adUnitId);
                 }
             }}
         />

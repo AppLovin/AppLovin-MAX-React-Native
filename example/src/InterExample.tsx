@@ -88,17 +88,13 @@ const InterExample = ({ adUnitId, isInitialized, log }: Props) => {
             title={getInterstitialButtonTitle()}
             enabled={isInitialized && adLoadState !== AdLoadState.loading}
             onPress={async () => {
-                try {
-                    const isInterstitialReady = await InterstitialAd.isAdReady(adUnitId);
-                    if (isInterstitialReady) {
-                        InterstitialAd.showAd(adUnitId);
-                    } else {
-                        log('Loading interstitial ad...');
-                        setAdLoadState(AdLoadState.loading);
-                        InterstitialAd.loadAd(adUnitId);
-                    }
-                } catch (error: unknown) {
-                    if (error instanceof Error) log(error.toString());
+                const isInterstitialReady = await InterstitialAd.isAdReady(adUnitId);
+                if (isInterstitialReady) {
+                    InterstitialAd.showAd(adUnitId);
+                } else {
+                    log('Loading interstitial ad...');
+                    setAdLoadState(AdLoadState.loading);
+                    InterstitialAd.loadAd(adUnitId);
                 }
             }}
         />

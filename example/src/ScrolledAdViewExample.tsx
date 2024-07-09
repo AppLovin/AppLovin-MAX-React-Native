@@ -44,29 +44,17 @@ const ScrolledAdViewExample = ({ bannerAdUnitId, mrecAdUnitId, isInitialized, is
                         {[...Array(4)].map((_, i) => (
                             <View key={i}>
                                 <Text style={styles.text} key={i + '-1'}>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                                    exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-                                    irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-                                    pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-                                    deserunt mollit anim id est laborum.
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+                                    veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+                                    velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
+                                    anim id est laborum.
                                 </Text>
 
                                 {isAdEnabled ? (
                                     i % 2 === 0 ? (
-                                        <AdView
-                                            adUnitId={bannerAdUnitId}
-                                            adFormat={AdFormat.BANNER}
-                                            style={styles.adview}
-                                            key={i + '-2'}
-                                        />
+                                        <AdView adUnitId={bannerAdUnitId} adFormat={AdFormat.BANNER} style={styles.adview} key={i + '-2'} />
                                     ) : (
-                                        <AdView
-                                            adUnitId={mrecAdUnitId}
-                                            adFormat={AdFormat.MREC}
-                                            style={styles.adview}
-                                            key={i + '-2'}
-                                        />
+                                        <AdView adUnitId={mrecAdUnitId} adFormat={AdFormat.MREC} style={styles.adview} key={i + '-2'} />
                                     )
                                 ) : (
                                     <Text style={styles.placeholder} key={i + '-2'}>
@@ -75,21 +63,15 @@ const ScrolledAdViewExample = ({ bannerAdUnitId, mrecAdUnitId, isInitialized, is
                                 )}
 
                                 <Text style={styles.text} key={i + '-3'}>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                                    exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-                                    irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-                                    pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-                                    deserunt mollit anim id est laborum.
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+                                    veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+                                    velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
+                                    anim id est laborum.
                                 </Text>
                             </View>
                         ))}
                     </ScrollView>
-                    {isAdEnabled ? (
-                        <AdView adUnitId={bannerAdUnitId} adFormat={AdFormat.BANNER} style={styles.adview} />
-                    ) : (
-                        <Text style={styles.placeholder}>AD PLACEHOLDER</Text>
-                    )}
+                    {isAdEnabled ? <AdView adUnitId={bannerAdUnitId} adFormat={AdFormat.BANNER} style={styles.adview} /> : <Text style={styles.placeholder}>AD PLACEHOLDER</Text>}
                 </View>
             )}
         </>

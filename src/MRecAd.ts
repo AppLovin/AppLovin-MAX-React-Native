@@ -7,14 +7,8 @@ import type { AdViewPosition } from './AdView';
 
 const { AppLovinMAX } = NativeModules;
 
-const {
-    ON_MREC_AD_LOADED_EVENT,
-    ON_MREC_AD_LOAD_FAILED_EVENT,
-    ON_MREC_AD_CLICKED_EVENT,
-    ON_MREC_AD_COLLAPSED_EVENT,
-    ON_MREC_AD_EXPANDED_EVENT,
-    ON_MREC_AD_REVENUE_PAID,
-} = AppLovinMAX.getConstants();
+const { ON_MREC_AD_LOADED_EVENT, ON_MREC_AD_LOAD_FAILED_EVENT, ON_MREC_AD_CLICKED_EVENT, ON_MREC_AD_COLLAPSED_EVENT, ON_MREC_AD_EXPANDED_EVENT, ON_MREC_AD_REVENUE_PAID } =
+    AppLovinMAX.getConstants();
 
 const createAd = (adUnitId: string, position: AdViewPosition): void => {
     AppLovinMAX.createMRec(adUnitId, position);

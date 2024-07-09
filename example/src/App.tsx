@@ -1,8 +1,18 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { Platform, StyleSheet, Text, View, SafeAreaView, Dimensions } from 'react-native';
-import AppLovinMAX, { ConsentFlowUserGeography, AppTrackingStatus } from 'react-native-applovin-max';
-import type { Configuration } from 'react-native-applovin-max';
+import AppLovinMAX, {
+    ConsentFlowUserGeography,
+    AppTrackingStatus,
+    preloadNativeUIComponentAdView,
+    destroyNativeUIComponentAdView,
+    addNativeUIComponentAdViewAdLoadFailedEventListener,
+    removeNativeUIComponentAdViewAdLoadedEventListener,
+    addNativeUIComponentAdViewAdLoadedEventListener,
+    removeNativeUIComponentAdViewAdLoadFailedEventListener,
+    AdFormat,
+} from 'react-native-applovin-max';
+import type { Configuration, AdInfo, AdLoadFailedInfo, NativeUIComponentAdViewOptions } from 'react-native-applovin-max';
 import AppLogo from './components/AppLogo';
 import AppButton from './components/AppButton';
 import InterExample from './InterExample';
@@ -72,25 +82,15 @@ const App = () => {
 
                 console.log('isTestModeEnabled: ' + conf.isTestModeEnabled);
 
-                console.log(
-                    'consentFlowUserGeography: ' +
-                        Object.keys(ConsentFlowUserGeography)[
-                            Object.values(ConsentFlowUserGeography).indexOf(conf.consentFlowUserGeography)
-                        ]
-                );
+                console.log('consentFlowUserGeography: ' + Object.keys(ConsentFlowUserGeography)[Object.values(ConsentFlowUserGeography).indexOf(conf.consentFlowUserGeography)]);
 
                 // AppTrackingStatus for iOS
                 if (conf.appTrackingStatus) {
-                    console.log(
-                        'appTrackingStatus: ' +
-                            Object.keys(AppTrackingStatus)[
-                                Object.values(AppTrackingStatus).indexOf(conf.appTrackingStatus)
-                            ]
-                    );
+                    console.log('appTrackingStatus: ' + Object.keys(AppTrackingStatus)[Object.values(AppTrackingStatus).indexOf(conf.appTrackingStatus)]);
                 }
             })
             .catch((error) => {
-                setStatusText(error.toString());
+                setStatusText(error.message);
             });
     }, []);
 
@@ -98,6 +98,77 @@ const App = () => {
     useEffect(() => {
         console.log(statusText);
     }, [statusText]);
+
+    // Preload AdView for banner and MREC ads
+    useEffect(() => {
+        if (!isInitialized) return;
+
+        addNativeUIComponentAdViewAdLoadedEventListener((adInfo: AdInfo) => {
+            if (adInfo.adUnitId === BANNER_AD_UNIT_ID) {
+                console.log('Banner ad preloaded from ' + adInfo.networkName);
+            } else if (adInfo.adUnitId === MREC_AD_UNIT_ID) {
+                console.log('MREC ad preloaded from ' + adInfo.networkName);
+            } else {
+                console.log('Error: unexpected ad preloaded for ' + adInfo.adUnitId);
+            }
+        });
+
+        addNativeUIComponentAdViewAdLoadFailedEventListener((errorInfo: AdLoadFailedInfo) => {
+            if (errorInfo.adUnitId === BANNER_AD_UNIT_ID) {
+                console.log('Banner ad failed to preload with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+            } else if (errorInfo.adUnitId === MREC_AD_UNIT_ID) {
+                console.log('MREC ad failed to preload with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+            } else {
+                console.log('Error: unexpected ad failed to preload for ' + errorInfo.adUnitId);
+            }
+        });
+
+        preloadNativeUIComponentAdView(BANNER_AD_UNIT_ID, AdFormat.BANNER)
+            .then(() => {
+                console.log('Started preloading a banner ad for ' + BANNER_AD_UNIT_ID);
+            })
+            .catch((error) => {
+                console.log('Failed to preaload a banner ad: ' + error.message);
+            });
+
+        const mrecOptions: NativeUIComponentAdViewOptions = {
+            placement: 'placement',
+            customData: 'customData',
+            extraParameters: { key1: 'value1', key2: 'value2' },
+            localExtraParameters: { key1: 1, key2: 'two' },
+        };
+
+        preloadNativeUIComponentAdView(MREC_AD_UNIT_ID, AdFormat.MREC, mrecOptions)
+            .then(() => {
+                console.log('Started preloading a MREC ad for ' + MREC_AD_UNIT_ID);
+            })
+            .catch((error) => {
+                console.log('Failed to preaload a MREC ad: ' + error.message);
+            });
+
+        return () => {
+            removeNativeUIComponentAdViewAdLoadedEventListener();
+            removeNativeUIComponentAdViewAdLoadFailedEventListener();
+
+            destroyNativeUIComponentAdView(BANNER_AD_UNIT_ID)
+                .then(() => {
+                    console.log('Destroyed the preloaded banner ad');
+                })
+                .catch((error) => {
+                    console.log('Cannot destroy the preloaded banner ad: ' + error.message);
+                });
+
+            destroyNativeUIComponentAdView(MREC_AD_UNIT_ID)
+                .then(() => {
+                    console.log('Destroyed the preloaded MREC ad');
+                })
+                .catch((error) => {
+                    console.log('Cannot destroy the preloaded MREC ad: ' + error.message);
+                });
+        };
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isInitialized]);
 
     return (
         <SafeAreaView>
@@ -152,12 +223,7 @@ const App = () => {
                     isNativeAdShowing={isNativeAdShowing}
                     setIsNativeAdShowing={setIsNativeAdShowing}
                 />
-                <ScrolledAdViewExample
-                    bannerAdUnitId={BANNER_AD_UNIT_ID}
-                    mrecAdUnitId={MREC_AD_UNIT_ID}
-                    isInitialized={isInitialized}
-                    isNativeAdShowing={isNativeAdShowing}
-                />
+                <ScrolledAdViewExample bannerAdUnitId={BANNER_AD_UNIT_ID} mrecAdUnitId={MREC_AD_UNIT_ID} isInitialized={isInitialized} isNativeAdShowing={isNativeAdShowing} />
             </View>
         </SafeAreaView>
     );
