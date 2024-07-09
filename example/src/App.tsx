@@ -90,7 +90,7 @@ const App = () => {
                 }
             })
             .catch((error) => {
-                setStatusText(error.toString());
+                setStatusText(error.message);
             });
     }, []);
 
@@ -127,8 +127,8 @@ const App = () => {
             .then(() => {
                 console.log('Started preloading a banner ad for ' + BANNER_AD_UNIT_ID);
             })
-            .catch((error: any) => {
-                console.log('Failed to preaload a banner ad: ' + error.toString());
+            .catch((error) => {
+                console.log('Failed to preaload a banner ad: ' + error.message);
             });
 
         const mrecOptions: NativeUIComponentAdViewOptions = {
@@ -142,8 +142,8 @@ const App = () => {
             .then(() => {
                 console.log('Started preloading a MREC ad for ' + MREC_AD_UNIT_ID);
             })
-            .catch((error: any) => {
-                console.log('Failed to preaload a MREC ad: ' + error.toString());
+            .catch((error) => {
+                console.log('Failed to preaload a MREC ad: ' + error.message);
             });
 
         return () => {
@@ -154,16 +154,16 @@ const App = () => {
                 .then(() => {
                     console.log('Destroyed the preloaded banner ad');
                 })
-                .catch((error: any) => {
-                    console.log('Cannot destroy the preloaded banner ad: ' + error.toString());
+                .catch((error) => {
+                    console.log('Cannot destroy the preloaded banner ad: ' + error.message);
                 });
 
             destroyNativeUIComponentAdView(MREC_AD_UNIT_ID)
                 .then(() => {
                     console.log('Destroyed the preloaded MREC ad');
                 })
-                .catch((error: any) => {
-                    console.log('Cannot destroy the preloaded MREC ad: ' + error.toString());
+                .catch((error) => {
+                    console.log('Cannot destroy the preloaded MREC ad: ' + error.message);
                 });
         };
 
