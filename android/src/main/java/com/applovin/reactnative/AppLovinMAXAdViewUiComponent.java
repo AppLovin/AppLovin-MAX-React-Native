@@ -147,7 +147,7 @@ class AppLovinMAXAdViewUiComponent
 
         // Copy adInfo since it is consumed once it is sent
         WritableMap adInfoForPreload = ( containerView != null ) ? adInfo.copy() : adInfo;
-        AppLovinMAXModule.getInstance().sendReactNativeEvent( "OnNativeUIComponentAdviewAdLoadedEvent", adInfoForPreload );
+        AppLovinMAXModule.getInstance().sendReactNativeEvent( "OnNativeUIComponentAdViewAdLoadedEvent", adInfoForPreload );
 
         if ( containerView != null )
         {
@@ -166,7 +166,7 @@ class AppLovinMAXAdViewUiComponent
 
         // Copy adLoadFailedInfo since it is consumed once it is sent
         WritableMap adLoadFailedInfoForPreload = ( containerView != null ) ? adLoadFailedInfo.copy() : adLoadFailedInfo;
-        AppLovinMAXModule.getInstance().sendReactNativeEvent( "OnNativeUIComponentAdviewAdLoadFailedEvent", adLoadFailedInfoForPreload );
+        AppLovinMAXModule.getInstance().sendReactNativeEvent( "OnNativeUIComponentAdViewAdLoadFailedEvent", adLoadFailedInfoForPreload );
 
         if ( containerView != null )
         {
