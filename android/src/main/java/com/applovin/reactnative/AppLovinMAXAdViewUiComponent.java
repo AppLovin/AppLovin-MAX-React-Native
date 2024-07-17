@@ -130,7 +130,8 @@ class AppLovinMAXAdViewUiComponent
     public void measureAndLayout(int x, int y, int width, int height)
     {
         // https://stackoverflow.com/a/39838774/5477988
-        // This is required to ensure ad refreshes render correctly in RN Android due to known issue where `getWidth()` and `getHeight()` return 0 on attach
+        // This is required to ensure ad refreshes render correctly in RN Android due to known issue
+        // where `getWidth()` and `getHeight()` return 0 on attach
         adView.measure(
             View.MeasureSpec.makeMeasureSpec( width, View.MeasureSpec.EXACTLY ),
             View.MeasureSpec.makeMeasureSpec( height, View.MeasureSpec.EXACTLY )
@@ -144,7 +145,9 @@ class AppLovinMAXAdViewUiComponent
     {
         WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
 
-        AppLovinMAXModule.getInstance().sendReactNativeEvent( "OnNativeUIComponentAdviewAdLoadedEvent", adInfo );
+        // Copy adInfo since it is consumed once it is sent
+        WritableMap adInfoForPreload = ( containerView != null ) ? adInfo.copy() : adInfo;
+        AppLovinMAXModule.getInstance().sendReactNativeEvent( "OnNativeUIComponentAdviewAdLoadedEvent", adInfoForPreload );
 
         if ( containerView != null )
         {
@@ -161,7 +164,9 @@ class AppLovinMAXAdViewUiComponent
     {
         WritableMap adLoadFailedInfo = AppLovinMAXModule.getInstance().getAdLoadFailedInfo( adUnitId, error );
 
-        AppLovinMAXModule.getInstance().sendReactNativeEvent( "OnNativeUIComponentAdviewAdLoadFailedEvent", adLoadFailedInfo );
+        // Copy adLoadFailedInfo since it is consumed once it is sent
+        WritableMap adLoadFailedInfoForPreload = ( containerView != null ) ? adLoadFailedInfo.copy() : adLoadFailedInfo;
+        AppLovinMAXModule.getInstance().sendReactNativeEvent( "OnNativeUIComponentAdviewAdLoadFailedEvent", adLoadFailedInfoForPreload );
 
         if ( containerView != null )
         {
