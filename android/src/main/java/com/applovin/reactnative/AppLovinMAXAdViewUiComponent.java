@@ -163,7 +163,7 @@ class AppLovinMAXAdViewUiComponent
     {
         WritableMap adLoadFailedInfo = AppLovinMAXModule.getInstance().getAdLoadFailedInfo( adUnitId, error );
 
-        // Copy the `adInfo` since sending the same map through the RN bridge more than once will result in `com.facebook.react.bridge.ObjectAlreadyConsumedException: Map already consumed`
+        // Copy the `adLoadFailedInfo` since sending the same map through the RN bridge more than once will result in `com.facebook.react.bridge.ObjectAlreadyConsumedException: Map already consumed`
         AppLovinMAXModule.getInstance().sendReactNativeEvent( "OnNativeUIComponentAdViewAdLoadFailedEvent", adLoadFailedInfo.copy() );
 
         if ( containerView != null )
