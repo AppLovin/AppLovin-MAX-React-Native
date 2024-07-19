@@ -123,8 +123,8 @@ public class AppLovinMAXModule
     private static final String ON_APPOPEN_AD_HIDDEN_EVENT            = "OnAppOpenAdHiddenEvent";
     private static final String ON_APPOPEN_AD_REVENUE_PAID            = "OnAppOpenAdRevenuePaid";
 
-    private static final String ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT      = "OnNativeUIComponentAdviewAdLoadedEvent";
-    private static final String ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT = "OnNativeUIComponentAdviewAdLoadFailedEvent";
+    private static final String ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT      = "OnNativeUIComponentAdViewAdLoadedEvent";
+    private static final String ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT = "OnNativeUIComponentAdViewAdLoadFailedEvent";
 
     private static final String TOP_CENTER    = "top_center";
     private static final String TOP_LEFT      = "top_left";

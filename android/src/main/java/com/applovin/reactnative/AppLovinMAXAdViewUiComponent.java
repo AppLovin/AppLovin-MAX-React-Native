@@ -130,7 +130,8 @@ class AppLovinMAXAdViewUiComponent
     public void measureAndLayout(int x, int y, int width, int height)
     {
         // https://stackoverflow.com/a/39838774/5477988
-        // This is required to ensure ad refreshes render correctly in RN Android due to known issue where `getWidth()` and `getHeight()` return 0 on attach
+        // This is required to ensure ad refreshes render correctly in RN Android due to known issue
+        // where `getWidth()` and `getHeight()` return 0 on attach
         adView.measure(
             View.MeasureSpec.makeMeasureSpec( width, View.MeasureSpec.EXACTLY ),
             View.MeasureSpec.makeMeasureSpec( height, View.MeasureSpec.EXACTLY )
@@ -144,7 +145,8 @@ class AppLovinMAXAdViewUiComponent
     {
         WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
 
-        AppLovinMAXModule.getInstance().sendReactNativeEvent( "OnNativeUIComponentAdviewAdLoadedEvent", adInfo );
+        // Copy the `adInfo` since sending the same map through the RN bridge more than once will result in `com.facebook.react.bridge.ObjectAlreadyConsumedException: Map already consumed`
+        AppLovinMAXModule.getInstance().sendReactNativeEvent( "OnNativeUIComponentAdViewAdLoadedEvent", adInfo.copy() );
 
         if ( containerView != null )
         {
@@ -161,7 +163,8 @@ class AppLovinMAXAdViewUiComponent
     {
         WritableMap adLoadFailedInfo = AppLovinMAXModule.getInstance().getAdLoadFailedInfo( adUnitId, error );
 
-        AppLovinMAXModule.getInstance().sendReactNativeEvent( "OnNativeUIComponentAdviewAdLoadFailedEvent", adLoadFailedInfo );
+        // Copy the `adLoadFailedInfo` since sending the same map through the RN bridge more than once will result in `com.facebook.react.bridge.ObjectAlreadyConsumedException: Map already consumed`
+        AppLovinMAXModule.getInstance().sendReactNativeEvent( "OnNativeUIComponentAdViewAdLoadFailedEvent", adLoadFailedInfo.copy() );
 
         if ( containerView != null )
         {
