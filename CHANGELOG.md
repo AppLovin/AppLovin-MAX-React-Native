@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 7.0.1
 * Fix native UI component banners and MRECs (`<AdView/>`) not calling the `onAdLoaded` and `onAdLoadFailed` callbacks on Android. Regression from v7.0.0. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/354)
 ## 7.0.0
 * Add APIs for preloading native UI component banners and MRECs. For more info, check out our [docs](https://developers.applovin.com/en/react-native/ad-formats/banner-and-mrec-ads#preloading-native-ui-component).
