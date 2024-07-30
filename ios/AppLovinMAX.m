@@ -39,27 +39,8 @@
 
 // Store these values if pub attempts to set it before initializing
 @property (nonatomic, strong, nullable) NSArray<NSString *> *initializationAdUnitIdentifiersToSet;
-@property (nonatomic,   copy, nullable) NSString *userIdentifierToSet;
-@property (nonatomic, strong, nullable) NSNumber *mutedToSet;
 @property (nonatomic, strong, nullable) NSArray<NSString *> *testDeviceIdentifiersToSet;
-@property (nonatomic, strong, nullable) NSNumber *verboseLoggingToSet;
-@property (nonatomic, strong, nullable) NSNumber *creativeDebuggerEnabledToSet;
-@property (nonatomic, strong, nullable) NSNumber *locationCollectionEnabledToSet;
-@property (nonatomic, strong) NSMutableDictionary<NSString *, NSString *> *extraParametersToSet;
-
-@property (nonatomic, strong, nullable) NSNumber *consentFlowEnabledToSet;
-@property (nonatomic, strong, nullable) NSNumber *termsAndPrivacyPolicyFlowEnabledToSet;
-@property (nonatomic, strong, nullable) NSURL *privacyPolicyURLToSet;
-@property (nonatomic, strong, nullable) NSURL *termsOfServiceURLToSet;
-@property (nonatomic,   copy, nullable) NSString *debugUserGeographyToSet;
-
-@property (nonatomic, strong, nullable) NSNumber *targetingYearOfBirthToSet;
-@property (nonatomic,   copy, nullable) NSString *targetingGenderToSet;
-@property (nonatomic, strong, nullable) NSNumber *targetingMaximumAdContentRatingToSet;
-@property (nonatomic,   copy, nullable) NSString *targetingEmailToSet;
-@property (nonatomic,   copy, nullable) NSString *targetingPhoneNumberToSet;
-@property (nonatomic, strong, nullable) NSArray<NSString *> *targetingKeywordsToSet;
-@property (nonatomic, strong, nullable) NSArray<NSString *> *targetingInterestsToSet;
+@property (nonatomic, strong) MASegmentCollectionBuilder *segmentCollectionBuilder;
 
 // Fullscreen Ad Fields
 @property (nonatomic, strong) NSMutableDictionary<NSString *, MAInterstitialAd *> *interstitials;
@@ -178,6 +159,9 @@ RCT_EXPORT_MODULE()
     {
         AppLovinMAXShared = self;
         
+        self.sdk = [ALSdk shared];
+        self.segmentCollectionBuilder = [MASegmentCollection builder];
+        
         self.interstitials = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.rewardedAds = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.adViews = [NSMutableDictionary dictionaryWithCapacity: 2];
@@ -189,8 +173,7 @@ RCT_EXPORT_MODULE()
         self.adViewConstraints = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.adUnitIdentifiersToShowAfterCreate = [NSMutableArray arrayWithCapacity: 2];
         self.disabledAdaptiveBannerAdUnitIdentifiers = [NSMutableSet setWithCapacity: 2];
-        self.extraParametersToSet = [NSMutableDictionary dictionaryWithCapacity: 8];
-        
+
         self.safeAreaBackground = [[UIView alloc] init];
         self.safeAreaBackground.hidden = YES;
         self.safeAreaBackground.backgroundColor = UIColor.clearColor;
@@ -222,162 +205,28 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     // If SDK key passed in is empty, check Info.plist
     if ( ![sdkKey al_isValidString] )
     {
-        if ( [[NSBundle mainBundle].infoDictionary al_containsValueForKey: @"AppLovinSdkKey"] )
+        reject(RCTErrorUnspecified, @"Unable to initialize AppLovin SDK - no SDK key provided!", nil);
+        return;
+    }
+    
+    ALSdkInitializationConfiguration *initConfig = [ALSdkInitializationConfiguration configurationWithSdkKey: sdkKey builderBlock:^(ALSdkInitializationConfigurationBuilder *builder) {
+
+        builder.mediationProvider = ALMediationProviderMAX;
+        builder.pluginVersion = [@"React-Native-" stringByAppendingString: pluginVersion];
+        builder.segmentCollection = [self.segmentCollectionBuilder build];
+        if ( self.initializationAdUnitIdentifiersToSet )
         {
-            sdkKey = [NSBundle mainBundle].infoDictionary[@"AppLovinSdkKey"];
+            builder.adUnitIdentifiers = self.initializationAdUnitIdentifiersToSet;
+            self.initializationAdUnitIdentifiersToSet = nil;
         }
-        else
+        if ( self.testDeviceIdentifiersToSet )
         {
-            reject(RCTErrorUnspecified, @"Unable to initialize AppLovin SDK - no SDK key provided and not found in Info.plist!", nil);
-            return;
+            builder.testDeviceAdvertisingIdentifiers = self.testDeviceIdentifiersToSet;
+            self.testDeviceIdentifiersToSet = nil;
         }
-    }
+    }];
     
-    ALSdkSettings *settings = [[ALSdkSettings alloc] init];
-    
-    // Selective init
-    if ( self.initializationAdUnitIdentifiersToSet )
-    {
-        settings.initializationAdUnitIdentifiers = self.initializationAdUnitIdentifiersToSet;
-        self.initializationAdUnitIdentifiersToSet = nil;
-    }
-    
-    // Deprecated consent flow which automatically moves to the new flow
-    if ( self.consentFlowEnabledToSet )
-    {
-        settings.consentFlowSettings.enabled = self.consentFlowEnabledToSet.boolValue;
-        self.consentFlowEnabledToSet = nil;
-        
-        if ( self.privacyPolicyURLToSet )
-        {
-            settings.consentFlowSettings.privacyPolicyURL = self.privacyPolicyURLToSet;
-            self.privacyPolicyURLToSet = nil;
-        }
-        
-        if (self.termsOfServiceURLToSet )
-        {
-            settings.consentFlowSettings.termsOfServiceURL = self.termsOfServiceURLToSet;
-            self.termsOfServiceURLToSet = nil;
-        }
-    }
-    
-    // New terms and privacy policy flow
-    if ( self.termsAndPrivacyPolicyFlowEnabledToSet )
-    {
-        settings.termsAndPrivacyPolicyFlowSettings.enabled = self.termsAndPrivacyPolicyFlowEnabledToSet.boolValue;
-        self.termsAndPrivacyPolicyFlowEnabledToSet = nil;
-        
-        if ( self.privacyPolicyURLToSet )
-        {
-            settings.termsAndPrivacyPolicyFlowSettings.privacyPolicyURL = self.privacyPolicyURLToSet;
-            self.privacyPolicyURLToSet = nil;
-        }
-        
-        if ( self.termsOfServiceURLToSet )
-        {
-            settings.termsAndPrivacyPolicyFlowSettings.termsOfServiceURL = self.termsOfServiceURLToSet;
-            self.termsOfServiceURLToSet = nil;
-        }
-        
-        if ( self.debugUserGeographyToSet )
-        {
-            settings.termsAndPrivacyPolicyFlowSettings.debugUserGeography = [self toAppLovinConsentFlowUserGeography: self.debugUserGeographyToSet];
-            self.debugUserGeographyToSet = nil;
-        }
-    }
-    
-    // Set muted if needed
-    if ( self.mutedToSet )
-    {
-        settings.muted = self.mutedToSet;
-        self.mutedToSet = nil;
-    }
-    
-    // Set test device ids if needed
-    if ( self.testDeviceIdentifiersToSet )
-    {
-        settings.testDeviceAdvertisingIdentifiers = self.testDeviceIdentifiersToSet;
-        self.testDeviceIdentifiersToSet = nil;
-    }
-    
-    // Set verbose logging state if needed
-    if ( self.verboseLoggingToSet )
-    {
-        settings.verboseLoggingEnabled = self.verboseLoggingToSet.boolValue;
-        self.verboseLoggingToSet = nil;
-    }
-    
-    // Set creative debugger enabled if needed.
-    if ( self.creativeDebuggerEnabledToSet )
-    {
-        settings.creativeDebuggerEnabled = self.creativeDebuggerEnabledToSet.boolValue;
-        self.creativeDebuggerEnabledToSet = nil;
-    }
-    
-    // Set location collection enabled if needed
-    if ( self.locationCollectionEnabledToSet )
-    {
-        settings.locationCollectionEnabled = self.locationCollectionEnabledToSet.boolValue;
-        self.locationCollectionEnabledToSet = nil;
-    }
-    
-    [self setPendingExtraParametersIfNeeded: settings];
-    
-    // Initialize SDK
-    self.sdk = [ALSdk sharedWithKey: sdkKey settings: settings];
-    [self.sdk setPluginVersion: [@"React-Native-" stringByAppendingString: pluginVersion]];
-    [self.sdk setMediationProvider: ALMediationProviderMAX];
-    
-    // Set user id if needed
-    if ( [self.userIdentifierToSet al_isValidString] )
-    {
-        self.sdk.userIdentifier = self.userIdentifierToSet;
-        self.userIdentifierToSet = nil;
-    }
-    
-    if ( self.targetingYearOfBirthToSet )
-    {
-        self.sdk.targetingData.yearOfBirth = self.targetingYearOfBirthToSet.intValue <= 0 ? nil : self.targetingYearOfBirthToSet;
-        self.targetingYearOfBirthToSet = nil;
-    }
-    
-    if ( self.targetingGenderToSet )
-    {
-        self.sdk.targetingData.gender = [self toAppLovinGender: self.targetingGenderToSet];
-        self.targetingGenderToSet = nil;
-    }
-    
-    if ( self.targetingMaximumAdContentRatingToSet )
-    {
-        self.sdk.targetingData.maximumAdContentRating = [self toAppLovinAdContentRating: self.targetingMaximumAdContentRatingToSet];
-        self.targetingMaximumAdContentRatingToSet = nil;
-    }
-    
-    if ( self.targetingEmailToSet )
-    {
-        self.sdk.targetingData.email = self.targetingEmailToSet;
-        self.targetingEmailToSet = nil;
-    }
-    
-    if ( self.targetingPhoneNumberToSet )
-    {
-        self.sdk.targetingData.phoneNumber = self.targetingPhoneNumberToSet;
-        self.targetingPhoneNumberToSet = nil;
-    }
-    
-    if ( self.targetingKeywordsToSet )
-    {
-        self.sdk.targetingData.keywords = self.targetingKeywordsToSet;
-        self.targetingKeywordsToSet = nil;
-    }
-    
-    if ( self.targetingInterestsToSet )
-    {
-        self.sdk.targetingData.interests = self.targetingInterestsToSet;
-        self.targetingInterestsToSet = nil;
-    }
-    
-    [self.sdk initializeSdkWithCompletionHandler:^(ALSdkConfiguration *configuration) {
+    [self.sdk initializeWithConfiguration:initConfig completionHandler:^(ALSdkConfiguration *configuration) {
         
         [self log: @"SDK initialized"];
         
@@ -412,7 +261,7 @@ RCT_EXPORT_METHOD(isTablet:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlo
 
 RCT_EXPORT_METHOD(showMediationDebugger)
 {
-    if ( !self.sdk )
+    if ( !self.isSDKInitialized )
     {
         [self logUninitializedAccessError: @"showMediationDebugger"];
         return;
@@ -453,72 +302,32 @@ RCT_EXPORT_METHOD(isDoNotSell:(RCTPromiseResolveBlock)resolve :(RCTPromiseReject
 
 RCT_EXPORT_METHOD(setUserId:(NSString *)userId)
 {
-    if ( [self isPluginInitialized] )
-    {
-        self.sdk.userIdentifier = userId;
-        self.userIdentifierToSet = nil;
-    }
-    else
-    {
-        self.userIdentifierToSet = userId;
-    }
+    self.sdk.settings.userIdentifier = userId;
 }
 
 RCT_EXPORT_METHOD(setMuted:(BOOL)muted)
 {
-    if ( [self isPluginInitialized] )
-    {
-        self.sdk.settings.muted = muted;
-        self.mutedToSet = nil;
-    }
-    else
-    {
-        self.mutedToSet = @(muted);
-    }
+    self.sdk.settings.muted = muted;
 }
 
 RCT_EXPORT_METHOD(isMuted:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
-    resolve([self isPluginInitialized] ? @(self.sdk.settings.muted) : @(NO) );
+    resolve(@(self.sdk.settings.muted));
 }
 
 RCT_EXPORT_METHOD(setVerboseLogging:(BOOL)enabled)
 {
-    if ( [self isPluginInitialized] )
-    {
-        self.sdk.settings.verboseLoggingEnabled = enabled;
-        self.verboseLoggingToSet = nil;
-    }
-    else
-    {
-        self.verboseLoggingToSet = @(enabled);
-    }
+    self.sdk.settings.verboseLoggingEnabled = enabled;
 }
 
 RCT_EXPORT_METHOD(setTestDeviceAdvertisingIds:(NSArray<NSString *> *)testDeviceAdvertisingIds)
 {
-    if ( [self isPluginInitialized] )
-    {
-        self.sdk.settings.testDeviceAdvertisingIdentifiers = testDeviceAdvertisingIds;
-        self.testDeviceIdentifiersToSet = nil;
-    }
-    else
-    {
-        self.testDeviceIdentifiersToSet = testDeviceAdvertisingIds;
-    }
+    self.testDeviceIdentifiersToSet = testDeviceAdvertisingIds;
 }
 
 RCT_EXPORT_METHOD(setCreativeDebuggerEnabled:(BOOL)enabled)
 {
-    if ( [self isPluginInitialized] )
-    {
-        self.sdk.settings.creativeDebuggerEnabled = enabled;
-        self.creativeDebuggerEnabledToSet = nil;
-    }
-    else
-    {
-        self.creativeDebuggerEnabledToSet = @(enabled);
-    }
+    self.sdk.settings.creativeDebuggerEnabled = enabled;
 }
 
 RCT_EXPORT_METHOD(setExtraParameter:(NSString *)key :(nullable NSString *)value)
@@ -529,16 +338,7 @@ RCT_EXPORT_METHOD(setExtraParameter:(NSString *)key :(nullable NSString *)value)
         return;
     }
     
-    if ( self.sdk )
-    {
-        ALSdkSettings *settings = self.sdk.settings;
-        [settings setExtraParameterForKey: key value: value];
-        [self setPendingExtraParametersIfNeeded: settings];
-    }
-    else
-    {
-        self.extraParametersToSet[key] = value;
-    }
+    [self.sdk.settings setExtraParameterForKey: key value: value];
 }
 
 RCT_EXPORT_METHOD(setInitializationAdUnitIds:(NSArray<NSString *> *)adUnitIds)
@@ -550,27 +350,31 @@ RCT_EXPORT_METHOD(setInitializationAdUnitIds:(NSArray<NSString *> *)adUnitIds)
 
 RCT_EXPORT_METHOD(setConsentFlowEnabled:(BOOL)enabled)
 {
-    self.consentFlowEnabledToSet = @(enabled);
+    self.sdk.settings.consentFlowSettings.enabled = enabled;
 }
 
 RCT_EXPORT_METHOD(setTermsAndPrivacyPolicyFlowEnabled:(BOOL)enabled)
 {
-    self.termsAndPrivacyPolicyFlowEnabledToSet = @(enabled);
+    self.sdk.settings.termsAndPrivacyPolicyFlowSettings.enabled = enabled;
 }
 
 RCT_EXPORT_METHOD(setPrivacyPolicyUrl:(NSString *)urlString)
 {
-    self.privacyPolicyURLToSet = [NSURL URLWithString: urlString];
+    NSURL *url = [NSURL URLWithString: urlString];
+    self.sdk.settings.termsAndPrivacyPolicyFlowSettings.privacyPolicyURL = url;
+    self.sdk.settings.consentFlowSettings.privacyPolicyURL = url;
 }
 
 RCT_EXPORT_METHOD(setTermsOfServiceUrl:(NSString *)urlString)
 {
-    self.termsOfServiceURLToSet = [NSURL URLWithString: urlString];
+    NSURL *url = [NSURL URLWithString: urlString];
+    self.sdk.settings.termsAndPrivacyPolicyFlowSettings.termsOfServiceURL = url;
+    self.sdk.settings.consentFlowSettings.termsOfServiceURL = url;
 }
 
 RCT_EXPORT_METHOD(setConsentFlowDebugUserGeography:(NSString *)userGeography)
 {
-    self.debugUserGeographyToSet = userGeography;
+    self.sdk.settings.termsAndPrivacyPolicyFlowSettings.debugUserGeography = [self toAppLovinConsentFlowUserGeography: userGeography];
 }
 
 RCT_EXPORT_METHOD(showCmpForExistingUser:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
@@ -607,190 +411,47 @@ RCT_EXPORT_METHOD(hasSupportedCmp:(RCTPromiseResolveBlock)resolve :(RCTPromiseRe
     resolve(@([self.sdk.cmpService hasSupportedCMP]));
 }
 
-#pragma mark - Data Passing
+#pragma mark - Segment Targeting
 
-RCT_EXPORT_METHOD(setTargetingDataYearOfBirth:(nonnull NSNumber *)yearOfBirth)
-{
-    if ( !self.sdk )
-    {
-        self.targetingYearOfBirthToSet = yearOfBirth;
-        return;
-    }
-    
-    self.sdk.targetingData.yearOfBirth = yearOfBirth.intValue <= 0 ? nil : yearOfBirth;
-}
-
-RCT_EXPORT_METHOD(getTargetingDataYearOfBirth:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
-{
-    if ( !self.sdk )
-    {
-        resolve(self.targetingYearOfBirthToSet ? self.targetingYearOfBirthToSet : @0);
-        return;
-    }
-    
-    resolve(self.sdk.targetingData.yearOfBirth ? self.sdk.targetingData.yearOfBirth : @0);
-}
-
-RCT_EXPORT_METHOD(setTargetingDataGender:(nullable NSString *)gender)
-{
-    if ( !self.sdk )
-    {
-        self.targetingGenderToSet = gender;
-        return;
-    }
-    
-    self.sdk.targetingData.gender = [self toAppLovinGender: gender];
-}
-
-RCT_EXPORT_METHOD(getTargetingDataGender:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
-{
-    if ( !self.sdk )
-    {
-        resolve(self.targetingGenderToSet ? self.targetingGenderToSet : @"U");
-        return;
-    }
-    
-    resolve([self fromAppLovinGender: self.sdk.targetingData.gender]);
-}
-
-RCT_EXPORT_METHOD(setTargetingDataMaximumAdContentRating:(nonnull NSNumber *)maximumAdContentRating)
-{
-    if ( !self.sdk )
-    {
-        self.targetingMaximumAdContentRatingToSet = maximumAdContentRating;
-        return;
-    }
-    
-    self.sdk.targetingData.maximumAdContentRating = [self toAppLovinAdContentRating: maximumAdContentRating];
-}
-
-RCT_EXPORT_METHOD(getTargetingDataMaximumAdContentRating:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
-{
-    if ( !self.sdk )
-    {
-        resolve(self.targetingMaximumAdContentRatingToSet ? self.targetingMaximumAdContentRatingToSet : @0);
-        return;
-    }
-    
-    resolve(@(self.sdk.targetingData.maximumAdContentRating));
-}
-
-RCT_EXPORT_METHOD(setTargetingDataEmail:(nullable NSString *)email)
-{
-    if ( !self.sdk )
-    {
-        self.targetingEmailToSet = email;
-        return;
-    }
-    
-    self.sdk.targetingData.email = email;
-}
-
-RCT_EXPORT_METHOD(getTargetingDataEmail:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
-{
-    if ( !self.sdk )
-    {
-        resolve(self.targetingEmailToSet);
-        return;
-    }
-    
-    resolve(self.sdk.targetingData.email);
-}
-
-RCT_EXPORT_METHOD(setTargetingDataPhoneNumber:(nullable NSString *)phoneNumber)
-{
-    if ( !self.sdk )
-    {
-        self.targetingPhoneNumberToSet = phoneNumber;
-        return;
-    }
-    
-    self.sdk.targetingData.phoneNumber = phoneNumber;
-}
-
-RCT_EXPORT_METHOD(getTargetingDataPhoneNumber:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
-{
-    if ( !self.sdk )
-    {
-        resolve(self.targetingPhoneNumberToSet);
-        return;
-    }
-    
-    resolve(self.sdk.targetingData.phoneNumber);
-}
-
-RCT_EXPORT_METHOD(setTargetingDataKeywords:(nullable NSArray<NSString *> *)keywords)
-{
-    if ( !self.sdk )
-    {
-        self.targetingKeywordsToSet = keywords;
-        return;
-    }
-    
-    self.sdk.targetingData.keywords = keywords;
-}
-
-RCT_EXPORT_METHOD(getTargetingDataKeywords:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
-{
-    if ( !self.sdk )
-    {
-        resolve(self.targetingKeywordsToSet);
-        return;
-    }
-    
-    resolve(self.sdk.targetingData.keywords);
-}
-
-RCT_EXPORT_METHOD(setTargetingDataInterests:(nullable NSArray<NSString *> *)interests)
-{
-    if ( !self.sdk )
-    {
-        self.targetingInterestsToSet = interests;
-        return;
-    }
-    
-    self.sdk.targetingData.interests = interests;
-}
-
-RCT_EXPORT_METHOD(getTargetingDataInterests:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
-{
-    if ( !self.sdk )
-    {
-        resolve(self.targetingInterestsToSet);
-        return;
-    }
-    
-    resolve(self.sdk.targetingData.interests);
-}
-
-RCT_EXPORT_METHOD(clearAllTargetingData)
-{
-    if ( !self.sdk )
-    {
-        self.targetingYearOfBirthToSet = nil;
-        self.targetingGenderToSet = nil;
-        self.targetingMaximumAdContentRatingToSet = nil;
-        self.targetingEmailToSet = nil;
-        self.targetingPhoneNumberToSet = nil;
-        self.targetingKeywordsToSet = nil;
-        self.targetingInterestsToSet = nil;
-        return;
-    }
-    
-    [self.sdk.targetingData clearAll];
-}
-
-RCT_EXPORT_METHOD(setLocationCollectionEnabled:(BOOL)enabled)
+RCT_EXPORT_METHOD(addSegment:(nonnull NSNumber *)key :(NSArray<NSNumber *> *)values :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
 {
     if ( [self isPluginInitialized] )
     {
-        self.sdk.settings.locationCollectionEnabled = enabled;
-        self.locationCollectionEnabledToSet = nil;
+        reject(RCTErrorUnspecified, @"A segment must be added before calling 'AppLovinMAX.initialize(...);'", nil);
+        return;
     }
-    else
+    
+    [self.segmentCollectionBuilder addSegment: [[MASegment alloc] initWithKey: key values: values]];
+    
+    resolve(nil);
+}
+
+RCT_EXPORT_METHOD(getSegments:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+{
+    if ( ![self isSDKInitialized] )
     {
-        self.locationCollectionEnabledToSet = @(enabled);
+        reject(RCTErrorUnspecified, @"Segments cannot be retrieved before calling 'AppLovinMAX.initialize(...).'", nil);
+        return;
     }
+    
+    NSArray<MASegment *> *segments = self.sdk.segmentCollection.segments;
+
+    if ( ![segments count] )
+    {
+        resolve(nil);
+        return;
+    }
+    
+    NSMutableDictionary<NSString *, NSArray<NSNumber *> *> *jsObj = [NSMutableDictionary dictionaryWithCapacity: [segments count]];
+    
+    for ( MASegment *segment in segments )
+    {
+        // JavaScript can't have integer as a key.
+        NSString *strKey = [segment.key stringValue];
+        jsObj[strKey] = segment.values;
+    }
+
+    resolve(jsObj);
 }
 
 #pragma mark - Event Tracking
@@ -2057,18 +1718,6 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier :(
     [NSLayoutConstraint activateConstraints: constraints];
 }
 
-- (void)setPendingExtraParametersIfNeeded:(ALSdkSettings *)settings
-{
-    if ( self.extraParametersToSet.count <= 0 ) return;
-    
-    for ( NSString *key in self.extraParametersToSet.allKeys )
-    {
-        [settings setExtraParameterForKey: key value: self.extraParametersToSet[key]];
-    }
-    
-    [self.extraParametersToSet removeAllObjects];
-}
-
 - (void)logInvalidAdFormat:(MAAdFormat *)adFormat
 {
     [self logInvalidAdFormat: adFormat withPromiseReject: nil];
@@ -2113,68 +1762,6 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier :(
     va_end(valist);
     
     NSLog(@"[%@] [%@] %@", SDK_TAG, TAG, message);
-}
-
-- (ALGender)toAppLovinGender:(nullable NSString *)gender
-{
-    if ( gender )
-    {
-        if ( [@"F" al_isEqualToStringIgnoringCase: gender] )
-        {
-            return ALGenderFemale;
-        }
-        else if ( [@"M" al_isEqualToStringIgnoringCase: gender] )
-        {
-            return ALGenderMale;
-        }
-        else if ( [@"O" al_isEqualToStringIgnoringCase: gender] )
-        {
-            return ALGenderOther;
-        }
-    }
-    
-    return ALGenderUnknown;
-}
-
-- (NSString *)fromAppLovinGender:(ALGender)gender
-{
-    if ( gender == ALGenderFemale )
-    {
-        return @"F";
-    }
-    else if ( gender == ALGenderMale )
-    {
-        return @"M";
-    }
-    else if ( gender == ALGenderOther )
-    {
-        return @"O";
-    }
-    
-    return @"U";
-}
-
-- (ALAdContentRating)toAppLovinAdContentRating:(nullable NSNumber *)maximumAdContentRating
-{
-    if ( maximumAdContentRating )
-    {
-        int intVal = maximumAdContentRating.intValue;
-        
-        if ( intVal == 1 )
-        {
-            return ALAdContentRatingAllAudiences;
-        }
-        else if ( intVal == 2 )
-        {
-            return ALAdContentRatingEveryoneOverTwelve;
-        }
-        else if ( intVal == 3 )
-        {
-            return ALAdContentRatingMatureAudiences;
-        }
-    }
-    
-    return ALAdContentRatingNone;
 }
 
 - (ALConsentFlowUserGeography)toAppLovinConsentFlowUserGeography:(NSString *)userGeography

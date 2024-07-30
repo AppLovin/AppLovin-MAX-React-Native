@@ -87,17 +87,38 @@ export enum CMPErrorCode {
     FORM_NOT_REQUIRED = 3,
 }
 
-const initialize = async (sdkKey: string): Promise<Configuration> => {
+const initialize = (sdkKey: string): Promise<Configuration> => {
     return NativeAppLovinMAX.initialize(VERSION, sdkKey);
 };
 
-type NativeAppLovinMAXType = Omit<AppLovinMAXType, 'initialize'>;
+const getSegments = async (): Promise<Map<number, number[]> | null> => {
+    const segments = await NativeAppLovinMAX.getSegments();
+
+    if (!segments) {
+        return null;
+    }
+
+    const map = new Map<number, number[]>();
+
+    for (const key in segments) {
+        if (segments.hasOwnProperty(key)) {
+            // Convert the key from a string to a number. In JavaScript, an object cannot have an
+            // integer as a key, but the Map object can have keys of any data type.
+            map.set(Number(key), segments[key]);
+        }
+    }
+
+    return map;
+};
+
+type NativeAppLovinMAXType = Omit<AppLovinMAXType, 'initialize' | 'getSegments'>;
 
 const nativeMethods: NativeAppLovinMAXType = NativeAppLovinMAX;
 
 export const AppLovinMAX: AppLovinMAXType = {
     ...nativeMethods,
     initialize,
+    getSegments,
 };
 
 export default AppLovinMAX;
