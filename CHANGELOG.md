@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Depend on Android SDK 12.6.0 and iOS SDK 12.6.0.
 ## 7.0.1
 * Fix native UI component banners and MRECs (`<AdView/>`) not calling the `onAdLoaded` and `onAdLoadFailed` callbacks on Android. Regression from v7.0.0. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/354)
 ## 7.0.0
