@@ -144,7 +144,7 @@ export type AppLovinMAXType = {
     hasSupportedCmp(): Promise<boolean>;
 
     /**
-     * Adds a segment.  Both the key and the values must be integers.
+     * Adds a segment. Both the key and the values must be integers.
      *
      * @param key An integer key.
      * @param values An array of integers.
