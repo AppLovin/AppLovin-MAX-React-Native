@@ -85,6 +85,6 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:0.73.6"
 
-  implementation "com.applovin:applovin-sdk:12.5.0"
+  implementation "com.applovin:applovin-sdk:12.6.0"
 }
 

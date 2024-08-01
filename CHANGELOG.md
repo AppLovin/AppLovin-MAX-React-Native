@@ -1,5 +1,8 @@
 ## Versions
 
+## x.x.x
+* Replace targeting data APIs with new numeric segments targeting APIs. For migration instructions, please see [here](https://developers.applovin.com/en/react-native/overview/data-and-keyword-passing/#segment-targeting).
+* Depend on Android SDK 12.6.0 and iOS SDK 12.6.0.
 ## 7.0.1
 * Fix native UI component banners and MRECs (`<AdView/>`) not calling the `onAdLoaded` and `onAdLoadFailed` callbacks on Android. Regression from v7.0.0. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/354)
 ## 7.0.0
