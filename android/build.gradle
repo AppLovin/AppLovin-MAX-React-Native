@@ -53,8 +53,8 @@ android {
     minSdkVersion getExtOrIntegerDefault("minSdkVersion")
     targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
 
-    buildConfigField("int", "VERSION_CODE", "7000100")
-    buildConfigField("String", "VERSION_NAME", "\"7.0.1\"")
+    buildConfigField("int", "VERSION_CODE", "7010000")
+    buildConfigField("String", "VERSION_NAME", "\"7.1.0\"")
   }
 
   buildTypes {

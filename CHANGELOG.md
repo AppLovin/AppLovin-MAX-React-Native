@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 7.1.0
 * Replace targeting data APIs with new numeric segments targeting APIs. For migration instructions, please see [here](https://developers.applovin.com/en/react-native/overview/data-and-keyword-passing/#segment-targeting).
 * Depend on Android SDK 12.6.0 and iOS SDK 12.6.0.
 ## 7.0.1
