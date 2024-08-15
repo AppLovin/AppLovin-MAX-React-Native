@@ -8,7 +8,7 @@
 
 #import "AppLovinMAX.h"
 #import "AppLovinMAXAdViewManager.h"
-#import "AppLovinMAXAdview.h"
+#import "AppLovinMAXAdView.h"
 
 @implementation AppLovinMAXAdViewManager
 

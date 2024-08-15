@@ -22,8 +22,8 @@
 @property (nonatomic, assign, readonly, getter=isAdaptiveBannerEnabled) BOOL adaptiveBannerEnabled;
 @property (nonatomic, assign, readonly, getter=isAutoRefresh) BOOL autoRefresh;
 @property (nonatomic, assign, readonly, getter=isLoadOnMount) BOOL loadOnMount;
-@property (nonatomic, copy, nullable) NSDictionary *extraParameters;
-@property (nonatomic, copy, nullable) NSDictionary *localExtraParameters;
+@property (nonatomic, copy, nullable) NSDictionary<NSString *, id> *extraParameters;
+@property (nonatomic, copy, nullable) NSDictionary<NSString *, id> *localExtraParameters;
 
 @end
 
@@ -41,12 +41,17 @@ static NSMutableDictionary<NSString *, AppLovinMAXAdViewUIComponent *> *preloade
 
 + (MAAdView *)sharedWithAdUnitIdentifier:(NSString *)adUnitIdentifier
 {
-    AppLovinMAXAdViewUIComponent *uiComponent = preloadedUIComponentInstances[adUnitIdentifier];
-    if ( !uiComponent ) uiComponent = uiComponentInstances[adUnitIdentifier];
-    return uiComponent ? uiComponent.adView : nil;
+    return (preloadedUIComponentInstances[adUnitIdentifier] ?: uiComponentInstances[adUnitIdentifier]).adView;
 }
 
-+ (void)preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat placement:(NSString *)placement  customData:(NSString *)customData extraParameters:(NSDictionary<NSString *, NSString *> *)extraParameters localExtraParameters:(NSDictionary<NSString *, NSString *> *)localExtraParameters withPromiseResolver:(RCTPromiseResolveBlock)resolve withPromiseRejecter:(RCTPromiseRejectBlock)reject
++ (void)preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier 
+                              adFormat:(MAAdFormat *)adFormat
+                             placement:(nullable NSString *)placement
+                            customData:(nullable NSString *)customData
+                       extraParameters:(nullable NSDictionary<NSString *, id> *)extraParameters
+                  localExtraParameters:(nullable NSDictionary<NSString *, id> *)localExtraParameters
+                   withPromiseResolver:(RCTPromiseResolveBlock)resolve
+                   withPromiseRejecter:(RCTPromiseRejectBlock)reject
 {
     AppLovinMAXAdViewUIComponent *preloadedUIComponent = preloadedUIComponentInstances[ adUnitIdentifier];
     if ( preloadedUIComponent )
@@ -68,7 +73,9 @@ static NSMutableDictionary<NSString *, AppLovinMAXAdViewUIComponent *> *preloade
     resolve(nil);
 }
 
-+ (void)destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier withPromiseResolver:(RCTPromiseResolveBlock)resolve withPromiseRejecter:(RCTPromiseRejectBlock)reject
++ (void)destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier 
+                   withPromiseResolver:(RCTPromiseResolveBlock)resolve
+                   withPromiseRejecter:(RCTPromiseRejectBlock)reject
 {
     AppLovinMAXAdViewUIComponent *preloadedUIComponent = preloadedUIComponentInstances[adUnitIdentifier];
     if ( !preloadedUIComponent )
@@ -187,7 +194,7 @@ static NSMutableDictionary<NSString *, AppLovinMAXAdViewUIComponent *> *preloade
         
         if ( ![AppLovinMAX shared].sdk )
         {
-            [[AppLovinMAX shared] logUninitializedAccessError: @"AppLovinMAXAdview.attachAdViewIfNeeded"];
+            [[AppLovinMAX shared] logUninitializedAccessError: @"AppLovinMAXAdView.attachAdViewIfNeeded"];
             return;
         }
         
@@ -218,6 +225,7 @@ static NSMutableDictionary<NSString *, AppLovinMAXAdViewUIComponent *> *preloade
             // same adUnitId
             if ( ![self.uiComponent hasContainerView] )
             {
+                self.uiComponent.adaptiveBannerEnabled = self.isAdaptiveBannerEnabled;
                 self.uiComponent.autoRefresh = self.isAutoRefresh;
                 [self.uiComponent attachAdView: self];
                 return;
@@ -269,11 +277,7 @@ static NSMutableDictionary<NSString *, AppLovinMAXAdViewUIComponent *> *preloade
             
             AppLovinMAXAdViewUIComponent *preloadedUIComponent = preloadedUIComponentInstances[self.adUnitId];
             
-            if ( self.uiComponent == preloadedUIComponent )
-            {
-                self.uiComponent.autoRefresh = NO;
-            }
-            else
+            if ( self.uiComponent != preloadedUIComponent )
             {
                 [uiComponentInstances removeObjectForKey: self.adUnitId];
                 [self.uiComponent destroy];

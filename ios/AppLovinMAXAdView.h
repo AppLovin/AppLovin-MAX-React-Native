@@ -23,9 +23,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (MAAdView *)sharedWithAdUnitIdentifier:(NSString *)adUnitIdentifier;
 
-+ (void)preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat placement:(NSString *)placement  customData:(NSString *)customData extraParameters:(NSDictionary<NSString *, NSString *> *)extraParameters localExtraParameters:(NSDictionary<NSString *, NSString *> *)localExtraParameters withPromiseResolver:(RCTPromiseResolveBlock)resolve withPromiseRejecter:(RCTPromiseRejectBlock)reject;
++ (void)preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier 
+                              adFormat:(MAAdFormat *)adFormat
+                             placement:(nullable NSString *)placement
+                            customData:(nullable NSString *)customData
+                       extraParameters:(nullable NSDictionary<NSString *, id> *)extraParameters
+                  localExtraParameters:(nullable NSDictionary<NSString *, id> *)localExtraParameters
+                   withPromiseResolver:(RCTPromiseResolveBlock)resolve
+                   withPromiseRejecter:(RCTPromiseRejectBlock)reject;
 
-+ (void)destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier withPromiseResolver:(RCTPromiseResolveBlock)resolve withPromiseRejecter:(RCTPromiseRejectBlock)reject;
++ (void)destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier 
+                   withPromiseResolver:(RCTPromiseResolveBlock)resolve
+                   withPromiseRejecter:(RCTPromiseRejectBlock)reject;
 
 - (void)loadAd;
 

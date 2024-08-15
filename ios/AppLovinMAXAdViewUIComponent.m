@@ -33,12 +33,12 @@
     return self;
 }
 
-- (void)setPlacement:(NSString *)placement
+- (void)setPlacement:(nullable NSString *)placement
 {
     self.adView.placement = placement;
 }
 
-- (void)setCustomData:(NSString *)customData
+- (void)setCustomData:(nullable NSString *)customData
 {
     self.adView.customData = customData;
 }
@@ -60,21 +60,20 @@
     }
 }
 
--(void)setExtraParameters:(NSDictionary<NSString *, id> *)parameterDict
+- (void)setExtraParameters:(nullable NSDictionary<NSString *, id> *)parameterDict
 {
-    for (NSString *key in parameterDict)
+    for ( NSString *key in parameterDict )
     {
-        NSString *value = (NSString *) parameterDict[key];
-        [self.adView setExtraParameterForKey:key value:value];
+        [self.adView setExtraParameterForKey: key value: [parameterDict al_stringForKey: key]];
     }
 }
 
--(void)setLocalExtraParameters:(NSDictionary<NSString *, id> *)parameterDict
+- (void)setLocalExtraParameters:(nullable NSDictionary<NSString *, id> *)parameterDict
 {
-    for (NSString *key in parameterDict)
+    for ( NSString *key in parameterDict )
     {
         id value = parameterDict[key];
-        [self.adView setLocalExtraParameterForKey:key value:value];
+        [self.adView setLocalExtraParameterForKey: key value: (value != [NSNull null] ? value : nil)];
     }
 }
 
@@ -123,15 +122,11 @@
 {
     NSDictionary *adInfo = [[AppLovinMAX shared] adInfoForAd: ad];
     
-    [[AppLovinMAX shared] sendEventWithName:@"OnNativeUIComponentAdviewAdLoadedEvent" body: adInfo];
+    [[AppLovinMAX shared] sendEventWithName: @"OnNativeUIComponentAdViewAdLoadedEvent" body: adInfo];
     
     if ( self.containerView )
     {
         self.containerView.onAdLoadedEvent(adInfo);
-    }
-    else
-    {
-        [self setAutoRefresh: NO];
     }
 }
 
@@ -139,7 +134,7 @@
 {
     NSDictionary *adLoadFailedInfo = [[AppLovinMAX shared] adLoadFailedInfoForAd: adUnitIdentifier withError: error];
     
-    [[AppLovinMAX shared] sendEventWithName:@"OnNativeUIComponentAdviewAdLoadFailedEvent" body: adLoadFailedInfo];
+    [[AppLovinMAX shared] sendEventWithName: @"OnNativeUIComponentAdViewAdLoadFailedEvent" body: adLoadFailedInfo];
     
     if ( self.containerView )
     {

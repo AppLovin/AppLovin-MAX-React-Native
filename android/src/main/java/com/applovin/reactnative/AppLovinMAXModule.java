@@ -150,9 +150,9 @@ public class AppLovinMAXModule
     private int           lastRotation;
 
     // Store these values if pub attempts to set it before initializing
-    private List<String>                 initializationAdUnitIdsToSet;
-    private List<String>                 testDeviceAdvertisingIdsToSet;
-    private MaxSegmentCollection.Builder segmentCollectionBuilder = MaxSegmentCollection.builder();
+    private       List<String>                 initializationAdUnitIdsToSet;
+    private       List<String>                 testDeviceAdvertisingIdsToSet;
+    private final MaxSegmentCollection.Builder segmentCollectionBuilder = MaxSegmentCollection.builder();
 
     // Fullscreen Ad Fields
     private final Map<String, MaxInterstitialAd> interstitials = new HashMap<>( 2 );
@@ -1158,7 +1158,14 @@ public class AppLovinMAXModule
         final Map<String, Object> extraParameters = ( extraParameterMap != null ) ? extraParameterMap.toHashMap() : null;
         final Map<String, Object> localExtraParameters = ( localExtraParameterMap != null ) ? localExtraParameterMap.toHashMap() : null;
 
-        getReactApplicationContext().runOnUiQueueThread( () -> AppLovinMAXAdView.preloadNativeUIComponentAdView( adUnitId, finalAdFormat, placement, customData, extraParameters, localExtraParameters, promise, getReactApplicationContext() ) );
+        getReactApplicationContext().runOnUiQueueThread( () -> AppLovinMAXAdView.preloadNativeUIComponentAdView( adUnitId,
+                                                                                                                 finalAdFormat,
+                                                                                                                 placement,
+                                                                                                                 customData,
+                                                                                                                 extraParameters,
+                                                                                                                 localExtraParameters,
+                                                                                                                 promise,
+                                                                                                                 getReactApplicationContext() ) );
     }
 
     @ReactMethod
@@ -1448,7 +1455,7 @@ public class AppLovinMAXModule
         WritableMap params = getAdInfo( ad );
         params.putString( "rewardLabel", rewardLabel );
         params.putInt( "rewardAmount", rewardAmount );
-        sendReactNativeEvent( "OnRewardedAdReceivedRewardEvent", params );
+        sendReactNativeEvent( ON_REWARDED_AD_RECEIVED_REWARD_EVENT, params );
     }
 
     // INTERNAL METHODS
