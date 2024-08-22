@@ -43,10 +43,10 @@ public class AppLovinMAXNativeAdViewManager
     {
         // mapping Android events to JavaScript events
         return MapBuilder.<String, Object>builder()
-            .put( "onAdLoadedEvent", MapBuilder.of( "registrationName", "onAdLoadedEvent" ) )
-            .put( "onAdLoadFailedEvent", MapBuilder.of( "registrationName", "onAdLoadFailedEvent" ) )
-            .put( "onAdClickedEvent", MapBuilder.of( "registrationName", "onAdClickedEvent" ) )
-            .put( "onAdRevenuePaidEvent", MapBuilder.of( "registrationName", "onAdRevenuePaidEvent" ) )
+            .put( AppLovinMAXAdEvents.ON_AD_LOADED_EVENT, MapBuilder.of( "registrationName", AppLovinMAXAdEvents.ON_AD_LOADED_EVENT ) )
+            .put( AppLovinMAXAdEvents.ON_AD_LOAD_FAILED_EVENT, MapBuilder.of( "registrationName", AppLovinMAXAdEvents.ON_AD_LOAD_FAILED_EVENT ) )
+            .put( AppLovinMAXAdEvents.ON_AD_CLICKED_EVENT, MapBuilder.of( "registrationName", AppLovinMAXAdEvents.ON_AD_CLICKED_EVENT ) )
+            .put( AppLovinMAXAdEvents.ON_AD_REVENUE_PAID_EVENT, MapBuilder.of( "registrationName", AppLovinMAXAdEvents.ON_AD_REVENUE_PAID_EVENT ) )
             .build();
     }
 

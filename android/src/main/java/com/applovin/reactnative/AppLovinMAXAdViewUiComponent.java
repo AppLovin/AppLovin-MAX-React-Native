@@ -146,11 +146,11 @@ class AppLovinMAXAdViewUiComponent
         WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
 
         // Copy the `adInfo` since sending the same map through the RN bridge more than once will result in `com.facebook.react.bridge.ObjectAlreadyConsumedException: Map already consumed`
-        AppLovinMAXModule.getInstance().sendReactNativeEvent( "OnNativeUIComponentAdViewAdLoadedEvent", adInfo.copy() );
+        AppLovinMAXModule.getInstance().sendReactNativeEvent( AppLovinMAXAdEvents.ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT, adInfo.copy() );
 
         if ( containerView != null )
         {
-            sendReactNativeCallbackEvent( "onAdLoadedEvent", adInfo );
+            sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_LOADED_EVENT, adInfo );
         }
     }
 
@@ -160,11 +160,11 @@ class AppLovinMAXAdViewUiComponent
         WritableMap adLoadFailedInfo = AppLovinMAXModule.getInstance().getAdLoadFailedInfo( adUnitId, error );
 
         // Copy the `adLoadFailedInfo` since sending the same map through the RN bridge more than once will result in `com.facebook.react.bridge.ObjectAlreadyConsumedException: Map already consumed`
-        AppLovinMAXModule.getInstance().sendReactNativeEvent( "OnNativeUIComponentAdViewAdLoadFailedEvent", adLoadFailedInfo.copy() );
+        AppLovinMAXModule.getInstance().sendReactNativeEvent( AppLovinMAXAdEvents.ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT, adLoadFailedInfo.copy() );
 
         if ( containerView != null )
         {
-            sendReactNativeCallbackEvent( "onAdLoadFailedEvent", adLoadFailedInfo );
+            sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_LOAD_FAILED_EVENT, adLoadFailedInfo );
         }
     }
 
@@ -174,7 +174,7 @@ class AppLovinMAXAdViewUiComponent
         if ( containerView != null )
         {
             WritableMap adDisplayFailedInfo = AppLovinMAXModule.getInstance().getAdDisplayFailedInfo( ad, error );
-            sendReactNativeCallbackEvent( "onAdDisplayFailedEvent", adDisplayFailedInfo );
+            sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_DISPLAY_FAILED_EVENT, adDisplayFailedInfo );
         }
     }
 
@@ -184,7 +184,7 @@ class AppLovinMAXAdViewUiComponent
         if ( containerView != null )
         {
             WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
-            sendReactNativeCallbackEvent( "onAdClickedEvent", adInfo );
+            sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_CLICKED_EVENT, adInfo );
         }
     }
 
@@ -194,7 +194,7 @@ class AppLovinMAXAdViewUiComponent
         if ( containerView != null )
         {
             WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
-            sendReactNativeCallbackEvent( "onAdExpandedEvent", adInfo );
+            sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_EXPANDED_EVENT, adInfo );
         }
     }
 
@@ -204,7 +204,7 @@ class AppLovinMAXAdViewUiComponent
         if ( containerView != null )
         {
             WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
-            sendReactNativeCallbackEvent( "onAdCollapsedEvent", adInfo );
+            sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_COLLAPSED_EVENT, adInfo );
         }
     }
 
@@ -214,7 +214,7 @@ class AppLovinMAXAdViewUiComponent
         if ( containerView != null )
         {
             WritableMap adRevenueInfo = AppLovinMAXModule.getInstance().getAdRevenueInfo( ad );
-            sendReactNativeCallbackEvent( "onAdRevenuePaidEvent", adRevenueInfo );
+            sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_REVENUE_PAID_EVENT, adRevenueInfo );
         }
     }
 

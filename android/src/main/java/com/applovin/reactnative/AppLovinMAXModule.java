@@ -82,48 +82,6 @@ public class AppLovinMAXModule
     private static final String USER_GEOGRAPHY_OTHER   = "O";
     private static final String USER_GEOGRAPHY_UNKNOWN = "U";
 
-    private static final String ON_BANNER_AD_LOADED_EVENT      = "OnBannerAdLoadedEvent";
-    private static final String ON_BANNER_AD_LOAD_FAILED_EVENT = "OnBannerAdLoadFailedEvent";
-    private static final String ON_BANNER_AD_CLICKED_EVENT     = "OnBannerAdClickedEvent";
-    private static final String ON_BANNER_AD_COLLAPSED_EVENT   = "OnBannerAdCollapsedEvent";
-    private static final String ON_BANNER_AD_EXPANDED_EVENT    = "OnBannerAdExpandedEvent";
-    private static final String ON_BANNER_AD_REVENUE_PAID      = "OnBannerAdRevenuePaid";
-
-    private static final String ON_MREC_AD_LOADED_EVENT      = "OnMRecAdLoadedEvent";
-    private static final String ON_MREC_AD_LOAD_FAILED_EVENT = "OnMRecAdLoadFailedEvent";
-    private static final String ON_MREC_AD_CLICKED_EVENT     = "OnMRecAdClickedEvent";
-    private static final String ON_MREC_AD_COLLAPSED_EVENT   = "OnMRecAdCollapsedEvent";
-    private static final String ON_MREC_AD_EXPANDED_EVENT    = "OnMRecAdExpandedEvent";
-    private static final String ON_MREC_AD_REVENUE_PAID      = "OnMRecAdRevenuePaid";
-
-    private static final String ON_INTERSTITIAL_LOADED_EVENT               = "OnInterstitialLoadedEvent";
-    private static final String ON_INTERSTITIAL_LOAD_FAILED_EVENT          = "OnInterstitialLoadFailedEvent";
-    private static final String ON_INTERSTITIAL_CLICKED_EVENT              = "OnInterstitialClickedEvent";
-    private static final String ON_INTERSTITIAL_DISPLAYED_EVENT            = "OnInterstitialDisplayedEvent";
-    private static final String ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT = "OnInterstitialAdFailedToDisplayEvent";
-    private static final String ON_INTERSTITIAL_HIDDEN_EVENT               = "OnInterstitialHiddenEvent";
-    private static final String ON_INTERSTITIAL_AD_REVENUE_PAID            = "OnInterstitialAdRevenuePaid";
-
-    private static final String ON_REWARDED_AD_LOADED_EVENT            = "OnRewardedAdLoadedEvent";
-    private static final String ON_REWARDED_AD_LOAD_FAILED_EVENT       = "OnRewardedAdLoadFailedEvent";
-    private static final String ON_REWARDED_AD_CLICKED_EVENT           = "OnRewardedAdClickedEvent";
-    private static final String ON_REWARDED_AD_DISPLAYED_EVENT         = "OnRewardedAdDisplayedEvent";
-    private static final String ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT = "OnRewardedAdFailedToDisplayEvent";
-    private static final String ON_REWARDED_AD_HIDDEN_EVENT            = "OnRewardedAdHiddenEvent";
-    private static final String ON_REWARDED_AD_RECEIVED_REWARD_EVENT   = "OnRewardedAdReceivedRewardEvent";
-    private static final String ON_REWARDED_AD_REVENUE_PAID            = "OnRewardedAdRevenuePaid";
-
-    private static final String ON_APPOPEN_AD_LOADED_EVENT            = "OnAppOpenAdLoadedEvent";
-    private static final String ON_APPOPEN_AD_LOAD_FAILED_EVENT       = "OnAppOpenAdLoadFailedEvent";
-    private static final String ON_APPOPEN_AD_CLICKED_EVENT           = "OnAppOpenAdClickedEvent";
-    private static final String ON_APPOPEN_AD_DISPLAYED_EVENT         = "OnAppOpenAdDisplayedEvent";
-    private static final String ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT = "OnAppOpenAdFailedToDisplayEvent";
-    private static final String ON_APPOPEN_AD_HIDDEN_EVENT            = "OnAppOpenAdHiddenEvent";
-    private static final String ON_APPOPEN_AD_REVENUE_PAID            = "OnAppOpenAdRevenuePaid";
-
-    private static final String ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT      = "OnNativeUIComponentAdViewAdLoadedEvent";
-    private static final String ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT = "OnNativeUIComponentAdViewAdLoadFailedEvent";
-
     private static final String TOP_CENTER    = "top_center";
     private static final String TOP_LEFT      = "top_left";
     private static final String TOP_RIGHT     = "top_right";
@@ -902,7 +860,7 @@ public class AppLovinMAXModule
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId, "loadInterstitial" );
         if ( interstitial == null )
         {
-            sendReactNativeEventForAdLoadFailed( ON_INTERSTITIAL_LOAD_FAILED_EVENT, adUnitId, null );
+            sendReactNativeEventForAdLoadFailed( AppLovinMAXAdEvents.ON_INTERSTITIAL_LOAD_FAILED_EVENT, adUnitId, null );
             return;
         }
 
@@ -941,7 +899,7 @@ public class AppLovinMAXModule
         MaxInterstitialAd interstitial = retrieveInterstitial( adUnitId, "showInterstitial" );
         if ( interstitial == null )
         {
-            sendReactNativeEvent( ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT, getAdUnitInfo( adUnitId ) );
+            sendReactNativeEvent( AppLovinMAXAdEvents.ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT, getAdUnitInfo( adUnitId ) );
             return;
         }
 
@@ -993,7 +951,7 @@ public class AppLovinMAXModule
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId, "loadRewardedAd" );
         if ( rewardedAd == null )
         {
-            sendReactNativeEventForAdLoadFailed( ON_REWARDED_AD_LOAD_FAILED_EVENT, adUnitId, null );
+            sendReactNativeEventForAdLoadFailed( AppLovinMAXAdEvents.ON_REWARDED_AD_LOAD_FAILED_EVENT, adUnitId, null );
             return;
         }
 
@@ -1032,7 +990,7 @@ public class AppLovinMAXModule
         MaxRewardedAd rewardedAd = retrieveRewardedAd( adUnitId, "showRewardedAd" );
         if ( rewardedAd == null )
         {
-            sendReactNativeEvent( ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT, getAdUnitInfo( adUnitId ) );
+            sendReactNativeEvent( AppLovinMAXAdEvents.ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT, getAdUnitInfo( adUnitId ) );
             return;
         }
 
@@ -1183,7 +1141,7 @@ public class AppLovinMAXModule
         MaxAdFormat adFormat = ad.getFormat();
         if ( adFormat.isAdViewAd() )
         {
-            name = ( MaxAdFormat.MREC == adFormat ) ? ON_MREC_AD_LOADED_EVENT : ON_BANNER_AD_LOADED_EVENT;
+            name = ( MaxAdFormat.MREC == adFormat ) ? AppLovinMAXAdEvents.ON_MREC_AD_LOADED_EVENT : AppLovinMAXAdEvents.ON_BANNER_AD_LOADED_EVENT;
 
             String adViewPosition = adViewPositions.get( ad.getAdUnitId() );
             if ( AppLovinSdkUtils.isValidString( adViewPosition ) )
@@ -1202,15 +1160,15 @@ public class AppLovinMAXModule
         }
         else if ( MaxAdFormat.INTERSTITIAL == adFormat )
         {
-            name = ON_INTERSTITIAL_LOADED_EVENT;
+            name = AppLovinMAXAdEvents.ON_INTERSTITIAL_LOADED_EVENT;
         }
         else if ( MaxAdFormat.REWARDED == adFormat )
         {
-            name = ON_REWARDED_AD_LOADED_EVENT;
+            name = AppLovinMAXAdEvents.ON_REWARDED_AD_LOADED_EVENT;
         }
         else if ( MaxAdFormat.APP_OPEN == adFormat )
         {
-            name = ON_APPOPEN_AD_LOADED_EVENT;
+            name = AppLovinMAXAdEvents.ON_APPOPEN_AD_LOADED_EVENT;
         }
         else
         {
@@ -1233,19 +1191,19 @@ public class AppLovinMAXModule
         String name;
         if ( adViews.containsKey( adUnitId ) )
         {
-            name = ( MaxAdFormat.MREC == adViewAdFormats.get( adUnitId ) ) ? ON_MREC_AD_LOAD_FAILED_EVENT : ON_BANNER_AD_LOAD_FAILED_EVENT;
+            name = ( MaxAdFormat.MREC == adViewAdFormats.get( adUnitId ) ) ? AppLovinMAXAdEvents.ON_MREC_AD_LOAD_FAILED_EVENT : AppLovinMAXAdEvents.ON_BANNER_AD_LOAD_FAILED_EVENT;
         }
         else if ( interstitials.containsKey( adUnitId ) )
         {
-            name = ON_INTERSTITIAL_LOAD_FAILED_EVENT;
+            name = AppLovinMAXAdEvents.ON_INTERSTITIAL_LOAD_FAILED_EVENT;
         }
         else if ( rewardedAds.containsKey( adUnitId ) )
         {
-            name = ON_REWARDED_AD_LOAD_FAILED_EVENT;
+            name = AppLovinMAXAdEvents.ON_REWARDED_AD_LOAD_FAILED_EVENT;
         }
         else if ( appOpenAds.containsKey( adUnitId ) )
         {
-            name = ON_APPOPEN_AD_LOAD_FAILED_EVENT;
+            name = AppLovinMAXAdEvents.ON_APPOPEN_AD_LOAD_FAILED_EVENT;
         }
         else
         {
@@ -1268,23 +1226,23 @@ public class AppLovinMAXModule
         final String name;
         if ( MaxAdFormat.BANNER == adFormat || MaxAdFormat.LEADER == adFormat )
         {
-            name = ON_BANNER_AD_CLICKED_EVENT;
+            name = AppLovinMAXAdEvents.ON_BANNER_AD_CLICKED_EVENT;
         }
         else if ( MaxAdFormat.MREC == adFormat )
         {
-            name = ON_MREC_AD_CLICKED_EVENT;
+            name = AppLovinMAXAdEvents.ON_MREC_AD_CLICKED_EVENT;
         }
         else if ( MaxAdFormat.INTERSTITIAL == adFormat )
         {
-            name = ON_INTERSTITIAL_CLICKED_EVENT;
+            name = AppLovinMAXAdEvents.ON_INTERSTITIAL_CLICKED_EVENT;
         }
         else if ( MaxAdFormat.REWARDED == adFormat )
         {
-            name = ON_REWARDED_AD_CLICKED_EVENT;
+            name = AppLovinMAXAdEvents.ON_REWARDED_AD_CLICKED_EVENT;
         }
         else if ( MaxAdFormat.APP_OPEN == adFormat )
         {
-            name = ON_APPOPEN_AD_CLICKED_EVENT;
+            name = AppLovinMAXAdEvents.ON_APPOPEN_AD_CLICKED_EVENT;
         }
         else
         {
@@ -1305,15 +1263,15 @@ public class AppLovinMAXModule
         final String name;
         if ( MaxAdFormat.INTERSTITIAL == adFormat )
         {
-            name = ON_INTERSTITIAL_DISPLAYED_EVENT;
+            name = AppLovinMAXAdEvents.ON_INTERSTITIAL_DISPLAYED_EVENT;
         }
         else if ( MaxAdFormat.REWARDED == adFormat )
         {
-            name = ON_REWARDED_AD_DISPLAYED_EVENT;
+            name = AppLovinMAXAdEvents.ON_REWARDED_AD_DISPLAYED_EVENT;
         }
         else // APP OPEN
         {
-            name = ON_APPOPEN_AD_DISPLAYED_EVENT;
+            name = AppLovinMAXAdEvents.ON_APPOPEN_AD_DISPLAYED_EVENT;
         }
 
         sendReactNativeEvent( name, getAdInfo( ad ) );
@@ -1329,15 +1287,15 @@ public class AppLovinMAXModule
         final String name;
         if ( MaxAdFormat.INTERSTITIAL == adFormat )
         {
-            name = ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT;
+            name = AppLovinMAXAdEvents.ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT;
         }
         else if ( MaxAdFormat.REWARDED == adFormat )
         {
-            name = ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT;
+            name = AppLovinMAXAdEvents.ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT;
         }
         else // APP OPEN
         {
-            name = ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT;
+            name = AppLovinMAXAdEvents.ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT;
         }
 
         sendReactNativeEvent( name, getAdDisplayFailedInfo( ad, error ) );
@@ -1353,15 +1311,15 @@ public class AppLovinMAXModule
         String name;
         if ( MaxAdFormat.INTERSTITIAL == adFormat )
         {
-            name = ON_INTERSTITIAL_HIDDEN_EVENT;
+            name = AppLovinMAXAdEvents.ON_INTERSTITIAL_HIDDEN_EVENT;
         }
         else if ( MaxAdFormat.REWARDED == adFormat )
         {
-            name = ON_REWARDED_AD_HIDDEN_EVENT;
+            name = AppLovinMAXAdEvents.ON_REWARDED_AD_HIDDEN_EVENT;
         }
         else // APP OPEN
         {
-            name = ON_APPOPEN_AD_HIDDEN_EVENT;
+            name = AppLovinMAXAdEvents.ON_APPOPEN_AD_HIDDEN_EVENT;
         }
 
         sendReactNativeEvent( name, getAdInfo( ad ) );
@@ -1377,7 +1335,7 @@ public class AppLovinMAXModule
             return;
         }
 
-        sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? ON_MREC_AD_EXPANDED_EVENT : ON_BANNER_AD_EXPANDED_EVENT, getAdInfo( ad ) );
+        sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? AppLovinMAXAdEvents.ON_MREC_AD_EXPANDED_EVENT : AppLovinMAXAdEvents.ON_BANNER_AD_EXPANDED_EVENT, getAdInfo( ad ) );
     }
 
     @Override
@@ -1390,7 +1348,7 @@ public class AppLovinMAXModule
             return;
         }
 
-        sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? ON_MREC_AD_COLLAPSED_EVENT : ON_BANNER_AD_COLLAPSED_EVENT, getAdInfo( ad ) );
+        sendReactNativeEvent( ( MaxAdFormat.MREC == adFormat ) ? AppLovinMAXAdEvents.ON_MREC_AD_COLLAPSED_EVENT : AppLovinMAXAdEvents.ON_BANNER_AD_COLLAPSED_EVENT, getAdInfo( ad ) );
     }
 
     @Override
@@ -1400,23 +1358,23 @@ public class AppLovinMAXModule
         final String name;
         if ( MaxAdFormat.BANNER == adFormat || MaxAdFormat.LEADER == adFormat )
         {
-            name = ON_BANNER_AD_REVENUE_PAID;
+            name = AppLovinMAXAdEvents.ON_BANNER_AD_REVENUE_PAID;
         }
         else if ( MaxAdFormat.MREC == adFormat )
         {
-            name = ON_MREC_AD_REVENUE_PAID;
+            name = AppLovinMAXAdEvents.ON_MREC_AD_REVENUE_PAID;
         }
         else if ( MaxAdFormat.INTERSTITIAL == adFormat )
         {
-            name = ON_INTERSTITIAL_AD_REVENUE_PAID;
+            name = AppLovinMAXAdEvents.ON_INTERSTITIAL_AD_REVENUE_PAID;
         }
         else if ( MaxAdFormat.REWARDED == adFormat )
         {
-            name = ON_REWARDED_AD_REVENUE_PAID;
+            name = AppLovinMAXAdEvents.ON_REWARDED_AD_REVENUE_PAID;
         }
         else if ( MaxAdFormat.APP_OPEN == adFormat )
         {
-            name = ON_APPOPEN_AD_REVENUE_PAID;
+            name = AppLovinMAXAdEvents.ON_APPOPEN_AD_REVENUE_PAID;
         }
         else
         {
@@ -1455,7 +1413,7 @@ public class AppLovinMAXModule
         WritableMap params = getAdInfo( ad );
         params.putString( "rewardLabel", rewardLabel );
         params.putInt( "rewardAmount", rewardAmount );
-        sendReactNativeEvent( ON_REWARDED_AD_RECEIVED_REWARD_EVENT, params );
+        sendReactNativeEvent( AppLovinMAXAdEvents.ON_REWARDED_AD_RECEIVED_REWARD_EVENT, params );
     }
 
     // INTERNAL METHODS
@@ -2376,47 +2334,47 @@ public class AppLovinMAXModule
     {
         final Map<String, Object> constants = new HashMap<>();
 
-        constants.put( "ON_MREC_AD_LOADED_EVENT", ON_MREC_AD_LOADED_EVENT );
-        constants.put( "ON_MREC_AD_LOAD_FAILED_EVENT", ON_MREC_AD_LOAD_FAILED_EVENT );
-        constants.put( "ON_MREC_AD_CLICKED_EVENT", ON_MREC_AD_CLICKED_EVENT );
-        constants.put( "ON_MREC_AD_COLLAPSED_EVENT", ON_MREC_AD_COLLAPSED_EVENT );
-        constants.put( "ON_MREC_AD_EXPANDED_EVENT", ON_MREC_AD_EXPANDED_EVENT );
-        constants.put( "ON_MREC_AD_REVENUE_PAID", ON_MREC_AD_REVENUE_PAID );
+        constants.put( "ON_MREC_AD_LOADED_EVENT", AppLovinMAXAdEvents.ON_MREC_AD_LOADED_EVENT );
+        constants.put( "ON_MREC_AD_LOAD_FAILED_EVENT", AppLovinMAXAdEvents.ON_MREC_AD_LOAD_FAILED_EVENT );
+        constants.put( "ON_MREC_AD_CLICKED_EVENT", AppLovinMAXAdEvents.ON_MREC_AD_CLICKED_EVENT );
+        constants.put( "ON_MREC_AD_COLLAPSED_EVENT", AppLovinMAXAdEvents.ON_MREC_AD_COLLAPSED_EVENT );
+        constants.put( "ON_MREC_AD_EXPANDED_EVENT", AppLovinMAXAdEvents.ON_MREC_AD_EXPANDED_EVENT );
+        constants.put( "ON_MREC_AD_REVENUE_PAID", AppLovinMAXAdEvents.ON_MREC_AD_REVENUE_PAID );
 
-        constants.put( "ON_BANNER_AD_LOADED_EVENT", ON_BANNER_AD_LOADED_EVENT );
-        constants.put( "ON_BANNER_AD_LOAD_FAILED_EVENT", ON_BANNER_AD_LOAD_FAILED_EVENT );
-        constants.put( "ON_BANNER_AD_CLICKED_EVENT", ON_BANNER_AD_CLICKED_EVENT );
-        constants.put( "ON_BANNER_AD_COLLAPSED_EVENT", ON_BANNER_AD_COLLAPSED_EVENT );
-        constants.put( "ON_BANNER_AD_EXPANDED_EVENT", ON_BANNER_AD_EXPANDED_EVENT );
-        constants.put( "ON_BANNER_AD_REVENUE_PAID", ON_BANNER_AD_REVENUE_PAID );
+        constants.put( "ON_BANNER_AD_LOADED_EVENT", AppLovinMAXAdEvents.ON_BANNER_AD_LOADED_EVENT );
+        constants.put( "ON_BANNER_AD_LOAD_FAILED_EVENT", AppLovinMAXAdEvents.ON_BANNER_AD_LOAD_FAILED_EVENT );
+        constants.put( "ON_BANNER_AD_CLICKED_EVENT", AppLovinMAXAdEvents.ON_BANNER_AD_CLICKED_EVENT );
+        constants.put( "ON_BANNER_AD_COLLAPSED_EVENT", AppLovinMAXAdEvents.ON_BANNER_AD_COLLAPSED_EVENT );
+        constants.put( "ON_BANNER_AD_EXPANDED_EVENT", AppLovinMAXAdEvents.ON_BANNER_AD_EXPANDED_EVENT );
+        constants.put( "ON_BANNER_AD_REVENUE_PAID", AppLovinMAXAdEvents.ON_BANNER_AD_REVENUE_PAID );
 
-        constants.put( "ON_INTERSTITIAL_LOADED_EVENT", ON_INTERSTITIAL_LOADED_EVENT );
-        constants.put( "ON_INTERSTITIAL_LOAD_FAILED_EVENT", ON_INTERSTITIAL_LOAD_FAILED_EVENT );
-        constants.put( "ON_INTERSTITIAL_CLICKED_EVENT", ON_INTERSTITIAL_CLICKED_EVENT );
-        constants.put( "ON_INTERSTITIAL_DISPLAYED_EVENT", ON_INTERSTITIAL_DISPLAYED_EVENT );
-        constants.put( "ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT", ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT );
-        constants.put( "ON_INTERSTITIAL_HIDDEN_EVENT", ON_INTERSTITIAL_HIDDEN_EVENT );
-        constants.put( "ON_INTERSTITIAL_AD_REVENUE_PAID", ON_INTERSTITIAL_AD_REVENUE_PAID );
+        constants.put( "ON_INTERSTITIAL_LOADED_EVENT", AppLovinMAXAdEvents.ON_INTERSTITIAL_LOADED_EVENT );
+        constants.put( "ON_INTERSTITIAL_LOAD_FAILED_EVENT", AppLovinMAXAdEvents.ON_INTERSTITIAL_LOAD_FAILED_EVENT );
+        constants.put( "ON_INTERSTITIAL_CLICKED_EVENT", AppLovinMAXAdEvents.ON_INTERSTITIAL_CLICKED_EVENT );
+        constants.put( "ON_INTERSTITIAL_DISPLAYED_EVENT", AppLovinMAXAdEvents.ON_INTERSTITIAL_DISPLAYED_EVENT );
+        constants.put( "ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT", AppLovinMAXAdEvents.ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT );
+        constants.put( "ON_INTERSTITIAL_HIDDEN_EVENT", AppLovinMAXAdEvents.ON_INTERSTITIAL_HIDDEN_EVENT );
+        constants.put( "ON_INTERSTITIAL_AD_REVENUE_PAID", AppLovinMAXAdEvents.ON_INTERSTITIAL_AD_REVENUE_PAID );
 
-        constants.put( "ON_REWARDED_AD_LOADED_EVENT", ON_REWARDED_AD_LOADED_EVENT );
-        constants.put( "ON_REWARDED_AD_LOAD_FAILED_EVENT", ON_REWARDED_AD_LOAD_FAILED_EVENT );
-        constants.put( "ON_REWARDED_AD_CLICKED_EVENT", ON_REWARDED_AD_CLICKED_EVENT );
-        constants.put( "ON_REWARDED_AD_DISPLAYED_EVENT", ON_REWARDED_AD_DISPLAYED_EVENT );
-        constants.put( "ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT", ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT );
-        constants.put( "ON_REWARDED_AD_HIDDEN_EVENT", ON_REWARDED_AD_HIDDEN_EVENT );
-        constants.put( "ON_REWARDED_AD_RECEIVED_REWARD_EVENT", ON_REWARDED_AD_RECEIVED_REWARD_EVENT );
-        constants.put( "ON_REWARDED_AD_REVENUE_PAID", ON_REWARDED_AD_REVENUE_PAID );
+        constants.put( "ON_REWARDED_AD_LOADED_EVENT", AppLovinMAXAdEvents.ON_REWARDED_AD_LOADED_EVENT );
+        constants.put( "ON_REWARDED_AD_LOAD_FAILED_EVENT", AppLovinMAXAdEvents.ON_REWARDED_AD_LOAD_FAILED_EVENT );
+        constants.put( "ON_REWARDED_AD_CLICKED_EVENT", AppLovinMAXAdEvents.ON_REWARDED_AD_CLICKED_EVENT );
+        constants.put( "ON_REWARDED_AD_DISPLAYED_EVENT", AppLovinMAXAdEvents.ON_REWARDED_AD_DISPLAYED_EVENT );
+        constants.put( "ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT", AppLovinMAXAdEvents.ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT );
+        constants.put( "ON_REWARDED_AD_HIDDEN_EVENT", AppLovinMAXAdEvents.ON_REWARDED_AD_HIDDEN_EVENT );
+        constants.put( "ON_REWARDED_AD_RECEIVED_REWARD_EVENT", AppLovinMAXAdEvents.ON_REWARDED_AD_RECEIVED_REWARD_EVENT );
+        constants.put( "ON_REWARDED_AD_REVENUE_PAID", AppLovinMAXAdEvents.ON_REWARDED_AD_REVENUE_PAID );
 
-        constants.put( "ON_APPOPEN_AD_LOADED_EVENT", ON_APPOPEN_AD_LOADED_EVENT );
-        constants.put( "ON_APPOPEN_AD_LOAD_FAILED_EVENT", ON_APPOPEN_AD_LOAD_FAILED_EVENT );
-        constants.put( "ON_APPOPEN_AD_CLICKED_EVENT", ON_APPOPEN_AD_CLICKED_EVENT );
-        constants.put( "ON_APPOPEN_AD_DISPLAYED_EVENT", ON_APPOPEN_AD_DISPLAYED_EVENT );
-        constants.put( "ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT", ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT );
-        constants.put( "ON_APPOPEN_AD_HIDDEN_EVENT", ON_APPOPEN_AD_HIDDEN_EVENT );
-        constants.put( "ON_APPOPEN_AD_REVENUE_PAID", ON_APPOPEN_AD_REVENUE_PAID );
+        constants.put( "ON_APPOPEN_AD_LOADED_EVENT", AppLovinMAXAdEvents.ON_APPOPEN_AD_LOADED_EVENT );
+        constants.put( "ON_APPOPEN_AD_LOAD_FAILED_EVENT", AppLovinMAXAdEvents.ON_APPOPEN_AD_LOAD_FAILED_EVENT );
+        constants.put( "ON_APPOPEN_AD_CLICKED_EVENT", AppLovinMAXAdEvents.ON_APPOPEN_AD_CLICKED_EVENT );
+        constants.put( "ON_APPOPEN_AD_DISPLAYED_EVENT", AppLovinMAXAdEvents.ON_APPOPEN_AD_DISPLAYED_EVENT );
+        constants.put( "ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT", AppLovinMAXAdEvents.ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT );
+        constants.put( "ON_APPOPEN_AD_HIDDEN_EVENT", AppLovinMAXAdEvents.ON_APPOPEN_AD_HIDDEN_EVENT );
+        constants.put( "ON_APPOPEN_AD_REVENUE_PAID", AppLovinMAXAdEvents.ON_APPOPEN_AD_REVENUE_PAID );
 
-        constants.put( "ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT", ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT );
-        constants.put( "ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT", ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT );
+        constants.put( "ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT", AppLovinMAXAdEvents.ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT );
+        constants.put( "ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT", AppLovinMAXAdEvents.ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT );
 
         constants.put( "TOP_CENTER_POSITION", TOP_CENTER );
         constants.put( "TOP_LEFT_POSITION", TOP_LEFT );
