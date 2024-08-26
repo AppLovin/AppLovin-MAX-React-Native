@@ -6,16 +6,16 @@ public class AppLovinMAXAdEvents
     public static final String ON_BANNER_AD_LOADED_EVENT      = "OnBannerAdLoadedEvent";
     public static final String ON_BANNER_AD_LOAD_FAILED_EVENT = "OnBannerAdLoadFailedEvent";
     public static final String ON_BANNER_AD_CLICKED_EVENT     = "OnBannerAdClickedEvent";
-    public static final String ON_BANNER_AD_COLLAPSED_EVENT   = "OnBannerAdCollapsedEvent";
     public static final String ON_BANNER_AD_EXPANDED_EVENT    = "OnBannerAdExpandedEvent";
+    public static final String ON_BANNER_AD_COLLAPSED_EVENT   = "OnBannerAdCollapsedEvent";
     public static final String ON_BANNER_AD_REVENUE_PAID      = "OnBannerAdRevenuePaid";
 
     // MREC Events
     public static final String ON_MREC_AD_LOADED_EVENT      = "OnMRecAdLoadedEvent";
     public static final String ON_MREC_AD_LOAD_FAILED_EVENT = "OnMRecAdLoadFailedEvent";
     public static final String ON_MREC_AD_CLICKED_EVENT     = "OnMRecAdClickedEvent";
-    public static final String ON_MREC_AD_COLLAPSED_EVENT   = "OnMRecAdCollapsedEvent";
     public static final String ON_MREC_AD_EXPANDED_EVENT    = "OnMRecAdExpandedEvent";
+    public static final String ON_MREC_AD_COLLAPSED_EVENT   = "OnMRecAdCollapsedEvent";
     public static final String ON_MREC_AD_REVENUE_PAID      = "OnMRecAdRevenuePaid";
 
     // Interstitial Events
@@ -46,7 +46,7 @@ public class AppLovinMAXAdEvents
     public static final String ON_APPOPEN_AD_HIDDEN_EVENT            = "OnAppOpenAdHiddenEvent";
     public static final String ON_APPOPEN_AD_REVENUE_PAID            = "OnAppOpenAdRevenuePaid";
 
-    // Native Ui Component Events
+    // Native UI Component Events
     public static final String ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT      = "OnNativeUIComponentAdViewAdLoadedEvent";
     public static final String ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT = "OnNativeUIComponentAdViewAdLoadFailedEvent";
 
