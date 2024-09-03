@@ -380,7 +380,7 @@ public class AppLovinMAXNativeAdView
         }
 
         view.setTag( MEDIA_VIEW_CONTAINER_TAG );
-        clickableViews.add( view );
+        clickableViews.add( mediaView );
 
         view.addOnLayoutChangeListener( this );
 
