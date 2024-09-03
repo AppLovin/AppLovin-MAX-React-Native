@@ -105,7 +105,7 @@
 {
     if ( ![AppLovinMAX shared].sdk )
     {
-        [[AppLovinMAX shared] logUninitializedAccessError: @"AppLovinMAXNativeAdview.loadAd"];
+        [[AppLovinMAX shared] logUninitializedAccessError: @"AppLovinMAXNativeAdView.loadAd"];
         return;
     }
     
@@ -118,7 +118,7 @@
         
         for ( NSString *key in self.extraParameters )
         {
-            [self.adLoader setExtraParameterForKey: key value: self.extraParameters[key]];
+            [self.adLoader setExtraParameterForKey: key value: [self.extraParameters al_stringForKey: key]];
         }
         
         for ( NSString *key in self.localExtraParameters )

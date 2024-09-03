@@ -6,7 +6,7 @@ import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } fro
 export type LocalExtraParameterValue = string | number | boolean | object | null;
 
 /**
- * Defines the base properties for the UI component ads i.e {@link Adview} and {@link NativeAdView}.
+ * Defines the base properties for the UI component ads i.e {@link AdView} and {@link NativeAdView}.
  */
 export type AdProps = {
     /**
@@ -38,27 +38,27 @@ export type AdProps = {
     localExtraParameters?: { [key: string]: LocalExtraParameterValue };
 
     /**
-     * A callback fuction that {@link Adview} or {@link NativeAdView} fires when it loads a new ad.
+     * A callback fuction that {@link AdView} or {@link NativeAdView} fires when it loads a new ad.
      */
     onAdLoaded?: (adInfo: AdInfo) => void;
 
     /**
-     * A callback fuction that {@link Adview} or {@link NativeAdView} fires when it could not load a new ad.
+     * A callback fuction that {@link AdView} or {@link NativeAdView} fires when it could not load a new ad.
      */
     onAdLoadFailed?: (error: AdLoadFailedInfo) => void;
 
     /**
-     * A callback fuction that {@link Adview} or {@link NativeAdView} fires when it fails to display the ad.
+     * A callback fuction that {@link AdView} or {@link NativeAdView} fires when it fails to display the ad.
      */
     onAdDisplayFailed?: (error: AdDisplayFailedInfo) => void;
 
     /**
-     * A callback fuction that {@link Adview} or {@link NativeAdView} fires when the user clicks the ad.
+     * A callback fuction that {@link AdView} or {@link NativeAdView} fires when the user clicks the ad.
      */
     onAdClicked?: (adInfo: AdInfo) => void;
 
     /**
-     * A callback fuction that {@link Adview} or {@link NativeAdView} fires when it pays ad revenue to the publisher.
+     * A callback fuction that {@link AdView} or {@link NativeAdView} fires when it pays ad revenue to the publisher.
      */
     onAdRevenuePaid?: (adInfo: AdRevenueInfo) => void;
 };

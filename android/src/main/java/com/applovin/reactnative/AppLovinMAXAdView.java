@@ -50,7 +50,14 @@ class AppLovinMAXAdView
         return ( uiComponent != null ) ? uiComponent.getAdView() : null;
     }
 
-    public static void preloadNativeUIComponentAdView(final String adUnitId, final MaxAdFormat adFormat, final String placement, final String customData, final Map<String, Object> extraParameters, final Map<String, Object> localExtraParameters, final Promise promise, final ReactContext context)
+    public static void preloadNativeUIComponentAdView(final String adUnitId,
+                                                      final MaxAdFormat adFormat,
+                                                      @Nullable final String placement,
+                                                      @Nullable final String customData,
+                                                      @Nullable final Map<String, Object> extraParameters,
+                                                      @Nullable final Map<String, Object> localExtraParameters,
+                                                      final Promise promise,
+                                                      final ReactContext context)
     {
         AppLovinMAXAdViewUiComponent preloadedUiComponent = preloadedUiComponentInstances.get( adUnitId );
         if ( preloadedUiComponent != null )
@@ -278,6 +285,7 @@ class AppLovinMAXAdView
                 // same adUnitId
                 if ( !uiComponent.hasContainerView() )
                 {
+                    uiComponent.setAdaptiveBannerEnabled( adaptiveBannerEnabled );
                     uiComponent.setAutoRefresh( autoRefresh );
                     uiComponent.attachAdView( AppLovinMAXAdView.this );
                     return;
@@ -324,11 +332,7 @@ class AppLovinMAXAdView
 
             AppLovinMAXAdViewUiComponent preloadedUiComponent = preloadedUiComponentInstances.get( adUnitId );
 
-            if ( uiComponent == preloadedUiComponent )
-            {
-                uiComponent.setAutoRefresh( false );
-            }
-            else
+            if ( uiComponent != preloadedUiComponent )
             {
                 uiComponentInstances.remove( adUnitId );
                 uiComponent.destroy();

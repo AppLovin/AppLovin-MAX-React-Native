@@ -87,7 +87,7 @@ static NSString *const ON_BANNER_AD_REVENUE_PAID = @"OnBannerAdRevenuePaid";
 
 static NSString *const ON_MREC_AD_LOADED_EVENT = @"OnMRecAdLoadedEvent";
 static NSString *const ON_MREC_AD_LOAD_FAILED_EVENT = @"OnMRecAdLoadFailedEvent";
-static NSString *const ON_MREC_AD_CLICKED_EVENT= @"OnMRecAdClickedEvent";
+static NSString *const ON_MREC_AD_CLICKED_EVENT = @"OnMRecAdClickedEvent";
 static NSString *const ON_MREC_AD_COLLAPSED_EVENT = @"OnMRecAdCollapsedEvent";
 static NSString *const ON_MREC_AD_EXPANDED_EVENT = @"OnMRecAdExpandedEvent";
 static NSString *const ON_MREC_AD_REVENUE_PAID = @"OnMRecAdRevenuePaid";
@@ -117,8 +117,8 @@ static NSString *const ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT = @"OnAppOpenAdFail
 static NSString *const ON_APPOPEN_AD_HIDDEN_EVENT = @"OnAppOpenAdHiddenEvent";
 static NSString *const ON_APPOPEN_AD_REVENUE_PAID = @"OnAppOpenAdRevenuePaid";
 
-static NSString *const ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT = @"OnNativeUIComponentAdviewAdLoadedEvent";
-static NSString *const ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT = @"OnNativeUIComponentAdviewAdLoadFailedEvent";
+static NSString *const ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT = @"OnNativeUIComponentAdViewAdLoadedEvent";
+static NSString *const ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT = @"OnNativeUIComponentAdViewAdLoadFailedEvent";
 
 static NSString *const TOP_CENTER = @"top_center";
 static NSString *const TOP_LEFT = @"top_left";
@@ -226,7 +226,7 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
         }
     }];
     
-    [self.sdk initializeWithConfiguration:initConfig completionHandler:^(ALSdkConfiguration *configuration) {
+    [self.sdk initializeWithConfiguration: initConfig completionHandler:^(ALSdkConfiguration *configuration) {
         
         [self log: @"SDK initialized"];
         
@@ -932,7 +932,14 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
 
 #pragma mark - AdView Preloading
 
-RCT_EXPORT_METHOD(preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier :(NSString *)adFormatStr :(NSString *)placement :(NSString *)customData :(NSDictionary<NSString *, id> *)extraParameterDict :(NSDictionary<NSString *, id> *)localExtraParameterDict :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier
+                                                :(NSString *)adFormatStr
+                                                :(nullable NSString *)placement
+                                                :(nullable NSString *)customData
+                                                :(nullable NSDictionary<NSString *, id> *)extraParameterDict
+                                                :(nullable NSDictionary<NSString *, id> *)localExtraParameterDict
+                                                :(RCTPromiseResolveBlock)resolve
+                                                :(RCTPromiseRejectBlock)reject)
 {
     MAAdFormat *adFormat;
     
@@ -950,12 +957,23 @@ RCT_EXPORT_METHOD(preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier :(
         return;
     }
     
-    [AppLovinMAXAdView preloadNativeUIComponentAdView:adUnitIdentifier adFormat:adFormat placement:placement customData:customData extraParameters:extraParameterDict localExtraParameters:localExtraParameterDict withPromiseResolver:resolve withPromiseRejecter:reject];
+    [AppLovinMAXAdView preloadNativeUIComponentAdView: adUnitIdentifier
+                                             adFormat: adFormat
+                                            placement: placement
+                                           customData: customData
+                                      extraParameters: extraParameterDict
+                                 localExtraParameters: localExtraParameterDict
+                                  withPromiseResolver: resolve
+                                  withPromiseRejecter: reject];
 }
 
-RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier 
+                                                :(RCTPromiseResolveBlock)resolve
+                                                :(RCTPromiseRejectBlock)reject)
 {
-    [AppLovinMAXAdView destroyNativeUIComponentAdView:adUnitIdentifier withPromiseResolver:resolve withPromiseRejecter:reject];
+    [AppLovinMAXAdView destroyNativeUIComponentAdView: adUnitIdentifier
+                                  withPromiseResolver: resolve
+                                  withPromiseRejecter: reject];
 }
 
 #pragma mark - Ad Callbacks
@@ -1012,7 +1030,7 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier :(
     NSString *name;
     if ( self.adViews[adUnitIdentifier] )
     {
-        name = ( MAAdFormat.mrec == self.adViewAdFormats[adUnitIdentifier] ) ? @"OnMRecAdLoadFailedEvent" : @"OnBannerAdLoadFailedEvent";
+        name = ( MAAdFormat.mrec == self.adViewAdFormats[adUnitIdentifier] ) ? ON_MREC_AD_LOAD_FAILED_EVENT : ON_BANNER_AD_LOAD_FAILED_EVENT;
     }
     else if ( self.interstitials[adUnitIdentifier] )
     {
@@ -1725,7 +1743,7 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier :(
 
 - (void)logInvalidAdFormat:(MAAdFormat *)adFormat withPromiseReject:(nullable RCTPromiseRejectBlock)reject
 {
-    NSString *message = [NSString stringWithFormat:@"invalid ad format: %@, from %@", adFormat, [NSThread callStackSymbols]];
+    NSString *message = [NSString stringWithFormat: @"invalid ad format: %@, from %@", adFormat, [NSThread callStackSymbols]];
     
     if ( !reject )
     {
@@ -1743,7 +1761,7 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier :(
 
 - (void)logUninitializedAccessError:(NSString *)callingMethod withPromiseReject:(nullable RCTPromiseRejectBlock)reject
 {
-    NSString *message = [NSString stringWithFormat:@"ERROR: Failed to execute %@() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!", callingMethod];
+    NSString *message = [NSString stringWithFormat: @"ERROR: Failed to execute %@() - please ensure the AppLovin MAX React Native module has been initialized by calling 'AppLovinMAX.initialize(...);'!", callingMethod];
     
     if ( !reject )
     {
