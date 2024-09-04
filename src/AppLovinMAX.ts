@@ -4,7 +4,7 @@ import type { Configuration } from './types/Configuration';
 
 const NativeAppLovinMAX = NativeModules.AppLovinMAX;
 
-const VERSION = '7.1.0';
+const VERSION = '7.1.1';
 
 /**
  * This enum represents the user's geography used to determine the type of consent flow shown to the
