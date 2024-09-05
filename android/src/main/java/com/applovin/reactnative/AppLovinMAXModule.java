@@ -2389,6 +2389,18 @@ public class AppLovinMAXModule
         constants.put( "BANNER_AD_FORMAT_LABEL", MaxAdFormat.BANNER.getLabel() );
         constants.put( "MREC_AD_FORMAT_LABEL", MaxAdFormat.MREC.getLabel() );
 
+        constants.put( "MAXERRORCODE_UNSPECIFIED", MaxErrorCode.UNSPECIFIED );
+        constants.put( "MAXERRORCODE_NO_FILL", MaxErrorCode.NO_FILL );
+        constants.put( "MAXERRORCODE_AD_LOAD_FAILED", MaxErrorCode.AD_LOAD_FAILED );
+        constants.put( "MAXERRORCODE_NETWORK_ERROR", MaxErrorCode.NETWORK_ERROR );
+        constants.put( "MAXERRORCODE_NETWORK_TIMEOUT", MaxErrorCode.NETWORK_TIMEOUT );
+        constants.put( "MAXERRORCODE_NO_NETWORK", MaxErrorCode.NO_NETWORK );
+        constants.put( "MAXERRORCODE_FULLSCREEN_AD_ALREADY_SHOWING", MaxErrorCode.FULLSCREEN_AD_ALREADY_SHOWING );
+        constants.put( "MAXERRORCODE_FULLSCREEN_AD_NOT_READY", MaxErrorCode.FULLSCREEN_AD_NOT_READY );
+        constants.put( "MAXERRORCODE_FULLSCREEN_AD_ALREADY_LOADING", MaxErrorCode.FULLSCREEN_AD_ALREADY_LOADING );
+        constants.put( "MAXERRORCODE_FULLSCREEN_AD_LOAD_WHILE_SHOWING", MaxErrorCode.FULLSCREEN_AD_LOAD_WHILE_SHOWING );
+        constants.put( "MAXERRORCODE_INVALID_AD_UNIT_ID", MaxErrorCode.INVALID_AD_UNIT_ID );
+
         return constants;
     }
 }

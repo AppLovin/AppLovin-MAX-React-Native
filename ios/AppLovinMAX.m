@@ -2140,7 +2140,19 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier
              @"BOTTOM_RIGHT_POSITION" : BOTTOM_RIGHT,
              
              @"BANNER_AD_FORMAT_LABEL" : MAAdFormat.banner.label,
-             @"MREC_AD_FORMAT_LABEL" : MAAdFormat.mrec.label};
+             @"MREC_AD_FORMAT_LABEL" : MAAdFormat.mrec.label,
+
+             @"MAXERRORCODE_UNSPECIFIED" : @(MAErrorCodeUnspecified),
+             @"MAXERRORCODE_NO_FILL" : @(MAErrorCodeNoFill),
+             @"MAXERRORCODE_AD_LOAD_FAILED" : @(MAErrorCodeAdLoadFailed),
+             @"MAXERRORCODE_NETWORK_ERROR" : @(MAErrorCodeNetworkError),
+             @"MAXERRORCODE_NETWORK_TIMEOUT" : @(MAErrorCodeNetworkTimeout),
+             @"MAXERRORCODE_NO_NETWORK" : @(MAErrorCodeNoNetwork),
+             @"MAXERRORCODE_FULLSCREEN_AD_ALREADY_SHOWING" : @(MAErrorCodeFullscreenAdAlreadyShowing),
+             @"MAXERRORCODE_FULLSCREEN_AD_NOT_READY" : @(MAErrorCodeFullscreenAdNotReady),
+             @"MAXERRORCODE_FULLSCREEN_AD_ALREADY_LOADING" :@(MAErrorCodeFullscreenAdAlreadyShowing),
+             @"MAXERRORCODE_FULLSCREEN_AD_LOAD_WHILE_SHOWING" : @(MAErrorCodeFullscreenAdLoadWhileShowing),
+             @"MAXERRORCODE_INVALID_AD_UNIT_ID" :@(MAErrorCodeInvalidAdUnitIdentifier)};
 }
 
 - (void)startObserving

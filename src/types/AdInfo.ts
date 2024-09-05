@@ -70,7 +70,7 @@ export type AdLoadFailedInfo = {
     /**
      * The error code for the error.
      */
-    code: string | null;
+    code: number | null;
 
     /**
      * The error message for the error.
