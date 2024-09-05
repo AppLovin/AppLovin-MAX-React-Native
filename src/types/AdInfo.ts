@@ -32,7 +32,7 @@ export type AdInfo = {
 
     /**
      *  The ad’s revenue amount. In the case where no revenue amount exists, or it is not available
-     *  yet, return 0.
+     *  yet, returns 0.
      */
     revenue: number;
 
@@ -239,7 +239,7 @@ export type AdWaterfallInfo = {
     networkResponses: AdNetworkResponseInfo[];
 
     /**
-     * The total latency in seconds for this waterfall to finish processing.
+     * The total latency in milliseconds for this waterfall to finish processing.
      */
     latencyMillis: number;
 };

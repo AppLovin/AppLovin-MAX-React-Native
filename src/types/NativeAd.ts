@@ -1,5 +1,5 @@
 /**
- * Represents a native ad for rendering `NativeAdView`.  Internal use only.
+ * Represents a native ad for rendering in {@link NativeAdView}. This type is intended for internal use only.
  */
 export type NativeAd = {
     /**

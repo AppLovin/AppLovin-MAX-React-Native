@@ -37,69 +37,69 @@ const setLocalExtraParameter = (adUnitId: string, key: string, value: LocalExtra
     AppLovinMAX.setRewardedAdLocalExtraParameter(adUnitId, { [key]: value });
 };
 
-const addAdLoadedEventListener = (listener: (adInfo: AdInfo) => void) => {
+const addAdLoadedEventListener = (listener: (adInfo: AdInfo) => void): void => {
     addEventListener(ON_REWARDED_AD_LOADED_EVENT, (adInfo: AdInfo) => listener(adInfo));
 };
 
-const removeAdLoadedEventListener = () => {
+const removeAdLoadedEventListener = (): void => {
     removeEventListener(ON_REWARDED_AD_LOADED_EVENT);
 };
 
-const addAdLoadFailedEventListener = (listener: (errorInfo: AdLoadFailedInfo) => void) => {
+const addAdLoadFailedEventListener = (listener: (errorInfo: AdLoadFailedInfo) => void): void => {
     addEventListener(ON_REWARDED_AD_LOAD_FAILED_EVENT, (errorInfo: AdLoadFailedInfo) => listener(errorInfo));
 };
 
-const removeAdLoadFailedEventListener = () => {
+const removeAdLoadFailedEventListener = (): void => {
     removeEventListener(ON_REWARDED_AD_LOAD_FAILED_EVENT);
 };
 
-const addAdClickedEventListener = (listener: (adInfo: AdInfo) => void) => {
+const addAdClickedEventListener = (listener: (adInfo: AdInfo) => void): void => {
     addEventListener(ON_REWARDED_AD_CLICKED_EVENT, (adInfo: AdInfo) => listener(adInfo));
 };
 
-const removeAdClickedEventListener = () => {
+const removeAdClickedEventListener = (): void => {
     removeEventListener(ON_REWARDED_AD_CLICKED_EVENT);
 };
 
-const addAdDisplayedEventListener = (listener: (adInfo: AdInfo) => void) => {
+const addAdDisplayedEventListener = (listener: (adInfo: AdInfo) => void): void => {
     addEventListener(ON_REWARDED_AD_DISPLAYED_EVENT, (adInfo: AdInfo) => listener(adInfo));
 };
 
-const removeAdDisplayedEventListener = () => {
+const removeAdDisplayedEventListener = (): void => {
     removeEventListener(ON_REWARDED_AD_DISPLAYED_EVENT);
 };
 
-const addAdFailedToDisplayEventListener = (listener: (errorInfo: AdDisplayFailedInfo) => void) => {
+const addAdFailedToDisplayEventListener = (listener: (errorInfo: AdDisplayFailedInfo) => void): void => {
     addEventListener(ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT, (errorInfo: AdDisplayFailedInfo) => listener(errorInfo));
 };
 
-const removeAdFailedToDisplayEventListener = () => {
+const removeAdFailedToDisplayEventListener = (): void => {
     removeEventListener(ON_REWARDED_AD_FAILED_TO_DISPLAY_EVENT);
 };
 
-const addAdHiddenEventListener = (listener: (adInfo: AdInfo) => void) => {
+const addAdHiddenEventListener = (listener: (adInfo: AdInfo) => void): void => {
     addEventListener(ON_REWARDED_AD_HIDDEN_EVENT, (adInfo: AdInfo) => listener(adInfo));
 };
 
-const removeAdHiddenEventListener = () => {
+const removeAdHiddenEventListener = (): void => {
     removeEventListener(ON_REWARDED_AD_HIDDEN_EVENT);
 };
 
-const addAdRevenuePaidListener = (listener: (adInfo: AdRevenueInfo) => void) => {
+const addAdRevenuePaidListener = (listener: (adInfo: AdRevenueInfo) => void): void => {
     addEventListener(ON_REWARDED_AD_REVENUE_PAID, (adInfo: AdRevenueInfo) => listener(adInfo));
 };
 
-const removeAdRevenuePaidListener = () => {
+const removeAdRevenuePaidListener = (): void => {
     removeEventListener(ON_REWARDED_AD_REVENUE_PAID);
 };
 
 // Rewarded specific APIs
 
-const addAdReceivedRewardEventListener = (listener: (adInfo: AdRewardInfo) => void) => {
+const addAdReceivedRewardEventListener = (listener: (adInfo: AdRewardInfo) => void): void => {
     addEventListener(ON_REWARDED_AD_RECEIVED_REWARD_EVENT, (adInfo: AdRewardInfo) => listener(adInfo));
 };
 
-const removeAdReceivedRewardEventListener = () => {
+const removeAdReceivedRewardEventListener = (): void => {
     removeEventListener(ON_REWARDED_AD_RECEIVED_REWARD_EVENT);
 };
 

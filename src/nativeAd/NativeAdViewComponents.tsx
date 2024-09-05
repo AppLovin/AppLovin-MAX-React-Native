@@ -1,21 +1,30 @@
 import * as React from 'react';
-import { useContext, useRef, useEffect } from 'react';
-import type { ReactNode } from 'react';
+import { useContext, useRef, useEffect, useCallback, useMemo } from 'react';
 import { findNodeHandle, Text, Image, View, TouchableOpacity, StyleSheet } from 'react-native';
 import type { ViewProps, ImageProps, TextStyle, StyleProp, TextProps } from 'react-native';
 import { NativeAdViewContext } from './NativeAdViewProvider';
 
-export const TitleView = (props: TextProps) => {
-    const titleRef = useRef(null);
+// Custom hook to handle setting native ad view properties and return nativeAd
+const useNativeAdViewProps = (nativeAdProp, ref, nativePropKey) => {
     const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
 
-    useEffect(() => {
-        if (!nativeAd.title || !titleRef.current) return;
-
+    const setNativeProps = useCallback(() => {
+        if (!nativeAd[nativeAdProp] || !ref || !ref.current) return;
         nativeAdView?.setNativeProps({
-            titleView: findNodeHandle(titleRef.current),
+            [nativePropKey]: findNodeHandle(ref.current),
         });
-    }, [nativeAd, nativeAdView]);
+    }, [nativeAd, nativeAdProp, nativeAdView, ref, nativePropKey]);
+
+    useEffect(() => {
+        setNativeProps();
+    }, [setNativeProps]);
+
+    return nativeAd;
+};
+
+export const TitleView = (props: TextProps) => {
+    const titleRef = useRef<Text | null>(null);
+    const nativeAd = useNativeAdViewProps('title', titleRef, 'titleView');
 
     return (
         <Text {...props} ref={titleRef}>
@@ -25,16 +34,8 @@ export const TitleView = (props: TextProps) => {
 };
 
 export const AdvertiserView = (props: TextProps) => {
-    const advertiserRef = useRef(null);
-    const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
-
-    useEffect(() => {
-        if (!nativeAd.advertiser || !advertiserRef.current) return;
-
-        nativeAdView?.setNativeProps({
-            advertiserView: findNodeHandle(advertiserRef.current),
-        });
-    }, [nativeAd, nativeAdView]);
+    const advertiserRef = useRef<Text | null>(null);
+    const nativeAd = useNativeAdViewProps('advertiser', advertiserRef, 'advertiserView');
 
     return (
         <Text {...props} ref={advertiserRef}>
@@ -44,16 +45,8 @@ export const AdvertiserView = (props: TextProps) => {
 };
 
 export const BodyView = (props: TextProps) => {
-    const bodyRef = useRef(null);
-    const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
-
-    useEffect(() => {
-        if (!nativeAd.body || !bodyRef.current) return;
-
-        nativeAdView?.setNativeProps({
-            bodyView: findNodeHandle(bodyRef.current),
-        });
-    }, [nativeAd, nativeAdView]);
+    const bodyRef = useRef<Text | null>(null);
+    const nativeAd = useNativeAdViewProps('body', bodyRef, 'bodyView');
 
     return (
         <Text {...props} ref={bodyRef}>
@@ -63,16 +56,8 @@ export const BodyView = (props: TextProps) => {
 };
 
 export const CallToActionView = (props: TextProps) => {
-    const callToActionRef = useRef(null);
-    const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
-
-    useEffect(() => {
-        if (!nativeAd.callToAction || !callToActionRef.current) return;
-
-        nativeAdView?.setNativeProps({
-            callToActionView: findNodeHandle(callToActionRef.current),
-        });
-    }, [nativeAd, nativeAdView]);
+    const callToActionRef = useRef<Text | null>(null);
+    const nativeAd = useNativeAdViewProps('callToAction', callToActionRef, 'callToActionView');
 
     return (
         <TouchableOpacity>
@@ -84,16 +69,8 @@ export const CallToActionView = (props: TextProps) => {
 };
 
 export const IconView = (props: Omit<ImageProps, 'source'>) => {
-    const imageRef = useRef(null);
-    const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
-
-    useEffect(() => {
-        if (!(nativeAd.image || nativeAd.url) || !imageRef.current) return;
-
-        nativeAdView?.setNativeProps({
-            iconView: findNodeHandle(imageRef.current),
-        });
-    }, [nativeAd, nativeAdView]);
+    const imageRef = useRef<Image | null>(null);
+    const nativeAd = useNativeAdViewProps('image', imageRef, 'iconView');
 
     return nativeAd.url ? (
         <Image {...props} ref={imageRef} source={{ uri: nativeAd.url }} />
@@ -105,30 +82,15 @@ export const IconView = (props: Omit<ImageProps, 'source'>) => {
 };
 
 export const OptionsView = (props: ViewProps) => {
-    const viewRef = useRef(null);
-    const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
-
-    useEffect(() => {
-        if (!nativeAd.isOptionsViewAvailable || !viewRef.current) return;
-        nativeAdView?.setNativeProps({
-            optionsView: findNodeHandle(viewRef.current),
-        });
-    }, [nativeAd, nativeAdView]);
+    const viewRef = useRef<View | null>(null);
+    useNativeAdViewProps('isOptionsViewAvailable', viewRef, 'optionsView');
 
     return <View {...props} ref={viewRef} />;
 };
 
 export const MediaView = (props: ViewProps) => {
-    const viewRef = useRef(null);
-    const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
-
-    useEffect(() => {
-        if (!nativeAd.isMediaViewAvailable || !viewRef.current) return;
-
-        nativeAdView?.setNativeProps({
-            mediaView: findNodeHandle(viewRef.current),
-        });
-    }, [nativeAd, nativeAdView]);
+    const viewRef = useRef<View | null>(null);
+    useNativeAdViewProps('isMediaViewAvailable', viewRef, 'mediaView');
 
     return <View {...props} ref={viewRef} />;
 };
@@ -142,33 +104,34 @@ export const StarRatingView = (props: ViewProps) => {
 
     const { nativeAd } = useContext(NativeAdViewContext);
 
+    // Memoize the star rendering process
+    const stars = useMemo(() => {
+        if (!nativeAd.starRating) {
+            return Array.from({ length: maxStarCount }).map((_, index) => (
+                <Text key={index} style={{ fontSize: starSize }}>
+                    {' '}
+                </Text>
+            ));
+        }
+
+        return Array.from({ length: maxStarCount }).map((_, index) => {
+            const width = (nativeAd.starRating - index) * starSize;
+            return (
+                <View key={index}>
+                    <Text style={{ fontSize: starSize, color: starColor }}>{String.fromCodePoint(0x2606)}</Text>
+                    {nativeAd.starRating > index && (
+                        <View style={[{ width: width }, styles.starRating]}>
+                            <Text style={{ fontSize: starSize, color: starColor }}>{String.fromCodePoint(0x2605)}</Text>
+                        </View>
+                    )}
+                </View>
+            );
+        });
+    }, [nativeAd.starRating, starColor, starSize]);
+
     return (
         <View {...restProps} style={[style, styles.starRatingContainer]}>
-            {(() => {
-                const stars: ReactNode[] = [];
-                for (let index = 0; index < maxStarCount; index++) {
-                    if (nativeAd.starRating) {
-                        const width = (nativeAd.starRating - index) * starSize;
-                        stars.push(
-                            <View key={index}>
-                                <Text style={{ fontSize: starSize, color: starColor }}>{String.fromCodePoint(0x2606)}</Text>
-                                {nativeAd.starRating > index && (
-                                    <View style={[{ width: width }, styles.starRating]}>
-                                        <Text style={{ fontSize: starSize, color: starColor }}>{String.fromCodePoint(0x2605)}</Text>
-                                    </View>
-                                )}
-                            </View>
-                        );
-                    } else {
-                        stars.push(
-                            <Text key={index} style={{ fontSize: starSize }}>
-                                {' '}
-                            </Text>
-                        );
-                    }
-                }
-                return stars;
-            })()}
+            {stars}
         </View>
     );
 };

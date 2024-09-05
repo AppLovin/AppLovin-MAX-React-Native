@@ -61,51 +61,51 @@ const stopAutoRefresh = (adUnitId: string): void => {
     AppLovinMAX.stopBannerAutoRefresh(adUnitId);
 };
 
-const addAdLoadedEventListener = (listener: (adInfo: AdInfo) => void) => {
+const addAdLoadedEventListener = (listener: (adInfo: AdInfo) => void): void => {
     addEventListener(ON_BANNER_AD_LOADED_EVENT, (adInfo: AdInfo) => listener(adInfo));
 };
 
-const removeAdLoadedEventListener = () => {
+const removeAdLoadedEventListener = (): void => {
     removeEventListener(ON_BANNER_AD_LOADED_EVENT);
 };
 
-const addAdLoadFailedEventListener = (listener: (errorInfo: AdLoadFailedInfo) => void) => {
+const addAdLoadFailedEventListener = (listener: (errorInfo: AdLoadFailedInfo) => void): void => {
     addEventListener(ON_BANNER_AD_LOAD_FAILED_EVENT, (errorInfo: AdLoadFailedInfo) => listener(errorInfo));
 };
 
-const removeAdLoadFailedEventListener = () => {
+const removeAdLoadFailedEventListener = (): void => {
     removeEventListener(ON_BANNER_AD_LOAD_FAILED_EVENT);
 };
 
-const addAdClickedEventListener = (listener: (adInfo: AdInfo) => void) => {
+const addAdClickedEventListener = (listener: (adInfo: AdInfo) => void): void => {
     addEventListener(ON_BANNER_AD_CLICKED_EVENT, (adInfo: AdInfo) => listener(adInfo));
 };
 
-const removeAdClickedEventListener = () => {
+const removeAdClickedEventListener = (): void => {
     removeEventListener(ON_BANNER_AD_CLICKED_EVENT);
 };
 
-const addAdCollapsedEventListener = (listener: (adInfo: AdInfo) => void) => {
+const addAdCollapsedEventListener = (listener: (adInfo: AdInfo) => void): void => {
     addEventListener(ON_BANNER_AD_COLLAPSED_EVENT, (adInfo: AdInfo) => listener(adInfo));
 };
 
-const removeAdCollapsedEventListener = () => {
+const removeAdCollapsedEventListener = (): void => {
     removeEventListener(ON_BANNER_AD_COLLAPSED_EVENT);
 };
 
-const addAdExpandedEventListener = (listener: (adInfo: AdInfo) => void) => {
+const addAdExpandedEventListener = (listener: (adInfo: AdInfo) => void): void => {
     addEventListener(ON_BANNER_AD_EXPANDED_EVENT, (adInfo: AdInfo) => listener(adInfo));
 };
 
-const removeAdExpandedEventListener = () => {
+const removeAdExpandedEventListener = (): void => {
     removeEventListener(ON_BANNER_AD_EXPANDED_EVENT);
 };
 
-const addAdRevenuePaidListener = (listener: (adInfo: AdRevenueInfo) => void) => {
+const addAdRevenuePaidListener = (listener: (adInfo: AdRevenueInfo) => void): void => {
     addEventListener(ON_BANNER_AD_REVENUE_PAID, (adInfo: AdRevenueInfo) => listener(adInfo));
 };
 
-const removeAdRevenuePaidListener = () => {
+const removeAdRevenuePaidListener = (): void => {
     removeEventListener(ON_BANNER_AD_REVENUE_PAID);
 };
 

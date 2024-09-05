@@ -10,7 +10,7 @@ export type NativeAdViewContextType = {
     nativeAd: NativeAd;
     nativeAdView: NativeAdViewType | null;
     setNativeAd: React.Dispatch<React.SetStateAction<NativeAd>>;
-    setNativeAdView: React.Dispatch<React.SetStateAction<NativeAdViewType>>;
+    setNativeAdView: React.Dispatch<React.SetStateAction<NativeAdViewType | null>>;
 };
 
 export const NativeAdViewContext = createContext<NativeAdViewContextType>({
@@ -21,11 +21,11 @@ export const NativeAdViewContext = createContext<NativeAdViewContextType>({
 });
 
 export const NativeAdViewProvider: React.FC<{ children: React.ReactNode }> = (props) => {
-    const [nativeAd, setNativeAd] = useState({
+    const [nativeAd, setNativeAd] = useState<NativeAd>({
         isOptionsViewAvailable: false,
         isMediaViewAvailable: false,
     });
-    const [nativeAdView, setNativeAdView] = useState(Object);
+    const [nativeAdView, setNativeAdView] = useState<NativeAdViewType | null>(null);
 
     const providerValue = {
         nativeAd,

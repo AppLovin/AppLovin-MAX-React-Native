@@ -81,35 +81,36 @@ const ADVIEW_SIZE = {
 };
 
 // Returns 'auto' for unspecified width / height
-const getOutlineViewSize = (style: StyleProp<ViewStyle>) => {
+const getOutlineViewSize = (style: StyleProp<ViewStyle>): [DimensionValue, DimensionValue] => {
     const viewStyle = StyleSheet.flatten(style || {});
     return [viewStyle?.width ?? 'auto', viewStyle?.height ?? 'auto'];
 };
 
-const sizeBannerDimensions = (sizeProps: SizeRecord, adaptiveBannerEnabled: boolean, screenWidth: number, bannerFormatSize: SizeRecord): Promise<SizeRecord> => {
-    const sizeForBannerFormat = async () => {
-        const width = sizeProps.width === 'auto' ? screenWidth : sizeProps.width;
+const sizeBannerDimensions = async (sizeProps: SizeRecord, adaptiveBannerEnabled: boolean, screenWidth: number, bannerFormatSize: SizeRecord): Promise<SizeRecord> => {
+    const width = sizeProps.width === 'auto' ? screenWidth : sizeProps.width;
 
-        let height;
-        if (sizeProps.height === 'auto') {
-            if (adaptiveBannerEnabled) {
+    let height;
+    if (sizeProps.height === 'auto') {
+        if (adaptiveBannerEnabled) {
+            try {
                 height = await AppLovinMAX.getAdaptiveBannerHeightForWidth(screenWidth);
-            } else {
+            } catch (error) {
+                console.error('Error getting adaptive banner height:', error);
                 height = bannerFormatSize.height;
             }
         } else {
-            height = sizeProps.height;
+            height = bannerFormatSize.height;
         }
+    } else {
+        height = sizeProps.height;
+    }
 
-        return Promise.resolve({ width: width, height: height });
-    };
-
-    return sizeForBannerFormat();
+    return { width: width, height: height };
 };
 
 /**
- * The {@link AdView} component that you use building a banner or an MREC. Phones
- * sizes banners to 320x50 and MRECs to 300x250. Tablets sizes banners to 728x90 and MRECs to
+ * The {@link AdView} component that you use for building a banner or an MREC. Phones
+ * size banners to 320x50 and MRECs to 300x250. Tablets size banners to 728x90 and MRECs to
  * 300x250. You may use the utility method {@link AppLovinMAX.isTablet()} to help with view sizing
  * adjustments. For adaptive banners, call {@link BannerAd.getAdaptiveHeightForWidth()} to get
  * the banner height, and then adjust your content accordingly.
@@ -161,7 +162,7 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
     const sizeProps = useRef<SizeRecord>({});
     const dimensions = useRef<SizeRecord>({});
 
-    const loadAd = () => {
+    const loadAd = useCallback(() => {
         if (adViewRef.current) {
             UIManager.dispatchViewManagerCommand(
                 findNodeHandle(adViewRef.current),
@@ -170,9 +171,9 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
                 undefined
             );
         }
-    };
+    }, []);
 
-    useImperativeHandle(ref, () => ({ loadAd }), []);
+    useImperativeHandle(ref, () => ({ loadAd }), [loadAd]);
 
     const saveElement = useCallback((element: AdViewType | null) => {
         if (element) {
@@ -181,25 +182,23 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
     }, []);
 
     useEffect(() => {
-        if (adFormat === AdFormat.BANNER) {
-            AppLovinMAX.isTablet().then((result: boolean) => {
-                if (result) {
-                    adFormatSize.current = { width: ADVIEW_SIZE.leader.width, height: ADVIEW_SIZE.leader.height };
-                } else {
-                    adFormatSize.current = { width: ADVIEW_SIZE.banner.width, height: ADVIEW_SIZE.banner.height };
-                }
-            });
-        } else {
-            adFormatSize.current = { width: ADVIEW_SIZE.mrec.width, height: ADVIEW_SIZE.mrec.height };
-        }
+        (async () => {
+            if (adFormat === AdFormat.BANNER) {
+                const isTablet = await AppLovinMAX.isTablet();
+                adFormatSize.current = isTablet
+                    ? { width: ADVIEW_SIZE.leader.width, height: ADVIEW_SIZE.leader.height }
+                    : { width: ADVIEW_SIZE.banner.width, height: ADVIEW_SIZE.banner.height };
+            } else {
+                adFormatSize.current = { width: ADVIEW_SIZE.mrec.width, height: ADVIEW_SIZE.mrec.height };
+            }
 
-        AppLovinMAX.isInitialized().then((result: boolean) => {
-            setIsInitialized(result);
-            if (!result) {
+            const initialized = await AppLovinMAX.isInitialized();
+            setIsInitialized(initialized);
+            if (!initialized) {
                 console.warn('AdView is mounted before the initialization of the AppLovin MAX React Native module');
             }
-        });
-    }, [adFormat]); // Run once when mounted
+        })();
+    }, [adFormat]);
 
     useEffect(() => {
         if (!isInitialized) return;
@@ -210,49 +209,72 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
 
         sizeProps.current = { width: width, height: height };
 
-        if (adFormat === AdFormat.BANNER) {
-            sizeBannerDimensions(sizeProps.current, adaptiveBannerEnabled, screenWidth, adFormatSize.current).then((adaptedSize: SizeRecord) => {
+        (async () => {
+            if (adFormat === AdFormat.BANNER) {
+                const adaptedSize = await sizeBannerDimensions(sizeProps.current, adaptiveBannerEnabled, screenWidth, adFormatSize.current);
+
                 if (dimensions.current.width !== adaptedSize.width || dimensions.current.height !== adaptedSize.height) {
                     dimensions.current = adaptedSize;
                     forceUpdate();
                 }
-            });
-        } else {
-            dimensions.current = {
-                width: width === 'auto' ? adFormatSize.current.width : width,
-                height: height === 'auto' ? adFormatSize.current.height : height,
-            };
-            forceUpdate();
-        }
-    }); // Run every render
+            } else {
+                dimensions.current = {
+                    width: width === 'auto' ? adFormatSize.current.width : width,
+                    height: height === 'auto' ? adFormatSize.current.height : height,
+                };
+                forceUpdate();
+            }
+        })();
+    }, [adFormat, adaptiveBannerEnabled, isInitialized, screenWidth, style]);
 
-    const onAdLoadedEvent = (event: AdNativeEvent<AdInfo>) => {
-        if (onAdLoaded) onAdLoaded(event.nativeEvent);
-    };
+    const onAdLoadedEvent = useCallback(
+        (event: AdNativeEvent<AdInfo>) => {
+            if (onAdLoaded) onAdLoaded(event.nativeEvent);
+        },
+        [onAdLoaded]
+    );
 
-    const onAdLoadFailedEvent = (event: AdNativeEvent<AdLoadFailedInfo>) => {
-        if (onAdLoadFailed) onAdLoadFailed(event.nativeEvent);
-    };
+    const onAdLoadFailedEvent = useCallback(
+        (event: AdNativeEvent<AdLoadFailedInfo>) => {
+            if (onAdLoadFailed) onAdLoadFailed(event.nativeEvent);
+        },
+        [onAdLoadFailed]
+    );
 
-    const onAdDisplayFailedEvent = (event: AdNativeEvent<AdDisplayFailedInfo>) => {
-        if (onAdDisplayFailed) onAdDisplayFailed(event.nativeEvent);
-    };
+    const onAdDisplayFailedEvent = useCallback(
+        (event: AdNativeEvent<AdDisplayFailedInfo>) => {
+            if (onAdDisplayFailed) onAdDisplayFailed(event.nativeEvent);
+        },
+        [onAdDisplayFailed]
+    );
 
-    const onAdClickedEvent = (event: AdNativeEvent<AdInfo>) => {
-        if (onAdClicked) onAdClicked(event.nativeEvent);
-    };
+    const onAdClickedEvent = useCallback(
+        (event: AdNativeEvent<AdInfo>) => {
+            if (onAdClicked) onAdClicked(event.nativeEvent);
+        },
+        [onAdClicked]
+    );
 
-    const onAdExpandedEvent = (event: AdNativeEvent<AdInfo>) => {
-        if (onAdExpanded) onAdExpanded(event.nativeEvent);
-    };
+    const onAdExpandedEvent = useCallback(
+        (event: AdNativeEvent<AdInfo>) => {
+            if (onAdExpanded) onAdExpanded(event.nativeEvent);
+        },
+        [onAdExpanded]
+    );
 
-    const onAdCollapsedEvent = (event: AdNativeEvent<AdInfo>) => {
-        if (onAdCollapsed) onAdCollapsed(event.nativeEvent);
-    };
+    const onAdCollapsedEvent = useCallback(
+        (event: AdNativeEvent<AdInfo>) => {
+            if (onAdCollapsed) onAdCollapsed(event.nativeEvent);
+        },
+        [onAdCollapsed]
+    );
 
-    const onAdRevenuePaidEvent = (event: AdNativeEvent<AdRevenueInfo>) => {
-        if (onAdRevenuePaid) onAdRevenuePaid(event.nativeEvent);
-    };
+    const onAdRevenuePaidEvent = useCallback(
+        (event: AdNativeEvent<AdRevenueInfo>) => {
+            if (onAdRevenuePaid) onAdRevenuePaid(event.nativeEvent);
+        },
+        [onAdRevenuePaid]
+    );
 
     // Not initialized
     if (!isInitialized) {
@@ -332,14 +354,14 @@ export const destroyNativeUIComponentAdView = async (adUnitId: string): Promise<
  *
  * @param listener Listener to be notified.
  */
-export const addNativeUIComponentAdViewAdLoadedEventListener = (listener: (adInfo: AdInfo) => void) => {
+export const addNativeUIComponentAdViewAdLoadedEventListener = (listener: (adInfo: AdInfo) => void): void => {
     addEventListener(ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT, (adInfo: AdInfo) => listener(adInfo));
 };
 
 /**
  * Removes the event listener to receive {@link AdInfo} when a native UI component loads a new ad.
  */
-export const removeNativeUIComponentAdViewAdLoadedEventListener = () => {
+export const removeNativeUIComponentAdViewAdLoadedEventListener = (): void => {
     removeEventListener(ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT);
 };
 
@@ -349,7 +371,7 @@ export const removeNativeUIComponentAdViewAdLoadedEventListener = () => {
  *
  * @param listener Listener to be notified.
  */
-export const addNativeUIComponentAdViewAdLoadFailedEventListener = (listener: (errorInfo: AdLoadFailedInfo) => void) => {
+export const addNativeUIComponentAdViewAdLoadFailedEventListener = (listener: (errorInfo: AdLoadFailedInfo) => void): void => {
     addEventListener(ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT, (errorInfo: AdLoadFailedInfo) => listener(errorInfo));
 };
 
@@ -357,6 +379,6 @@ export const addNativeUIComponentAdViewAdLoadFailedEventListener = (listener: (e
  * Removes the event listener to receive {@link AdLoadFailedInfo} when a native UI component could
  * not load a new ad.
  */
-export const removeNativeUIComponentAdViewAdLoadFailedEventListener = () => {
+export const removeNativeUIComponentAdViewAdLoadFailedEventListener = (): void => {
     removeEventListener(ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT);
 };

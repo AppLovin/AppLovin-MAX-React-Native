@@ -1,8 +1,4 @@
 export type PrivacyType = {
-    /**********************************************************************************/
-    /* Privacy */
-    /**********************************************************************************/
-
     /**
      * Sets whether or not the user provided consent for information-sharing with AppLovin.
      *
