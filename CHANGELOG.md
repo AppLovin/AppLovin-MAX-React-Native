@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 7.1.1
 * Depend on Android SDK 12.6.1 and iOS SDK 12.6.1.
 * Fix BidMachine media view not clickable on Android.
 ## 7.1.0
