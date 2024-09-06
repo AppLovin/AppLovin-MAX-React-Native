@@ -1,3 +1,5 @@
+import type { ErrorCode } from '../ErrorCode';
+
 /**
  * Represents an ad that has been served by AppLovin MAX.
  */
@@ -70,7 +72,7 @@ export type AdLoadFailedInfo = {
     /**
      * The error code for the error.
      */
-    code: number | null;
+    code: ErrorCode | number;
 
     /**
      * The error message for the error.
