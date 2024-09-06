@@ -18,7 +18,7 @@ const {
 } = AppLovinMAX.getConstants();
 
 /**
- * This class contains various error codes that the SDK can return when a MAX ad fails to load or
+ * This enum contains various error codes that the SDK can return when a MAX ad fails to load or
  * display.
  */
 export enum ErrorCode {
@@ -91,10 +91,10 @@ export enum ErrorCode {
      * invalid ad unit identifier.
      *
      * Possible reasons for an invalid ad unit identifier:
-     * 1. Ad unit identifier is malformed or does not exist
-     * 2. Ad unit is disabled
-     * 3. Ad unit is not associated with the current app's package name
-     * 4. Ad unit was created within the last 30-60 minutes
+     * 1. Ad unit identifier is malformed or does not exist.
+     * 2. Ad unit is disabled.
+     * 3. Ad unit is not associated with the current app's package name.
+     * 4. Ad unit was created within the last 30-60 minutes.
      */
     INVALID_AD_UNIT_ID = MAX_ERROR_CODE_INVALID_AD_UNIT_ID,
 }
