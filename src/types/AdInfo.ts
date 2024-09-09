@@ -72,7 +72,7 @@ export type AdLoadFailedInfo = {
     /**
      * The error code for the error.
      */
-    code: ErrorCode | number;
+    code: ErrorCode;
 
     /**
      * The error message for the error.
@@ -107,7 +107,7 @@ export type AdDisplayFailedInfo = AdInfo & {
     /**
      * The error code for the error.
      */
-    code: string | null;
+    code: ErrorCode;
 
     /**
      * The error message for the error.
@@ -273,7 +273,7 @@ export type AdErrorInfo = {
     /**
      * The error code for the error.
      */
-    code: number;
+    code: ErrorCode;
 
     /**
      * The error message for the error.

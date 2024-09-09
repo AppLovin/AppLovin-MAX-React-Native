@@ -2401,7 +2401,11 @@ public class AppLovinMAXModule
         constants.put( "MAX_ERROR_CODE_FULLSCREEN_AD_NOT_READY", MaxErrorCode.FULLSCREEN_AD_NOT_READY );
         constants.put( "MAX_ERROR_CODE_FULLSCREEN_AD_ALREADY_LOADING", MaxErrorCode.FULLSCREEN_AD_ALREADY_LOADING );
         constants.put( "MAX_ERROR_CODE_FULLSCREEN_AD_LOAD_WHILE_SHOWING", MaxErrorCode.FULLSCREEN_AD_LOAD_WHILE_SHOWING );
+        constants.put( "MAX_ERROR_CODE_NO_ACTIVITY", MaxAdapterError.ERROR_CODE_MISSING_ACTIVITY );
+        constants.put( "MAX_ERROR_CODE_DONT_KEEP_ACTIVITIES_ENABLED", MaxErrorCode.DONT_KEEP_ACTIVITIES_ENABLED );
         constants.put( "MAX_ERROR_CODE_INVALID_AD_UNIT_ID", MaxErrorCode.INVALID_AD_UNIT_ID );
+        // iOS only
+        constants.put( "MAX_ERROR_CODE_FULLSCREEN_AD_INVALID_VIEW_CONTROLLER", -25 );
 
         return constants;
     }
