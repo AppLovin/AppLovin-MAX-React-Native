@@ -2156,7 +2156,6 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier
              @"MAX_ERROR_CODE_FULLSCREEN_AD_LOAD_WHILE_SHOWING" : @(MAErrorCodeFullscreenAdLoadWhileShowing),
              @"MAX_ERROR_CODE_INVALID_AD_UNIT_ID" : @(MAErrorCodeInvalidAdUnitIdentifier),
              // Android only
-             @"MAX_ERROR_CODE_NO_ACTIVITY" : @(-5601),
              @"MAX_ERROR_CODE_DONT_KEEP_ACTIVITIES_ENABLED" : @(-5602)};
 }
 

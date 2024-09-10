@@ -15,7 +15,6 @@ const {
     MAX_ERROR_CODE_FULLSCREEN_AD_INVALID_VIEW_CONTROLLER,
     MAX_ERROR_CODE_FULLSCREEN_AD_ALREADY_LOADING,
     MAX_ERROR_CODE_FULLSCREEN_AD_LOAD_WHILE_SHOWING,
-    MAX_ERROR_CODE_NO_ACTIVITY,
     MAX_ERROR_CODE_DONT_KEEP_ACTIVITIES_ENABLED,
     MAX_ERROR_CODE_INVALID_AD_UNIT_ID,
 } = AppLovinMAX.getConstants();
@@ -95,13 +94,6 @@ export enum ErrorCode {
      * is still showing.
      */
     FULLSCREEN_AD_LOAD_WHILE_SHOWING = MAX_ERROR_CODE_FULLSCREEN_AD_LOAD_WHILE_SHOWING,
-
-    /**
-     * This error code indicates that the SDK failed to load an ad because it could not find the top
-     * Activity.
-     * **Android ONLY**.
-     */
-    NO_ACTIVITY = MAX_ERROR_CODE_NO_ACTIVITY,
 
     /**
      * This error code indicates that the SDK failed to display an ad because the user has the
