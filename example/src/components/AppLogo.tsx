@@ -1,17 +1,20 @@
 import * as React from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet, Appearance } from 'react-native';
 
 const AppLogo = () => {
+    const colorScheme = Appearance.getColorScheme();
+    const iconColour = { tintColor: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
+
     return (
         <View style={styles.container}>
-            <Image style={styles.logo} source={require('../resources/applovin_logo.png')} />
+            <Image style={[styles.logo, iconColour]} source={require('../resources/applovin_logo.png')} />
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     logo: {
-        resizeMode: 'stretch',
+        resizeMode: 'center',
         width: 235,
         height: 55,
     },
