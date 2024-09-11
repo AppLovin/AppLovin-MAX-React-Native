@@ -2140,7 +2140,23 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier
              @"BOTTOM_RIGHT_POSITION" : BOTTOM_RIGHT,
              
              @"BANNER_AD_FORMAT_LABEL" : MAAdFormat.banner.label,
-             @"MREC_AD_FORMAT_LABEL" : MAAdFormat.mrec.label};
+             @"MREC_AD_FORMAT_LABEL" : MAAdFormat.mrec.label,
+
+             @"MAX_ERROR_CODE_UNSPECIFIED" : @(MAErrorCodeUnspecified),
+             @"MAX_ERROR_CODE_NO_FILL" : @(MAErrorCodeNoFill),
+             @"MAX_ERROR_CODE_AD_LOAD_FAILED" : @(MAErrorCodeAdLoadFailed),
+             @"MAX_ERROR_CODE_AD_DISPLAY_FAILED" : @(MAAdapterError.adDisplayFailedError.code),
+             @"MAX_ERROR_CODE_NETWORK_ERROR" : @(MAErrorCodeNetworkError),
+             @"MAX_ERROR_CODE_NETWORK_TIMEOUT" : @(MAErrorCodeNetworkTimeout),
+             @"MAX_ERROR_CODE_NO_NETWORK" : @(MAErrorCodeNoNetwork),
+             @"MAX_ERROR_CODE_FULLSCREEN_AD_ALREADY_SHOWING" : @(MAErrorCodeFullscreenAdAlreadyShowing),
+             @"MAX_ERROR_CODE_FULLSCREEN_AD_NOT_READY" : @(MAErrorCodeFullscreenAdNotReady),
+             @"MAX_ERROR_CODE_FULLSCREEN_AD_INVALID_VIEW_CONTROLLER" : @(MAErrorCodeFullscreenAdInvalidViewController),
+             @"MAX_ERROR_CODE_FULLSCREEN_AD_ALREADY_LOADING" : @(MAErrorCodeFullscreenAdAlreadyLoading),
+             @"MAX_ERROR_CODE_FULLSCREEN_AD_LOAD_WHILE_SHOWING" : @(MAErrorCodeFullscreenAdLoadWhileShowing),
+             @"MAX_ERROR_CODE_INVALID_AD_UNIT_ID" : @(MAErrorCodeInvalidAdUnitIdentifier),
+             // Android only
+             @"MAX_ERROR_CODE_DONT_KEEP_ACTIVITIES_ENABLED" : @(-5602)};
 }
 
 - (void)startObserving

@@ -32,6 +32,7 @@ import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.MaxRewardedAdListener;
 import com.applovin.mediation.MaxSegment;
 import com.applovin.mediation.MaxSegmentCollection;
+import com.applovin.mediation.adapter.MaxAdapterError;
 import com.applovin.mediation.ads.MaxAdView;
 import com.applovin.mediation.ads.MaxAppOpenAd;
 import com.applovin.mediation.ads.MaxInterstitialAd;
@@ -2388,6 +2389,22 @@ public class AppLovinMAXModule
 
         constants.put( "BANNER_AD_FORMAT_LABEL", MaxAdFormat.BANNER.getLabel() );
         constants.put( "MREC_AD_FORMAT_LABEL", MaxAdFormat.MREC.getLabel() );
+
+        constants.put( "MAX_ERROR_CODE_UNSPECIFIED", MaxErrorCode.UNSPECIFIED );
+        constants.put( "MAX_ERROR_CODE_NO_FILL", MaxErrorCode.NO_FILL );
+        constants.put( "MAX_ERROR_CODE_AD_LOAD_FAILED", MaxErrorCode.AD_LOAD_FAILED );
+        constants.put( "MAX_ERROR_CODE_AD_DISPLAY_FAILED", MaxAdapterError.ERROR_CODE_AD_DISPLAY_FAILED );
+        constants.put( "MAX_ERROR_CODE_NETWORK_ERROR", MaxErrorCode.NETWORK_ERROR );
+        constants.put( "MAX_ERROR_CODE_NETWORK_TIMEOUT", MaxErrorCode.NETWORK_TIMEOUT );
+        constants.put( "MAX_ERROR_CODE_NO_NETWORK", MaxErrorCode.NO_NETWORK );
+        constants.put( "MAX_ERROR_CODE_FULLSCREEN_AD_ALREADY_SHOWING", MaxErrorCode.FULLSCREEN_AD_ALREADY_SHOWING );
+        constants.put( "MAX_ERROR_CODE_FULLSCREEN_AD_NOT_READY", MaxErrorCode.FULLSCREEN_AD_NOT_READY );
+        constants.put( "MAX_ERROR_CODE_FULLSCREEN_AD_ALREADY_LOADING", MaxErrorCode.FULLSCREEN_AD_ALREADY_LOADING );
+        constants.put( "MAX_ERROR_CODE_FULLSCREEN_AD_LOAD_WHILE_SHOWING", MaxErrorCode.FULLSCREEN_AD_LOAD_WHILE_SHOWING );
+        constants.put( "MAX_ERROR_CODE_DONT_KEEP_ACTIVITIES_ENABLED", MaxErrorCode.DONT_KEEP_ACTIVITIES_ENABLED );
+        constants.put( "MAX_ERROR_CODE_INVALID_AD_UNIT_ID", MaxErrorCode.INVALID_AD_UNIT_ID );
+        // iOS only
+        constants.put( "MAX_ERROR_CODE_FULLSCREEN_AD_INVALID_VIEW_CONTROLLER", -25 );
 
         return constants;
     }
