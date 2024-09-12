@@ -14,9 +14,9 @@ const AppLogo = () => {
 
 const styles = StyleSheet.create({
     logo: {
-        resizeMode: 'center',
+        resizeMode: 'stretch',
         width: 235,
-        height: 55,
+        height: 42,
     },
     container: {
         height: 60,
