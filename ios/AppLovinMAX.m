@@ -280,16 +280,6 @@ RCT_EXPORT_METHOD(hasUserConsent:(RCTPromiseResolveBlock)resolve :(RCTPromiseRej
     resolve(@([ALPrivacySettings hasUserConsent]));
 }
 
-RCT_EXPORT_METHOD(setIsAgeRestrictedUser:(BOOL)isAgeRestrictedUser)
-{
-    [ALPrivacySettings setIsAgeRestrictedUser: isAgeRestrictedUser];
-}
-
-RCT_EXPORT_METHOD(isAgeRestrictedUser:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
-{
-    resolve(@([ALPrivacySettings isAgeRestrictedUser]));
-}
-
 RCT_EXPORT_METHOD(setDoNotSell:(BOOL)doNotSell)
 {
     [ALPrivacySettings setDoNotSell: doNotSell];
