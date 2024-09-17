@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+* Removed COPPA support.
 * Add constants for MAX Error Codes. For more info, check out our [docs](https://developers.applovin.com/en/max/react-native/overview/error-handling#max-error-codes).
 ## 7.1.1
 * Depend on Android SDK 12.6.1 and iOS SDK 12.6.1.

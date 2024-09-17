@@ -16,18 +16,6 @@ export type PrivacyType = {
     hasUserConsent(): Promise<boolean>;
 
     /**
-     * Marks the user as age-restricted (i.e. under 16).
-     *
-     * @param isAgeRestrictedUser true if the user is age restricted (i.e. under 16).
-     */
-    setIsAgeRestrictedUser(isAgeRestrictedUser: boolean): void;
-
-    /**
-     * Checks if the user is age-restricted.
-     */
-    isAgeRestrictedUser(): Promise<boolean>;
-
-    /**
      * Sets whether or not the user opted out of the sale of their personal information.
      *
      * @param doNotSell true if the user opted out of the sale of their personal information.

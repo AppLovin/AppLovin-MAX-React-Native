@@ -293,18 +293,6 @@ public class AppLovinMAXModule
     }
 
     @ReactMethod
-    public void setIsAgeRestrictedUser(final boolean isAgeRestrictedUser)
-    {
-        AppLovinPrivacySettings.setIsAgeRestrictedUser( isAgeRestrictedUser, getReactApplicationContext() );
-    }
-
-    @ReactMethod
-    public void isAgeRestrictedUser(final Promise promise)
-    {
-        promise.resolve( AppLovinPrivacySettings.isAgeRestrictedUser( getReactApplicationContext() ) );
-    }
-
-    @ReactMethod
     public void setDoNotSell(final boolean doNotSell)
     {
         AppLovinPrivacySettings.setDoNotSell( doNotSell, getReactApplicationContext() );
