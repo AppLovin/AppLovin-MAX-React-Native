@@ -1375,18 +1375,6 @@ public class AppLovinMAXModule
     }
 
     @Override
-    public void onRewardedVideoCompleted(@NonNull final MaxAd ad)
-    {
-        // This event is not forwarded
-    }
-
-    @Override
-    public void onRewardedVideoStarted(@NonNull final MaxAd ad)
-    {
-        // This event is not forwarded
-    }
-
-    @Override
     public void onUserRewarded(final MaxAd ad, @NonNull final MaxReward reward)
     {
         final MaxAdFormat adFormat = ad.getFormat();
