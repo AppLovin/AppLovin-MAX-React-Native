@@ -85,7 +85,7 @@ const removeAdHiddenEventListener = (): void => {
 };
 
 const addAdRevenuePaidListener = (listener: (adInfo: AdRevenueInfo) => void): void => {
-    addEventListener(ON_APPOPEN_AD_REVENUE_PAID, (adInfo: AdRevenueInfo) => listener(adInfo));
+    addEventListener(ON_APPOPEN_AD_REVENUE_PAID, listener);
 };
 
 const removeAdRevenuePaidListener = (): void => {
