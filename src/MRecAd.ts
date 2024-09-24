@@ -55,7 +55,7 @@ const stopAutoRefresh = (adUnitId: string): void => {
 };
 
 const addAdLoadedEventListener = (listener: (adInfo: AdInfo) => void): void => {
-    addEventListener(ON_MREC_AD_LOADED_EVENT, (adInfo: AdInfo) => listener(adInfo));
+    addEventListener(ON_MREC_AD_LOADED_EVENT, listener);
 };
 
 const removeAdLoadedEventListener = (): void => {
@@ -63,7 +63,7 @@ const removeAdLoadedEventListener = (): void => {
 };
 
 const addAdLoadFailedEventListener = (listener: (errorInfo: AdLoadFailedInfo) => void): void => {
-    addEventListener(ON_MREC_AD_LOAD_FAILED_EVENT, (errorInfo: AdLoadFailedInfo) => listener(errorInfo));
+    addEventListener(ON_MREC_AD_LOAD_FAILED_EVENT, listener);
 };
 
 const removeAdLoadFailedEventListener = (): void => {
@@ -71,7 +71,7 @@ const removeAdLoadFailedEventListener = (): void => {
 };
 
 const addAdClickedEventListener = (listener: (adInfo: AdInfo) => void): void => {
-    addEventListener(ON_MREC_AD_CLICKED_EVENT, (adInfo: AdInfo) => listener(adInfo));
+    addEventListener(ON_MREC_AD_CLICKED_EVENT, listener);
 };
 
 const removeAdClickedEventListener = (): void => {
@@ -79,7 +79,7 @@ const removeAdClickedEventListener = (): void => {
 };
 
 const addAdCollapsedEventListener = (listener: (adInfo: AdInfo) => void): void => {
-    addEventListener(ON_MREC_AD_COLLAPSED_EVENT, (adInfo: AdInfo) => listener(adInfo));
+    addEventListener(ON_MREC_AD_COLLAPSED_EVENT, listener);
 };
 
 const removeAdCollapsedEventListener = (): void => {
@@ -87,7 +87,7 @@ const removeAdCollapsedEventListener = (): void => {
 };
 
 const addAdExpandedEventListener = (listener: (adInfo: AdInfo) => void): void => {
-    addEventListener(ON_MREC_AD_EXPANDED_EVENT, (adInfo: AdInfo) => listener(adInfo));
+    addEventListener(ON_MREC_AD_EXPANDED_EVENT, listener);
 };
 
 const removeAdExpandedEventListener = (): void => {
@@ -95,7 +95,7 @@ const removeAdExpandedEventListener = (): void => {
 };
 
 const addAdRevenuePaidListener = (listener: (adInfo: AdRevenueInfo) => void): void => {
-    addEventListener(ON_MREC_AD_REVENUE_PAID, (adInfo: AdRevenueInfo) => listener(adInfo));
+    addEventListener(ON_MREC_AD_REVENUE_PAID, listener);
 };
 
 const removeAdRevenuePaidListener = (): void => {

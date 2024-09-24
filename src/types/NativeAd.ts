@@ -30,12 +30,12 @@ export type NativeAd = {
     /**
      * The URL string of the icon.
      */
-    url?: string | null;
+    url?: string;
 
     /**
      * The star rating of the native ad.
      */
-    starRating?: number | null;
+    starRating?: number;
 
     /**
      * Whether or not the Options view is available.

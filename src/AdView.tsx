@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState, useRef, useCallback, useImperativeHandle, useReducer, forwardRef } from 'react';
-import { NativeModules, requireNativeComponent, StyleSheet, UIManager, findNodeHandle, useWindowDimensions } from 'react-native';
+import { NativeModules, requireNativeComponent, StyleSheet, UIManager, findNodeHandle, useWindowDimensions, View } from 'react-native';
 import type { ViewProps, ViewStyle, StyleProp, NativeMethods, DimensionValue } from 'react-native';
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from './types/AdInfo';
 import type { AdNativeEvent } from './types/AdEvent';
@@ -82,8 +82,8 @@ const ADVIEW_SIZE = {
 
 // Returns 'auto' for unspecified width / height
 const getOutlineViewSize = (style: StyleProp<ViewStyle>): [DimensionValue, DimensionValue] => {
-    const viewStyle = StyleSheet.flatten(style || {});
-    return [viewStyle?.width ?? 'auto', viewStyle?.height ?? 'auto'];
+    const viewStyle = StyleSheet.flatten(style) || {};
+    return [viewStyle.width ?? 'auto', viewStyle.height ?? 'auto'];
 };
 
 const sizeBannerDimensions = async (sizeProps: SizeRecord, adaptiveBannerEnabled: boolean, screenWidth: number, bannerFormatSize: SizeRecord): Promise<SizeRecord> => {
@@ -105,7 +105,7 @@ const sizeBannerDimensions = async (sizeProps: SizeRecord, adaptiveBannerEnabled
         height = sizeProps.height;
     }
 
-    return { width: width, height: height };
+    return { width, height };
 };
 
 /**
@@ -176,9 +176,7 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
     useImperativeHandle(ref, () => ({ loadAd }), [loadAd]);
 
     const saveElement = useCallback((element: AdViewType | null) => {
-        if (element) {
-            adViewRef.current = element;
-        }
+        adViewRef.current = element;
     }, []);
 
     useEffect(() => {
@@ -201,13 +199,11 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
     }, [adFormat]);
 
     useEffect(() => {
-        if (!isInitialized) return;
-
         const [width, height] = getOutlineViewSize(style);
 
         if (sizeProps.current.width === width && sizeProps.current.height === height) return;
 
-        sizeProps.current = { width: width, height: height };
+        sizeProps.current = { width, height };
 
         (async () => {
             if (adFormat === AdFormat.BANNER) {
@@ -276,16 +272,9 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
         [onAdRevenuePaid]
     );
 
-    // Not initialized
-    if (!isInitialized) {
-        return null;
-    } else {
-        const isDimensionsSet = Object.keys(dimensions.current).length > 0;
-
-        // Not sized yet
-        if (!isDimensionsSet) {
-            return null;
-        }
+    if (!isInitialized || Object.keys(dimensions.current).length === 0) {
+        // Early return if not initialized or dimensions are not set
+        return <View style={Object.assign({}, style, dimensions.current)} {...otherProps} />;
     }
 
     return (
@@ -355,7 +344,7 @@ export const destroyNativeUIComponentAdView = async (adUnitId: string): Promise<
  * @param listener Listener to be notified.
  */
 export const addNativeUIComponentAdViewAdLoadedEventListener = (listener: (adInfo: AdInfo) => void): void => {
-    addEventListener(ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT, (adInfo: AdInfo) => listener(adInfo));
+    addEventListener(ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT, listener);
 };
 
 /**
@@ -372,7 +361,7 @@ export const removeNativeUIComponentAdViewAdLoadedEventListener = (): void => {
  * @param listener Listener to be notified.
  */
 export const addNativeUIComponentAdViewAdLoadFailedEventListener = (listener: (errorInfo: AdLoadFailedInfo) => void): void => {
-    addEventListener(ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT, (errorInfo: AdLoadFailedInfo) => listener(errorInfo));
+    addEventListener(ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT, listener);
 };
 
 /**

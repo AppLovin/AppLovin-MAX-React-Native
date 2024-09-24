@@ -3,13 +3,14 @@ import { useContext, useRef, useEffect, useCallback, useMemo } from 'react';
 import { findNodeHandle, Text, Image, View, TouchableOpacity, StyleSheet } from 'react-native';
 import type { ViewProps, ImageProps, TextStyle, StyleProp, TextProps } from 'react-native';
 import { NativeAdViewContext } from './NativeAdViewProvider';
+import type { NativeAd } from '../types/NativeAd';
 
 // Custom hook to handle setting native ad view properties and return nativeAd
-const useNativeAdViewProps = (nativeAdProp, ref, nativePropKey) => {
+const useNativeAdViewProps = (nativeAdProp: keyof NativeAd, ref: React.RefObject<any>, nativePropKey: string) => {
     const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
 
     const setNativeProps = useCallback(() => {
-        if (!nativeAd[nativeAdProp] || !ref || !ref.current) return;
+        if (!nativeAd[nativeAdProp] || !ref.current) return;
         nativeAdView?.setNativeProps({
             [nativePropKey]: findNodeHandle(ref.current),
         });
@@ -115,11 +116,12 @@ export const StarRatingView = (props: ViewProps) => {
         }
 
         return Array.from({ length: maxStarCount }).map((_, index) => {
-            const width = (nativeAd.starRating - index) * starSize;
+            const starRating = nativeAd.starRating!;
+            const width = (starRating - index) * starSize;
             return (
                 <View key={index}>
                     <Text style={{ fontSize: starSize, color: starColor }}>{String.fromCodePoint(0x2606)}</Text>
-                    {nativeAd.starRating > index && (
+                    {starRating > index && (
                         <View style={[{ width: width }, styles.starRating]}>
                             <Text style={{ fontSize: starSize, color: starColor }}>{String.fromCodePoint(0x2605)}</Text>
                         </View>

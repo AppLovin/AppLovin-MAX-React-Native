@@ -37,7 +37,7 @@ const setLocalExtraParameter = (adUnitId: string, key: string, value: LocalExtra
 };
 
 const addAdLoadedEventListener = (listener: (adInfo: AdInfo) => void): void => {
-    addEventListener(ON_INTERSTITIAL_LOADED_EVENT, (adInfo: AdInfo) => listener(adInfo));
+    addEventListener(ON_INTERSTITIAL_LOADED_EVENT, listener);
 };
 
 const removeAdLoadedEventListener = (): void => {
@@ -45,7 +45,7 @@ const removeAdLoadedEventListener = (): void => {
 };
 
 const addAdLoadFailedEventListener = (listener: (errorInfo: AdLoadFailedInfo) => void): void => {
-    addEventListener(ON_INTERSTITIAL_LOAD_FAILED_EVENT, (errorInfo: AdLoadFailedInfo) => listener(errorInfo));
+    addEventListener(ON_INTERSTITIAL_LOAD_FAILED_EVENT, listener);
 };
 
 const removeAdLoadFailedEventListener = (): void => {
@@ -53,7 +53,7 @@ const removeAdLoadFailedEventListener = (): void => {
 };
 
 const addAdClickedEventListener = (listener: (adInfo: AdInfo) => void): void => {
-    addEventListener(ON_INTERSTITIAL_CLICKED_EVENT, (adInfo: AdInfo) => listener(adInfo));
+    addEventListener(ON_INTERSTITIAL_CLICKED_EVENT, listener);
 };
 
 const removeAdClickedEventListener = (): void => {
@@ -61,7 +61,7 @@ const removeAdClickedEventListener = (): void => {
 };
 
 const addAdDisplayedEventListener = (listener: (adInfo: AdInfo) => void): void => {
-    addEventListener(ON_INTERSTITIAL_DISPLAYED_EVENT, (adInfo: AdInfo) => listener(adInfo));
+    addEventListener(ON_INTERSTITIAL_DISPLAYED_EVENT, listener);
 };
 
 const removeAdDisplayedEventListener = (): void => {
@@ -69,7 +69,7 @@ const removeAdDisplayedEventListener = (): void => {
 };
 
 const addAdFailedToDisplayEventListener = (listener: (errorInfo: AdDisplayFailedInfo) => void): void => {
-    addEventListener(ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT, (errorInfo: AdDisplayFailedInfo) => listener(errorInfo));
+    addEventListener(ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT, listener);
 };
 
 const removeAdFailedToDisplayEventListener = (): void => {
@@ -77,7 +77,7 @@ const removeAdFailedToDisplayEventListener = (): void => {
 };
 
 const addAdHiddenEventListener = (listener: (adInfo: AdInfo) => void): void => {
-    addEventListener(ON_INTERSTITIAL_HIDDEN_EVENT, (adInfo: AdInfo) => listener(adInfo));
+    addEventListener(ON_INTERSTITIAL_HIDDEN_EVENT, listener);
 };
 
 const removeAdHiddenEventListener = (): void => {
@@ -85,7 +85,7 @@ const removeAdHiddenEventListener = (): void => {
 };
 
 const addAdRevenuePaidListener = (listener: (adInfo: AdRevenueInfo) => void): void => {
-    addEventListener(ON_INTERSTITIAL_AD_REVENUE_PAID, (adInfo: AdRevenueInfo) => listener(adInfo));
+    addEventListener(ON_INTERSTITIAL_AD_REVENUE_PAID, listener);
 };
 
 const removeAdRevenuePaidListener = (): void => {

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { forwardRef, useContext, useImperativeHandle, useRef, useState, useEffect, useCallback } from 'react';
-import { NativeModules, requireNativeComponent, UIManager, findNodeHandle } from 'react-native';
+import { NativeModules, requireNativeComponent, UIManager, findNodeHandle, View } from 'react-native';
 import type { ViewProps } from 'react-native';
 import { NativeAdViewContext, NativeAdViewProvider } from './NativeAdViewProvider';
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from '../types/AdInfo';
@@ -65,7 +65,7 @@ export const NativeAdView = forwardRef<NativeAdViewHandler, NativeAdViewProps & 
             const result = await AppLovinMAX.isInitialized();
             setIsInitialized(result);
             if (!result) {
-                console.warn('NativeAdView is mounted before the initialization of the AppLovin MAX React Native module');
+                console.warn('NativeAdView is mounted before the initialization of the AppLovin MAX React Native module.');
             }
         };
 
@@ -74,7 +74,7 @@ export const NativeAdView = forwardRef<NativeAdViewHandler, NativeAdViewProps & 
 
     // Avoid rendering the NativeAdView if the SDK is not initialized
     if (!isInitialized) {
-        return null;
+        return <View {...props} />;
     }
 
     return (
@@ -121,28 +121,28 @@ const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps & Vie
     const onAdLoadedEvent = useCallback(
         (event: { nativeEvent: { nativeAd: NativeAd; adInfo: AdInfo } }) => {
             setNativeAd(event.nativeEvent.nativeAd);
-            if (onAdLoaded) onAdLoaded(event.nativeEvent.adInfo);
+            onAdLoaded?.(event.nativeEvent.adInfo);
         },
         [onAdLoaded, setNativeAd]
     );
 
     const onAdLoadFailedEvent = useCallback(
         (event: AdNativeEvent<AdLoadFailedInfo>) => {
-            if (onAdLoadFailed) onAdLoadFailed(event.nativeEvent);
+            onAdLoadFailed?.(event.nativeEvent);
         },
         [onAdLoadFailed]
     );
 
     const onAdClickedEvent = useCallback(
         (event: AdNativeEvent<AdInfo>) => {
-            if (onAdClicked) onAdClicked(event.nativeEvent);
+            onAdClicked?.(event.nativeEvent);
         },
         [onAdClicked]
     );
 
     const onAdRevenuePaidEvent = useCallback(
         (event: AdNativeEvent<AdRevenueInfo>) => {
-            if (onAdRevenuePaid) onAdRevenuePaid(event.nativeEvent);
+            onAdRevenuePaid?.(event.nativeEvent);
         },
         [onAdRevenuePaid]
     );
