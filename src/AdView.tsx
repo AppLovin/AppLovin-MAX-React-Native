@@ -225,49 +225,49 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
 
     const onAdLoadedEvent = useCallback(
         (event: AdNativeEvent<AdInfo>) => {
-            if (onAdLoaded) onAdLoaded(event.nativeEvent);
+            onAdLoaded?.(event.nativeEvent);
         },
         [onAdLoaded]
     );
 
     const onAdLoadFailedEvent = useCallback(
         (event: AdNativeEvent<AdLoadFailedInfo>) => {
-            if (onAdLoadFailed) onAdLoadFailed(event.nativeEvent);
+            onAdLoadFailed?.(event.nativeEvent);
         },
         [onAdLoadFailed]
     );
 
     const onAdDisplayFailedEvent = useCallback(
         (event: AdNativeEvent<AdDisplayFailedInfo>) => {
-            if (onAdDisplayFailed) onAdDisplayFailed(event.nativeEvent);
+            onAdDisplayFailed?.(event.nativeEvent);
         },
         [onAdDisplayFailed]
     );
 
     const onAdClickedEvent = useCallback(
         (event: AdNativeEvent<AdInfo>) => {
-            if (onAdClicked) onAdClicked(event.nativeEvent);
+            onAdClicked?.(event.nativeEvent);
         },
         [onAdClicked]
     );
 
     const onAdExpandedEvent = useCallback(
         (event: AdNativeEvent<AdInfo>) => {
-            if (onAdExpanded) onAdExpanded(event.nativeEvent);
+            onAdExpanded?.(event.nativeEvent);
         },
         [onAdExpanded]
     );
 
     const onAdCollapsedEvent = useCallback(
         (event: AdNativeEvent<AdInfo>) => {
-            if (onAdCollapsed) onAdCollapsed(event.nativeEvent);
+            onAdCollapsed?.(event.nativeEvent);
         },
         [onAdCollapsed]
     );
 
     const onAdRevenuePaidEvent = useCallback(
         (event: AdNativeEvent<AdRevenueInfo>) => {
-            if (onAdRevenuePaid) onAdRevenuePaid(event.nativeEvent);
+            onAdRevenuePaid?.(event.nativeEvent);
         },
         [onAdRevenuePaid]
     );
