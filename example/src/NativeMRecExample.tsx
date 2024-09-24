@@ -60,6 +60,7 @@ const NativeMRecExample = ({ adUnitId, isInitialized, log, isNativeUIMRecShowing
 
 const styles = StyleSheet.create({
     mrec: {
+        backgroundColor: '#000000',
         position: 'absolute',
         width: '100%',
         height: 'auto',
