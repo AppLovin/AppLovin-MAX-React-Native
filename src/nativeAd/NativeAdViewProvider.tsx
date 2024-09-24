@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useState, createContext } from 'react';
+import type { ReactNode } from 'react';
 import type { NativeMethods } from 'react-native';
 import type { NativeAd } from '../types/NativeAd';
 import type { NativeAdViewProps } from '../types/NativeAdViewProps';
@@ -10,29 +11,34 @@ export type NativeAdViewContextType = {
     nativeAd: NativeAd;
     nativeAdView: NativeAdViewType | null;
     setNativeAd: React.Dispatch<React.SetStateAction<NativeAd>>;
-    setNativeAdView: React.Dispatch<React.SetStateAction<NativeAdViewType>>;
+    setNativeAdView: React.Dispatch<React.SetStateAction<NativeAdViewType | null>>;
+};
+
+const defaultNativeAd: NativeAd = {
+    isOptionsViewAvailable: false,
+    isMediaViewAvailable: false,
 };
 
 export const NativeAdViewContext = createContext<NativeAdViewContextType>({
-    nativeAd: { isOptionsViewAvailable: false, isMediaViewAvailable: false },
+    nativeAd: defaultNativeAd,
     nativeAdView: null,
     setNativeAd: () => {},
     setNativeAdView: () => {},
 });
 
-export const NativeAdViewProvider: React.FC<{ children: React.ReactNode }> = (props) => {
-    const [nativeAd, setNativeAd] = useState({
-        isOptionsViewAvailable: false,
-        isMediaViewAvailable: false,
-    });
-    const [nativeAdView, setNativeAdView] = useState(Object);
+export const NativeAdViewProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+    const [nativeAd, setNativeAd] = useState<NativeAd>(defaultNativeAd);
+    const [nativeAdView, setNativeAdView] = useState<NativeAdViewType | null>(null);
 
-    const providerValue = {
-        nativeAd,
-        nativeAdView,
-        setNativeAd,
-        setNativeAdView,
-    };
+    const providerValue = React.useMemo(
+        () => ({
+            nativeAd,
+            nativeAdView,
+            setNativeAd,
+            setNativeAdView,
+        }),
+        [nativeAd, nativeAdView]
+    );
 
-    return <NativeAdViewContext.Provider value={providerValue}>{props.children}</NativeAdViewContext.Provider>;
+    return <NativeAdViewContext.Provider value={providerValue}>{children}</NativeAdViewContext.Provider>;
 };

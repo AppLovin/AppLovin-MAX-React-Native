@@ -36,59 +36,59 @@ const setLocalExtraParameter = (adUnitId: string, key: string, value: LocalExtra
     AppLovinMAX.setInterstitialLocalExtraParameter(adUnitId, { [key]: value });
 };
 
-const addAdLoadedEventListener = (listener: (adInfo: AdInfo) => void) => {
-    addEventListener(ON_INTERSTITIAL_LOADED_EVENT, (adInfo: AdInfo) => listener(adInfo));
+const addAdLoadedEventListener = (listener: (adInfo: AdInfo) => void): void => {
+    addEventListener(ON_INTERSTITIAL_LOADED_EVENT, listener);
 };
 
-const removeAdLoadedEventListener = () => {
+const removeAdLoadedEventListener = (): void => {
     removeEventListener(ON_INTERSTITIAL_LOADED_EVENT);
 };
 
-const addAdLoadFailedEventListener = (listener: (errorInfo: AdLoadFailedInfo) => void) => {
-    addEventListener(ON_INTERSTITIAL_LOAD_FAILED_EVENT, (errorInfo: AdLoadFailedInfo) => listener(errorInfo));
+const addAdLoadFailedEventListener = (listener: (errorInfo: AdLoadFailedInfo) => void): void => {
+    addEventListener(ON_INTERSTITIAL_LOAD_FAILED_EVENT, listener);
 };
 
-const removeAdLoadFailedEventListener = () => {
+const removeAdLoadFailedEventListener = (): void => {
     removeEventListener(ON_INTERSTITIAL_LOAD_FAILED_EVENT);
 };
 
-const addAdClickedEventListener = (listener: (adInfo: AdInfo) => void) => {
-    addEventListener(ON_INTERSTITIAL_CLICKED_EVENT, (adInfo: AdInfo) => listener(adInfo));
+const addAdClickedEventListener = (listener: (adInfo: AdInfo) => void): void => {
+    addEventListener(ON_INTERSTITIAL_CLICKED_EVENT, listener);
 };
 
-const removeAdClickedEventListener = () => {
+const removeAdClickedEventListener = (): void => {
     removeEventListener(ON_INTERSTITIAL_CLICKED_EVENT);
 };
 
-const addAdDisplayedEventListener = (listener: (adInfo: AdInfo) => void) => {
-    addEventListener(ON_INTERSTITIAL_DISPLAYED_EVENT, (adInfo: AdInfo) => listener(adInfo));
+const addAdDisplayedEventListener = (listener: (adInfo: AdInfo) => void): void => {
+    addEventListener(ON_INTERSTITIAL_DISPLAYED_EVENT, listener);
 };
 
-const removeAdDisplayedEventListener = () => {
+const removeAdDisplayedEventListener = (): void => {
     removeEventListener(ON_INTERSTITIAL_DISPLAYED_EVENT);
 };
 
-const addAdFailedToDisplayEventListener = (listener: (errorInfo: AdDisplayFailedInfo) => void) => {
-    addEventListener(ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT, (errorInfo: AdDisplayFailedInfo) => listener(errorInfo));
+const addAdFailedToDisplayEventListener = (listener: (errorInfo: AdDisplayFailedInfo) => void): void => {
+    addEventListener(ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT, listener);
 };
 
-const removeAdFailedToDisplayEventListener = () => {
+const removeAdFailedToDisplayEventListener = (): void => {
     removeEventListener(ON_INTERSTITIAL_AD_FAILED_TO_DISPLAY_EVENT);
 };
 
-const addAdHiddenEventListener = (listener: (adInfo: AdInfo) => void) => {
-    addEventListener(ON_INTERSTITIAL_HIDDEN_EVENT, (adInfo: AdInfo) => listener(adInfo));
+const addAdHiddenEventListener = (listener: (adInfo: AdInfo) => void): void => {
+    addEventListener(ON_INTERSTITIAL_HIDDEN_EVENT, listener);
 };
 
-const removeAdHiddenEventListener = () => {
+const removeAdHiddenEventListener = (): void => {
     removeEventListener(ON_INTERSTITIAL_HIDDEN_EVENT);
 };
 
-const addAdRevenuePaidListener = (listener: (adInfo: AdRevenueInfo) => void) => {
-    addEventListener(ON_INTERSTITIAL_AD_REVENUE_PAID, (adInfo: AdRevenueInfo) => listener(adInfo));
+const addAdRevenuePaidListener = (listener: (adInfo: AdRevenueInfo) => void): void => {
+    addEventListener(ON_INTERSTITIAL_AD_REVENUE_PAID, listener);
 };
 
-const removeAdRevenuePaidListener = () => {
+const removeAdRevenuePaidListener = (): void => {
     removeEventListener(ON_INTERSTITIAL_AD_REVENUE_PAID);
 };
 

@@ -1,5 +1,5 @@
 /**
- * Represents a native ad for rendering `NativeAdView`.  Internal use only.
+ * Represents a native ad for rendering in {@link NativeAdView}. This type is intended for internal use only.
  */
 export type NativeAd = {
     /**
@@ -30,12 +30,12 @@ export type NativeAd = {
     /**
      * The URL string of the icon.
      */
-    url?: string | null;
+    url?: string;
 
     /**
      * The star rating of the native ad.
      */
-    starRating?: number | null;
+    starRating?: number;
 
     /**
      * Whether or not the Options view is available.
