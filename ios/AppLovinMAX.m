@@ -338,11 +338,6 @@ RCT_EXPORT_METHOD(setInitializationAdUnitIds:(NSArray<NSString *> *)adUnitIds)
 
 #pragma mark - MAX Terms and Privacy Policy Flow
 
-RCT_EXPORT_METHOD(setConsentFlowEnabled:(BOOL)enabled)
-{
-    self.sdk.settings.consentFlowSettings.enabled = enabled;
-}
-
 RCT_EXPORT_METHOD(setTermsAndPrivacyPolicyFlowEnabled:(BOOL)enabled)
 {
     self.sdk.settings.termsAndPrivacyPolicyFlowSettings.enabled = enabled;
@@ -352,14 +347,12 @@ RCT_EXPORT_METHOD(setPrivacyPolicyUrl:(NSString *)urlString)
 {
     NSURL *url = [NSURL URLWithString: urlString];
     self.sdk.settings.termsAndPrivacyPolicyFlowSettings.privacyPolicyURL = url;
-    self.sdk.settings.consentFlowSettings.privacyPolicyURL = url;
 }
 
 RCT_EXPORT_METHOD(setTermsOfServiceUrl:(NSString *)urlString)
 {
     NSURL *url = [NSURL URLWithString: urlString];
     self.sdk.settings.termsAndPrivacyPolicyFlowSettings.termsOfServiceURL = url;
-    self.sdk.settings.consentFlowSettings.termsOfServiceURL = url;
 }
 
 RCT_EXPORT_METHOD(setConsentFlowDebugUserGeography:(NSString *)userGeography)
