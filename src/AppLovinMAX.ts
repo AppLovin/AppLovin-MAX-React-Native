@@ -111,7 +111,11 @@ const getSegments = async (): Promise<Map<number, number[]> | null> => {
     return map;
 };
 
-type NativeAppLovinMAXType = Omit<AppLovinMAXType, 'initialize' | 'getSegments'>;
+const setConsentFlowEnabled = (_: boolean): void => {
+    console.warn('Deprecated, use AppLovinMAX.setTermsAndPrivacyPolicyFlowEnabled() instead.');
+};
+
+type NativeAppLovinMAXType = Omit<AppLovinMAXType, 'initialize' | 'getSegments' | 'setConsentFlowEnabled'>;
 
 const nativeMethods: NativeAppLovinMAXType = NativeAppLovinMAX;
 
@@ -119,6 +123,7 @@ export const AppLovinMAX: AppLovinMAXType = {
     ...nativeMethods,
     initialize,
     getSegments,
+    setConsentFlowEnabled,
 };
 
 export default AppLovinMAX;
