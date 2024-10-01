@@ -60,6 +60,7 @@ export const CallToActionView = (props: TextProps) => {
     const callToActionRef = useRef<Text | null>(null);
     const nativeAd = useNativeAdViewProps('callToAction', callToActionRef, 'callToActionView');
 
+    // TouchableOpacity disables clicking on certain Android devices.
     if (Platform.OS === 'android') {
         return (
             <Text {...props} ref={callToActionRef}>
