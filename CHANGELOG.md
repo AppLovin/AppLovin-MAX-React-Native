@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 8.0.1
 * Fix CTA not clickable in native ads on Android.
 ## 8.0.0
 * Depend on Android SDK 13.0.0 and iOS SDK 13.0.0.
