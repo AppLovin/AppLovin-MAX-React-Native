@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useContext, useRef, useEffect, useCallback, useMemo } from 'react';
-import { findNodeHandle, Text, Image, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { findNodeHandle, Text, Image, View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import type { ViewProps, ImageProps, TextStyle, StyleProp, TextProps } from 'react-native';
 import { NativeAdViewContext } from './NativeAdViewProvider';
 import type { NativeAd } from '../types/NativeAd';
@@ -60,13 +60,21 @@ export const CallToActionView = (props: TextProps) => {
     const callToActionRef = useRef<Text | null>(null);
     const nativeAd = useNativeAdViewProps('callToAction', callToActionRef, 'callToActionView');
 
-    return (
-        <TouchableOpacity>
+    if (Platform.OS === 'android') {
+        return (
             <Text {...props} ref={callToActionRef}>
                 {nativeAd.callToAction || null}
             </Text>
-        </TouchableOpacity>
-    );
+        );
+    } else {
+        return (
+            <TouchableOpacity>
+                <Text {...props} ref={callToActionRef}>
+                    {nativeAd.callToAction || null}
+                </Text>
+            </TouchableOpacity>
+        );
+    }
 };
 
 export const IconView = (props: Omit<ImageProps, 'source'>) => {
