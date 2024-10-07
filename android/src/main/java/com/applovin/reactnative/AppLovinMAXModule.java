@@ -76,8 +76,9 @@ public class AppLovinMAXModule
     implements LifecycleEventListener,
     MaxAdListener, MaxAdViewAdListener, MaxRewardedAdListener, MaxAdRevenueListener
 {
-    private static final String SDK_TAG = "AppLovinSdk";
-    private static final String TAG     = "AppLovinMAXModule";
+    private static final String SDK_TAG        = "AppLovinSdk";
+    private static final String TAG            = "AppLovinMAXModule";
+    private static final String PLUGIN_VERSION = "8.0.1";
 
     private static final String USER_GEOGRAPHY_GDPR    = "G";
     private static final String USER_GEOGRAPHY_OTHER   = "O";
@@ -94,6 +95,14 @@ public class AppLovinMAXModule
     private static final String BOTTOM_RIGHT  = "bottom_right";
 
     private static final Point DEFAULT_AD_VIEW_OFFSET = new Point( 0, 0 );
+
+    private static final Map<String, String> ALCompatibleNativeSDKVersions = new HashMap<>();
+
+    static
+    {
+        ALCompatibleNativeSDKVersions.put( "8.0.1", "13.0.0" );
+        ALCompatibleNativeSDKVersions.put( "8.0.0", "13.0.0" );
+    }
 
     public static  AppLovinMAXModule instance;
     @Nullable
@@ -140,6 +149,14 @@ public class AppLovinMAXModule
     public AppLovinMAXModule(final ReactApplicationContext reactContext)
     {
         super( reactContext );
+
+        // Check that plugin version is compatible with native SDK version
+        String minCompatibleNativeSdkVersion = ALCompatibleNativeSDKVersions.get( PLUGIN_VERSION );
+        boolean isCompatible = isInclusiveVersion( AppLovinSdk.VERSION, minCompatibleNativeSdkVersion, null );
+        if ( !isCompatible )
+        {
+            throw new RuntimeException( "Incompatible native SDK version " + AppLovinSdk.VERSION + " found for plugin " + PLUGIN_VERSION );
+        }
 
         instance = this;
         currentActivity = reactContext.getCurrentActivity();
@@ -2384,4 +2401,53 @@ public class AppLovinMAXModule
 
         return constants;
     }
+
+    // Version String
+
+    private boolean isInclusiveVersion(final String version, @Nullable final String minVersion, @Nullable final String maxVersion)
+    {
+        if ( TextUtils.isEmpty( version ) ) return true;
+
+        // if version is less than the minimum version
+        if ( !TextUtils.isEmpty( minVersion ) )
+        {
+            int versionCode = toVersionCode( version );
+            int minVersionCode = toVersionCode( minVersion );
+
+            if ( versionCode < minVersionCode ) return false;
+        }
+
+        // if version is greater than the maximum version
+        if ( !TextUtils.isEmpty( maxVersion ) )
+        {
+            int versionCode = toVersionCode( version );
+            int maxVersionCode = toVersionCode( maxVersion );
+
+            if ( versionCode > maxVersionCode ) return false;
+        }
+
+        return true;
+    }
+
+    private static int toVersionCode(String versionString)
+    {
+        String[] versionNums = versionString.split( "\\." );
+
+        int versionCode = 0;
+        for ( String num : versionNums )
+        {
+            // Each number gets two digits in the version code.
+            if ( num.length() > 2 )
+            {
+                w( "Version number components cannot be longer than two digits -> " + versionString );
+                return versionCode;
+            }
+
+            versionCode *= 100;
+            versionCode += Integer.parseInt( num );
+        }
+
+        return versionCode;
+    }
+
 }
