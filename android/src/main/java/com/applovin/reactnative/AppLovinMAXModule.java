@@ -96,12 +96,12 @@ public class AppLovinMAXModule
 
     private static final Point DEFAULT_AD_VIEW_OFFSET = new Point( 0, 0 );
 
-    private static final Map<String, String> ALCompatibleNativeSDKVersions = new HashMap<>();
+    private static final Map<String, String> ALCompatibleNativeSdkVersions = new HashMap<>();
 
     static
     {
-        ALCompatibleNativeSDKVersions.put( "8.0.1", "13.0.0" );
-        ALCompatibleNativeSDKVersions.put( "8.0.0", "13.0.0" );
+        ALCompatibleNativeSdkVersions.put( "8.0.1", "13.0.0" );
+        ALCompatibleNativeSdkVersions.put( "8.0.0", "13.0.0" );
     }
 
     public static  AppLovinMAXModule instance;
@@ -151,7 +151,7 @@ public class AppLovinMAXModule
         super( reactContext );
 
         // Check that plugin version is compatible with native SDK version
-        String minCompatibleNativeSdkVersion = ALCompatibleNativeSDKVersions.get( PLUGIN_VERSION );
+        String minCompatibleNativeSdkVersion = ALCompatibleNativeSdkVersions.get( PLUGIN_VERSION );
         boolean isCompatible = isInclusiveVersion( AppLovinSdk.VERSION, minCompatibleNativeSdkVersion, null );
         if ( !isCompatible )
         {
