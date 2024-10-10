@@ -29,6 +29,12 @@
 @property (nonatomic, assign, readonly, getter=al_isValidString) BOOL al_validString;
 @end
 
+@interface ALUtils (ALUtils)
++ (BOOL)isInclusiveVersion:(NSString *)version
+             forMinVersion:(nullable NSString *)minVersion
+                maxVersion:(nullable NSString *)maxVersion;
+@end
+
 @interface AppLovinMAX()
 
 // Parent Fields
@@ -67,6 +73,7 @@
 @implementation AppLovinMAX
 static NSString *const SDK_TAG = @"AppLovinSdk";
 static NSString *const TAG = @"AppLovinMAX";
+static NSString *const PLUGIN_VERSION = @"8.0.1";
 
 static NSString *const USER_GEOGRAPHY_GDPR = @"G";
 static NSString *const USER_GEOGRAPHY_OTHER = @"O";
@@ -132,8 +139,20 @@ static NSString *const BOTTOM_RIGHT = @"bottom_right";
 
 static AppLovinMAX *AppLovinMAXShared; // Shared instance of this bridge module.
 
+static NSDictionary<NSString *, NSString *> *ALCompatibleNativeSDKVersions;
+
 // To export a module named AppLovinMAX ("RCT" automatically removed)
 RCT_EXPORT_MODULE()
+
++ (void)initialize
+{
+    [super initialize];
+    
+    ALCompatibleNativeSDKVersions = @{
+        @"8.0.1" : @"13.0.0",
+        @"8.0.0" : @"13.0.0"
+    };
+}
 
 // `init` requires main queue b/c of UI code
 + (BOOL)requiresMainQueueSetup
@@ -173,13 +192,24 @@ RCT_EXPORT_MODULE()
         self.adViewConstraints = [NSMutableDictionary dictionaryWithCapacity: 2];
         self.adUnitIdentifiersToShowAfterCreate = [NSMutableArray arrayWithCapacity: 2];
         self.disabledAdaptiveBannerAdUnitIdentifiers = [NSMutableSet setWithCapacity: 2];
-
+        
         self.safeAreaBackground = [[UIView alloc] init];
         self.safeAreaBackground.hidden = YES;
         self.safeAreaBackground.backgroundColor = UIColor.clearColor;
         self.safeAreaBackground.translatesAutoresizingMaskIntoConstraints = NO;
         self.safeAreaBackground.userInteractionEnabled = NO;
         [ROOT_VIEW_CONTROLLER.view addSubview: self.safeAreaBackground];
+        
+        // Check that plugin version is compatible with native SDK version
+        NSString *minCompatibleNativeSdkVersion = ALCompatibleNativeSDKVersions[PLUGIN_VERSION];
+        BOOL isCompatible = [ALUtils isInclusiveVersion: ALSdk.version
+                                          forMinVersion: minCompatibleNativeSdkVersion
+                                             maxVersion: nil];
+        if ( !isCompatible )
+        {
+            [NSException raise: NSInternalInconsistencyException
+                        format: @"Incompatible native SDK version (%@) found for plugin (%@)", minCompatibleNativeSdkVersion, PLUGIN_VERSION];
+        }
     }
     return self;
 }
@@ -210,7 +240,7 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
     }
     
     ALSdkInitializationConfiguration *initConfig = [ALSdkInitializationConfiguration configurationWithSdkKey: sdkKey builderBlock:^(ALSdkInitializationConfigurationBuilder *builder) {
-
+        
         builder.mediationProvider = ALMediationProviderMAX;
         builder.pluginVersion = [@"React-Native-" stringByAppendingString: pluginVersion];
         builder.segmentCollection = [self.segmentCollectionBuilder build];
@@ -425,7 +455,7 @@ RCT_EXPORT_METHOD(getSegments:(RCTPromiseResolveBlock)resolve :(RCTPromiseReject
     }
     
     NSArray<MASegment *> *segments = self.sdk.segmentCollection.segments;
-
+    
     if ( ![segments count] )
     {
         resolve(nil);
@@ -440,7 +470,7 @@ RCT_EXPORT_METHOD(getSegments:(RCTPromiseResolveBlock)resolve :(RCTPromiseReject
         NSString *strKey = [segment.key stringValue];
         jsObj[strKey] = segment.values;
     }
-
+    
     resolve(jsObj);
 }
 
@@ -2070,7 +2100,7 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier
              ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT,
              ON_APPOPEN_AD_HIDDEN_EVENT,
              ON_APPOPEN_AD_REVENUE_PAID,
-
+             
              ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT,
              ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT];
 }
@@ -2118,7 +2148,7 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier
              
              @"ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT" : ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT,
              @"ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT" : ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT,
-
+             
              @"TOP_CENTER_POSITION" : TOP_CENTER,
              @"TOP_LEFT_POSITION" : TOP_LEFT,
              @"TOP_RIGHT_POSITION" : TOP_RIGHT,
@@ -2131,7 +2161,7 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier
              
              @"BANNER_AD_FORMAT_LABEL" : MAAdFormat.banner.label,
              @"MREC_AD_FORMAT_LABEL" : MAAdFormat.mrec.label,
-
+             
              @"MAX_ERROR_CODE_UNSPECIFIED" : @(MAErrorCodeUnspecified),
              @"MAX_ERROR_CODE_NO_FILL" : @(MAErrorCodeNoFill),
              @"MAX_ERROR_CODE_AD_LOAD_FAILED" : @(MAErrorCodeAdLoadFailed),
