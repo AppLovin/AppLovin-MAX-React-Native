@@ -2408,10 +2408,11 @@ public class AppLovinMAXModule
     {
         if ( TextUtils.isEmpty( version ) ) return true;
 
+        int versionCode = toVersionCode( version );
+
         // if version is less than the minimum version
         if ( !TextUtils.isEmpty( minVersion ) )
         {
-            int versionCode = toVersionCode( version );
             int minVersionCode = toVersionCode( minVersion );
 
             if ( versionCode < minVersionCode ) return false;
@@ -2420,7 +2421,6 @@ public class AppLovinMAXModule
         // if version is greater than the maximum version
         if ( !TextUtils.isEmpty( maxVersion ) )
         {
-            int versionCode = toVersionCode( version );
             int maxVersionCode = toVersionCode( maxVersion );
 
             if ( versionCode > maxVersionCode ) return false;
