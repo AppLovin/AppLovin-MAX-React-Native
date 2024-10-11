@@ -2402,7 +2402,9 @@ public class AppLovinMAXModule
         return constants;
     }
 
-    // Version String
+    //
+    // Version Utils
+    //
 
     private boolean isInclusiveVersion(final String version, @Nullable final String minVersion, @Nullable final String maxVersion)
     {
