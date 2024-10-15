@@ -100,6 +100,7 @@ public class AppLovinMAXModule
 
     static
     {
+        ALCompatibleNativeSdkVersions.put( "8.0.2", "13.0.0" );
         ALCompatibleNativeSdkVersions.put( "8.0.1", "13.0.0" );
         ALCompatibleNativeSdkVersions.put( "8.0.0", "13.0.0" );
     }

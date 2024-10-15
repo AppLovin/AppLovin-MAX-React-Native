@@ -149,6 +149,7 @@ RCT_EXPORT_MODULE()
     [super initialize];
     
     ALCompatibleNativeSDKVersions = @{
+        @"8.0.2" : @"13.0.0",
         @"8.0.1" : @"13.0.0",
         @"8.0.0" : @"13.0.0"
     };
