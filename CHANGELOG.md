@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 8.0.2
 * Crash if plugin version is incompatible with native SDK version.
 ## 8.0.1
 * Fix CTA not clickable in native ads on Android.
