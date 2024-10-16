@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 8.0.3
 * Remove deprecated Terms Flow API `AppLovinMAX.setConsentFlowEnabled()`. Check out our docs for integrating our latest [MAX Terms and Privacy Policy Consent Flow](https://developers.applovin.com/en/max/react-native/overview/terms-and-privacy-policy-flow/).
 ## 8.0.2
 * Crash if plugin version is incompatible with native SDK version.
