@@ -393,9 +393,6 @@ public class AppLovinMAXModule
     // MAX Terms and Privacy Policy Flow
 
     @ReactMethod
-    public void setConsentFlowEnabled(final boolean enabled) { }
-
-    @ReactMethod
     public void setTermsAndPrivacyPolicyFlowEnabled(final boolean enabled)
     {
         sdk.getSettings().getTermsAndPrivacyPolicyFlowSettings().setEnabled( enabled );
