@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Add support for BigoAds native ads.
 ## 8.0.3
 * Remove deprecated Terms Flow API `AppLovinMAX.setConsentFlowEnabled()`. Check out our docs for integrating our latest [MAX Terms and Privacy Policy Consent Flow](https://developers.applovin.com/en/max/react-native/overview/terms-and-privacy-policy-flow/).
 ## 8.0.2
