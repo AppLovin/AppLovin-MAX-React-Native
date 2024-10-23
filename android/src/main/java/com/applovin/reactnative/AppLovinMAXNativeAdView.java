@@ -337,6 +337,14 @@ public class AppLovinMAXNativeAdView
                 view.setImageDrawable( icon.getDrawable() );
             }
         }
+        else
+        {
+            ImageView iconView = (ImageView) nativeAd.getNativeAd().getIconView();
+            if ( iconView != null )
+            {
+                view.setImageDrawable( iconView.getDrawable() );
+            }
+        }
     }
 
     public void setOptionsView(final int tag)
@@ -379,7 +387,7 @@ public class AppLovinMAXNativeAdView
             return;
         }
 
-        view.setTag( MEDIA_VIEW_CONTAINER_TAG );
+        mediaView.setTag( MEDIA_VIEW_CONTAINER_TAG );
         clickableViews.add( mediaView );
 
         view.addOnLayoutChangeListener( this );
@@ -504,7 +512,7 @@ public class AppLovinMAXNativeAdView
             nativeAdInfo.putDouble( "mediaContentAspectRatio", aspectRatio );
         }
 
-        nativeAdInfo.putBoolean( "isIconImageAvailable", ( ad.getIcon() != null ) );
+        nativeAdInfo.putBoolean( "isIconImageAvailable", ( ad.getIcon() != null || ad.getIconView() != null ) );
         nativeAdInfo.putBoolean( "isOptionsViewAvailable", ( ad.getOptionsView() != null ) );
         nativeAdInfo.putBoolean( "isMediaViewAvailable", ( ad.getMediaView() != null ) );
 
@@ -535,6 +543,10 @@ public class AppLovinMAXNativeAdView
             {
                 jsNativeAd.putBoolean( "image", true );
             }
+        }
+        else if ( ad.getIconView() != null )
+        {
+            jsNativeAd.putBoolean( "image", true );
         }
 
         jsNativeAd.putBoolean( "isOptionsViewAvailable", ( ad.getOptionsView() != null ) );
