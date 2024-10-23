@@ -549,7 +549,6 @@ public class AppLovinMAXNativeAdView
             jsNativeAd.putBoolean( "image", true );
         }
 
-
         jsNativeAd.putBoolean( "isOptionsViewAvailable", ( ad.getOptionsView() != null ) );
         jsNativeAd.putBoolean( "isMediaViewAvailable", ( ad.getMediaView() != null ) );
 
