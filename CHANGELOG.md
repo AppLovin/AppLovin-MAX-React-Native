@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 8.0.4
 * Update IconView to support native ad icon image view, primarily for BigoAds native ads.
 ## 8.0.3
 * Remove deprecated Terms Flow API `AppLovinMAX.setConsentFlowEnabled()`. Check out our docs for integrating our latest [MAX Terms and Privacy Policy Consent Flow](https://developers.applovin.com/en/max/react-native/overview/terms-and-privacy-policy-flow/).
