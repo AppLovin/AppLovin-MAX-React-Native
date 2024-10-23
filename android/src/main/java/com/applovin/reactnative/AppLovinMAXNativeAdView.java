@@ -387,7 +387,7 @@ public class AppLovinMAXNativeAdView
             return;
         }
 
-        view.setTag( MEDIA_VIEW_CONTAINER_TAG );
+        mediaView.setTag( MEDIA_VIEW_CONTAINER_TAG );
         clickableViews.add( mediaView );
 
         view.addOnLayoutChangeListener( this );
