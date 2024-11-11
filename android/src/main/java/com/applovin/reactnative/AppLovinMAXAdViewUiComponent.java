@@ -93,15 +93,23 @@ class AppLovinMAXAdViewUiComponent
         }
     }
 
-    public boolean hasContainerView()
+    public boolean isAdViewAttached()
     {
-        return containerView != null;
+        return containerView != null || adView.getParent() != null;
     }
 
     public void attachAdView(AppLovinMAXAdView view)
     {
         containerView = view;
-        containerView.addView( adView );
+
+        if ( adView.getParent() == null )
+        {
+            containerView.addView( adView );
+        }
+        else
+        {
+            AppLovinMAXModule.e( "Cannot attach AdView due to an existing parent: " + adView );
+        }
     }
 
     public void detachAdView()
