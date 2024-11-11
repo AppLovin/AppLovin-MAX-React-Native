@@ -88,7 +88,7 @@ class AppLovinMAXAdView
             return;
         }
 
-        if ( preloadedUiComponent.isAdViewAttached() )
+        if ( preloadedUiComponent.hasContainerView() )
         {
             promise.reject( new IllegalStateException( "Cannot destroy - currently in use" ) );
             return;
@@ -281,9 +281,9 @@ class AppLovinMAXAdView
             {
                 // Attach the preloaded uiComponent if possible, otherwise create a new one for the
                 // same adUnitId
-                if ( !uiComponent.isAdViewAttached() )
+                if ( !( uiComponent.hasContainerView() || uiComponent.isAdViewNotRemoved() ) )
                 {
-                    AppLovinMAXModule.d( "Attaching the preloaded native UI component for " + adUnitId );
+                    AppLovinMAXModule.d( "Mounting the preloaded native UI component for " + adUnitId );
 
                     uiComponent.setAutoRefresh( autoRefresh );
                     uiComponent.attachAdView( AppLovinMAXAdView.this );
@@ -291,7 +291,7 @@ class AppLovinMAXAdView
                 }
             }
 
-            AppLovinMAXModule.d( "Attaching a new native UI component for " + adUnitId );
+            AppLovinMAXModule.d( "Mounting a new native UI component for " + adUnitId );
 
             uiComponent = new AppLovinMAXAdViewUiComponent( adUnitId, adFormat, reactContext );
             uiComponentInstances.put( adUnitId, uiComponent );
@@ -337,7 +337,7 @@ class AppLovinMAXAdView
             }
             else
             {
-                AppLovinMAXModule.d( "Destroying the native UI component: " + uiComponent.getAdView() );
+                AppLovinMAXModule.d( "Unmounting the native UI component to destroy: " + uiComponent.getAdView() );
 
                 uiComponentInstances.remove( adUnitId );
                 uiComponent.destroy();

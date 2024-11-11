@@ -93,23 +93,30 @@ class AppLovinMAXAdViewUiComponent
         }
     }
 
-    public boolean isAdViewAttached()
+    public boolean hasContainerView()
     {
-        return containerView != null || adView.getParent() != null;
+        return containerView != null;
+    }
+
+    // AdView should have no parent when containerView is null, but it retains a parent even after
+    // being removed from containerView when attached to react-native-screens views. This happens
+    // because react-native-screens replaces the default UI manager with its own, which includes
+    // caching for screen navigation.
+    public boolean isAdViewNotRemoved()
+    {
+        return containerView == null && adView.getParent() != null;
     }
 
     public void attachAdView(AppLovinMAXAdView view)
     {
-        containerView = view;
+        if ( isAdViewNotRemoved() )
+        {
+            AppLovinMAXModule.e( "Cannot attach AdView because it already has an existing parent: " + adView );
+            return;
+        }
 
-        if ( adView.getParent() == null )
-        {
-            containerView.addView( adView );
-        }
-        else
-        {
-            AppLovinMAXModule.e( "Cannot attach AdView due to an existing parent: " + adView );
-        }
+        containerView = view;
+        containerView.addView( adView );
     }
 
     public void detachAdView()
