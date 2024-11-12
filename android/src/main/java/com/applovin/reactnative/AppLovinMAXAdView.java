@@ -281,7 +281,7 @@ class AppLovinMAXAdView
             {
                 // Attach the preloaded uiComponent if possible, otherwise create a new one for the
                 // same adUnitId
-                if ( !( uiComponent.hasContainerView() || uiComponent.isAdViewNotRemoved() ) )
+                if ( !( uiComponent.hasContainerView() || uiComponent.isAdViewAttached() ) )
                 {
                     AppLovinMAXModule.d( "Mounting the preloaded native UI component for " + adUnitId );
 
