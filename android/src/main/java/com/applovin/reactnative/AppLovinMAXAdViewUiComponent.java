@@ -98,8 +98,23 @@ class AppLovinMAXAdViewUiComponent
         return containerView != null;
     }
 
+    // AdView should have no parent when containerView is null, but it retains a parent even after
+    // being removed from containerView when attached to react-native-screens views. This happens
+    // because react-native-screens replaces the default UI manager with its own, which includes
+    // caching for screen navigation.
+    public boolean isAdViewAttached()
+    {
+        return containerView == null && adView.getParent() != null;
+    }
+
     public void attachAdView(AppLovinMAXAdView view)
     {
+        if ( isAdViewAttached() )
+        {
+            AppLovinMAXModule.e( "Cannot attach AdView because it already has an existing parent: " + adView );
+            return;
+        }
+
         containerView = view;
         containerView.addView( adView );
     }

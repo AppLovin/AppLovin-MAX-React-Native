@@ -276,21 +276,22 @@ class AppLovinMAXAdView
                 return;
             }
 
-            AppLovinMAXModule.d( "Attaching a native UI component for " + adUnitId );
-
             uiComponent = preloadedUiComponentInstances.get( adUnitId );
             if ( uiComponent != null )
             {
                 // Attach the preloaded uiComponent if possible, otherwise create a new one for the
                 // same adUnitId
-                if ( !uiComponent.hasContainerView() )
+                if ( !( uiComponent.hasContainerView() || uiComponent.isAdViewAttached() ) )
                 {
-                    uiComponent.setAdaptiveBannerEnabled( adaptiveBannerEnabled );
+                    AppLovinMAXModule.d( "Mounting the preloaded native UI component for " + adUnitId );
+
                     uiComponent.setAutoRefresh( autoRefresh );
                     uiComponent.attachAdView( AppLovinMAXAdView.this );
                     return;
                 }
             }
+
+            AppLovinMAXModule.d( "Mounting a new native UI component for " + adUnitId );
 
             uiComponent = new AppLovinMAXAdViewUiComponent( adUnitId, adFormat, reactContext );
             uiComponentInstances.put( adUnitId, uiComponent );
@@ -326,14 +327,18 @@ class AppLovinMAXAdView
     {
         if ( uiComponent != null )
         {
-            AppLovinMAXModule.d( "Unmounting the native UI component: " + uiComponent.getAdView() );
-
             uiComponent.detachAdView();
 
             AppLovinMAXAdViewUiComponent preloadedUiComponent = preloadedUiComponentInstances.get( adUnitId );
 
-            if ( uiComponent != preloadedUiComponent )
+            if ( uiComponent == preloadedUiComponent )
             {
+                AppLovinMAXModule.d( "Unmounting the preloaded native UI component: " + uiComponent.getAdView() );
+            }
+            else
+            {
+                AppLovinMAXModule.d( "Unmounting the native UI component to destroy: " + uiComponent.getAdView() );
+
                 uiComponentInstances.remove( adUnitId );
                 uiComponent.destroy();
             }
