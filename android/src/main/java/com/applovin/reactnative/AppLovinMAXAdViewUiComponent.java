@@ -34,6 +34,7 @@ class AppLovinMAXAdViewUiComponent
         adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), context );
         adView.setListener( this );
         adView.setRevenueListener( this );
+        adView.stopAutoRefresh();
 
         adView.setExtraParameter( "adaptive_banner", "true" );
 
@@ -166,10 +167,6 @@ class AppLovinMAXAdViewUiComponent
         if ( containerView != null )
         {
             sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_LOADED_EVENT, adInfo );
-        }
-        else
-        {
-            setAutoRefresh( false );
         }
     }
 

@@ -21,6 +21,8 @@
         self.adView = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitIdentifier adFormat: adFormat sdk: [AppLovinMAX shared].sdk];
         self.adView.delegate = self;
         self.adView.revenueDelegate = self;
+
+        [self.adView stopAutoRefresh];
         
         [self.adView setExtraParameterForKey: @"adaptive_banner" value: @"true"];
         
@@ -127,10 +129,6 @@
     if ( self.containerView )
     {
         self.containerView.onAdLoadedEvent(adInfo);
-    }
-    else
-    {
-        self.autoRefresh = NO;
     }
 }
 
