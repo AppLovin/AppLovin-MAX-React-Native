@@ -128,6 +128,10 @@
     {
         self.containerView.onAdLoadedEvent(adInfo);
     }
+    else
+    {
+        self.autoRefresh = NO;
+    }
 }
 
 - (void)didFailToLoadAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(MAError *)error

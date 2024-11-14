@@ -167,6 +167,10 @@ class AppLovinMAXAdViewUiComponent
         {
             sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_LOADED_EVENT, adInfo );
         }
+        else
+        {
+            setAutoRefresh( false );
+        }
     }
 
     @Override
