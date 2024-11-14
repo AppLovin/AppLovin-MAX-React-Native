@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 8.0.5
 * Add a workaround for the IllegalStateException (ISE) that occurs when remounting a preloaded banner and MREC (`<AdView/>`) using `react-native-screens`.
 ## 8.0.4
 * Update IconView to support native ad icon image view, primarily for BigoAds native ads.
