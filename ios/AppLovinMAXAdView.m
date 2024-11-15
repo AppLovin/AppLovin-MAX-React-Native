@@ -277,7 +277,11 @@ static NSMutableDictionary<NSString *, AppLovinMAXAdViewUIComponent *> *preloade
             
             AppLovinMAXAdViewUIComponent *preloadedUIComponent = preloadedUIComponentInstances[self.adUnitId];
             
-            if ( self.uiComponent != preloadedUIComponent )
+            if ( self.uiComponent == preloadedUIComponent )
+            {
+                self.uiComponent.autoRefresh = NO;
+            }
+            else
             {
                 [uiComponentInstances removeObjectForKey: self.adUnitId];
                 [self.uiComponent destroy];
