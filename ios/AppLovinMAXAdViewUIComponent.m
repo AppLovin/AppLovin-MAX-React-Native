@@ -21,11 +21,13 @@
         self.adView = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitIdentifier adFormat: adFormat sdk: [AppLovinMAX shared].sdk];
         self.adView.delegate = self;
         self.adView.revenueDelegate = self;
-        
+
         [self.adView setExtraParameterForKey: @"adaptive_banner" value: @"true"];
         
         // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
         [self.adView setExtraParameterForKey: @"allow_pause_auto_refresh_immediately" value: @"true"];
+
+        [self.adView stopAutoRefresh];
         
         // Set a frame size to suppress an error of zero area for MAAdView
         self.adView.frame = (CGRect) { CGPointZero, adFormat.size };

@@ -334,6 +334,8 @@ class AppLovinMAXAdView
             if ( uiComponent == preloadedUiComponent )
             {
                 AppLovinMAXModule.d( "Unmounting the preloaded native UI component: " + uiComponent.getAdView() );
+
+                uiComponent.setAutoRefresh( false );
             }
             else
             {
