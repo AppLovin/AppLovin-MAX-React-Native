@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 8.0.5
 * Depend on Android SDK 13.0.1 and iOS SDK 13.0.1.
 * Update preloaded banners and MRECs (`<AdView/>`) to suspend auto-refresh while not visible in background.
 * Add a workaround for the IllegalStateException (ISE) that occurs when remounting a preloaded banner and MREC (`<AdView/>`) using `react-native-screens`.
