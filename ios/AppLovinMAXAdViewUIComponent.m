@@ -122,25 +122,33 @@
 
 - (void)didLoadAd:(MAAd *)ad
 {
-    NSDictionary *adInfo = [[AppLovinMAX shared] adInfoForAd: ad];
+    NSMutableDictionary *body = [@{@"adViewId": @(self.adView.hash)} mutableCopy];
+    [body addEntriesFromDictionary: [[AppLovinMAX shared] adInfoForAd: ad]];
     
-    [[AppLovinMAX shared] sendEventWithName: @"OnNativeUIComponentAdViewAdLoadedEvent" body: adInfo];
+    if ( [AppLovinMAXAdView preloadedAdView: @(self.adView.hash)] )
+    {
+        [[AppLovinMAX shared] sendEventWithName: @"OnNativeUIComponentAdViewAdLoadedEvent" body: body];
+    }
     
     if ( self.containerView )
     {
-        self.containerView.onAdLoadedEvent(adInfo);
+        self.containerView.onAdLoadedEvent(body);
     }
 }
 
 - (void)didFailToLoadAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(MAError *)error
 {
-    NSDictionary *adLoadFailedInfo = [[AppLovinMAX shared] adLoadFailedInfoForAd: adUnitIdentifier withError: error];
+    NSMutableDictionary *body = [@{@"adViewId": @(self.adView.hash)} mutableCopy];
+    [body addEntriesFromDictionary: [[AppLovinMAX shared] adLoadFailedInfoForAd: adUnitIdentifier withError: error]];
     
-    [[AppLovinMAX shared] sendEventWithName: @"OnNativeUIComponentAdViewAdLoadFailedEvent" body: adLoadFailedInfo];
+    if ( [AppLovinMAXAdView preloadedAdView: @(self.adView.hash)] )
+    {
+        [[AppLovinMAX shared] sendEventWithName: @"OnNativeUIComponentAdViewAdLoadFailedEvent" body: body];
+    }
     
     if ( self.containerView )
     {
-        self.containerView.onAdLoadFailedEvent(adLoadFailedInfo);
+        self.containerView.onAdLoadFailedEvent(body);
     }
 }
 
@@ -148,7 +156,10 @@
 {
     if ( self.containerView )
     {
-        self.containerView.onAdDisplayFailedEvent([[AppLovinMAX shared] adDisplayFailedInfoForAd: ad withError: error]);
+        NSMutableDictionary *body = [@{@"adViewId": @(self.adView.hash)} mutableCopy];
+        [body addEntriesFromDictionary: [[AppLovinMAX shared] adDisplayFailedInfoForAd: ad withError: error]];
+
+        self.containerView.onAdDisplayFailedEvent(body);
     }
 }
 
@@ -156,7 +167,10 @@
 {
     if ( self.containerView )
     {
-        self.containerView.onAdClickedEvent([[AppLovinMAX shared] adInfoForAd: ad]);
+        NSMutableDictionary *body = [@{@"adViewId": @(self.adView.hash)} mutableCopy];
+        [body addEntriesFromDictionary: [[AppLovinMAX shared] adInfoForAd: ad]];
+
+        self.containerView.onAdClickedEvent(body);
     }
 }
 
@@ -166,7 +180,10 @@
 {
     if ( self.containerView )
     {
-        self.containerView.onAdExpandedEvent([[AppLovinMAX shared] adInfoForAd: ad]);
+        NSMutableDictionary *body = [@{@"adViewId": @(self.adView.hash)} mutableCopy];
+        [body addEntriesFromDictionary: [[AppLovinMAX shared] adInfoForAd: ad]];
+ 
+        self.containerView.onAdExpandedEvent(body);
     }
 }
 
@@ -174,7 +191,10 @@
 {
     if ( self.containerView )
     {
-        self.containerView.onAdCollapsedEvent([[AppLovinMAX shared] adInfoForAd: ad]);
+        NSMutableDictionary *body = [@{@"adViewId": @(self.adView.hash)} mutableCopy];
+        [body addEntriesFromDictionary: [[AppLovinMAX shared] adInfoForAd: ad]];
+
+        self.containerView.onAdCollapsedEvent(body);
     }
 }
 
@@ -184,7 +204,10 @@
 {
     if ( self.containerView )
     {
-        self.containerView.onAdRevenuePaidEvent([[AppLovinMAX shared] adRevenueInfoForAd: ad]);
+        NSMutableDictionary *body = [@{@"adViewId": @(self.adView.hash)} mutableCopy];
+        [body addEntriesFromDictionary: [[AppLovinMAX shared] adInfoForAd: ad]];
+
+        self.containerView.onAdRevenuePaidEvent(body);
     }
 }
 

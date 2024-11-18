@@ -13,6 +13,12 @@ export type AdViewHandler = {
 };
 
 /**
+ * Used to identify which AdView instance is being referenced.
+ * A value of `undefined` indicates that the AdView has not been preloaded or assigned an ID.
+ */
+export type AdViewId = number | undefined;
+
+/**
  * Represents an {@link AdView} - Banner / MREC.
  */
 export type AdViewProps = AdProps & {
@@ -21,6 +27,11 @@ export type AdViewProps = AdProps & {
      * {@link AdFormat.BANNER} or {@link AdFormat.MREC}.
      */
     adFormat: AdFormat;
+
+    /**
+     * An ID representing AdView.
+     */
+    adViewId?: AdViewId;
 
     /**
      * A boolean value representing whether or not to enable adaptive banners.

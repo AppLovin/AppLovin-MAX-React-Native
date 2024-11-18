@@ -984,11 +984,11 @@ RCT_EXPORT_METHOD(preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier
                                   withPromiseRejecter: reject];
 }
 
-RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier 
+RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(NSNumber *)adViewId
                                                 :(RCTPromiseResolveBlock)resolve
                                                 :(RCTPromiseRejectBlock)reject)
 {
-    [AppLovinMAXAdView destroyNativeUIComponentAdView: adUnitIdentifier
+    [AppLovinMAXAdView destroyNativeUIComponentAdView: adViewId
                                   withPromiseResolver: resolve
                                   withPromiseRejecter: reject];
 }

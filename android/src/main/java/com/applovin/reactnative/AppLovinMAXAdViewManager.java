@@ -83,6 +83,12 @@ class AppLovinMAXAdViewManager
         view.setAdFormat( adFormatStr );
     }
 
+    @ReactProp(name = "adViewId")
+    public void setAdFormat(final AppLovinMAXAdView view, final int adViewId)
+    {
+        view.setAdViewId( adViewId );
+    }
+
     @ReactProp(name = "placement")
     public void setPlacement(final AppLovinMAXAdView view, @Nullable final String placement)
     {

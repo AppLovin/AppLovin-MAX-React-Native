@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (MAAdView *)sharedWithAdUnitIdentifier:(NSString *)adUnitIdentifier;
 
++ (BOOL)preloadedAdView:(NSNumber *)adViewId;
+
 + (void)preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier 
                               adFormat:(MAAdFormat *)adFormat
                              placement:(nullable NSString *)placement
@@ -32,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
                    withPromiseResolver:(RCTPromiseResolveBlock)resolve
                    withPromiseRejecter:(RCTPromiseRejectBlock)reject;
 
-+ (void)destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier 
++ (void)destroyNativeUIComponentAdView:(NSNumber *)adViewId
                    withPromiseResolver:(RCTPromiseResolveBlock)resolve
                    withPromiseRejecter:(RCTPromiseRejectBlock)reject;
 

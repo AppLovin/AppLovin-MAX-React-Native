@@ -160,9 +160,13 @@ class AppLovinMAXAdViewUiComponent
     public void onAdLoaded(@NonNull final MaxAd ad)
     {
         WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+        adInfo.putInt( "adViewId", adView.hashCode() );
 
-        // Copy the `adInfo` since sending the same map through the RN bridge more than once will result in `com.facebook.react.bridge.ObjectAlreadyConsumedException: Map already consumed`
-        AppLovinMAXModule.getInstance().sendReactNativeEvent( AppLovinMAXAdEvents.ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT, adInfo.copy() );
+        if ( AppLovinMAXAdView.isPreloadedAdView( adView.hashCode() ))
+        {
+            // Copy the `adInfo` since sending the same map through the RN bridge more than once will result in `com.facebook.react.bridge.ObjectAlreadyConsumedException: Map already consumed`
+            AppLovinMAXModule.getInstance().sendReactNativeEvent( AppLovinMAXAdEvents.ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT, adInfo.copy() );
+        }
 
         if ( containerView != null )
         {
@@ -174,9 +178,13 @@ class AppLovinMAXAdViewUiComponent
     public void onAdLoadFailed(@NonNull final String adUnitId, @NonNull final MaxError error)
     {
         WritableMap adLoadFailedInfo = AppLovinMAXModule.getInstance().getAdLoadFailedInfo( adUnitId, error );
+        adLoadFailedInfo.putInt( "adViewId", adView.hashCode() );
 
-        // Copy the `adLoadFailedInfo` since sending the same map through the RN bridge more than once will result in `com.facebook.react.bridge.ObjectAlreadyConsumedException: Map already consumed`
-        AppLovinMAXModule.getInstance().sendReactNativeEvent( AppLovinMAXAdEvents.ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT, adLoadFailedInfo.copy() );
+        if ( AppLovinMAXAdView.isPreloadedAdView( adView.hashCode() ) )
+        {
+            // Copy the `adLoadFailedInfo` since sending the same map through the RN bridge more than once will result in `com.facebook.react.bridge.ObjectAlreadyConsumedException: Map already consumed`
+            AppLovinMAXModule.getInstance().sendReactNativeEvent( AppLovinMAXAdEvents.ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT, adLoadFailedInfo.copy() );
+        }
 
         if ( containerView != null )
         {
@@ -190,6 +198,8 @@ class AppLovinMAXAdViewUiComponent
         if ( containerView != null )
         {
             WritableMap adDisplayFailedInfo = AppLovinMAXModule.getInstance().getAdDisplayFailedInfo( ad, error );
+            adDisplayFailedInfo.putInt( "adViewId", adView.hashCode() );
+
             sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_DISPLAY_FAILED_EVENT, adDisplayFailedInfo );
         }
     }
@@ -200,6 +210,8 @@ class AppLovinMAXAdViewUiComponent
         if ( containerView != null )
         {
             WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+            adInfo.putInt( "adViewId", adView.hashCode() );
+
             sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_CLICKED_EVENT, adInfo );
         }
     }
@@ -210,6 +222,8 @@ class AppLovinMAXAdViewUiComponent
         if ( containerView != null )
         {
             WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+            adInfo.putInt( "adViewId", adView.hashCode() );
+
             sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_EXPANDED_EVENT, adInfo );
         }
     }
@@ -220,6 +234,8 @@ class AppLovinMAXAdViewUiComponent
         if ( containerView != null )
         {
             WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+            adInfo.putInt( "adViewId", adView.hashCode() );
+
             sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_COLLAPSED_EVENT, adInfo );
         }
     }
@@ -230,6 +246,8 @@ class AppLovinMAXAdViewUiComponent
         if ( containerView != null )
         {
             WritableMap adRevenueInfo = AppLovinMAXModule.getInstance().getAdRevenueInfo( ad );
+            adRevenueInfo.putInt( "adViewId", adView.hashCode() );
+
             sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_REVENUE_PAID_EVENT, adRevenueInfo );
         }
     }
