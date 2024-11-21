@@ -65,7 +65,7 @@ class AppLovinMAXAdView
         return null;
     }
 
-    public static boolean isPreloadedAdView(final int adViewId)
+    public static boolean isNativeUIComponentPreloaded(final int adViewId)
     {
         return preloadedUiComponentInstances.containsKey( adViewId );
     }

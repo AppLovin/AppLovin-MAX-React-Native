@@ -63,7 +63,7 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
     return nil;
 }
 
-+ (BOOL)preloadedAdView:(NSNumber *)adViewId
++ (BOOL)isNativeUIComponentPreloaded:(NSNumber *)adViewId
 {
     return [preloadedUIComponentInstances objectForKey: adViewId];
 }

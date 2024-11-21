@@ -162,7 +162,7 @@ class AppLovinMAXAdViewUiComponent
         WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
         adInfo.putInt( "adViewId", adView.hashCode() );
 
-        if ( AppLovinMAXAdView.isPreloadedAdView( adView.hashCode() ))
+        if ( AppLovinMAXAdView.isNativeUIComponentPreloaded( adView.hashCode() ))
         {
             // Copy the `adInfo` since sending the same map through the RN bridge more than once will result in `com.facebook.react.bridge.ObjectAlreadyConsumedException: Map already consumed`
             AppLovinMAXModule.getInstance().sendReactNativeEvent( AppLovinMAXAdEvents.ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT, adInfo.copy() );
@@ -180,7 +180,7 @@ class AppLovinMAXAdViewUiComponent
         WritableMap adLoadFailedInfo = AppLovinMAXModule.getInstance().getAdLoadFailedInfo( adUnitId, error );
         adLoadFailedInfo.putInt( "adViewId", adView.hashCode() );
 
-        if ( AppLovinMAXAdView.isPreloadedAdView( adView.hashCode() ) )
+        if ( AppLovinMAXAdView.isNativeUIComponentPreloaded( adView.hashCode() ) )
         {
             // Copy the `adLoadFailedInfo` since sending the same map through the RN bridge more than once will result in `com.facebook.react.bridge.ObjectAlreadyConsumedException: Map already consumed`
             AppLovinMAXModule.getInstance().sendReactNativeEvent( AppLovinMAXAdEvents.ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT, adLoadFailedInfo.copy() );

@@ -125,7 +125,7 @@
     NSMutableDictionary *body = [@{@"adViewId": @(self.adView.hash)} mutableCopy];
     [body addEntriesFromDictionary: [[AppLovinMAX shared] adInfoForAd: ad]];
     
-    if ( [AppLovinMAXAdView preloadedAdView: @(self.adView.hash)] )
+    if ( [AppLovinMAXAdView isNativeUIComponentPreloaded: @(self.adView.hash)] )
     {
         [[AppLovinMAX shared] sendEventWithName: @"OnNativeUIComponentAdViewAdLoadedEvent" body: body];
     }
@@ -141,7 +141,7 @@
     NSMutableDictionary *body = [@{@"adViewId": @(self.adView.hash)} mutableCopy];
     [body addEntriesFromDictionary: [[AppLovinMAX shared] adLoadFailedInfoForAd: adUnitIdentifier withError: error]];
     
-    if ( [AppLovinMAXAdView preloadedAdView: @(self.adView.hash)] )
+    if ( [AppLovinMAXAdView isNativeUIComponentPreloaded: @(self.adView.hash)] )
     {
         [[AppLovinMAX shared] sendEventWithName: @"OnNativeUIComponentAdViewAdLoadFailedEvent" body: body];
     }

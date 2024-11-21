@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (MAAdView *)sharedWithAdUnitIdentifier:(NSString *)adUnitIdentifier;
 
-+ (BOOL)preloadedAdView:(NSNumber *)adViewId;
++ (BOOL)isNativeUIComponentPreloaded:(NSNumber *)adViewId;
 
 + (void)preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier 
                               adFormat:(MAAdFormat *)adFormat
