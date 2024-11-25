@@ -37,18 +37,21 @@ class AppLovinMAXAdView
     @Nullable
     private String              customData;
     private boolean             adaptiveBannerEnabled;
-    private boolean             autoRefresh;
+    private boolean             autoRefreshEnabled;
     private boolean             loadOnMount;
     @Nullable
     private Map<String, Object> extraParameters;
     @Nullable
     private Map<String, Object> localExtraParameters;
 
+    // Returns an MaxAdView to support Amazon integrations. This method returns the first instance
+    // that matches the Ad Unit ID, consistent with the behavior introduced when this feature was
+    // first implemented.
     public static MaxAdView getInstance(final String adUnitId)
     {
         for ( Map.Entry<Integer, AppLovinMAXAdViewUiComponent> entry : preloadedUiComponentInstances.entrySet() )
         {
-            if ( adUnitId.equals( entry.getValue().getAdView().getAdUnitId() ) )
+            if ( entry.getValue().getAdUnitId().equals ( adUnitId ) )
             {
                 return entry.getValue().getAdView();
             }
@@ -56,7 +59,7 @@ class AppLovinMAXAdView
 
         for ( Map.Entry<Integer, AppLovinMAXAdViewUiComponent> entry : uiComponentInstances.entrySet() )
         {
-            if ( adUnitId.equals( entry.getValue().getAdView().getAdUnitId() ) )
+            if ( entry.getValue().getAdUnitId().equals( adUnitId ) )
             {
                 return entry.getValue().getAdView();
             }
@@ -65,9 +68,9 @@ class AppLovinMAXAdView
         return null;
     }
 
-    public static boolean isNativeUIComponentPreloaded(final int adViewId)
+    public static boolean hasPreloadedAdView(final int adViewId)
     {
-        return preloadedUiComponentInstances.containsKey( adViewId );
+        return preloadedUiComponentInstances.get( adViewId ) != null;
     }
 
     public static void preloadNativeUIComponentAdView(final String adUnitId,
@@ -80,7 +83,7 @@ class AppLovinMAXAdView
                                                       final ReactContext context)
     {
         AppLovinMAXAdViewUiComponent preloadedUiComponent = new AppLovinMAXAdViewUiComponent( adUnitId, adFormat, context );
-        preloadedUiComponentInstances.put( preloadedUiComponent.getAdView().hashCode(), preloadedUiComponent );
+        preloadedUiComponentInstances.put( preloadedUiComponent.hashCode(), preloadedUiComponent );
 
         preloadedUiComponent.setPlacement( placement );
         preloadedUiComponent.setCustomData( customData );
@@ -89,7 +92,7 @@ class AppLovinMAXAdView
 
         preloadedUiComponent.loadAd();
 
-        promise.resolve( preloadedUiComponent.getAdView().hashCode() );
+        promise.resolve( preloadedUiComponent.hashCode() );
     }
 
     public static void destroyNativeUIComponentAdView(final int adViewId, final Promise promise)
@@ -98,13 +101,13 @@ class AppLovinMAXAdView
 
         if ( preloadedUiComponent == null )
         {
-            promise.reject( new IllegalStateException( "No native UI component found to destroy" ) );
+            promise.reject( new IllegalStateException( "No preloaded AdView found to destroy" ) );
             return;
         }
 
         if ( preloadedUiComponent.hasContainerView() )
         {
-            promise.reject( new IllegalStateException( "Cannot destroy - currently in use" ) );
+            promise.reject( new IllegalStateException( "Cannot destroy - the preloaded AdView is currently in use" ) );
             return;
         }
 
@@ -159,12 +162,6 @@ class AppLovinMAXAdView
 
     public void setAdViewId(final int value)
     {
-        if ( uiComponent != null )
-        {
-            AppLovinMAXModule.e( "Attempting to set an AdView ID with " + value + " after the native UI component is created" );
-            return;
-        }
-
         adViewId = value;
     }
 
@@ -198,13 +195,13 @@ class AppLovinMAXAdView
         }
     }
 
-    public void setAutoRefresh(final boolean enabled)
+    public void setAutoRefreshEnabled(final boolean enabled)
     {
-        autoRefresh = enabled;
+        autoRefreshEnabled = enabled;
 
         if ( uiComponent != null )
         {
-            uiComponent.setAutoRefresh( enabled );
+            uiComponent.setAutoRefreshEnabled( enabled );
         }
     }
 
@@ -247,7 +244,7 @@ class AppLovinMAXAdView
 
         if ( uiComponent != null )
         {
-            uiComponent.setAutoRefresh( false );
+            uiComponent.setAutoRefreshEnabled( false );
         }
     }
 
@@ -258,7 +255,7 @@ class AppLovinMAXAdView
 
         if ( uiComponent != null )
         {
-            uiComponent.setAutoRefresh( autoRefresh );
+            uiComponent.setAutoRefreshEnabled( autoRefreshEnabled );
         }
     }
 
@@ -297,38 +294,37 @@ class AppLovinMAXAdView
 
             if ( uiComponent != null )
             {
-                AppLovinMAXModule.e( "Attempting to re-attach with existing native UI component: " + uiComponent.getAdView() );
+                AppLovinMAXModule.e( "Attempting to re-attach with existing AdView (" + uiComponent.hashCode() + ") for Ad Unit ID " + adUnitId );
                 return;
             }
 
             uiComponent = preloadedUiComponentInstances.get( adViewId );
             if ( uiComponent != null )
             {
-                // Attach the preloaded uiComponent if possible, otherwise create a new one for the
-                // same adUnitId
+                // Attach the preloaded uiComponent if possible, otherwise create a new one for the same adUnitId
                 if ( !( uiComponent.hasContainerView() || uiComponent.isAdViewAttached() ) )
                 {
-                    AppLovinMAXModule.d( "Mounting the preloaded native UI component for " + adUnitId + " using AdView " + adViewId );
+                    AppLovinMAXModule.d( "Mounting the preloaded AdView (" + adViewId + ") for Ad Unit ID " + adUnitId );
 
                     uiComponent.setAdaptiveBannerEnabled( adaptiveBannerEnabled );
-                    uiComponent.setAutoRefresh( autoRefresh );
+                    uiComponent.setAutoRefreshEnabled( autoRefreshEnabled );
                     uiComponent.attachAdView( AppLovinMAXAdView.this );
                     return;
                 }
             }
 
             uiComponent = new AppLovinMAXAdViewUiComponent( adUnitId, adFormat, reactContext );
-            adViewId = uiComponent.getAdView().hashCode();
+            adViewId = uiComponent.hashCode();
             uiComponentInstances.put( adViewId, uiComponent );
 
-            AppLovinMAXModule.d( "Mounting a new native UI component for " + adUnitId + " using AdView " + adViewId );
+            AppLovinMAXModule.d( "Mounting a new AdView (" + adViewId + ") for Ad Unit ID " + adUnitId );
 
             uiComponent.setPlacement( placement );
             uiComponent.setCustomData( customData );
             uiComponent.setExtraParameters( extraParameters );
             uiComponent.setLocalExtraParameters( localExtraParameters );
             uiComponent.setAdaptiveBannerEnabled( adaptiveBannerEnabled );
-            uiComponent.setAutoRefresh( autoRefresh );
+            uiComponent.setAutoRefreshEnabled( autoRefreshEnabled );
 
             uiComponent.attachAdView( AppLovinMAXAdView.this );
 
@@ -360,13 +356,13 @@ class AppLovinMAXAdView
 
             if ( uiComponent == preloadedUiComponent )
             {
-                AppLovinMAXModule.d( "Unmounting the preloaded native UI component for " + adUnitId + " using AdView " + adViewId );
+                AppLovinMAXModule.d( "Unmounting the preloaded AdView (" + adViewId + ") for Ad Unit ID " + adUnitId );
 
-                uiComponent.setAutoRefresh( false );
+                uiComponent.setAutoRefreshEnabled( false );
             }
             else
             {
-                AppLovinMAXModule.d( "Unmounting the native UI component to destroy for " + adUnitId + " using AdView " + adViewId );
+                AppLovinMAXModule.d( "Unmounting the AdView (" + adViewId + ") to destroy for Ad Unit ID " + adUnitId );
 
                 uiComponentInstances.remove( adViewId );
                 uiComponent.destroy();

@@ -110,7 +110,7 @@ class AppLovinMAXAdViewManager
     @ReactProp(name = "autoRefresh")
     public void setAutoRefresh(final AppLovinMAXAdView view, final boolean enabled)
     {
-        view.setAutoRefresh( enabled );
+        view.setAutoRefreshEnabled( enabled );
     }
 
     @ReactProp(name = "loadOnMount")

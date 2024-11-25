@@ -21,18 +21,23 @@
         self.adView = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitIdentifier adFormat: adFormat sdk: [AppLovinMAX shared].sdk];
         self.adView.delegate = self;
         self.adView.revenueDelegate = self;
-
+        
         [self.adView setExtraParameterForKey: @"adaptive_banner" value: @"true"];
         
         // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
         [self.adView setExtraParameterForKey: @"allow_pause_auto_refresh_immediately" value: @"true"];
-
+        
         [self.adView stopAutoRefresh];
         
         // Set a frame size to suppress an error of zero area for MAAdView
         self.adView.frame = (CGRect) { CGPointZero, adFormat.size };
     }
     return self;
+}
+
+- (NSString *)adUnitIdentifier
+{
+    return self.adView.adUnitIdentifier;
 }
 
 - (void)setPlacement:(nullable NSString *)placement
@@ -50,7 +55,7 @@
     [self.adView setExtraParameterForKey: @"adaptive_banner" value: adaptiveBannerEnabled ? @"true" : @"false"];
 }
 
-- (void)setAutoRefresh:(BOOL)autoRefresh
+- (void)setAutoRefreshEnabled:(BOOL)autoRefresh
 {
     if ( autoRefresh )
     {
@@ -122,12 +127,12 @@
 
 - (void)didLoadAd:(MAAd *)ad
 {
-    NSMutableDictionary *body = [@{@"adViewId": @(self.adView.hash)} mutableCopy];
+    NSMutableDictionary *body = [@{@"adViewId": @(self.hash)} mutableCopy];
     [body addEntriesFromDictionary: [[AppLovinMAX shared] adInfoForAd: ad]];
     
-    if ( [AppLovinMAXAdView isNativeUIComponentPreloaded: @(self.adView.hash)] )
+    if ( [AppLovinMAXAdView hasPreloadedAdViewForIdentifier: @(self.hash)] )
     {
-        [[AppLovinMAX shared] sendEventWithName: @"OnNativeUIComponentAdViewAdLoadedEvent" body: body];
+        [[AppLovinMAX shared] sendEventWithName: ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT body: body];
     }
     
     if ( self.containerView )
@@ -138,12 +143,12 @@
 
 - (void)didFailToLoadAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(MAError *)error
 {
-    NSMutableDictionary *body = [@{@"adViewId": @(self.adView.hash)} mutableCopy];
+    NSMutableDictionary *body = [@{@"adViewId": @(self.hash)} mutableCopy];
     [body addEntriesFromDictionary: [[AppLovinMAX shared] adLoadFailedInfoForAd: adUnitIdentifier withError: error]];
     
-    if ( [AppLovinMAXAdView isNativeUIComponentPreloaded: @(self.adView.hash)] )
+    if ( [AppLovinMAXAdView hasPreloadedAdViewForIdentifier: @(self.hash)] )
     {
-        [[AppLovinMAX shared] sendEventWithName: @"OnNativeUIComponentAdViewAdLoadFailedEvent" body: body];
+        [[AppLovinMAX shared] sendEventWithName: ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT body: body];
     }
     
     if ( self.containerView )
@@ -156,9 +161,9 @@
 {
     if ( self.containerView )
     {
-        NSMutableDictionary *body = [@{@"adViewId": @(self.adView.hash)} mutableCopy];
+        NSMutableDictionary *body = [@{@"adViewId": @(self.hash)} mutableCopy];
         [body addEntriesFromDictionary: [[AppLovinMAX shared] adDisplayFailedInfoForAd: ad withError: error]];
-
+        
         self.containerView.onAdDisplayFailedEvent(body);
     }
 }
@@ -167,9 +172,9 @@
 {
     if ( self.containerView )
     {
-        NSMutableDictionary *body = [@{@"adViewId": @(self.adView.hash)} mutableCopy];
+        NSMutableDictionary *body = [@{@"adViewId": @(self.hash)} mutableCopy];
         [body addEntriesFromDictionary: [[AppLovinMAX shared] adInfoForAd: ad]];
-
+        
         self.containerView.onAdClickedEvent(body);
     }
 }
@@ -180,9 +185,9 @@
 {
     if ( self.containerView )
     {
-        NSMutableDictionary *body = [@{@"adViewId": @(self.adView.hash)} mutableCopy];
+        NSMutableDictionary *body = [@{@"adViewId": @(self.hash)} mutableCopy];
         [body addEntriesFromDictionary: [[AppLovinMAX shared] adInfoForAd: ad]];
- 
+        
         self.containerView.onAdExpandedEvent(body);
     }
 }
@@ -191,9 +196,9 @@
 {
     if ( self.containerView )
     {
-        NSMutableDictionary *body = [@{@"adViewId": @(self.adView.hash)} mutableCopy];
+        NSMutableDictionary *body = [@{@"adViewId": @(self.hash)} mutableCopy];
         [body addEntriesFromDictionary: [[AppLovinMAX shared] adInfoForAd: ad]];
-
+        
         self.containerView.onAdCollapsedEvent(body);
     }
 }
@@ -204,9 +209,9 @@
 {
     if ( self.containerView )
     {
-        NSMutableDictionary *body = [@{@"adViewId": @(self.adView.hash)} mutableCopy];
+        NSMutableDictionary *body = [@{@"adViewId": @(self.hash)} mutableCopy];
         [body addEntriesFromDictionary: [[AppLovinMAX shared] adInfoForAd: ad]];
-
+        
         self.containerView.onAdRevenuePaidEvent(body);
     }
 }

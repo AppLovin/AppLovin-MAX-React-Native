@@ -11,7 +11,7 @@ export type AdInfo = {
     adUnitId: string;
 
     /**
-     * The ID representing AdView.
+     * The unique ID of the native UI component AdView.
      */
     adViewId?: AdViewId;
 
@@ -76,7 +76,7 @@ export type AdLoadFailedInfo = {
     adUnitId: string;
 
     /**
-     * The ID representing AdView.
+     * The unique ID of the native UI component AdView.
      */
     adViewId?: AdViewId;
 

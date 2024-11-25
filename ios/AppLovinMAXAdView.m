@@ -21,7 +21,7 @@
 @property (nonatomic, copy, nullable) NSString *placement;
 @property (nonatomic, copy, nullable) NSString *customData;
 @property (nonatomic, assign, readonly, getter=isAdaptiveBannerEnabled) BOOL adaptiveBannerEnabled;
-@property (nonatomic, assign, readonly, getter=isAutoRefresh) BOOL autoRefresh;
+@property (nonatomic, assign, readonly, getter=isAutoRefreshEnabled) BOOL autoRefresh;
 @property (nonatomic, assign, readonly, getter=isLoadOnMount) BOOL loadOnMount;
 @property (nonatomic, copy, nullable) NSDictionary<NSString *, id> *extraParameters;
 @property (nonatomic, copy, nullable) NSDictionary<NSString *, id> *localExtraParameters;
@@ -40,32 +40,36 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
     preloadedUIComponentInstances = [NSMutableDictionary dictionaryWithCapacity: 2];
 }
 
+
+// Returns an MAAdView to support Amazon integrations. This method returns the first instance that
+// matches the Ad Unit ID, consistent with the behavior introduced when this feature was first
+// implemented.
 + (MAAdView *)sharedWithAdUnitIdentifier:(NSString *)adUnitIdentifier
 {
     for ( id key in preloadedUIComponentInstances )
     {
         AppLovinMAXAdViewUIComponent *uiComponent = preloadedUIComponentInstances[key];
-        if ( [adUnitIdentifier isEqualToString: uiComponent.adView.adUnitIdentifier] )
+        if ( [uiComponent.adUnitIdentifier isEqualToString: adUnitIdentifier] )
         {
             return uiComponent.adView;
         }
     }
-
+    
     for ( id key in uiComponentInstances )
     {
         AppLovinMAXAdViewUIComponent *uiComponent = uiComponentInstances[key];
-        if ( [adUnitIdentifier isEqualToString: uiComponent.adView.adUnitIdentifier] )
+        if ( [uiComponent.adUnitIdentifier isEqualToString: adUnitIdentifier] )
         {
             return uiComponent.adView;
         }
     }
-
+    
     return nil;
 }
 
-+ (BOOL)isNativeUIComponentPreloaded:(NSNumber *)adViewId
++ (BOOL)hasPreloadedAdViewForIdentifier:(NSNumber *)adViewId
 {
-    return [preloadedUIComponentInstances objectForKey: adViewId];
+    return preloadedUIComponentInstances[adViewId];
 }
 
 + (void)preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier 
@@ -78,7 +82,7 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
                    withPromiseRejecter:(RCTPromiseRejectBlock)reject
 {
     AppLovinMAXAdViewUIComponent *preloadedUIComponent = [[AppLovinMAXAdViewUIComponent alloc] initWithAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
-    preloadedUIComponentInstances[@(preloadedUIComponent.adView.hash)] = preloadedUIComponent;
+    preloadedUIComponentInstances[@(preloadedUIComponent.hash)] = preloadedUIComponent;
     
     preloadedUIComponent.placement = placement;
     preloadedUIComponent.customData = customData;
@@ -87,7 +91,7 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
     
     [preloadedUIComponent loadAd];
     
-    resolve(@(preloadedUIComponent.adView.hash));
+    resolve(@(preloadedUIComponent.hash));
 }
 
 + (void)destroyNativeUIComponentAdView:(NSNumber *)adViewId
@@ -97,13 +101,13 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
     AppLovinMAXAdViewUIComponent *preloadedUIComponent = preloadedUIComponentInstances[adViewId];
     if ( !preloadedUIComponent )
     {
-        reject(RCTErrorUnspecified, @"No native UI component found to destroy", nil);
+        reject(RCTErrorUnspecified, @"No preloaded AdView found to destroy", nil);
         return;
     }
     
     if ( [preloadedUIComponent hasContainerView] )
     {
-        reject(RCTErrorUnspecified, @"Cannot destroy - currently in use", nil);
+        reject(RCTErrorUnspecified, @"Cannot destroy - the preloaded AdView is currently in use", nil);
         return;
     }
     
@@ -191,7 +195,7 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
     
     if ( self.uiComponent )
     {
-        self.uiComponent.autoRefresh = autoRefresh;
+        self.uiComponent.autoRefreshEnabled = autoRefresh;
     }
 }
 
@@ -234,38 +238,37 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
         
         if ( self.uiComponent )
         {
-            [[AppLovinMAX shared] log: @"Attempting to re-attach with existing native UI component: %@", self.uiComponent.adView];
+            [[AppLovinMAX shared] log: @"Attempting to re-attach with existing AdView (%@) for Ad Unit ID %@", @(self.uiComponent.hash), self.adUnitId];
             return;
         }
         
         self.uiComponent = preloadedUIComponentInstances[self.adViewId];
         if ( self.uiComponent )
         {
-            // Attach the preloaded uiComponent if possible, otherwise create a new one for the
-            // same adUnitId
+            // Attach the preloaded uiComponent if possible, otherwise create a new one for the same adUnitId
             if ( ![self.uiComponent hasContainerView] )
             {
-                [[AppLovinMAX shared] log: @"Mounting the preloaded native UI component for %@ using AdView %@", self.adUnitId, self.adViewId];
-
-                self.uiComponent.adaptiveBannerEnabled = self.isAdaptiveBannerEnabled;
-                self.uiComponent.autoRefresh = self.isAutoRefresh;
+                [[AppLovinMAX shared] log: @"Mounting the preloaded AdView (%@) for Ad Unit ID %@", self.adViewId, self.adUnitId];
+                
+                self.uiComponent.adaptiveBannerEnabled = [self isAdaptiveBannerEnabled];
+                self.uiComponent.autoRefreshEnabled = [self isAutoRefreshEnabled];
                 [self.uiComponent attachAdView: self];
                 return;
             }
         }
         
         self.uiComponent = [[AppLovinMAXAdViewUIComponent alloc] initWithAdUnitIdentifier: adUnitId adFormat: adFormat];
-        self.adViewId = @(self.uiComponent.adView.hash);
+        self.adViewId = @(self.uiComponent.hash);
         uiComponentInstances[self.adViewId] = self.uiComponent;
         
-        [[AppLovinMAX shared] log: @"Mounting a new native UI component for %@ using AdView %@", self.adUnitId, self.adViewId];
-
+        [[AppLovinMAX shared] log: @"Mounting a new AdView (%@) for Ad Unit ID %@", self.adViewId, self.adUnitId];
+        
         self.uiComponent.placement = self.placement;
         self.uiComponent.customData = self.customData;
         self.uiComponent.extraParameters = self.extraParameters;
         self.uiComponent.localExtraParameters = self.localExtraParameters;
-        self.uiComponent.adaptiveBannerEnabled = self.isAdaptiveBannerEnabled;
-        self.uiComponent.autoRefresh = self.isAutoRefresh;
+        self.uiComponent.adaptiveBannerEnabled = [self isAdaptiveBannerEnabled];
+        self.uiComponent.autoRefreshEnabled = [self isAutoRefreshEnabled];
         
         [self.uiComponent attachAdView: self];
         
@@ -302,14 +305,14 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
             
             if ( self.uiComponent == preloadedUIComponent )
             {
-                [[AppLovinMAX shared] log: @"Unmounting the preloaded native UI component for %@ using AdView %@", self.adUnitId, self.adViewId];
-
-                self.uiComponent.autoRefresh = NO;
+                [[AppLovinMAX shared] log: @"Unmounting the preloaded AdView (%@) for Ad Unit ID %@", self.adViewId, self.adUnitId];
+                
+                self.uiComponent.autoRefreshEnabled = NO;
             }
             else
             {
-                [[AppLovinMAX shared] log: @"Unmounting the native UI component to destroy for %@ using AdView %@", self.adUnitId, self.adViewId];
-
+                [[AppLovinMAX shared] log: @"Unmounting the AdView (%@) to destroy for Ad Unit ID %@", self.adViewId, self.adUnitId];
+                
                 [uiComponentInstances removeObjectForKey: self.adViewId];
                 [self.uiComponent destroy];
             }
