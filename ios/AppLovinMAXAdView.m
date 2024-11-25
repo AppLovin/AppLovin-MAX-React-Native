@@ -44,7 +44,7 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
 // Returns an MAAdView to support Amazon integrations. This method returns the first instance that
 // matches the Ad Unit ID, consistent with the behavior introduced when this feature was first
 // implemented.
-+ (MAAdView *)sharedWithAdUnitIdentifier:(NSString *)adUnitIdentifier
++ (nullable MAAdView *)sharedWithAdUnitIdentifier:(NSString *)adUnitIdentifier
 {
     for ( id key in preloadedUIComponentInstances )
     {

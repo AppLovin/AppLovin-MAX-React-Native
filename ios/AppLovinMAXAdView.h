@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) RCTDirectEventBlock onAdCollapsedEvent;
 @property (nonatomic, copy) RCTDirectEventBlock onAdRevenuePaidEvent;
 
-+ (MAAdView *)sharedWithAdUnitIdentifier:(NSString *)adUnitIdentifier;
++ (nullable MAAdView *)sharedWithAdUnitIdentifier:(NSString *)adUnitIdentifier;
 
 + (BOOL)hasPreloadedAdViewForIdentifier:(NSNumber *)adViewId;
 

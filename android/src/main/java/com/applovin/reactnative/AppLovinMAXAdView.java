@@ -47,6 +47,7 @@ class AppLovinMAXAdView
     // Returns an MaxAdView to support Amazon integrations. This method returns the first instance
     // that matches the Ad Unit ID, consistent with the behavior introduced when this feature was
     // first implemented.
+    @Nullable
     public static MaxAdView getInstance(final String adUnitId)
     {
         for ( Map.Entry<Integer, AppLovinMAXAdViewUiComponent> entry : preloadedUiComponentInstances.entrySet() )
