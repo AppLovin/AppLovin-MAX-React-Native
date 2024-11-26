@@ -1,7 +1,7 @@
 ## Versions
 
 ## x.x.x
-* Enhance banner and MREC (<AdView/>) preloading to support preloading multiple <AdView/> instances.
+* Enhance banner and MREC (`<AdView/>`) preloading to support preloading multiple `<AdView/>` instances.
 ## 8.0.5
 * Depend on Android SDK 13.0.1 and iOS SDK 13.0.1.
 * Update preloaded banners and MRECs (`<AdView/>`) to suspend auto-refresh while not visible in background.
