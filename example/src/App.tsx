@@ -12,7 +12,7 @@ import AppLovinMAX, {
     removeNativeUIComponentAdViewAdLoadFailedEventListener,
     AdFormat,
 } from 'react-native-applovin-max';
-import type { Configuration, AdInfo, AdLoadFailedInfo, NativeUIComponentAdViewOptions } from 'react-native-applovin-max';
+import type { Configuration, AdInfo, AdLoadFailedInfo, NativeUIComponentAdViewOptions, AdViewId } from 'react-native-applovin-max';
 import AppLogo from './components/AppLogo';
 import AppButton from './components/AppButton';
 import InterExample from './InterExample';
@@ -66,6 +66,10 @@ const App = () => {
     const [isNativeUIMRecShowing, setIsNativeUIMRecShowing] = useState(false);
     const [isNativeAdShowing, setIsNativeAdShowing] = useState(false);
     const [statusText, setStatusText] = useState('Initializing SDK...');
+    const [preloadedBannerId, setPreloadedBannerId] = useState<AdViewId>();
+    const [preloadedMRecId, setPreloadedMRecId] = useState<AdViewId>();
+    const [preloadedBanner2Id, setPreloadedBanner2Id] = useState<AdViewId>();
+    const [preloadedMRec2Id, setPreloadedMRec2Id] = useState<AdViewId>();
 
     // Run once after mounting
     useEffect(() => {
@@ -105,27 +109,28 @@ const App = () => {
 
         addNativeUIComponentAdViewAdLoadedEventListener((adInfo: AdInfo) => {
             if (adInfo.adUnitId === BANNER_AD_UNIT_ID) {
-                console.log('Banner ad preloaded from ' + adInfo.networkName);
+                console.log('Banner ad ( ' + adInfo.adViewId + ' ) preloaded from ' + adInfo.networkName);
             } else if (adInfo.adUnitId === MREC_AD_UNIT_ID) {
-                console.log('MREC ad preloaded from ' + adInfo.networkName);
+                console.log('MREC ad ( ' + adInfo.adViewId + ' ) preloaded from ' + adInfo.networkName);
             } else {
-                console.log('Error: unexpected ad preloaded for ' + adInfo.adUnitId);
+                console.log('Error: unexpected ad ( ' + adInfo.adViewId + ' ) preloaded for ' + adInfo.adUnitId);
             }
         });
 
         addNativeUIComponentAdViewAdLoadFailedEventListener((errorInfo: AdLoadFailedInfo) => {
             if (errorInfo.adUnitId === BANNER_AD_UNIT_ID) {
-                console.log('Banner ad failed to preload with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+                console.log('Banner ad ( ' + errorInfo.adViewId + ' ) failed to preload with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
             } else if (errorInfo.adUnitId === MREC_AD_UNIT_ID) {
-                console.log('MREC ad failed to preload with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+                console.log('MREC ad ( ' + errorInfo.adViewId + ' ) failed to preload with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
             } else {
-                console.log('Error: unexpected ad failed to preload for ' + errorInfo.adUnitId);
+                console.log('Error: unexpected ad ( ' + errorInfo.adViewId + ' ) failed to preload for ' + errorInfo.adUnitId);
             }
         });
 
         preloadNativeUIComponentAdView(BANNER_AD_UNIT_ID, AdFormat.BANNER)
-            .then(() => {
-                console.log('Started preloading a banner ad for ' + BANNER_AD_UNIT_ID);
+            .then((adViewId: AdViewId) => {
+                setPreloadedBannerId(adViewId);
+                console.log('Started preloading a banner ad for ' + BANNER_AD_UNIT_ID + ' with ' + adViewId);
             })
             .catch((error) => {
                 console.log('Failed to preaload a banner ad: ' + error.message);
@@ -139,8 +144,27 @@ const App = () => {
         };
 
         preloadNativeUIComponentAdView(MREC_AD_UNIT_ID, AdFormat.MREC, mrecOptions)
-            .then(() => {
-                console.log('Started preloading a MREC ad for ' + MREC_AD_UNIT_ID);
+            .then((adViewId: AdViewId) => {
+                setPreloadedMRecId(adViewId);
+                console.log('Started preloading a MREC ad for ' + MREC_AD_UNIT_ID + ' with ' + adViewId);
+            })
+            .catch((error) => {
+                console.log('Failed to preaload a MREC ad: ' + error.message);
+            });
+
+        preloadNativeUIComponentAdView(BANNER_AD_UNIT_ID, AdFormat.BANNER)
+            .then((adViewId: AdViewId) => {
+                setPreloadedBanner2Id(adViewId);
+                console.log('Started preloading a banner ad for ' + BANNER_AD_UNIT_ID + ' with ' + adViewId);
+            })
+            .catch((error) => {
+                console.log('Failed to preaload a banner ad: ' + error.message);
+            });
+
+        preloadNativeUIComponentAdView(MREC_AD_UNIT_ID, AdFormat.MREC)
+            .then((adViewId: AdViewId) => {
+                setPreloadedMRec2Id(adViewId);
+                console.log('Started preloading a MREC ad for ' + MREC_AD_UNIT_ID + ' with ' + adViewId);
             })
             .catch((error) => {
                 console.log('Failed to preaload a MREC ad: ' + error.message);
@@ -150,20 +174,36 @@ const App = () => {
             removeNativeUIComponentAdViewAdLoadedEventListener();
             removeNativeUIComponentAdViewAdLoadFailedEventListener();
 
-            destroyNativeUIComponentAdView(BANNER_AD_UNIT_ID)
+            destroyNativeUIComponentAdView(preloadedBannerId)
                 .then(() => {
-                    console.log('Destroyed the preloaded banner ad');
+                    console.log('Destroyed the preloaded banner ad ( ' + preloadedBannerId + ' )');
                 })
                 .catch((error) => {
-                    console.log('Cannot destroy the preloaded banner ad: ' + error.message);
+                    console.log('Cannot destroy the preloaded banner ad ( ' + preloadedBannerId + ' ): ' + error.message);
                 });
 
-            destroyNativeUIComponentAdView(MREC_AD_UNIT_ID)
+            destroyNativeUIComponentAdView(preloadedMRecId)
                 .then(() => {
-                    console.log('Destroyed the preloaded MREC ad');
+                    console.log('Destroyed the preloaded MREC ad ( ' + preloadedMRecId + ' )');
                 })
                 .catch((error) => {
-                    console.log('Cannot destroy the preloaded MREC ad: ' + error.message);
+                    console.log('Cannot destroy the preloaded MREC ad ( ' + preloadedMRecId + ' ): ' + error.message);
+                });
+
+            destroyNativeUIComponentAdView(preloadedBanner2Id)
+                .then(() => {
+                    console.log('Destroyed the preloaded banner ad ( ' + preloadedBanner2Id + ' )');
+                })
+                .catch((error) => {
+                    console.log('Cannot destroy the preloaded banner ad ( ' + preloadedBanner2Id + ' ): ' + error.message);
+                });
+
+            destroyNativeUIComponentAdView(preloadedMRec2Id)
+                .then(() => {
+                    console.log('Destroyed the preloaded MREC ad ( ' + preloadedMRec2Id + ' )');
+                })
+                .catch((error) => {
+                    console.log('Cannot destroy the preloaded MREC ad ( ' + preloadedMRec2Id + ' ): ' + error.message);
                 });
         };
 
@@ -202,6 +242,7 @@ const App = () => {
                 />
                 <NativeBannerExample
                     adUnitId={BANNER_AD_UNIT_ID}
+                    adViewId={preloadedBannerId}
                     log={setStatusText}
                     isInitialized={isInitialized}
                     isNativeUIBannerShowing={isNativeUIBannerShowing}
@@ -210,6 +251,7 @@ const App = () => {
                 />
                 <NativeMRecExample
                     adUnitId={MREC_AD_UNIT_ID}
+                    adViewId={preloadedMRecId}
                     log={setStatusText}
                     isInitialized={isInitialized}
                     isNativeUIMRecShowing={isNativeUIMRecShowing}
@@ -223,7 +265,16 @@ const App = () => {
                     isNativeAdShowing={isNativeAdShowing}
                     setIsNativeAdShowing={setIsNativeAdShowing}
                 />
-                <ScrolledAdViewExample bannerAdUnitId={BANNER_AD_UNIT_ID} mrecAdUnitId={MREC_AD_UNIT_ID} isInitialized={isInitialized} isNativeAdShowing={isNativeAdShowing} />
+                <ScrolledAdViewExample
+                    bannerAdUnitId={BANNER_AD_UNIT_ID}
+                    mrecAdUnitId={MREC_AD_UNIT_ID}
+                    bannerAdViewId={preloadedBannerId}
+                    mrecAdViewId={preloadedMRecId}
+                    bannerAdView2Id={preloadedBanner2Id}
+                    mrecAdView2Id={preloadedMRec2Id}
+                    isInitialized={isInitialized}
+                    isNativeAdShowing={isNativeAdShowing}
+                />
             </View>
         </SafeAreaView>
     );

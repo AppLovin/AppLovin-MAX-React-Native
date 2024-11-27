@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { AdView, AdFormat } from 'react-native-applovin-max';
-import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from 'react-native-applovin-max';
+import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo, AdViewId } from 'react-native-applovin-max';
 import AppButton from './components/AppButton';
 
 type Props = {
     adUnitId: string;
+    adViewId?: AdViewId;
     isInitialized: boolean;
     log: (str: string) => void;
     isNativeUIBannerShowing: boolean;
@@ -13,7 +14,7 @@ type Props = {
     setIsNativeUIBannerShowing: (showing: boolean) => void;
 };
 
-const NativeBannerExample = ({ adUnitId, isInitialized, log, isNativeUIBannerShowing, isProgrammaticBannerShowing, setIsNativeUIBannerShowing }: Props) => {
+const NativeBannerExample = ({ adUnitId, adViewId, isInitialized, log, isNativeUIBannerShowing, isProgrammaticBannerShowing, setIsNativeUIBannerShowing }: Props) => {
     return (
         <>
             <AppButton
@@ -26,31 +27,26 @@ const NativeBannerExample = ({ adUnitId, isInitialized, log, isNativeUIBannerSho
             {isNativeUIBannerShowing && (
                 <AdView
                     adUnitId={adUnitId}
+                    adViewId={adViewId}
                     adFormat={AdFormat.BANNER}
                     style={styles.banner}
                     onAdLoaded={(adInfo: AdInfo) => {
-                        log('Banner ad loaded from ' + adInfo.networkName);
+                        log('Banner ad ( ' + adInfo.adViewId + ' ) loaded from ' + adInfo.networkName);
                     }}
                     onAdLoadFailed={(errorInfo: AdLoadFailedInfo) => {
-                        log('Banner ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+                        log('Banner ad ( ' + errorInfo.adViewId + ' ) failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
                     }}
-                    onAdClicked={
-                        (/* adInfo: AdInfo */) => {
-                            log('Banner ad clicked');
-                        }
-                    }
-                    onAdExpanded={
-                        (/* adInfo: AdInfo */) => {
-                            log('Banner ad expanded');
-                        }
-                    }
-                    onAdCollapsed={
-                        (/* adInfo: AdInfo */) => {
-                            log('Banner ad collapsed');
-                        }
-                    }
+                    onAdClicked={(adInfo: AdInfo) => {
+                        log('Banner ad ( ' + adInfo.adViewId + ' ) clicked');
+                    }}
+                    onAdExpanded={(adInfo: AdInfo) => {
+                        log('Banner ad ( ' + adInfo.adViewId + ' ) expanded');
+                    }}
+                    onAdCollapsed={(adInfo: AdInfo) => {
+                        log('Banner ad ( ' + adInfo.adViewId + ' ) collapsed');
+                    }}
                     onAdRevenuePaid={(adInfo: AdRevenueInfo) => {
-                        log('Banner ad revenue paid: ' + adInfo.revenue);
+                        log('Banner ad ( ' + adInfo.adViewId + ' ) revenue paid: ' + adInfo.revenue);
                     }}
                 />
             )}

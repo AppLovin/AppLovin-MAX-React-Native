@@ -13,39 +13,57 @@ export type AdViewHandler = {
 };
 
 /**
+ * A unique identifier for referencing a specific AdView instance.
+ *
+ * - If the value is a number, it represents the ID of a preloaded or assigned AdView.
+ * - A value of `undefined` indicates that the AdView has not been preloaded or assigned an ID yet.
+ */
+export type AdViewId = number | undefined;
+
+/**
  * Represents an {@link AdView} - Banner / MREC.
  */
 export type AdViewProps = AdProps & {
     /**
-     * An enum value representing the ad format to load ads for. Should be either
+     * An enum value representing the ad format to load ads for. Must be either
      * {@link AdFormat.BANNER} or {@link AdFormat.MREC}.
      */
     adFormat: AdFormat;
 
     /**
-     * A boolean value representing whether or not to enable adaptive banners.
+     * A unique identifier representing the AdView instance.
+     * Used to manage and track the specific AdView.
+     */
+    adViewId?: AdViewId;
+
+    /**
+     * A boolean indicating whether adaptive banners are enabled.
      */
     adaptiveBannerEnabled?: boolean;
 
     /**
-     * A boolean value representing whether or not to enable auto-refresh. Note that auto-refresh is
-     * enabled by default.
+     * A boolean indicating whether auto-refresh is enabled.
+     * Auto-refresh is enabled by default.
      */
     autoRefresh?: boolean;
 
     /**
-     * A boolean value representing whether or not to load an ad as soon as {@link AdView} is
-     * mounted. Note that the default value is true.
+     * A boolean indicating whether an ad should load automatically
+     * when the {@link AdView} is mounted. Defaults to `true`.
      */
     loadOnMount?: boolean;
 
     /**
-     * A callback fuction that {@link AdView} fires when it expands the ad.
+     * A callback function triggered when the {@link AdView} expands the ad.
+     *
+     * @param adInfo - Information about the ad that was expanded.
      */
     onAdExpanded?: (adInfo: AdInfo) => void;
 
     /**
-     * A callback fuction that {@link AdView} fires when it collapses the ad.
+     * A callback function triggered when the {@link AdView} collapses the ad.
+     *
+     * @param adInfo - Information about the ad that was collapsed.
      */
     onAdCollapsed?: (adInfo: AdInfo) => void;
 };

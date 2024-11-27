@@ -4,7 +4,7 @@ import { NativeModules, requireNativeComponent, StyleSheet, UIManager, findNodeH
 import type { ViewProps, ViewStyle, StyleProp, NativeMethods, DimensionValue } from 'react-native';
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from './types/AdInfo';
 import type { AdNativeEvent } from './types/AdEvent';
-import type { AdViewProps, AdViewHandler, NativeUIComponentAdViewOptions } from './types/AdViewProps';
+import type { AdViewProps, AdViewHandler, NativeUIComponentAdViewOptions, AdViewId } from './types/AdViewProps';
 import { addEventListener, removeEventListener } from './EventEmitter';
 
 const { AppLovinMAX } = NativeModules;
@@ -109,11 +109,16 @@ const sizeBannerDimensions = async (sizeProps: SizeRecord, adaptiveBannerEnabled
 };
 
 /**
- * The {@link AdView} component that you use for building a banner or an MREC. Phones
- * size banners to 320x50 and MRECs to 300x250. Tablets size banners to 728x90 and MRECs to
- * 300x250. You may use the utility method {@link AppLovinMAX.isTablet()} to help with view sizing
- * adjustments. For adaptive banners, call {@link BannerAd.getAdaptiveHeightForWidth()} to get
- * the banner height, and then adjust your content accordingly.
+ * The {@link AdView} component renders banner or MREC ads with responsive sizing.
+ * - **Banners**: 320x50 on phones, 728x90 on tablets.
+ * - **MRECs**: 300x250 on all devices.
+ *
+ * Use {@link AppLovinMAX.isTablet()} to determine device type for layout adjustments.
+ * For adaptive banners, use {@link BannerAd.getAdaptiveHeightForWidth()} for precise sizing.
+ *
+ * **Preloading**:
+ * When preloading an {@link AdView} using {@link preloadNativeUIComponentAdView},
+ * the returned {@link AdViewId} must be passed to identify the preloaded instance.
  *
  * ### Example:
  * ```js
@@ -135,6 +140,7 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
     {
         adUnitId,
         adFormat,
+        adViewId,
         placement,
         customData,
         adaptiveBannerEnabled = true,
@@ -282,6 +288,7 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
             ref={saveElement}
             adUnitId={adUnitId}
             adFormat={adFormat}
+            adViewId={adViewId || 0}
             placement={placement}
             customData={customData}
             adaptiveBannerEnabled={adaptiveBannerEnabled}
@@ -303,38 +310,33 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
 });
 
 /**
- * Preloads a native UI component for {@link AdView}. When you mount {@link AdView} with the Ad Unit
- * ID you preloaded, it will be constructed with the preloaded native UI component, allowing the ads
- * to be displayed quickly. When you unmount {@link AdView}, the preloaded native UI component won't
- * be destroyed. Instead, it will be reused for the next mount. You must manually destroy it when it
- * is no longer needed.
+ * Preloads a native UI component for {@link AdView}, enabling faster ad display on first mount.
  *
- * You can preload only one native UI component for a single Ad Unit ID. If you mount two of
- * {@link AdView} with the same Ad Unit ID, the first {@link AdView} will be constructed with the
- * preloaded native UI component, but the second {@link AdView} will create its own native UI
- * component and destroy it when unmounting.
+ * - When you mount {@link AdView} with the preloaded Ad Unit ID, it uses the preloaded native UI component.
+ * - Unmounting {@link AdView} does not destroy the preloaded component—it will be reused on the next mount.
+ * - You must manually destroy the preloaded component when it is no longer needed using {@link destroyNativeUIComponentAdView}.
  *
- * @param adUnitId The Ad Unit ID to load ads for.
- * @param adFormat An enum value representing the ad format to load ads for. Should be either
- * {@link AdFormat.BANNER} or {@link AdFormat.MREC}.
- * @param options Optional props used to construct a native UI component.
- * @returns A promise that resolves when preload starts. The resolved object contains void.
- * @throws Throws an error if the request fails.
+ * @param adUnitId - The Ad Unit ID for which the ads should be preloaded.
+ * @param adFormat - The ad format to preload. Must be either {@link AdFormat.BANNER} or {@link AdFormat.MREC}.
+ * @param options - Optional properties to configure the native UI component (e.g., placement, custom data).
+ * @returns A promise resolving to an {@link AdViewId}, which uniquely identifies the preloaded component.
+ * @throws An error if the preload request fails.
  */
-export const preloadNativeUIComponentAdView = async (adUnitId: string, adFormat: AdFormat, options?: NativeUIComponentAdViewOptions): Promise<void> => {
+export const preloadNativeUIComponentAdView = async (adUnitId: string, adFormat: AdFormat, options?: NativeUIComponentAdViewOptions): Promise<AdViewId> => {
     return AppLovinMAX.preloadNativeUIComponentAdView(adUnitId, adFormat, options?.placement, options?.customData, options?.extraParameters, options?.localExtraParameters);
 };
 
 /**
- * Destroys the native UI component.
+ * Destroys a preloaded native UI component identified by its {@link AdViewId}.
  *
- * @param adUnitId The ad unit ID of the native UI component to destroy.
- * @returns A promise that resolves upon the destruction of the native UI component. The resolved
- * object contains void.
- * @throws Throws an error if the request fails.
+ * - This method should be called when the preloaded component is no longer needed to free resources.
+ *
+ * @param adViewId - The {@link AdViewId} of the native UI component to be destroyed.
+ * @returns A promise that resolves when the native UI component is successfully destroyed.
+ * @throws An error if the destruction process fails.
  */
-export const destroyNativeUIComponentAdView = async (adUnitId: string): Promise<void> => {
-    return AppLovinMAX.destroyNativeUIComponentAdView(adUnitId);
+export const destroyNativeUIComponentAdView = async (adViewId: AdViewId): Promise<void> => {
+    return AppLovinMAX.destroyNativeUIComponentAdView(adViewId);
 };
 
 /**

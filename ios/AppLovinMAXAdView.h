@@ -21,7 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) RCTDirectEventBlock onAdCollapsedEvent;
 @property (nonatomic, copy) RCTDirectEventBlock onAdRevenuePaidEvent;
 
-+ (MAAdView *)sharedWithAdUnitIdentifier:(NSString *)adUnitIdentifier;
++ (nullable MAAdView *)sharedWithAdUnitIdentifier:(NSString *)adUnitIdentifier;
+
++ (BOOL)hasPreloadedAdViewForIdentifier:(NSNumber *)adViewId;
 
 + (void)preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier 
                               adFormat:(MAAdFormat *)adFormat
@@ -32,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
                    withPromiseResolver:(RCTPromiseResolveBlock)resolve
                    withPromiseRejecter:(RCTPromiseRejectBlock)reject;
 
-+ (void)destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier 
++ (void)destroyNativeUIComponentAdView:(NSNumber *)adViewId
                    withPromiseResolver:(RCTPromiseResolveBlock)resolve
                    withPromiseRejecter:(RCTPromiseRejectBlock)reject;
 

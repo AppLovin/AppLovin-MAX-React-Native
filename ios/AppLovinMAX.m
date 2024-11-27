@@ -124,9 +124,6 @@ static NSString *const ON_APPOPEN_AD_FAILED_TO_DISPLAY_EVENT = @"OnAppOpenAdFail
 static NSString *const ON_APPOPEN_AD_HIDDEN_EVENT = @"OnAppOpenAdHiddenEvent";
 static NSString *const ON_APPOPEN_AD_REVENUE_PAID = @"OnAppOpenAdRevenuePaid";
 
-static NSString *const ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT = @"OnNativeUIComponentAdViewAdLoadedEvent";
-static NSString *const ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT = @"OnNativeUIComponentAdViewAdLoadFailedEvent";
-
 static NSString *const TOP_CENTER = @"top_center";
 static NSString *const TOP_LEFT = @"top_left";
 static NSString *const TOP_RIGHT = @"top_right";
@@ -140,6 +137,9 @@ static NSString *const BOTTOM_RIGHT = @"bottom_right";
 static AppLovinMAX *AppLovinMAXShared; // Shared instance of this bridge module.
 
 static NSDictionary<NSString *, NSString *> *ALCompatibleNativeSDKVersions;
+
+NSString *const ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT = @"OnNativeUIComponentAdViewAdLoadedEvent";
+NSString *const ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT = @"OnNativeUIComponentAdViewAdLoadFailedEvent";
 
 // To export a module named AppLovinMAX ("RCT" automatically removed)
 RCT_EXPORT_MODULE()
@@ -984,11 +984,11 @@ RCT_EXPORT_METHOD(preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier
                                   withPromiseRejecter: reject];
 }
 
-RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(NSString *)adUnitIdentifier 
+RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(NSNumber *)adViewId
                                                 :(RCTPromiseResolveBlock)resolve
                                                 :(RCTPromiseRejectBlock)reject)
 {
-    [AppLovinMAXAdView destroyNativeUIComponentAdView: adUnitIdentifier
+    [AppLovinMAXAdView destroyNativeUIComponentAdView: adViewId
                                   withPromiseResolver: resolve
                                   withPromiseRejecter: reject];
 }

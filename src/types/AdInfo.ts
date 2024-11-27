@@ -1,4 +1,5 @@
 import type { ErrorCode } from '../ErrorCode';
+import type { AdViewId } from './AdViewProps';
 
 /**
  * Represents an ad that has been served by AppLovin MAX.
@@ -8,6 +9,11 @@ export type AdInfo = {
      * The ad unit ID for which this ad was loaded.
      */
     adUnitId: string;
+
+    /**
+     * The unique ID of the native UI component AdView.
+     */
+    adViewId?: AdViewId;
 
     /**
      * The creative ID tied to the ad, if any. You can report creative issues to the corresponding
@@ -68,6 +74,11 @@ export type AdLoadFailedInfo = {
      * The ad unit ID for which this ad was loaded.
      */
     adUnitId: string;
+
+    /**
+     * The unique ID of the native UI component AdView.
+     */
+    adViewId?: AdViewId;
 
     /**
      * The error code for the error.

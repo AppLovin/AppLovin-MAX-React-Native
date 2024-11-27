@@ -21,6 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface AppLovinMAX : RCTEventEmitter<RCTBridgeModule, MAAdDelegate, MARewardedAdDelegate, MAAdViewAdDelegate, MAAdRevenueDelegate>
 
+extern NSString *const ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT;
+extern NSString *const ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT;
+
 /**
  * Shared instance of this bridge module.
  */
