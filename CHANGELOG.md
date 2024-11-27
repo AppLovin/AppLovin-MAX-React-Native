@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 8.1.0
 * Enhance banner and MREC (`<AdView/>`) preloading to support preloading multiple `<AdView/>` instances.
 ## 8.0.5
 * Depend on Android SDK 13.0.1 and iOS SDK 13.0.1.

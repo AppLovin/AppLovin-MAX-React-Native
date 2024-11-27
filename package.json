@@ -1,7 +1,7 @@
 {
   "name": "react-native-applovin-max",
   "author": "AppLovin Corporation <support@applovin.com> (https://applovin.com)",
-  "version": "8.0.5",
+  "version": "8.1.0",
   "description": "AppLovin MAX React Native Plugin for Android and iOS",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
