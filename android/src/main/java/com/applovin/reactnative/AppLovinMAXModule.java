@@ -78,7 +78,7 @@ public class AppLovinMAXModule
 {
     private static final String SDK_TAG        = "AppLovinSdk";
     private static final String TAG            = "AppLovinMAXModule";
-    private static final String PLUGIN_VERSION = "8.0.5";
+    private static final String PLUGIN_VERSION = "8.1.0";
 
     private static final String USER_GEOGRAPHY_GDPR    = "G";
     private static final String USER_GEOGRAPHY_OTHER   = "O";
@@ -100,6 +100,7 @@ public class AppLovinMAXModule
 
     static
     {
+        ALCompatibleNativeSdkVersions.put( "8.1.0", "13.0.1" );
         ALCompatibleNativeSdkVersions.put( "8.0.5", "13.0.1" );
         ALCompatibleNativeSdkVersions.put( "8.0.4", "13.0.0" );
         ALCompatibleNativeSdkVersions.put( "8.0.3", "13.0.0" );
