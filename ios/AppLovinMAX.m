@@ -2170,8 +2170,6 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(nonnull NSNumber *)adViewId
              @"MAX_ERROR_CODE_FULLSCREEN_AD_ALREADY_SHOWING" : @(MAErrorCodeFullscreenAdAlreadyShowing),
              @"MAX_ERROR_CODE_FULLSCREEN_AD_NOT_READY" : @(MAErrorCodeFullscreenAdNotReady),
              @"MAX_ERROR_CODE_FULLSCREEN_AD_INVALID_VIEW_CONTROLLER" : @(MAErrorCodeFullscreenAdInvalidViewController),
-             @"MAX_ERROR_CODE_FULLSCREEN_AD_ALREADY_LOADING" : @(MAErrorCodeFullscreenAdAlreadyLoading),
-             @"MAX_ERROR_CODE_FULLSCREEN_AD_LOAD_WHILE_SHOWING" : @(MAErrorCodeFullscreenAdLoadWhileShowing),
              @"MAX_ERROR_CODE_INVALID_AD_UNIT_ID" : @(MAErrorCodeInvalidAdUnitIdentifier),
              // Android only
              @"MAX_ERROR_CODE_DONT_KEEP_ACTIVITIES_ENABLED" : @(-5602)};

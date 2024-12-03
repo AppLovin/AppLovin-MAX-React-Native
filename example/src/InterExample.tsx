@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
-import { InterstitialAd, ErrorCode } from 'react-native-applovin-max';
+import { InterstitialAd } from 'react-native-applovin-max';
 import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from 'react-native-applovin-max';
 import AppButton from './components/AppButton';
 
@@ -35,14 +35,6 @@ const InterExample = ({ adUnitId, isInitialized, log }: Props) => {
         });
         InterstitialAd.addAdLoadFailedEventListener((errorInfo: AdLoadFailedInfo) => {
             setAdLoadState(AdLoadState.notLoaded);
-
-            if (errorInfo.code === ErrorCode.FULLSCREEN_AD_ALREADY_LOADING) {
-                log('Interstitial ad failed: ad is already loading');
-                return;
-            } else if (errorInfo.code === ErrorCode.FULLSCREEN_AD_LOAD_WHILE_SHOWING) {
-                log('Interstitial ad failed: ad is currently shown for this ad unit');
-                return;
-            }
 
             if (retryAttempt.current > MAX_EXPONENTIAL_RETRY_COUNT) {
                 log('Interstitial ad failed to load with code ' + errorInfo.code);
