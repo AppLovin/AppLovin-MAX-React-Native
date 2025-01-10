@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+* Upgrade the React Native version to 0.75.4.
 * Remove obsolete MAX Error Codes - `ErrorCode.FULLSCREEN_AD_ALREADY_LOADING` and `ErrorCode.FULLSCREEN_AD_LOAD_WHILE_SHOWING`.
 ## 8.1.0
 * Enhance banner and MREC (`<AdView/>`) preloading to support preloading multiple `<AdView/>` instances.
