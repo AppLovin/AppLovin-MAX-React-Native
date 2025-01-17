@@ -95,13 +95,12 @@ const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps & Vie
 
     // Load a new ad
     const loadAd = useCallback(() => {
-        if (nativeAdViewRef.current) {
-            UIManager.dispatchViewManagerCommand(
-                findNodeHandle(nativeAdViewRef.current),
-                // @ts-ignore: Issue in RN ts defs
-                UIManager.getViewManagerConfig('AppLovinMAXNativeAdView').Commands.loadAd,
-                undefined
-            );
+        const nativeAdView = nativeAdViewRef.current;
+        if (nativeAdView) {
+            const viewManagerConfig = UIManager.getViewManagerConfig('AppLovinMAXNativeAdView');
+            if (viewManagerConfig?.Commands && typeof viewManagerConfig.Commands.loadAd === 'number') {
+                UIManager.dispatchViewManagerCommand(findNodeHandle(nativeAdView), viewManagerConfig.Commands.loadAd, []);
+            }
         }
     }, []);
 
