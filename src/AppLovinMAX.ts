@@ -115,10 +115,15 @@ type NativeAppLovinMAXType = Omit<AppLovinMAXType, 'initialize' | 'getSegments'>
 
 const nativeMethods: NativeAppLovinMAXType = NativeAppLovinMAX;
 
-export const AppLovinMAX: AppLovinMAXType = {
-    ...nativeMethods,
-    initialize,
-    getSegments,
-};
+export const AppLovinMAX: AppLovinMAXType = Object.create(nativeMethods, {
+    initialize: {
+        value: initialize,
+        enumerable: true,
+    },
+    getSegments: {
+        value: getSegments,
+        enumerable: true,
+    },
+});
 
 export default AppLovinMAX;
