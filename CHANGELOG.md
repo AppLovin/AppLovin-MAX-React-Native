@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+* Make AppLovinMAXAdView public to support Amazon Integration. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/407)
 * Enable compatibility with the Interop Layer.
 * Upgrade the React Native version to 0.76.2.
 * Remove obsolete MAX Error Codes - `ErrorCode.FULLSCREEN_AD_ALREADY_LOADING` and `ErrorCode.FULLSCREEN_AD_LOAD_WHILE_SHOWING`.
