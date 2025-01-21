@@ -18,7 +18,7 @@ import androidx.annotation.Nullable;
 /**
  * Created by Thomas So on September 27 2020
  */
-class AppLovinMAXAdView
+public class AppLovinMAXAdView
     extends ReactViewGroup
 {
     private static final Map<Integer, AppLovinMAXAdViewUiComponent> uiComponentInstances          = new HashMap<>( 2 );
