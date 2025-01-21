@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 8.1.1
 * Make AppLovinMAXAdView public to support Amazon Integration. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/407)
 * Enable compatibility with the Interop Layer.
 * Upgrade the React Native version to 0.76.2.
