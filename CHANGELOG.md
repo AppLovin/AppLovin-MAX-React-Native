@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Fix native ads not being destroyed when unmounted on iOS.
 ## 8.1.1
 * Make AppLovinMAXAdView public to support Amazon Integration. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/407)
 * Enable compatibility with the Interop Layer.
