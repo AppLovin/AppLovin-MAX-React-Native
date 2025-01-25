@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Fix banners and MRECs (<AdView/>) not being destroyed when unmounted with the new architecture enabled on iOS.
 ## 8.1.1
 * Make AppLovinMAXAdView public to support Amazon Integration. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/407)
 * Enable compatibility with the Interop Layer.
