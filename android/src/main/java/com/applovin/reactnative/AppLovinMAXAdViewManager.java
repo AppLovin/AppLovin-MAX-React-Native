@@ -84,7 +84,7 @@ class AppLovinMAXAdViewManager
     }
 
     @ReactProp(name = "adViewId")
-    public void setAdFormat(final AppLovinMAXAdView view, final int adViewId)
+    public void setAdViewId(final AppLovinMAXAdView view, final int adViewId)
     {
         view.setAdViewId( adViewId );
     }
