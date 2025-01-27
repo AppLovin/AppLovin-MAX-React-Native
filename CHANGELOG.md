@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Fix `adViewId` not correctly set for banners and MRECs (`<AdView/>`) on Android.
 ## 8.1.1
 * Make AppLovinMAXAdView public to support Amazon Integration. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/407)
 * Enable compatibility with the Interop Layer.
