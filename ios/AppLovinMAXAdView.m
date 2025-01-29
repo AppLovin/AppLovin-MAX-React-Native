@@ -317,6 +317,8 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
                 [self.uiComponent destroy];
             }
         }
+        
+        self.uiComponent = nil;
     }
 }
 
