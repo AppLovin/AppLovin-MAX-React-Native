@@ -85,7 +85,7 @@
 {
     [super didMoveToWindow];
     
-    if ( !self.window && !self.superview )
+    if ( !self.window )
     {
         [self destroyCurrentAdIfNeeded];
     }
