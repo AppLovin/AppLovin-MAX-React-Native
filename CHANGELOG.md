@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+* Depend on Android SDK 13.1.0 and iOS SDK 13.1.0.
 * Update `AdInfo` to include `adFormat`, `networkPlacement`, `revenuePrecision`, and `latencyMills`, deprecating `AdRevenueInfo`.
 * Fix banners and MRECs (`<AdView/>`) not being destroyed when unmounted with the new architecture enabled on iOS.
 * Fix native ads not being destroyed when unmounted on iOS.
