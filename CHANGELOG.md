@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+* Fix banners and MRECs (`<AdView/>`) not being destroyed when unmounted with the new architecture enabled on iOS.
 * Fix native ads not being destroyed when unmounted on iOS.
 * Fix `adViewId` not correctly set for banners and MRECs (`<AdView/>`) on Android.
 ## 8.1.1

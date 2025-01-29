@@ -295,7 +295,7 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
     [super didMoveToWindow];
     
     // This view is unmounted
-    if ( !self.window && !self.superview )
+    if ( !self.window )
     {
         if ( self.uiComponent )
         {
@@ -317,6 +317,8 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
                 [self.uiComponent destroy];
             }
         }
+        
+        self.uiComponent = nil;
     }
 }
 
