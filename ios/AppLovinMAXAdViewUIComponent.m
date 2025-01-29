@@ -210,7 +210,7 @@
     if ( self.containerView )
     {
         NSMutableDictionary *body = [@{@"adViewId": @(self.hash)} mutableCopy];
-        [body addEntriesFromDictionary: [[AppLovinMAX shared] adInfoForAd: ad]];
+        [body addEntriesFromDictionary: [[AppLovinMAX shared] adRevenueInfoForAd: ad]];
         
         self.containerView.onAdRevenuePaidEvent(body);
     }
