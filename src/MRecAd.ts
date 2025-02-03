@@ -1,6 +1,6 @@
 import { NativeModules } from 'react-native';
 import { addEventListener, removeEventListener } from './EventEmitter';
-import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from './types/AdInfo';
+import type { AdInfo, AdLoadFailedInfo } from './types/AdInfo';
 import type { LocalExtraParameterValue } from './types/AdProps';
 import type { MRecAdType } from './types/MRecAd';
 import type { AdViewPosition } from './AdView';
@@ -94,7 +94,7 @@ const removeAdExpandedEventListener = (): void => {
     removeEventListener(ON_MREC_AD_EXPANDED_EVENT);
 };
 
-const addAdRevenuePaidListener = (listener: (adInfo: AdRevenueInfo) => void): void => {
+const addAdRevenuePaidListener = (listener: (adInfo: AdInfo) => void): void => {
     addEventListener(ON_MREC_AD_REVENUE_PAID, listener);
 };
 

@@ -59,11 +59,6 @@ extern NSString *const ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT;
  */
 - (NSDictionary<NSString *, id> *)adDisplayFailedInfoForAd:(MAAd *)ad withError:(MAError *)error;
 
-/**
- * Returns a dictionay value of adRevenuInfo for the specified ad.
- */
-- (NSDictionary<NSString *, id> *)adRevenueInfoForAd:(MAAd *)ad;
-
 @end
 
 NS_ASSUME_NONNULL_END

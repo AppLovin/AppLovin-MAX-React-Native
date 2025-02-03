@@ -3,7 +3,7 @@ import { forwardRef, useContext, useImperativeHandle, useRef, useState, useEffec
 import { NativeModules, requireNativeComponent, UIManager, findNodeHandle, View } from 'react-native';
 import type { ViewProps } from 'react-native';
 import { NativeAdViewContext, NativeAdViewProvider } from './NativeAdViewProvider';
-import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from '../types/AdInfo';
+import type { AdInfo, AdLoadFailedInfo } from '../types/AdInfo';
 import type { AdNativeEvent } from '../types/AdEvent';
 import type { NativeAd } from '../types/NativeAd';
 import type { NativeAdViewHandler, NativeAdViewProps } from '../types/NativeAdViewProps';
@@ -15,7 +15,7 @@ type NativeAdViewNativeEvents = {
     onAdLoadedEvent(event: { nativeEvent: { nativeAd: NativeAd; adInfo: AdInfo } }): void;
     onAdLoadFailedEvent(event: AdNativeEvent<AdLoadFailedInfo>): void;
     onAdClickedEvent(event: AdNativeEvent<AdInfo>): void;
-    onAdRevenuePaidEvent(event: AdNativeEvent<AdRevenueInfo>): void;
+    onAdRevenuePaidEvent(event: AdNativeEvent<AdInfo>): void;
 };
 
 const NativeAdViewComponent = requireNativeComponent<NativeAdViewProps & ViewProps & NativeAdViewNativeEvents>('AppLovinMAXNativeAdView');
@@ -140,7 +140,7 @@ const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps & Vie
     );
 
     const onAdRevenuePaidEvent = useCallback(
-        (event: AdNativeEvent<AdRevenueInfo>) => {
+        (event: AdNativeEvent<AdInfo>) => {
             onAdRevenuePaid?.(event.nativeEvent);
         },
         [onAdRevenuePaid]

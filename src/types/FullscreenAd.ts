@@ -1,5 +1,5 @@
 import type { AdEventListener } from './AdEvent';
-import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo, AdDisplayFailedInfo } from './AdInfo';
+import type { AdInfo, AdLoadFailedInfo, AdDisplayFailedInfo } from './AdInfo';
 import type { LocalExtraParameterValue } from './AdProps';
 
 /**
@@ -126,15 +126,15 @@ export type FullscreenAdType = {
     removeAdHiddenEventListener(): void;
 
     /**
-     * Adds the specified event listener to receive {@link AdRevenueInfo} when a full-screen ad
+     * Adds the specified event listener to receive {@link AdInfo} when a full-screen ad
      * pays ad revenue to the publisher.
      *
      * @param listener Listener to be notified.
      */
-    addAdRevenuePaidListener(listener: AdEventListener<AdRevenueInfo>): void;
+    addAdRevenuePaidListener(listener: AdEventListener<AdInfo>): void;
 
     /**
-     * Removes the event listener to receive {@link AdRevenueInfo} when a full-screen ad pays
+     * Removes the event listener to receive {@link AdInfo} when a full-screen ad pays
      * ad revenue to the publisher.
      */
     removeAdRevenuePaidListener(): void;

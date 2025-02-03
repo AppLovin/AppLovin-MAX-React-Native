@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { InterstitialAd } from 'react-native-applovin-max';
-import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from 'react-native-applovin-max';
+import type { AdInfo, AdLoadFailedInfo } from 'react-native-applovin-max';
 import AppButton from './components/AppButton';
 
 const MAX_EXPONENTIAL_RETRY_COUNT = 6;
@@ -68,7 +68,7 @@ const InterExample = ({ adUnitId, isInitialized, log }: Props) => {
             setAdLoadState(AdLoadState.notLoaded);
             log('Interstitial ad hidden');
         });
-        InterstitialAd.addAdRevenuePaidListener((adInfo: AdRevenueInfo) => {
+        InterstitialAd.addAdRevenuePaidListener((adInfo: AdInfo) => {
             log('Interstitial ad revenue paid: ' + adInfo.revenue);
         });
     }, [adUnitId, log]);

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
 import { NativeAdView, TitleView, AdvertiserView, BodyView, CallToActionView, IconView, OptionsView, MediaView, StarRatingView } from 'react-native-applovin-max';
-import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo, NativeAdViewHandler } from 'react-native-applovin-max';
+import type { AdInfo, AdLoadFailedInfo, NativeAdViewHandler } from 'react-native-applovin-max';
 import AppButton from './components/AppButton';
 
 type Props = {
@@ -65,7 +65,7 @@ export const NativeAdViewExample = ({ adUnitId, isInitialized, log, isNativeAdSh
                         onAdClicked={(adInfo: AdInfo) => {
                             log('Native ad clicked on ' + adInfo.adUnitId);
                         }}
-                        onAdRevenuePaid={(adInfo: AdRevenueInfo) => {
+                        onAdRevenuePaid={(adInfo: AdInfo) => {
                             log('Native ad revenue paid: ' + adInfo.revenue);
                         }}
                     >

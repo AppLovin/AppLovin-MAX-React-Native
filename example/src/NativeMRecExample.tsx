@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { AdView, AdFormat } from 'react-native-applovin-max';
-import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo, AdViewId } from 'react-native-applovin-max';
+import type { AdInfo, AdLoadFailedInfo, AdViewId } from 'react-native-applovin-max';
 import AppButton from './components/AppButton';
 
 type Props = {
@@ -45,7 +45,7 @@ const NativeMRecExample = ({ adUnitId, adViewId, isInitialized, log, isNativeUIM
                     onAdCollapsed={(adInfo: AdInfo) => {
                         log('MREC ad ( ' + adInfo.adViewId + ' ) collapsed');
                     }}
-                    onAdRevenuePaid={(adInfo: AdRevenueInfo) => {
+                    onAdRevenuePaid={(adInfo: AdInfo) => {
                         log('MREC ad ( ' + adInfo.adViewId + ' ) revenue paid: ' + adInfo.revenue);
                     }}
                 />

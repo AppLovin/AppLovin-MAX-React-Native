@@ -1,6 +1,6 @@
 import { NativeModules } from 'react-native';
 import { addEventListener, removeEventListener } from './EventEmitter';
-import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo, AdRewardInfo } from './types/AdInfo';
+import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRewardInfo } from './types/AdInfo';
 import type { LocalExtraParameterValue } from './types/AdProps';
 import type { RewardedAdType } from './types/RewardedAd';
 
@@ -85,7 +85,7 @@ const removeAdHiddenEventListener = (): void => {
     removeEventListener(ON_REWARDED_AD_HIDDEN_EVENT);
 };
 
-const addAdRevenuePaidListener = (listener: (adInfo: AdRevenueInfo) => void): void => {
+const addAdRevenuePaidListener = (listener: (adInfo: AdInfo) => void): void => {
     addEventListener(ON_REWARDED_AD_REVENUE_PAID, listener);
 };
 

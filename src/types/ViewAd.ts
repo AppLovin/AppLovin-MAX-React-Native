@@ -1,5 +1,5 @@
 import type { AdEventListener } from './AdEvent';
-import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from './AdInfo';
+import type { AdInfo, AdLoadFailedInfo } from './AdInfo';
 import type { LocalExtraParameterValue } from './AdProps';
 import type { AdViewPosition } from '../AdView';
 
@@ -147,15 +147,15 @@ export type ViewAdType = {
     removeAdExpandedEventListener(): void;
 
     /**
-     * Adds the specified event listener to receive {@link AdRevenueInfo} when a view-base ad pays
+     * Adds the specified event listener to receive {@link AdInfo} when a view-base ad pays
      * ad revenue to the publisher.
      *
      * @param listener Listener to be notified.
      */
-    addAdRevenuePaidListener(listener: AdEventListener<AdRevenueInfo>): void;
+    addAdRevenuePaidListener(listener: AdEventListener<AdInfo>): void;
 
     /**
-     * Removes the event listener to receive {@link AdRevenueInfo} when when a view-base ad pays ad
+     * Removes the event listener to receive {@link AdInfo} when when a view-base ad pays ad
      * revenue to the publisher.
      */
     removeAdRevenuePaidListener(): void;

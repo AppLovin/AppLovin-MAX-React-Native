@@ -1,6 +1,6 @@
 import { NativeModules } from 'react-native';
 import { addEventListener, removeEventListener } from './EventEmitter';
-import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from './types/AdInfo';
+import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo } from './types/AdInfo';
 import type { LocalExtraParameterValue } from './types/AdProps';
 import type { InterstitialAdType } from './types/InterstitialAd';
 
@@ -84,7 +84,7 @@ const removeAdHiddenEventListener = (): void => {
     removeEventListener(ON_INTERSTITIAL_HIDDEN_EVENT);
 };
 
-const addAdRevenuePaidListener = (listener: (adInfo: AdRevenueInfo) => void): void => {
+const addAdRevenuePaidListener = (listener: (adInfo: AdInfo) => void): void => {
     addEventListener(ON_INTERSTITIAL_AD_REVENUE_PAID, listener);
 };
 

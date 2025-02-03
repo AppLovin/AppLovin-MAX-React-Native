@@ -1391,7 +1391,7 @@ public class AppLovinMAXModule
             return;
         }
 
-        sendReactNativeEvent( name, getAdRevenueInfo( ad ) );
+        sendReactNativeEvent( name, getAdInfo( ad ) );
     }
 
     @Override
@@ -2053,11 +2053,16 @@ public class AppLovinMAXModule
     {
         WritableMap adInfo = Arguments.createMap();
         adInfo.putString( "adUnitId", ad.getAdUnitId() );
-        adInfo.putString( "creativeId", AppLovinSdkUtils.isValidString( ad.getCreativeId() ) ? ad.getCreativeId() : "" );
+        adInfo.putString( "adFormat", ad.getFormat().getLabel() );
         adInfo.putString( "networkName", ad.getNetworkName() );
+        adInfo.putString( "networkPlacement", ad.getNetworkPlacement() );
+
+        adInfo.putString( "creativeId", AppLovinSdkUtils.isValidString( ad.getCreativeId() ) ? ad.getCreativeId() : "" );
         adInfo.putString( "placement", AppLovinSdkUtils.isValidString( ad.getPlacement() ) ? ad.getPlacement() : "" );
         adInfo.putDouble( "revenue", ad.getRevenue() );
+        adInfo.putString( "revenuePrecision", ad.getRevenuePrecision() );
         adInfo.putMap( "waterfall", createAdWaterfallInfo( ad.getWaterfall() ) );
+        adInfo.putDouble( "latencyMillis", ad.getRequestLatencyMillis() );
         adInfo.putString( "dspName", AppLovinSdkUtils.isValidString( ad.getDspName() ) ? ad.getDspName() : "" );
 
         WritableMap sizeObject = Arguments.createMap();
@@ -2098,15 +2103,6 @@ public class AppLovinMAXModule
         info.putInt( "mediatedNetworkErrorCode", error.getMediatedNetworkErrorCode() );
         info.putString( "mediatedNetworkErrorMessage", error.getMediatedNetworkErrorMessage() );
         return info;
-    }
-
-    public WritableMap getAdRevenueInfo(final MaxAd ad)
-    {
-        WritableMap adInfo = getAdInfo( ad );
-        adInfo.putString( "networkPlacement", ad.getNetworkPlacement() );
-        adInfo.putString( "revenuePrecision", ad.getRevenuePrecision() );
-        adInfo.putString( "countryCode", sdkConfiguration.getCountryCode() );
-        return adInfo;
     }
 
     private WritableMap getAdUnitInfo(final String adUnitId)

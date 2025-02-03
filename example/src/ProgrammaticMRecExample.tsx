@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { MRecAd, AdViewPosition } from 'react-native-applovin-max';
-import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from 'react-native-applovin-max';
+import type { AdInfo, AdLoadFailedInfo } from 'react-native-applovin-max';
 import AppButton from './components/AppButton';
 
 type Props = {
@@ -32,7 +32,7 @@ const ProgrammaticMRecExample = ({ adUnitId, isInitialized, log, isNativeUIMRecS
         MRecAd.addAdCollapsedEventListener((/* adInfo: AdInfo */) => {
             log('MRec ad collapsed');
         });
-        MRecAd.addAdRevenuePaidListener((adInfo: AdRevenueInfo) => {
+        MRecAd.addAdRevenuePaidListener((adInfo: AdInfo) => {
             log('MRec ad revenue paid: ' + adInfo.revenue);
         });
     }, [log]);
