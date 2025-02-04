@@ -227,8 +227,8 @@ public class AppLovinMAXNativeAdView
     @Override
     public void onAdRevenuePaid(@NonNull final MaxAd ad)
     {
-        WritableMap adRevenueInfo = AppLovinMAXModule.getInstance().getAdRevenueInfo( ad );
-        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), AppLovinMAXAdEvents.ON_AD_REVENUE_PAID_EVENT, adRevenueInfo );
+        WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), AppLovinMAXAdEvents.ON_AD_REVENUE_PAID_EVENT, adInfo );
     }
 
     /// Native Ad Component Methods

@@ -250,10 +250,10 @@ class AppLovinMAXAdViewUiComponent
     {
         if ( containerView != null )
         {
-            WritableMap adRevenueInfo = AppLovinMAXModule.getInstance().getAdRevenueInfo( ad );
-            adRevenueInfo.putInt( "adViewId", hashCode() );
+            WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+            adInfo.putInt( "adViewId", hashCode() );
 
-            sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_REVENUE_PAID_EVENT, adRevenueInfo );
+            sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_REVENUE_PAID_EVENT, adInfo );
         }
     }
 

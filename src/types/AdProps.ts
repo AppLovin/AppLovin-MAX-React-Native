@@ -1,4 +1,4 @@
-import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRevenueInfo } from './AdInfo';
+import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo } from './AdInfo';
 
 /**
  * Local extra parameters can be of type: string, number, boolean, array, map, and null.
@@ -60,5 +60,5 @@ export type AdProps = {
     /**
      * A callback fuction that {@link AdView} or {@link NativeAdView} fires when it pays ad revenue to the publisher.
      */
-    onAdRevenuePaid?: (adInfo: AdRevenueInfo) => void;
+    onAdRevenuePaid?: (adInfo: AdInfo) => void;
 };

@@ -1230,7 +1230,7 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(nonnull NSNumber *)adViewId
         return;
     }
     
-    [self sendReactNativeEventWithName: name body: [self adRevenueInfoForAd: ad]];
+    [self sendReactNativeEventWithName: name body: [self adInfoForAd: ad]];
 }
 
 - (void)didCompleteRewardedVideoForAd:(MAAd *)ad
@@ -1856,11 +1856,15 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(nonnull NSNumber *)adViewId
 - (NSDictionary<NSString *, id> *)adInfoForAd:(MAAd *)ad
 {
     return @{@"adUnitId" : ad.adUnitIdentifier,
-             @"creativeId" : ad.creativeIdentifier ?: @"",
+             @"adFormat" : ad.format.label,
              @"networkName" : ad.networkName,
+             @"networkPlacement" : ad.networkPlacement,
+             @"creativeId" : ad.creativeIdentifier ?: @"",
              @"placement" : ad.placement ?: @"",
              @"revenue" : @(ad.revenue),
+             @"revenuePrecision" : ad.revenuePrecision,
              @"waterfall": [self createAdWaterfallInfo: ad.waterfall],
+             @"latencyMillis" : @(ad.requestLatency * 1000),
              @"dspName" : ad.DSPName ?: @"",
              @"size" : @{@"width" : @(ad.size.width),
                          @"height" : @(ad.size.height)}
@@ -1889,15 +1893,6 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(nonnull NSNumber *)adViewId
                                    @"mediatedNetworkErrorCode" : @(error.mediatedNetworkErrorCode),
                                    @"mediatedNetworkErrorMessage" : error.mediatedNetworkErrorMessage} mutableCopy];
     [body addEntriesFromDictionary: [self adInfoForAd: ad]];
-    return body;
-}
-
-- (NSDictionary<NSString *, id> *)adRevenueInfoForAd:(MAAd *)ad
-{
-    NSMutableDictionary *body = [self adInfoForAd: ad].mutableCopy;
-    body[@"networkPlacement"] = ad.networkPlacement;
-    body[@"revenuePrecision"] = ad.revenuePrecision;
-    body[@"countryCode"] = self.sdk.configuration.countryCode;
     return body;
 }
 

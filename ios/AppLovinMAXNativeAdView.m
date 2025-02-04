@@ -402,7 +402,7 @@
 
 - (void)didPayRevenueForAd:(MAAd *)ad
 {
-    self.onAdRevenuePaidEvent([[AppLovinMAX shared] adRevenueInfoForAd: ad]);
+    self.onAdRevenuePaidEvent([[AppLovinMAX shared] adInfoForAd: ad]);
 }
 
 - (void)destroyCurrentAdIfNeeded

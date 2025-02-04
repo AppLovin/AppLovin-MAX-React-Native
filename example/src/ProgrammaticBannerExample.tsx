@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { BannerAd, AdViewPosition } from 'react-native-applovin-max';
-import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from 'react-native-applovin-max';
+import type { AdInfo, AdLoadFailedInfo } from 'react-native-applovin-max';
 import AppButton from './components/AppButton';
 
 type Props = {
@@ -32,7 +32,7 @@ const ProgrammaticBannerExample = ({ adUnitId, isInitialized, log, isNativeUIBan
         BannerAd.addAdCollapsedEventListener((/* adInfo: AdInfo */) => {
             log('Banner ad collapsed');
         });
-        BannerAd.addAdRevenuePaidListener((adInfo: AdRevenueInfo) => {
+        BannerAd.addAdRevenuePaidListener((adInfo: AdInfo) => {
             log('Banner ad revenue paid: ' + adInfo.revenue);
         });
     }, [log]);

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { RewardedAd } from 'react-native-applovin-max';
-import type { AdInfo, AdLoadFailedInfo, AdRevenueInfo } from 'react-native-applovin-max';
+import type { AdInfo, AdLoadFailedInfo } from 'react-native-applovin-max';
 import AppButton from './components/AppButton';
 
 const MAX_EXPONENTIAL_RETRY_COUNT = 6;
@@ -71,7 +71,7 @@ const RewardedExample = ({ adUnitId, isInitialized, log }: Props) => {
         RewardedAd.addAdReceivedRewardEventListener((/* adInfo: AdRewardInfo */) => {
             log('Rewarded ad granted reward');
         });
-        RewardedAd.addAdRevenuePaidListener((adInfo: AdRevenueInfo) => {
+        RewardedAd.addAdRevenuePaidListener((adInfo: AdInfo) => {
             log('Rewarded ad revenue paid: ' + adInfo.revenue);
         });
     }, [adUnitId, log]);

@@ -11,6 +11,11 @@ export type AdInfo = {
     adUnitId: string;
 
     /**
+     * The format of this ad.
+     */
+    adFormat: string;
+
+    /**
      * The unique ID of the native UI component AdView.
      */
     adViewId?: AdViewId;
@@ -31,6 +36,11 @@ export type AdInfo = {
     networkName: string;
 
     /**
+     * The ad network placement for which this ad was loaded.
+     */
+    networkPlacement: string;
+
+    /**
      * The placement name that you assign when you integrate each ad format, for granular reporting
      * in postbacks.
      */
@@ -43,9 +53,26 @@ export type AdInfo = {
     revenue: number;
 
     /**
+     * The precision of the revenue value for this ad.
+     *
+     * Possible values are:
+     * - "publisher_defined" - If the revenue is the price assigned to the line item by the publisher.
+     * - "exact" - If the revenue is the resulting price of a real-time auction.
+     * - "estimated" - If the revenue is the price obtained by auto-CPM.
+     * - "undefined" - If we do not have permission from the ad network to share impression-level data.
+     * - "" - An empty string, if revenue and precision are not valid (for example, in test mode).
+     */
+    revenuePrecision: string;
+
+    /**
      * The DSP network that provides the loaded ad when the ad is served through AppLovin Exchange.
      */
     dspName?: string | null;
+
+    /**
+     * The latency of the mediation ad load request in milliseconds.
+     */
+    latencyMillis: number;
 
     /**
      * The underlying waterfall of ad responses.
@@ -149,33 +176,6 @@ export type AdRewardInfo = AdInfo & {
      * The rewarded amount.
      */
     rewardAmount: string;
-};
-
-/**
- * Represents revenue given to the publisher.
- */
-export type AdRevenueInfo = AdInfo & {
-    /**
-     * The ad network placement for which this ad was loaded.
-     */
-    networkPlacement: string;
-
-    /**
-     * The precision of the revenue value for this ad.
-     *
-     * Possible values are:
-     * - "publisher_defined" - If the revenue is the price assigned to the line item by the publisher.
-     * - "exact" - If the revenue is the resulting price of a real-time auction.
-     * - "estimated" - If the revenue is the price obtained by auto-CPM.
-     * - "undefined" - If we do not have permission from the ad network to share impression-level data.
-     * - "" - An empty string, if revenue and precision are not valid (for example, in test mode).
-     */
-    revenuePrecision: string;
-
-    /**
-     * The current country code where the ad was shown.
-     */
-    countryCode: string;
 };
 
 /**
