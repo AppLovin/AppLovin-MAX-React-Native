@@ -11,7 +11,9 @@ import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxAdView;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.uimanager.UIManagerHelper;
+import com.facebook.react.uimanager.events.Event;
+import com.facebook.react.uimanager.events.EventDispatcher;
 
 import java.util.Map;
 
@@ -31,7 +33,7 @@ class AppLovinMAXAdViewUiComponent
     {
         reactContext = context;
 
-        adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), context );
+        adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModuleImpl.getInstance().getSdk(), context );
         adView.setListener( this );
         adView.setRevenueListener( this );
         adView.setExtraParameter( "adaptive_banner", "true" );
@@ -117,7 +119,7 @@ class AppLovinMAXAdViewUiComponent
     {
         if ( isAdViewAttached() )
         {
-            AppLovinMAXModule.e( "Cannot attach AdView because it already has an existing parent: " + adView );
+            AppLovinMAXModuleImpl.e( "Cannot attach AdView because it already has an existing parent: " + adView );
             return;
         }
 
@@ -164,36 +166,36 @@ class AppLovinMAXAdViewUiComponent
     @Override
     public void onAdLoaded(@NonNull final MaxAd ad)
     {
-        WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+        WritableMap adInfo = AppLovinMAXModuleImpl.getInstance().getAdInfo( ad );
         adInfo.putInt( "adViewId", hashCode() );
 
         if ( AppLovinMAXAdView.hasPreloadedAdView( hashCode() ) )
         {
             // Copy the `adInfo` since sending the same map through the RN bridge more than once will result in `com.facebook.react.bridge.ObjectAlreadyConsumedException: Map already consumed`
-            AppLovinMAXModule.getInstance().sendReactNativeEvent( AppLovinMAXAdEvents.ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT, adInfo.copy() );
+            AppLovinMAXModuleImpl.getInstance().sendReactNativeEvent( AppLovinMAXAdEvents.ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT, adInfo.copy() );
         }
 
         if ( containerView != null )
         {
-            sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_LOADED_EVENT, adInfo );
+            sendReactNativeCallbackEvent( new AdEvent<>( UIManagerHelper.getSurfaceId( reactContext ), containerView.getId(), AppLovinMAXAdEvents.ON_AD_LOADED_EVENT, adInfo ) );
         }
     }
 
     @Override
     public void onAdLoadFailed(@NonNull final String adUnitId, @NonNull final MaxError error)
     {
-        WritableMap adLoadFailedInfo = AppLovinMAXModule.getInstance().getAdLoadFailedInfo( adUnitId, error );
+        WritableMap adLoadFailedInfo = AppLovinMAXModuleImpl.getInstance().getAdLoadFailedInfo( adUnitId, error );
         adLoadFailedInfo.putInt( "adViewId", hashCode() );
 
         if ( AppLovinMAXAdView.hasPreloadedAdView( hashCode() ) )
         {
             // Copy the `adLoadFailedInfo` since sending the same map through the RN bridge more than once will result in `com.facebook.react.bridge.ObjectAlreadyConsumedException: Map already consumed`
-            AppLovinMAXModule.getInstance().sendReactNativeEvent( AppLovinMAXAdEvents.ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT, adLoadFailedInfo.copy() );
+            AppLovinMAXModuleImpl.getInstance().sendReactNativeEvent( AppLovinMAXAdEvents.ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT, adLoadFailedInfo.copy() );
         }
 
         if ( containerView != null )
         {
-            sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_LOAD_FAILED_EVENT, adLoadFailedInfo );
+            sendReactNativeCallbackEvent( new AdEvent<>( UIManagerHelper.getSurfaceId( reactContext ), containerView.getId(), AppLovinMAXAdEvents.ON_AD_LOAD_FAILED_EVENT, adLoadFailedInfo ) );
         }
     }
 
@@ -202,10 +204,10 @@ class AppLovinMAXAdViewUiComponent
     {
         if ( containerView != null )
         {
-            WritableMap adDisplayFailedInfo = AppLovinMAXModule.getInstance().getAdDisplayFailedInfo( ad, error );
+            WritableMap adDisplayFailedInfo = AppLovinMAXModuleImpl.getInstance().getAdDisplayFailedInfo( ad, error );
             adDisplayFailedInfo.putInt( "adViewId", hashCode() );
 
-            sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_DISPLAY_FAILED_EVENT, adDisplayFailedInfo );
+            sendReactNativeCallbackEvent( new AdEvent<>( UIManagerHelper.getSurfaceId( reactContext ), containerView.getId(), AppLovinMAXAdEvents.ON_AD_DISPLAY_FAILED_EVENT, adDisplayFailedInfo ) );
         }
     }
 
@@ -214,10 +216,10 @@ class AppLovinMAXAdViewUiComponent
     {
         if ( containerView != null )
         {
-            WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+            WritableMap adInfo = AppLovinMAXModuleImpl.getInstance().getAdInfo( ad );
             adInfo.putInt( "adViewId", hashCode() );
 
-            sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_CLICKED_EVENT, adInfo );
+            sendReactNativeCallbackEvent( new AdEvent<>( UIManagerHelper.getSurfaceId( reactContext ), containerView.getId(), AppLovinMAXAdEvents.ON_AD_CLICKED_EVENT, adInfo ) );
         }
     }
 
@@ -226,10 +228,10 @@ class AppLovinMAXAdViewUiComponent
     {
         if ( containerView != null )
         {
-            WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+            WritableMap adInfo = AppLovinMAXModuleImpl.getInstance().getAdInfo( ad );
             adInfo.putInt( "adViewId", hashCode() );
 
-            sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_EXPANDED_EVENT, adInfo );
+            sendReactNativeCallbackEvent( new AdEvent<>( UIManagerHelper.getSurfaceId( reactContext ), containerView.getId(), AppLovinMAXAdEvents.ON_AD_EXPANDED_EVENT, adInfo ) );
         }
     }
 
@@ -238,10 +240,10 @@ class AppLovinMAXAdViewUiComponent
     {
         if ( containerView != null )
         {
-            WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+            WritableMap adInfo = AppLovinMAXModuleImpl.getInstance().getAdInfo( ad );
             adInfo.putInt( "adViewId", hashCode() );
 
-            sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_COLLAPSED_EVENT, adInfo );
+            sendReactNativeCallbackEvent( new AdEvent<>( UIManagerHelper.getSurfaceId( reactContext ), containerView.getId(), AppLovinMAXAdEvents.ON_AD_COLLAPSED_EVENT, adInfo ) );
         }
     }
 
@@ -250,10 +252,10 @@ class AppLovinMAXAdViewUiComponent
     {
         if ( containerView != null )
         {
-            WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+            WritableMap adInfo = AppLovinMAXModuleImpl.getInstance().getAdInfo( ad );
             adInfo.putInt( "adViewId", hashCode() );
 
-            sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_REVENUE_PAID_EVENT, adInfo );
+            sendReactNativeCallbackEvent( new AdEvent<>( UIManagerHelper.getSurfaceId( reactContext ), containerView.getId(), AppLovinMAXAdEvents.ON_AD_REVENUE_PAID_EVENT, adInfo ) );
         }
     }
 
@@ -267,11 +269,43 @@ class AppLovinMAXAdViewUiComponent
 
     /// Utilities
 
-    private void sendReactNativeCallbackEvent(final String name, @Nullable final WritableMap params)
+    private void sendReactNativeCallbackEvent(Event event)
     {
         if ( containerView != null )
         {
-            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerView.getId(), name, params );
+            EventDispatcher eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag( reactContext, containerView.getId() );
+            if ( eventDispatcher != null )
+            {
+                eventDispatcher.dispatchEvent( event );
+            }
+        }
+    }
+
+    private static class AdEvent<T extends AdEvent<T>>
+        extends Event<T>
+    {
+        private final WritableMap payload;
+        private final String      eventName;
+
+        AdEvent(final int surfaceId, final int viewId, final String eventName, final WritableMap payload)
+        {
+            super( surfaceId, viewId );
+            this.eventName = eventName;
+            this.payload = payload;
+        }
+
+        @NonNull
+        @Override
+        public String getEventName()
+        {
+            return eventName;
+        }
+
+        @Nullable
+        @Override
+        protected WritableMap getEventData()
+        {
+            return payload;
         }
     }
 }

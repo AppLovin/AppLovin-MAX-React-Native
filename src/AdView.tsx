@@ -1,31 +1,16 @@
 import * as React from 'react';
 import { useEffect, useState, useRef, useCallback, useImperativeHandle, useReducer, forwardRef } from 'react';
-import { NativeModules, requireNativeComponent, StyleSheet, UIManager, findNodeHandle, useWindowDimensions, View } from 'react-native';
-import type { ViewProps, ViewStyle, StyleProp, NativeMethods, DimensionValue } from 'react-native';
-import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo } from './types/AdInfo';
-import type { AdNativeEvent } from './types/AdEvent';
-import type { AdViewProps, AdViewHandler, NativeUIComponentAdViewOptions, AdViewId } from './types/AdViewProps';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import type { NativeSyntheticEvent, ViewProps, ViewStyle, StyleProp, DimensionValue } from 'react-native';
+import AppLovinMAX from './specs/NativeAppLovinMAXMoudle';
+import AdViewComponent, { Commands } from './specs/AppLovinMAXAdViewNativeComponent';
+import type { AdInfoEvent, AdLoadFailedEvent, AdDisplayFailedEvent } from './specs/AppLovinMAXAdViewNativeComponent';
 import { addEventListener, removeEventListener } from './EventEmitter';
+import type { AdInfo, AdLoadFailedInfo } from './types/AdInfo';
+import type { AdViewProps, AdViewHandler, NativeUIComponentAdViewOptions, AdViewId } from './types/AdViewProps';
+import type { LocalExtraParameterValue } from './types/AdProps';
 
-const { AppLovinMAX } = NativeModules;
-
-const {
-    BANNER_AD_FORMAT_LABEL,
-    MREC_AD_FORMAT_LABEL,
-
-    TOP_CENTER_POSITION,
-    TOP_LEFT_POSITION,
-    TOP_RIGHT_POSITION,
-    CENTERED_POSITION,
-    CENTER_LEFT_POSITION,
-    CENTER_RIGHT_POSITION,
-    BOTTOM_LEFT_POSITION,
-    BOTTOM_CENTER_POSITION,
-    BOTTOM_RIGHT_POSITION,
-
-    ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT,
-    ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT,
-} = AppLovinMAX.getConstants();
+const { ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT, ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT } = AppLovinMAX.getConstants();
 
 /**
  * Defines a format of an ad.
@@ -34,42 +19,28 @@ export enum AdFormat {
     /**
      * Banner ad.
      */
-    BANNER = BANNER_AD_FORMAT_LABEL,
+    BANNER = 'BANNER',
 
     /**
      * MREC ad.
      */
-    MREC = MREC_AD_FORMAT_LABEL,
+    MREC = 'MREC',
 }
 
 /**
  * Defines a position of a banner or MREC ad.
  */
 export enum AdViewPosition {
-    TOP_CENTER = TOP_CENTER_POSITION,
-    TOP_LEFT = TOP_LEFT_POSITION,
-    TOP_RIGHT = TOP_RIGHT_POSITION,
-    CENTERED = CENTERED_POSITION,
-    CENTER_LEFT = CENTER_LEFT_POSITION,
-    CENTER_RIGHT = CENTER_RIGHT_POSITION,
-    BOTTOM_LEFT = BOTTOM_LEFT_POSITION,
-    BOTTOM_CENTER = BOTTOM_CENTER_POSITION,
-    BOTTOM_RIGHT = BOTTOM_RIGHT_POSITION,
+    TOP_CENTER = 'top_center',
+    TOP_LEFT = 'top_left',
+    TOP_RIGHT = 'top_right',
+    CENTERED = 'centered',
+    CENTER_LEFT = 'center_left',
+    CENTER_RIGHT = 'center_right',
+    BOTTOM_LEFT = 'bottom_left',
+    BOTTOM_CENTER = 'bottom_center',
+    BOTTOM_RIGHT = 'bottom_right',
 }
-
-type AdViewNativeEvents = {
-    onAdLoadedEvent(event: AdNativeEvent<AdInfo>): void;
-    onAdLoadFailedEvent(event: AdNativeEvent<AdLoadFailedInfo>): void;
-    onAdDisplayFailedEvent(event: AdNativeEvent<AdDisplayFailedInfo>): void;
-    onAdClickedEvent(event: AdNativeEvent<AdInfo>): void;
-    onAdExpandedEvent(event: AdNativeEvent<AdInfo>): void;
-    onAdCollapsedEvent(event: AdNativeEvent<AdInfo>): void;
-    onAdRevenuePaidEvent(event: AdNativeEvent<AdInfo>): void;
-};
-
-const AdViewComponent = requireNativeComponent<AdViewProps & ViewProps & AdViewNativeEvents>('AppLovinMAXAdView');
-
-type AdViewType = React.Component<AdViewProps> & NativeMethods;
 
 type SizeKey = 'width' | 'height';
 type SizeRecord = Partial<Record<SizeKey, DimensionValue>>;
@@ -106,6 +77,25 @@ const sizeBannerDimensions = async (sizeProps: SizeRecord, adaptiveBannerEnabled
     }
 
     return { width, height };
+};
+
+const makeExtraParametersArray = (input?: { [key: string]: string | null }): Array<{ key: string; value: string | null }> => {
+    if (!input) return [];
+    return Object.entries(input).map(([key, value]) => ({
+        key,
+        value,
+    }));
+};
+
+// TODO: only string works for now
+const makeLocalExtraParametersArray = (input?: { [key: string]: LocalExtraParameterValue }): Array<{ key: string; value: string | null }> => {
+    if (!input) return [];
+    return Object.entries(input)
+        .filter(([_, value]) => typeof value === 'string' || value === null) // Keep only strings and null
+        .map(([key, value]) => ({
+            key,
+            value: value as string | null, // Type assertion to match the expected output type
+        }));
 };
 
 /**
@@ -163,27 +153,16 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
     const { width: screenWidth } = useWindowDimensions();
     const adFormatSize = useRef<SizeRecord>({});
     const [, forceUpdate] = useReducer((x) => x + 1, 0);
-    const adViewRef = useRef<AdViewType | null>(null);
+    const adViewRef = useRef<React.ElementRef<typeof AdViewComponent> | undefined>();
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
     const sizeProps = useRef<SizeRecord>({});
     const dimensions = useRef<SizeRecord>({});
 
-    const loadAd = useCallback(() => {
-        if (adViewRef.current) {
-            UIManager.dispatchViewManagerCommand(
-                findNodeHandle(adViewRef.current),
-                // @ts-ignore: Issue in RN ts defs
-                UIManager.getViewManagerConfig('AppLovinMAXAdView').Commands.loadAd,
-                undefined
-            );
-        }
-    }, []);
+    useImperativeHandle(ref, () => ({ loadAd: () => Commands.loadAd(adViewRef.current!) }), []);
 
-    useImperativeHandle(ref, () => ({ loadAd }), [loadAd]);
-
-    const saveElement = useCallback((element: AdViewType | null) => {
-        adViewRef.current = element;
-    }, []);
+    const saveElement = (element: React.ElementRef<typeof AdViewComponent> | null) => {
+        adViewRef.current = element ?? undefined;
+    };
 
     useEffect(() => {
         (async () => {
@@ -230,50 +209,156 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
     }, [adFormat, adaptiveBannerEnabled, isInitialized, screenWidth, style]);
 
     const onAdLoadedEvent = useCallback(
-        (event: AdNativeEvent<AdInfo>) => {
-            onAdLoaded?.(event.nativeEvent);
+        (event: NativeSyntheticEvent<AdInfoEvent>) => {
+            onAdLoaded?.({
+                adUnitId: event.nativeEvent.adUnitId,
+                adFormat: event.nativeEvent.adFormat,
+                adViewId: event.nativeEvent.adViewId,
+                creativeId: event.nativeEvent.creativeId,
+                networkName: event.nativeEvent.networkName,
+                networkPlacement: event.nativeEvent.networkPlacement,
+                placement: event.nativeEvent.placement,
+                revenue: event.nativeEvent.revenue,
+                revenuePrecision: event.nativeEvent.revenuePrecision,
+                dspName: event.nativeEvent.dspName,
+                latencyMillis: event.nativeEvent.latencyMillis,
+                size: {
+                    width: event.nativeEvent.size?.width ?? 0,
+                    height: event.nativeEvent.size?.height ?? 0,
+                },
+            });
         },
         [onAdLoaded]
     );
 
     const onAdLoadFailedEvent = useCallback(
-        (event: AdNativeEvent<AdLoadFailedInfo>) => {
-            onAdLoadFailed?.(event.nativeEvent);
+        (event: NativeSyntheticEvent<AdLoadFailedEvent>) => {
+            onAdLoadFailed?.({
+                adUnitId: event.nativeEvent.adUnitId,
+                adViewId: event.nativeEvent.adViewId,
+                code: event.nativeEvent.code,
+                message: event.nativeEvent.message,
+                mediatedNetworkErrorCode: event.nativeEvent.mediatedNetworkErrorCode,
+                mediatedNetworkErrorMessage: event.nativeEvent.mediatedNetworkErrorMessage,
+            });
         },
         [onAdLoadFailed]
     );
 
     const onAdDisplayFailedEvent = useCallback(
-        (event: AdNativeEvent<AdDisplayFailedInfo>) => {
-            onAdDisplayFailed?.(event.nativeEvent);
+        (event: NativeSyntheticEvent<AdDisplayFailedEvent>) => {
+            onAdDisplayFailed?.({
+                adUnitId: event.nativeEvent.adUnitId,
+                adFormat: event.nativeEvent.adFormat,
+                adViewId: event.nativeEvent.adViewId,
+                creativeId: event.nativeEvent.creativeId,
+                networkName: event.nativeEvent.networkName,
+                networkPlacement: event.nativeEvent.networkPlacement,
+                placement: event.nativeEvent.placement,
+                revenue: event.nativeEvent.revenue,
+                revenuePrecision: event.nativeEvent.revenuePrecision,
+                dspName: event.nativeEvent.dspName,
+                latencyMillis: event.nativeEvent.latencyMillis,
+                size: {
+                    width: event.nativeEvent.size?.width ?? 0,
+                    height: event.nativeEvent.size?.height ?? 0,
+                },
+                code: event.nativeEvent.code,
+                mediatedNetworkErrorCode: event.nativeEvent.mediatedNetworkErrorCode,
+                mediatedNetworkErrorMessage: event.nativeEvent.mediatedNetworkErrorMessage,
+            });
         },
         [onAdDisplayFailed]
     );
 
     const onAdClickedEvent = useCallback(
-        (event: AdNativeEvent<AdInfo>) => {
-            onAdClicked?.(event.nativeEvent);
+        (event: NativeSyntheticEvent<AdInfoEvent>) => {
+            onAdClicked?.({
+                adUnitId: event.nativeEvent.adUnitId,
+                adFormat: event.nativeEvent.adFormat,
+                adViewId: event.nativeEvent.adViewId,
+                creativeId: event.nativeEvent.creativeId,
+                networkName: event.nativeEvent.networkName,
+                networkPlacement: event.nativeEvent.networkPlacement,
+                placement: event.nativeEvent.placement,
+                revenue: event.nativeEvent.revenue,
+                revenuePrecision: event.nativeEvent.revenuePrecision,
+                dspName: event.nativeEvent.dspName,
+                latencyMillis: event.nativeEvent.latencyMillis,
+                size: {
+                    width: event.nativeEvent.size?.width ?? 0,
+                    height: event.nativeEvent.size?.height ?? 0,
+                },
+            });
         },
         [onAdClicked]
     );
 
     const onAdExpandedEvent = useCallback(
-        (event: AdNativeEvent<AdInfo>) => {
-            onAdExpanded?.(event.nativeEvent);
+        (event: NativeSyntheticEvent<AdInfoEvent>) => {
+            onAdExpanded?.({
+                adUnitId: event.nativeEvent.adUnitId,
+                adFormat: event.nativeEvent.adFormat,
+                adViewId: event.nativeEvent.adViewId,
+                creativeId: event.nativeEvent.creativeId,
+                networkName: event.nativeEvent.networkName,
+                networkPlacement: event.nativeEvent.networkPlacement,
+                placement: event.nativeEvent.placement,
+                revenue: event.nativeEvent.revenue,
+                revenuePrecision: event.nativeEvent.revenuePrecision,
+                dspName: event.nativeEvent.dspName,
+                latencyMillis: event.nativeEvent.latencyMillis,
+                size: {
+                    width: event.nativeEvent.size?.width ?? 0,
+                    height: event.nativeEvent.size?.height ?? 0,
+                },
+            });
         },
         [onAdExpanded]
     );
 
     const onAdCollapsedEvent = useCallback(
-        (event: AdNativeEvent<AdInfo>) => {
-            onAdCollapsed?.(event.nativeEvent);
+        (event: NativeSyntheticEvent<AdInfoEvent>) => {
+            onAdCollapsed?.({
+                adUnitId: event.nativeEvent.adUnitId,
+                adFormat: event.nativeEvent.adFormat,
+                adViewId: event.nativeEvent.adViewId,
+                creativeId: event.nativeEvent.creativeId,
+                networkName: event.nativeEvent.networkName,
+                networkPlacement: event.nativeEvent.networkPlacement,
+                placement: event.nativeEvent.placement,
+                revenue: event.nativeEvent.revenue,
+                revenuePrecision: event.nativeEvent.revenuePrecision,
+                dspName: event.nativeEvent.dspName,
+                latencyMillis: event.nativeEvent.latencyMillis,
+                size: {
+                    width: event.nativeEvent.size?.width ?? 0,
+                    height: event.nativeEvent.size?.height ?? 0,
+                },
+            });
         },
         [onAdCollapsed]
     );
 
     const onAdRevenuePaidEvent = useCallback(
-        (event: AdNativeEvent<AdInfo>) => {
-            onAdRevenuePaid?.(event.nativeEvent);
+        (event: NativeSyntheticEvent<AdInfoEvent>) => {
+            onAdRevenuePaid?.({
+                adUnitId: event.nativeEvent.adUnitId,
+                adFormat: event.nativeEvent.adFormat,
+                adViewId: event.nativeEvent.adViewId,
+                creativeId: event.nativeEvent.creativeId,
+                networkName: event.nativeEvent.networkName,
+                networkPlacement: event.nativeEvent.networkPlacement,
+                placement: event.nativeEvent.placement,
+                revenue: event.nativeEvent.revenue,
+                revenuePrecision: event.nativeEvent.revenuePrecision,
+                dspName: event.nativeEvent.dspName,
+                latencyMillis: event.nativeEvent.latencyMillis,
+                size: {
+                    width: event.nativeEvent.size?.width ?? 0,
+                    height: event.nativeEvent.size?.height ?? 0,
+                },
+            });
         },
         [onAdRevenuePaid]
     );
@@ -294,8 +379,8 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
             adaptiveBannerEnabled={adaptiveBannerEnabled}
             autoRefresh={autoRefresh}
             loadOnMount={loadOnMount}
-            extraParameters={extraParameters}
-            localExtraParameters={localExtraParameters}
+            extraParameters={makeExtraParametersArray(extraParameters)}
+            localExtraParameters={makeLocalExtraParametersArray(localExtraParameters)}
             onAdLoadedEvent={onAdLoadedEvent}
             onAdLoadFailedEvent={onAdLoadFailedEvent}
             onAdDisplayFailedEvent={onAdDisplayFailedEvent}
@@ -322,8 +407,9 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
  * @returns A promise resolving to an {@link AdViewId}, which uniquely identifies the preloaded component.
  * @throws An error if the preload request fails.
  */
-export const preloadNativeUIComponentAdView = async (adUnitId: string, adFormat: AdFormat, options?: NativeUIComponentAdViewOptions): Promise<AdViewId> => {
-    return AppLovinMAX.preloadNativeUIComponentAdView(adUnitId, adFormat, options?.placement, options?.customData, options?.extraParameters, options?.localExtraParameters);
+export const preloadNativeUIComponentAdView = async (adUnitId: string, adFormat: AdFormat, options: NativeUIComponentAdViewOptions = {}): Promise<AdViewId> => {
+    const { placement = null, customData = null, extraParameters = {}, localExtraParameters = {} } = options;
+    return AppLovinMAX.preloadNativeUIComponentAdView(adUnitId, adFormat, placement, customData, extraParameters, localExtraParameters);
 };
 
 /**
@@ -336,6 +422,9 @@ export const preloadNativeUIComponentAdView = async (adUnitId: string, adFormat:
  * @throws An error if the destruction process fails.
  */
 export const destroyNativeUIComponentAdView = async (adViewId: AdViewId): Promise<void> => {
+    if (adViewId === undefined) {
+        return Promise.reject(new Error('adViewId is undefined'));
+    }
     return AppLovinMAX.destroyNativeUIComponentAdView(adViewId);
 };
 

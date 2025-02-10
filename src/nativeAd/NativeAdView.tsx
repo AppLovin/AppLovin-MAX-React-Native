@@ -1,24 +1,14 @@
 import * as React from 'react';
 import { forwardRef, useContext, useImperativeHandle, useRef, useState, useEffect, useCallback } from 'react';
-import { NativeModules, requireNativeComponent, UIManager, findNodeHandle, View } from 'react-native';
-import type { ViewProps } from 'react-native';
+import { findNodeHandle, View } from 'react-native';
+import type { NativeSyntheticEvent, ViewProps } from 'react-native';
+import AppLovinMAX from '../specs/NativeAppLovinMAXMoudle';
+import NativeAdViewComponent, { Commands } from '../specs/AppLovinMAXNativeAdViewNativeComponent';
+import type { AdNativeInfoEvent, AdInfoEvent, AdLoadFailedEvent } from '../specs/AppLovinMAXNativeAdViewNativeComponent';
 import { NativeAdViewContext, NativeAdViewProvider } from './NativeAdViewProvider';
-import type { AdInfo, AdLoadFailedInfo } from '../types/AdInfo';
-import type { AdNativeEvent } from '../types/AdEvent';
-import type { NativeAd } from '../types/NativeAd';
+import type { NativeAdViewContextType } from './NativeAdViewProvider';
 import type { NativeAdViewHandler, NativeAdViewProps } from '../types/NativeAdViewProps';
-import type { NativeAdViewType, NativeAdViewContextType } from './NativeAdViewProvider';
-
-const { AppLovinMAX } = NativeModules;
-
-type NativeAdViewNativeEvents = {
-    onAdLoadedEvent(event: { nativeEvent: { nativeAd: NativeAd; adInfo: AdInfo } }): void;
-    onAdLoadFailedEvent(event: AdNativeEvent<AdLoadFailedInfo>): void;
-    onAdClickedEvent(event: AdNativeEvent<AdInfo>): void;
-    onAdRevenuePaidEvent(event: AdNativeEvent<AdInfo>): void;
-};
-
-const NativeAdViewComponent = requireNativeComponent<NativeAdViewProps & ViewProps & NativeAdViewNativeEvents>('AppLovinMAXNativeAdView');
+import type { LocalExtraParameterValue } from '../types/AdProps';
 
 /**
  * The {@link NativeAdView} component that you use building a native ad. This loads a native ad and
@@ -84,64 +74,207 @@ export const NativeAdView = forwardRef<NativeAdViewHandler, NativeAdViewProps & 
     );
 });
 
+const makeExtraParametersArray = (input?: { [key: string]: string | null }): Array<{ key: string; value: string | null }> => {
+    if (!input) return [];
+    return Object.entries(input).map(([key, value]) => ({
+        key,
+        value,
+    }));
+};
+
+// TODO: only string works for now
+const makeLocalExtraParametersArray = (input?: { [key: string]: LocalExtraParameterValue }): Array<{ key: string; value: string | null }> => {
+    if (!input) return [];
+    return Object.entries(input)
+        .filter(([_, value]) => typeof value === 'string' || value === null) // Keep only strings and null
+        .map(([key, value]) => ({
+            key,
+            value: value as string | null, // Type assertion to match the expected output type
+        }));
+};
+
 const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps & ViewProps>(function NativeAdViewImpl(
     { adUnitId, placement, customData, extraParameters, localExtraParameters, onAdLoaded, onAdLoadFailed, onAdClicked, onAdRevenuePaid, children, style, ...otherProps },
     ref
 ) {
     // Context provides functions to manage native ad and native ad view state
-    const { setNativeAd, setNativeAdView } = useContext(NativeAdViewContext) as NativeAdViewContextType;
+    const { titleRef, advertiserRef, bodyRef, callToActionRef, imageRef, optionViewRef, mediaViewRef, setNativeAd, setNativeAdView } = useContext(
+        NativeAdViewContext
+    ) as NativeAdViewContextType;
 
-    const nativeAdViewRef = useRef<NativeAdViewType | null>(null);
+    const nativeAdViewRef = useRef<React.ElementRef<typeof NativeAdViewComponent> | undefined>();
 
     // Load a new ad
     const loadAd = useCallback(() => {
-        const nativeAdView = nativeAdViewRef.current;
-        if (nativeAdView) {
-            const viewManagerConfig = UIManager.getViewManagerConfig('AppLovinMAXNativeAdView');
-            if (viewManagerConfig?.Commands && typeof viewManagerConfig.Commands.loadAd === 'number') {
-                UIManager.dispatchViewManagerCommand(findNodeHandle(nativeAdView), viewManagerConfig.Commands.loadAd, []);
-            }
+        if (nativeAdViewRef.current) {
+            Commands.loadAd(nativeAdViewRef.current);
         }
     }, []);
 
     useImperativeHandle(ref, () => ({ loadAd }), [loadAd]);
 
     // Save the DOM element reference
-    const saveElement = useCallback(
-        (element: NativeAdViewType | null) => {
-            if (element) {
-                nativeAdViewRef.current = element;
-                setNativeAdView(element);
-            }
-        },
-        [setNativeAdView]
-    );
+    const saveElement = (element: React.ElementRef<typeof NativeAdViewComponent>) => {
+        if (element === null) {
+            return;
+        }
+        nativeAdViewRef.current = element;
+        setNativeAdView(element);
+    };
 
     const onAdLoadedEvent = useCallback(
-        (event: { nativeEvent: { nativeAd: NativeAd; adInfo: AdInfo } }) => {
-            setNativeAd(event.nativeEvent.nativeAd);
-            onAdLoaded?.(event.nativeEvent.adInfo);
+        (event: NativeSyntheticEvent<AdNativeInfoEvent>) => {
+            setNativeAd({
+                title: event.nativeEvent.nativeAd.title,
+                advertiser: event.nativeEvent.nativeAd.advertiser,
+                body: event.nativeEvent.nativeAd.body,
+                callToAction: event.nativeEvent.nativeAd.callToAction,
+                image: event.nativeEvent.nativeAd.image,
+                url: event.nativeEvent.nativeAd.url,
+                starRating: event.nativeEvent.nativeAd.starRating,
+                isOptionsViewAvailable: event.nativeEvent.nativeAd.isOptionsViewAvailable,
+                isMediaViewAvailable: event.nativeEvent.nativeAd.isMediaViewAvailable,
+            });
+
+            if (titleRef.current && event.nativeEvent.nativeAd.title) {
+                const node = findNodeHandle(titleRef.current);
+                if (node) {
+                    Commands.updateAssetView(nativeAdViewRef.current!, node, 'TitleView');
+                }
+            }
+            if (advertiserRef.current && event.nativeEvent.nativeAd.advertiser) {
+                const node = findNodeHandle(advertiserRef.current);
+                if (node) {
+                    Commands.updateAssetView(nativeAdViewRef.current!, node, 'AdvertiserView');
+                }
+            }
+            if (bodyRef.current && event.nativeEvent.nativeAd.body) {
+                const node = findNodeHandle(bodyRef.current);
+                if (node) {
+                    Commands.updateAssetView(nativeAdViewRef.current!, node, 'BodyView');
+                }
+            }
+            if (callToActionRef.current && event.nativeEvent.nativeAd.callToAction) {
+                const node = findNodeHandle(callToActionRef.current);
+                if (node) {
+                    Commands.updateAssetView(nativeAdViewRef.current!, node, 'CallToActionView');
+                }
+            }
+            if (imageRef.current && (event.nativeEvent.nativeAd.image || event.nativeEvent.nativeAd.url)) {
+                const node = findNodeHandle(imageRef.current);
+                if (node) {
+                    Commands.updateAssetView(nativeAdViewRef.current!, node, 'IconView');
+                }
+            }
+            if (optionViewRef.current && event.nativeEvent.nativeAd.isOptionsViewAvailable) {
+                const node = findNodeHandle(optionViewRef.current);
+                if (node) {
+                    Commands.updateAssetView(nativeAdViewRef.current!, node, 'OptionsView');
+                }
+            }
+            if (mediaViewRef.current && event.nativeEvent.nativeAd.isMediaViewAvailable) {
+                const node = findNodeHandle(mediaViewRef.current);
+                if (node) {
+                    Commands.updateAssetView(nativeAdViewRef.current!, node, 'MediaView');
+                }
+            }
+
+            Commands.renderNativeAd(nativeAdViewRef.current!);
+
+            onAdLoaded?.({
+                adUnitId: event.nativeEvent.adInfo.adUnitId,
+                adFormat: event.nativeEvent.adInfo.adFormat,
+                creativeId: event.nativeEvent.adInfo.creativeId,
+                networkName: event.nativeEvent.adInfo.networkName,
+                networkPlacement: event.nativeEvent.adInfo.networkPlacement,
+                placement: event.nativeEvent.adInfo.placement,
+                revenue: event.nativeEvent.adInfo.revenue,
+                revenuePrecision: event.nativeEvent.adInfo.revenuePrecision,
+                dspName: event.nativeEvent.adInfo.dspName,
+                latencyMillis: event.nativeEvent.adInfo.latencyMillis,
+                nativeAd: {
+                    title: event.nativeEvent.adInfo.nativeAd?.title,
+                    advertiser: event.nativeEvent.adInfo.nativeAd?.advertiser,
+                    body: event.nativeEvent.adInfo.nativeAd?.body,
+                    callToAction: event.nativeEvent.adInfo.nativeAd?.callToAction,
+                    starRating: event.nativeEvent.adInfo.nativeAd?.starRating,
+                    mediaContentAspectRatio: event.nativeEvent.adInfo.nativeAd?.mediaContentAspectRatio,
+                    isIconImageAvailable: event.nativeEvent.adInfo.nativeAd?.isIconImageAvailable ?? false,
+                    isOptionsViewAvailable: event.nativeEvent.adInfo.nativeAd?.isOptionsViewAvailable ?? false,
+                    isMediaViewAvailable: event.nativeEvent.adInfo.nativeAd?.isMediaViewAvailable ?? false,
+                },
+            });
         },
-        [onAdLoaded, setNativeAd]
+        [onAdLoaded, setNativeAd, titleRef, advertiserRef, bodyRef, callToActionRef, imageRef, optionViewRef, mediaViewRef]
     );
 
     const onAdLoadFailedEvent = useCallback(
-        (event: AdNativeEvent<AdLoadFailedInfo>) => {
-            onAdLoadFailed?.(event.nativeEvent);
+        (event: NativeSyntheticEvent<AdLoadFailedEvent>) => {
+            onAdLoadFailed?.({
+                adUnitId: event.nativeEvent.adUnitId,
+                code: event.nativeEvent.code,
+                message: event.nativeEvent.message,
+                mediatedNetworkErrorCode: event.nativeEvent.mediatedNetworkErrorCode,
+                mediatedNetworkErrorMessage: event.nativeEvent.mediatedNetworkErrorMessage,
+            });
         },
         [onAdLoadFailed]
     );
 
     const onAdClickedEvent = useCallback(
-        (event: AdNativeEvent<AdInfo>) => {
-            onAdClicked?.(event.nativeEvent);
+        (event: NativeSyntheticEvent<AdInfoEvent>) => {
+            onAdClicked?.({
+                adUnitId: event.nativeEvent.adUnitId,
+                adFormat: event.nativeEvent.adFormat,
+                creativeId: event.nativeEvent.creativeId,
+                networkName: event.nativeEvent.networkName,
+                networkPlacement: event.nativeEvent.networkPlacement,
+                placement: event.nativeEvent.placement,
+                revenue: event.nativeEvent.revenue,
+                revenuePrecision: event.nativeEvent.revenuePrecision,
+                dspName: event.nativeEvent.dspName,
+                latencyMillis: event.nativeEvent.latencyMillis,
+                nativeAd: {
+                    title: event.nativeEvent.nativeAd?.title,
+                    advertiser: event.nativeEvent.nativeAd?.advertiser,
+                    body: event.nativeEvent.nativeAd?.body,
+                    callToAction: event.nativeEvent.nativeAd?.callToAction,
+                    starRating: event.nativeEvent.nativeAd?.starRating,
+                    mediaContentAspectRatio: event.nativeEvent.nativeAd?.mediaContentAspectRatio,
+                    isIconImageAvailable: event.nativeEvent.nativeAd?.isIconImageAvailable ?? false,
+                    isOptionsViewAvailable: event.nativeEvent.nativeAd?.isOptionsViewAvailable ?? false,
+                    isMediaViewAvailable: event.nativeEvent.nativeAd?.isMediaViewAvailable ?? false,
+                },
+            });
         },
         [onAdClicked]
     );
 
     const onAdRevenuePaidEvent = useCallback(
-        (event: AdNativeEvent<AdInfo>) => {
-            onAdRevenuePaid?.(event.nativeEvent);
+        (event: NativeSyntheticEvent<AdInfoEvent>) => {
+            onAdRevenuePaid?.({
+                adUnitId: event.nativeEvent.adUnitId,
+                adFormat: event.nativeEvent.adFormat,
+                creativeId: event.nativeEvent.creativeId,
+                networkName: event.nativeEvent.networkName,
+                networkPlacement: event.nativeEvent.networkPlacement,
+                placement: event.nativeEvent.placement,
+                revenue: event.nativeEvent.revenue,
+                revenuePrecision: event.nativeEvent.revenuePrecision,
+                dspName: event.nativeEvent.dspName,
+                latencyMillis: event.nativeEvent.latencyMillis,
+                nativeAd: {
+                    title: event.nativeEvent.nativeAd?.title,
+                    advertiser: event.nativeEvent.nativeAd?.advertiser,
+                    body: event.nativeEvent.nativeAd?.body,
+                    callToAction: event.nativeEvent.nativeAd?.callToAction,
+                    starRating: event.nativeEvent.nativeAd?.starRating,
+                    mediaContentAspectRatio: event.nativeEvent.nativeAd?.mediaContentAspectRatio,
+                    isIconImageAvailable: event.nativeEvent.nativeAd?.isIconImageAvailable ?? false,
+                    isOptionsViewAvailable: event.nativeEvent.nativeAd?.isOptionsViewAvailable ?? false,
+                    isMediaViewAvailable: event.nativeEvent.nativeAd?.isMediaViewAvailable ?? false,
+                },
+            });
         },
         [onAdRevenuePaid]
     );
@@ -152,8 +285,8 @@ const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps & Vie
             adUnitId={adUnitId}
             placement={placement}
             customData={customData}
-            extraParameters={extraParameters}
-            localExtraParameters={localExtraParameters}
+            extraParameters={makeExtraParametersArray(extraParameters)}
+            localExtraParameters={makeLocalExtraParametersArray(localExtraParameters)}
             onAdLoadedEvent={onAdLoadedEvent}
             onAdLoadFailedEvent={onAdLoadFailedEvent}
             onAdClickedEvent={onAdClickedEvent}

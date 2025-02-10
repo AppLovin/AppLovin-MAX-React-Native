@@ -1,31 +1,11 @@
 import * as React from 'react';
-import { useContext, useRef, useEffect, useCallback, useMemo } from 'react';
-import { findNodeHandle, Text, Image, View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { useContext, useMemo } from 'react';
+import { Text, Image, View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import type { ViewProps, ImageProps, TextStyle, StyleProp, TextProps } from 'react-native';
 import { NativeAdViewContext } from './NativeAdViewProvider';
-import type { NativeAd } from '../types/NativeAd';
-
-// Custom hook to handle setting native ad view properties and return nativeAd
-const useNativeAdViewProps = (nativeAdProp: keyof NativeAd, ref: React.RefObject<any>, nativePropKey: string) => {
-    const { nativeAd, nativeAdView } = useContext(NativeAdViewContext);
-
-    const setNativeProps = useCallback(() => {
-        if (!nativeAd[nativeAdProp] || !ref.current) return;
-        nativeAdView?.setNativeProps({
-            [nativePropKey]: findNodeHandle(ref.current),
-        });
-    }, [nativeAd, nativeAdProp, nativeAdView, ref, nativePropKey]);
-
-    useEffect(() => {
-        setNativeProps();
-    }, [setNativeProps]);
-
-    return nativeAd;
-};
 
 export const TitleView = (props: TextProps) => {
-    const titleRef = useRef<Text | null>(null);
-    const nativeAd = useNativeAdViewProps('title', titleRef, 'titleView');
+    const { titleRef, nativeAd } = useContext(NativeAdViewContext);
 
     return (
         <Text {...props} ref={titleRef}>
@@ -35,8 +15,7 @@ export const TitleView = (props: TextProps) => {
 };
 
 export const AdvertiserView = (props: TextProps) => {
-    const advertiserRef = useRef<Text | null>(null);
-    const nativeAd = useNativeAdViewProps('advertiser', advertiserRef, 'advertiserView');
+    const { advertiserRef, nativeAd } = useContext(NativeAdViewContext);
 
     return (
         <Text {...props} ref={advertiserRef}>
@@ -46,8 +25,7 @@ export const AdvertiserView = (props: TextProps) => {
 };
 
 export const BodyView = (props: TextProps) => {
-    const bodyRef = useRef<Text | null>(null);
-    const nativeAd = useNativeAdViewProps('body', bodyRef, 'bodyView');
+    const { bodyRef, nativeAd } = useContext(NativeAdViewContext);
 
     return (
         <Text {...props} ref={bodyRef}>
@@ -57,8 +35,7 @@ export const BodyView = (props: TextProps) => {
 };
 
 export const CallToActionView = (props: TextProps) => {
-    const callToActionRef = useRef<Text | null>(null);
-    const nativeAd = useNativeAdViewProps('callToAction', callToActionRef, 'callToActionView');
+    const { callToActionRef, nativeAd } = useContext(NativeAdViewContext);
 
     // TouchableOpacity disables clicking on certain Android devices.
     if (Platform.OS === 'android') {
@@ -79,8 +56,7 @@ export const CallToActionView = (props: TextProps) => {
 };
 
 export const IconView = (props: Omit<ImageProps, 'source'>) => {
-    const imageRef = useRef<Image | null>(null);
-    const nativeAd = useNativeAdViewProps('image', imageRef, 'iconView');
+    const { imageRef, nativeAd } = useContext(NativeAdViewContext);
 
     return nativeAd.url ? (
         <Image {...props} ref={imageRef} source={{ uri: nativeAd.url }} />
@@ -92,17 +68,15 @@ export const IconView = (props: Omit<ImageProps, 'source'>) => {
 };
 
 export const OptionsView = (props: ViewProps) => {
-    const viewRef = useRef<View | null>(null);
-    useNativeAdViewProps('isOptionsViewAvailable', viewRef, 'optionsView');
+    const { optionViewRef } = useContext(NativeAdViewContext);
 
-    return <View {...props} ref={viewRef} />;
+    return <View {...props} ref={optionViewRef} />;
 };
 
 export const MediaView = (props: ViewProps) => {
-    const viewRef = useRef<View | null>(null);
-    useNativeAdViewProps('isMediaViewAvailable', viewRef, 'mediaView');
+    const { mediaViewRef } = useContext(NativeAdViewContext);
 
-    return <View {...props} ref={viewRef} />;
+    return <View {...props} ref={mediaViewRef} />;
 };
 
 export const StarRatingView = (props: ViewProps) => {

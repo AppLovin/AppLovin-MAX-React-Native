@@ -77,7 +77,7 @@ export type AdInfo = {
     /**
      * The underlying waterfall of ad responses.
      */
-    waterfall: AdWaterfallInfo;
+    waterfall?: AdWaterfallInfo;
 
     /**
      * The native ad info.
@@ -87,7 +87,7 @@ export type AdInfo = {
     /**
      * The size of the AdView format ad, or size with (width: 0, height: 0) otherwise.
      */
-    size: {
+    size?: {
         width: number;
         height: number;
     };
