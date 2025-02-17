@@ -90,7 +90,7 @@ const initialize = (sdkKey: string): Promise<Configuration> => {
 };
 
 const getSegments = async (): Promise<Map<number, number[]> | null> => {
-    const segments: { [key: string]: number[] } | null = await NativeAppLovinMAX.getSegments();
+    const segments = await NativeAppLovinMAX.getSegments();
 
     if (!segments) {
         return null;
