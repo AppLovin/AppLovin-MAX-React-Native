@@ -90,25 +90,20 @@ const initialize = (sdkKey: string): Promise<Configuration> => {
 };
 
 const getSegments = async (): Promise<Map<number, number[]> | null> => {
-    const segments: Map<string, number[]> | null = await NativeAppLovinMAX.getSegments();
+    const segments: { [key: string]: number[] } | null = await NativeAppLovinMAX.getSegments();
 
     if (!segments) {
         return null;
     }
 
-    // Convert the segments forcebly to a type with the index signature
-    const indexedSegments: { [key: string]: number[] } = segments as unknown as { [key: string]: number[] };
-
     const map = new Map<number, number[]>();
 
-    for (const key in indexedSegments) {
-        if (indexedSegments.hasOwnProperty(key)) {
-            // Convert the key from a string to a number. In JavaScript, an object cannot have an
-            // integer as a key, but the Map object can have keys of any data type.
-            const value = indexedSegments[key];
-            if (value) {
-                map.set(Number(key), value);
-            }
+    for (const key in segments) {
+        // Convert the key from a string to a number. In JavaScript, an object cannot have an
+        // integer as a key, but the Map object can have keys of any data type.
+        const value = segments[key];
+        if (value) {
+            map.set(Number(key), value);
         }
     }
 

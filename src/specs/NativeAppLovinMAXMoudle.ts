@@ -103,7 +103,7 @@ export interface Spec extends TurboModule {
 
     addSegment(key: number, values: number[]): Promise<void>;
 
-    getSegments(): Promise<Map<string, number[]> | null>;
+    getSegments(): Promise<{ [key: string]: number[] } | null>;
 
     createBanner(adUnitId: string, position: string): void;
 
