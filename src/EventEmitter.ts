@@ -1,8 +1,7 @@
-import { NativeModules, NativeEventEmitter } from 'react-native';
+import { NativeEventEmitter } from 'react-native';
 import type { EventSubscription } from 'react-native';
 import type { AdEventObject, AdEventListener } from './types/AdEvent';
-
-const { AppLovinMAX } = NativeModules;
+import AppLovinMAX from './specs/NativeAppLovinMAXMoudle';
 
 // Note that this is a singleton in ES6 module
 const emitter = new NativeEventEmitter(AppLovinMAX);

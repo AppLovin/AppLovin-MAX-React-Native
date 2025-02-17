@@ -1,8 +1,6 @@
-import { NativeModules } from 'react-native';
 import type { AppLovinMAXType } from './types/AppLovinMAX';
 import type { Configuration } from './types/Configuration';
-
-const NativeAppLovinMAX = NativeModules.AppLovinMAX;
+import NativeAppLovinMAX from './specs/NativeAppLovinMAXMoudle';
 
 const VERSION = '8.2.0';
 
@@ -92,19 +90,25 @@ const initialize = (sdkKey: string): Promise<Configuration> => {
 };
 
 const getSegments = async (): Promise<Map<number, number[]> | null> => {
-    const segments = await NativeAppLovinMAX.getSegments();
+    const segments: Map<string, number[]> | null = await NativeAppLovinMAX.getSegments();
 
     if (!segments) {
         return null;
     }
 
+    // Convert the segments forcebly to a type with the index signature
+    const indexedSegments: { [key: string]: number[] } = segments as unknown as { [key: string]: number[] };
+
     const map = new Map<number, number[]>();
 
-    for (const key in segments) {
-        if (segments.hasOwnProperty(key)) {
+    for (const key in indexedSegments) {
+        if (indexedSegments.hasOwnProperty(key)) {
             // Convert the key from a string to a number. In JavaScript, an object cannot have an
             // integer as a key, but the Map object can have keys of any data type.
-            map.set(Number(key), segments[key]);
+            const value = indexedSegments[key];
+            if (value) {
+                map.set(Number(key), value);
+            }
         }
     }
 

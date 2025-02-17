@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.platforms    = { :ios => min_ios_version_supported }
   s.source       = { :git => "https://github.com/AppLovin/AppLovin-MAX-React-Native.git", :tag => "release_8_2_0" }
 
-  s.source_files = "ios/AppLovinMAX*.{h,m}"
+  s.source_files = "ios/AppLovinMAX*.{h,mm}"
 
   s.dependency "AppLovinSDK", "13.1.0"
 

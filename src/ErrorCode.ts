@@ -1,6 +1,4 @@
-import { NativeModules } from 'react-native';
-
-const { AppLovinMAX } = NativeModules;
+import AppLovinMAX from './specs/NativeAppLovinMAXMoudle';
 
 const {
     MAX_ERROR_CODE_UNSPECIFIED,
