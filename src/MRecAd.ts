@@ -3,7 +3,7 @@ import type { AdInfo, AdLoadFailedInfo } from './types/AdInfo';
 import type { LocalExtraParameterValue } from './types/AdProps';
 import type { MRecAdType } from './types/MRecAd';
 import type { AdViewPosition } from './AdView';
-import AppLovinMAX from './specs/NativeAppLovinMAXMoudle';
+import AppLovinMAX from './specs/NativeAppLovinMAXModule';
 
 const { ON_MREC_AD_LOADED_EVENT, ON_MREC_AD_LOAD_FAILED_EVENT, ON_MREC_AD_CLICKED_EVENT, ON_MREC_AD_COLLAPSED_EVENT, ON_MREC_AD_EXPANDED_EVENT, ON_MREC_AD_REVENUE_PAID } =
     AppLovinMAX.getConstants();

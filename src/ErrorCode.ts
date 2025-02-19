@@ -1,4 +1,4 @@
-import AppLovinMAX from './specs/NativeAppLovinMAXMoudle';
+import AppLovinMAX from './specs/NativeAppLovinMAXModule';
 
 const {
     MAX_ERROR_CODE_UNSPECIFIED,

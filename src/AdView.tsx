@@ -7,7 +7,7 @@ import type { AdNativeEvent } from './types/AdEvent';
 import type { AdViewProps, AdViewHandler, NativeUIComponentAdViewOptions, AdViewId } from './types/AdViewProps';
 import { addEventListener, removeEventListener } from './EventEmitter';
 
-import AppLovinMAX from './specs/NativeAppLovinMAXMoudle';
+import AppLovinMAX from './specs/NativeAppLovinMAXModule';
 
 const { ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT, ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT } = AppLovinMAX.getConstants();
 

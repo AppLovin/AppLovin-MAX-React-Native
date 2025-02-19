@@ -123,7 +123,7 @@ export interface Spec extends TurboModule {
 
     setBannerExtraParameter(adUnitId: string, key: string, value: string | null): void;
 
-    setBannerLocalExtraParameter(adUnitId: string, parameter: UnsafeObject): void;
+    setBannerLocalExtraParameter(adUnitId: string, parameters: UnsafeObject): void;
 
     startBannerAutoRefresh(adUnitId: string): void;
 
@@ -147,7 +147,7 @@ export interface Spec extends TurboModule {
 
     setMRecExtraParameter(adUnitId: string, key: string, value: string | null): void;
 
-    setMRecLocalExtraParameter(adUnitId: string, parameter: UnsafeObject): void;
+    setMRecLocalExtraParameter(adUnitId: string, parameters: UnsafeObject): void;
 
     startMRecAutoRefresh(adUnitId: string): void;
 
@@ -167,7 +167,7 @@ export interface Spec extends TurboModule {
 
     setInterstitialExtraParameter(adUnitId: string, key: string, value: string | null): void;
 
-    setInterstitialLocalExtraParameter(adUnitId: string, parameter: UnsafeObject): void;
+    setInterstitialLocalExtraParameter(adUnitId: string, parameters: UnsafeObject): void;
 
     loadRewardedAd(adUnitId: string): void;
 
@@ -177,7 +177,7 @@ export interface Spec extends TurboModule {
 
     setRewardedAdExtraParameter(adUnitId: string, key: string, value: string | null): void;
 
-    setRewardedAdLocalExtraParameter(adUnitId: string, parameter: UnsafeObject): void;
+    setRewardedAdLocalExtraParameter(adUnitId: string, parameters: UnsafeObject): void;
 
     loadAppOpenAd(adUnitId: string): void;
 
@@ -187,7 +187,7 @@ export interface Spec extends TurboModule {
 
     setAppOpenAdExtraParameter(adUnitId: string, key: string, value: string | null): void;
 
-    setAppOpenAdLocalExtraParameter(adUnitId: string, parameter: UnsafeObject): void;
+    setAppOpenAdLocalExtraParameter(adUnitId: string, parameters: UnsafeObject): void;
 
     preloadNativeUIComponentAdView(
         adUnitId: string,

@@ -2,7 +2,7 @@ import { addEventListener, removeEventListener } from './EventEmitter';
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo, AdRewardInfo } from './types/AdInfo';
 import type { LocalExtraParameterValue } from './types/AdProps';
 import type { RewardedAdType } from './types/RewardedAd';
-import AppLovinMAX from './specs/NativeAppLovinMAXMoudle';
+import AppLovinMAX from './specs/NativeAppLovinMAXModule';
 
 const {
     ON_REWARDED_AD_LOADED_EVENT,

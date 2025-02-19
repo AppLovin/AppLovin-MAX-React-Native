@@ -1,6 +1,6 @@
 import type { AppLovinMAXType } from './types/AppLovinMAX';
 import type { Configuration } from './types/Configuration';
-import NativeAppLovinMAX from './specs/NativeAppLovinMAXMoudle';
+import NativeAppLovinMAX from './specs/NativeAppLovinMAXModule';
 
 const VERSION = '8.2.0';
 

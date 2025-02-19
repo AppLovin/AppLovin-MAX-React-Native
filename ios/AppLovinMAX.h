@@ -18,7 +18,7 @@
  */
 #ifdef RCT_NEW_ARCH_ENABLED
 #import <RNAppLovinMAXSpec/RNAppLovinMAXSpec.h> 
-@interface AppLovinMAX : RCTEventEmitter<NativeAppLovinMAXMoudleSpec, MAAdDelegate, MARewardedAdDelegate, MAAdViewAdDelegate, MAAdRevenueDelegate>
+@interface AppLovinMAX : RCTEventEmitter<NativeAppLovinMAXModuleSpec, MAAdDelegate, MARewardedAdDelegate, MAAdViewAdDelegate, MAAdRevenueDelegate>
 #else
 #import <React/RCTBridgeModule.h>
 @interface AppLovinMAX : RCTEventEmitter<RCTBridgeModule, MAAdDelegate, MARewardedAdDelegate, MAAdViewAdDelegate, MAAdRevenueDelegate>

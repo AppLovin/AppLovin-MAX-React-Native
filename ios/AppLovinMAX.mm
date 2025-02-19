@@ -2191,7 +2191,7 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(double)adViewId
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
 (const facebook::react::ObjCTurboModule::InitParams &)params
 {
-    return std::make_shared<facebook::react::NativeAppLovinMAXMoudleSpecJSI>(params);
+    return std::make_shared<facebook::react::NativeAppLovinMAXModuleSpecJSI>(params);
 }
 #endif
 

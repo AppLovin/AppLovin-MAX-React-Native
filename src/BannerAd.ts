@@ -3,7 +3,7 @@ import type { AdInfo, AdLoadFailedInfo } from './types/AdInfo';
 import type { LocalExtraParameterValue } from './types/AdProps';
 import type { BannerAdType } from './types/BannerAd';
 import type { AdViewPosition } from './AdView';
-import AppLovinMAX from './specs/NativeAppLovinMAXMoudle';
+import AppLovinMAX from './specs/NativeAppLovinMAXModule';
 
 const {
     ON_BANNER_AD_LOADED_EVENT,
