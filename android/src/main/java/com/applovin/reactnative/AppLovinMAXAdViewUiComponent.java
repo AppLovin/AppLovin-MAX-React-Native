@@ -31,7 +31,7 @@ class AppLovinMAXAdViewUiComponent
     {
         reactContext = context;
 
-        adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModule.getInstance().getSdk(), context );
+        adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModuleImpl.getInstance().getSdk(), context );
         adView.setListener( this );
         adView.setRevenueListener( this );
         adView.setExtraParameter( "adaptive_banner", "true" );
@@ -117,7 +117,7 @@ class AppLovinMAXAdViewUiComponent
     {
         if ( isAdViewAttached() )
         {
-            AppLovinMAXModule.e( "Cannot attach AdView because it already has an existing parent: " + adView );
+            AppLovinMAXModuleImpl.e( "Cannot attach AdView because it already has an existing parent: " + adView );
             return;
         }
 
@@ -164,13 +164,13 @@ class AppLovinMAXAdViewUiComponent
     @Override
     public void onAdLoaded(@NonNull final MaxAd ad)
     {
-        WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+        WritableMap adInfo = AppLovinMAXModuleImpl.getInstance().getAdInfo( ad );
         adInfo.putInt( "adViewId", hashCode() );
 
         if ( AppLovinMAXAdView.hasPreloadedAdView( hashCode() ) )
         {
             // Copy the `adInfo` since sending the same map through the RN bridge more than once will result in `com.facebook.react.bridge.ObjectAlreadyConsumedException: Map already consumed`
-            AppLovinMAXModule.getInstance().sendReactNativeEvent( AppLovinMAXAdEvents.ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT, adInfo.copy() );
+            AppLovinMAXModuleImpl.getInstance().sendReactNativeEvent( AppLovinMAXAdEvents.ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT, adInfo.copy() );
         }
 
         if ( containerView != null )
@@ -182,13 +182,13 @@ class AppLovinMAXAdViewUiComponent
     @Override
     public void onAdLoadFailed(@NonNull final String adUnitId, @NonNull final MaxError error)
     {
-        WritableMap adLoadFailedInfo = AppLovinMAXModule.getInstance().getAdLoadFailedInfo( adUnitId, error );
+        WritableMap adLoadFailedInfo = AppLovinMAXModuleImpl.getInstance().getAdLoadFailedInfo( adUnitId, error );
         adLoadFailedInfo.putInt( "adViewId", hashCode() );
 
         if ( AppLovinMAXAdView.hasPreloadedAdView( hashCode() ) )
         {
             // Copy the `adLoadFailedInfo` since sending the same map through the RN bridge more than once will result in `com.facebook.react.bridge.ObjectAlreadyConsumedException: Map already consumed`
-            AppLovinMAXModule.getInstance().sendReactNativeEvent( AppLovinMAXAdEvents.ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT, adLoadFailedInfo.copy() );
+            AppLovinMAXModuleImpl.getInstance().sendReactNativeEvent( AppLovinMAXAdEvents.ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT, adLoadFailedInfo.copy() );
         }
 
         if ( containerView != null )
@@ -202,7 +202,7 @@ class AppLovinMAXAdViewUiComponent
     {
         if ( containerView != null )
         {
-            WritableMap adDisplayFailedInfo = AppLovinMAXModule.getInstance().getAdDisplayFailedInfo( ad, error );
+            WritableMap adDisplayFailedInfo = AppLovinMAXModuleImpl.getInstance().getAdDisplayFailedInfo( ad, error );
             adDisplayFailedInfo.putInt( "adViewId", hashCode() );
 
             sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_DISPLAY_FAILED_EVENT, adDisplayFailedInfo );
@@ -214,7 +214,7 @@ class AppLovinMAXAdViewUiComponent
     {
         if ( containerView != null )
         {
-            WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+            WritableMap adInfo = AppLovinMAXModuleImpl.getInstance().getAdInfo( ad );
             adInfo.putInt( "adViewId", hashCode() );
 
             sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_CLICKED_EVENT, adInfo );
@@ -226,7 +226,7 @@ class AppLovinMAXAdViewUiComponent
     {
         if ( containerView != null )
         {
-            WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+            WritableMap adInfo = AppLovinMAXModuleImpl.getInstance().getAdInfo( ad );
             adInfo.putInt( "adViewId", hashCode() );
 
             sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_EXPANDED_EVENT, adInfo );
@@ -238,7 +238,7 @@ class AppLovinMAXAdViewUiComponent
     {
         if ( containerView != null )
         {
-            WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+            WritableMap adInfo = AppLovinMAXModuleImpl.getInstance().getAdInfo( ad );
             adInfo.putInt( "adViewId", hashCode() );
 
             sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_COLLAPSED_EVENT, adInfo );
@@ -250,7 +250,7 @@ class AppLovinMAXAdViewUiComponent
     {
         if ( containerView != null )
         {
-            WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+            WritableMap adInfo = AppLovinMAXModuleImpl.getInstance().getAdInfo( ad );
             adInfo.putInt( "adViewId", hashCode() );
 
             sendReactNativeCallbackEvent( AppLovinMAXAdEvents.ON_AD_REVENUE_PAID_EVENT, adInfo );
