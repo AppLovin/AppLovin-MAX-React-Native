@@ -584,7 +584,7 @@ RCT_EXPORT_METHOD(setBannerExtraParameter:(NSString *)adUnitIdentifier key:(NSSt
 }
 
 // NOTE: Even though iOS is ok with `id` generic types, Android is not - so we wrap it via JSON/ReadableMap
-RCT_EXPORT_METHOD(setBannerLocalExtraParameter:(NSString *)adUnitIdentifier parameter:(NSDictionary *)parameterDict)
+RCT_EXPORT_METHOD(setBannerLocalExtraParameter:(NSString *)adUnitIdentifier parameters:(NSDictionary<NSString *, id> *)parameterDict)
 {
     NSString *key = parameterDict.allKeys.firstObject;
     id value = parameterDict.allValues.firstObject != [NSNull null] ? parameterDict.allValues.firstObject : nil;
@@ -704,7 +704,7 @@ RCT_EXPORT_METHOD(setMRecExtraParameter:(NSString *)adUnitIdentifier key:(NSStri
 }
 
 // NOTE: Even though iOS is ok with `id` generic types, Android is not - so we wrap it via JSON/ReadableMap
-RCT_EXPORT_METHOD(setMRecLocalExtraParameter:(NSString *)adUnitIdentifier parameter:(NSDictionary *)parameterDict)
+RCT_EXPORT_METHOD(setMRecLocalExtraParameter:(NSString *)adUnitIdentifier parameters:(NSDictionary<NSString *, id> *)parameterDict)
 {
     NSString *key = parameterDict.allKeys.firstObject;
     id value = parameterDict.allValues.firstObject != [NSNull null] ? parameterDict.allValues.firstObject : nil;
@@ -819,7 +819,7 @@ RCT_EXPORT_METHOD(setInterstitialExtraParameter:(NSString *)adUnitIdentifier key
 }
 
 // NOTE: Even though iOS is ok with `id` generic types, Android is not - so we wrap it via JSON/ReadableMap
-RCT_EXPORT_METHOD(setInterstitialLocalExtraParameter:(NSString *)adUnitIdentifier parameter:(NSDictionary *)parameterDict)
+RCT_EXPORT_METHOD(setInterstitialLocalExtraParameter:(NSString *)adUnitIdentifier parameters:(NSDictionary<NSString *, id> *)parameterDict)
 {
     NSString *key = parameterDict.allKeys.firstObject;
     id value = parameterDict.allValues.firstObject != [NSNull null] ? parameterDict.allValues.firstObject : nil;
@@ -880,7 +880,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier key:(
 }
 
 // NOTE: Even though iOS is ok with `id` generic types, Android is not - so we wrap it via JSON/ReadableMap
-RCT_EXPORT_METHOD(setRewardedAdLocalExtraParameter:(NSString *)adUnitIdentifier parameter:(NSDictionary *)parameterDict)
+RCT_EXPORT_METHOD(setRewardedAdLocalExtraParameter:(NSString *)adUnitIdentifier parameters:(NSDictionary<NSString *, id> *)parameterDict)
 {
     NSString *key = parameterDict.allKeys.firstObject;
     id value = parameterDict.allValues.firstObject != [NSNull null] ? parameterDict.allValues.firstObject : nil;
@@ -941,7 +941,7 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
 }
 
 // NOTE: Even though iOS is ok with `id` generic types, Android is not - so we wrap it via JSON/ReadableMap
-RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier parameter:(NSDictionary *)parameterDict)
+RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier parameters:(NSDictionary<NSString *, id> *)parameterDict)
 {
     NSString *key = parameterDict.allKeys.firstObject;
     id value = parameterDict.allValues.firstObject != [NSNull null] ? parameterDict.allValues.firstObject : nil;
