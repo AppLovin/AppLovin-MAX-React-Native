@@ -229,9 +229,9 @@ public class AppLovinMAXModule
     }
 
     @Override
-    public void setBannerLocalExtraParameter(final String adUnitId, final ReadableMap parameter)
+    public void setBannerLocalExtraParameter(final String adUnitId, final ReadableMap parameters)
     {
-        impl.setBannerLocalExtraParameter( adUnitId, parameter );
+        impl.setBannerLocalExtraParameter( adUnitId, parameters );
     }
 
     @Override
@@ -301,9 +301,9 @@ public class AppLovinMAXModule
     }
 
     @Override
-    public void setMRecLocalExtraParameter(final String adUnitId, final ReadableMap parameter)
+    public void setMRecLocalExtraParameter(final String adUnitId, final ReadableMap parameters)
     {
-        impl.setMRecLocalExtraParameter( adUnitId, parameter );
+        impl.setMRecLocalExtraParameter( adUnitId, parameters );
     }
 
     @Override
@@ -361,9 +361,9 @@ public class AppLovinMAXModule
     }
 
     @Override
-    public void setInterstitialLocalExtraParameter(final String adUnitId, final ReadableMap parameter)
+    public void setInterstitialLocalExtraParameter(final String adUnitId, final ReadableMap parameters)
     {
-        impl.setInterstitialLocalExtraParameter( adUnitId, parameter );
+        impl.setInterstitialLocalExtraParameter( adUnitId, parameters );
     }
 
     @Override
@@ -391,9 +391,9 @@ public class AppLovinMAXModule
     }
 
     @Override
-    public void setRewardedAdLocalExtraParameter(final String adUnitId, final ReadableMap parameter)
+    public void setRewardedAdLocalExtraParameter(final String adUnitId, final ReadableMap parameters)
     {
-        impl.setRewardedAdLocalExtraParameter( adUnitId, parameter );
+        impl.setRewardedAdLocalExtraParameter( adUnitId, parameters );
     }
 
     @Override
@@ -421,9 +421,9 @@ public class AppLovinMAXModule
     }
 
     @Override
-    public void setAppOpenAdLocalExtraParameter(final String adUnitId, final ReadableMap parameter)
+    public void setAppOpenAdLocalExtraParameter(final String adUnitId, final ReadableMap parameters)
     {
-        impl.setAppOpenAdLocalExtraParameter( adUnitId, parameter );
+        impl.setAppOpenAdLocalExtraParameter( adUnitId, parameters );
     }
 
     @Override
