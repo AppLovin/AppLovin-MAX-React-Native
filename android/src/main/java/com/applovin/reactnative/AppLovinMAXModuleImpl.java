@@ -2239,42 +2239,6 @@ public class AppLovinMAXModuleImpl
             .emit( name, params );
     }
 
-    public void sendReactNativeViewEvent(final int surfaceId, final int viewId, final String eventName, final WritableMap payload)
-    {
-        EventDispatcher eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag( reactContext, viewId );
-        if ( eventDispatcher != null )
-        {
-            eventDispatcher.dispatchEvent( new OnViewEvent( surfaceId, viewId, eventName, payload ) );
-        }
-    }
-
-    private class OnViewEvent
-        extends Event<OnViewEvent>
-    {
-        private final WritableMap payload;
-        private final String      eventName;
-
-        OnViewEvent(final int surfaceId, final int viewId, final String eventName, @Nullable final WritableMap payload)
-        {
-            super( surfaceId, viewId );
-            this.eventName = eventName;
-            this.payload = payload;
-        }
-
-        @Override
-        public String getEventName()
-        {
-            return eventName;
-        }
-
-        @Nullable
-        @Override
-        protected WritableMap getEventData()
-        {
-            return payload;
-        }
-    }
-
     @Nullable
     public Map<String, Object> getConstants()
     {
