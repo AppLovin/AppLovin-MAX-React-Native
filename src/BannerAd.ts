@@ -1,11 +1,9 @@
-import { NativeModules } from 'react-native';
 import { addEventListener, removeEventListener } from './EventEmitter';
 import type { AdInfo, AdLoadFailedInfo } from './types/AdInfo';
 import type { LocalExtraParameterValue } from './types/AdProps';
 import type { BannerAdType } from './types/BannerAd';
 import type { AdViewPosition } from './AdView';
-
-const { AppLovinMAX } = NativeModules;
+import AppLovinMAX from './specs/NativeAppLovinMAXModule';
 
 const {
     ON_BANNER_AD_LOADED_EVENT,

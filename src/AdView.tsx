@@ -1,31 +1,15 @@
 import * as React from 'react';
 import { useEffect, useState, useRef, useCallback, useImperativeHandle, useReducer, forwardRef } from 'react';
-import { NativeModules, requireNativeComponent, StyleSheet, UIManager, findNodeHandle, useWindowDimensions, View } from 'react-native';
+import { requireNativeComponent, StyleSheet, UIManager, findNodeHandle, useWindowDimensions, View } from 'react-native';
 import type { ViewProps, ViewStyle, StyleProp, NativeMethods, DimensionValue } from 'react-native';
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo } from './types/AdInfo';
 import type { AdNativeEvent } from './types/AdEvent';
 import type { AdViewProps, AdViewHandler, NativeUIComponentAdViewOptions, AdViewId } from './types/AdViewProps';
 import { addEventListener, removeEventListener } from './EventEmitter';
 
-const { AppLovinMAX } = NativeModules;
+import AppLovinMAX from './specs/NativeAppLovinMAXModule';
 
-const {
-    BANNER_AD_FORMAT_LABEL,
-    MREC_AD_FORMAT_LABEL,
-
-    TOP_CENTER_POSITION,
-    TOP_LEFT_POSITION,
-    TOP_RIGHT_POSITION,
-    CENTERED_POSITION,
-    CENTER_LEFT_POSITION,
-    CENTER_RIGHT_POSITION,
-    BOTTOM_LEFT_POSITION,
-    BOTTOM_CENTER_POSITION,
-    BOTTOM_RIGHT_POSITION,
-
-    ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT,
-    ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT,
-} = AppLovinMAX.getConstants();
+const { ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT, ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT } = AppLovinMAX.getConstants();
 
 /**
  * Defines a format of an ad.
@@ -34,27 +18,27 @@ export enum AdFormat {
     /**
      * Banner ad.
      */
-    BANNER = BANNER_AD_FORMAT_LABEL,
+    BANNER = 'BANNER',
 
     /**
      * MREC ad.
      */
-    MREC = MREC_AD_FORMAT_LABEL,
+    MREC = 'MREC',
 }
 
 /**
  * Defines a position of a banner or MREC ad.
  */
 export enum AdViewPosition {
-    TOP_CENTER = TOP_CENTER_POSITION,
-    TOP_LEFT = TOP_LEFT_POSITION,
-    TOP_RIGHT = TOP_RIGHT_POSITION,
-    CENTERED = CENTERED_POSITION,
-    CENTER_LEFT = CENTER_LEFT_POSITION,
-    CENTER_RIGHT = CENTER_RIGHT_POSITION,
-    BOTTOM_LEFT = BOTTOM_LEFT_POSITION,
-    BOTTOM_CENTER = BOTTOM_CENTER_POSITION,
-    BOTTOM_RIGHT = BOTTOM_RIGHT_POSITION,
+    TOP_CENTER = 'top_center',
+    TOP_LEFT = 'top_left',
+    TOP_RIGHT = 'top_right',
+    CENTERED = 'centered',
+    CENTER_LEFT = 'center_left',
+    CENTER_RIGHT = 'center_right',
+    BOTTOM_LEFT = 'bottom_left',
+    BOTTOM_CENTER = 'bottom_center',
+    BOTTOM_RIGHT = 'bottom_right',
 }
 
 type AdViewNativeEvents = {
@@ -322,8 +306,9 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
  * @returns A promise resolving to an {@link AdViewId}, which uniquely identifies the preloaded component.
  * @throws An error if the preload request fails.
  */
-export const preloadNativeUIComponentAdView = async (adUnitId: string, adFormat: AdFormat, options?: NativeUIComponentAdViewOptions): Promise<AdViewId> => {
-    return AppLovinMAX.preloadNativeUIComponentAdView(adUnitId, adFormat, options?.placement, options?.customData, options?.extraParameters, options?.localExtraParameters);
+export const preloadNativeUIComponentAdView = async (adUnitId: string, adFormat: AdFormat, options: NativeUIComponentAdViewOptions = {}): Promise<AdViewId> => {
+    const { placement = null, customData = null, extraParameters = {}, localExtraParameters = {} } = options;
+    return AppLovinMAX.preloadNativeUIComponentAdView(adUnitId, adFormat, placement, customData, extraParameters, localExtraParameters);
 };
 
 /**
@@ -336,6 +321,9 @@ export const preloadNativeUIComponentAdView = async (adUnitId: string, adFormat:
  * @throws An error if the destruction process fails.
  */
 export const destroyNativeUIComponentAdView = async (adViewId: AdViewId): Promise<void> => {
+    if (adViewId === undefined) {
+        return Promise.reject(new Error('adViewId is not provided'));
+    }
     return AppLovinMAX.destroyNativeUIComponentAdView(adViewId);
 };
 

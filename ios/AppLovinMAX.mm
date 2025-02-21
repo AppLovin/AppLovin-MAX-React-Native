@@ -221,12 +221,12 @@ RCT_EXPORT_MODULE()
     return self;
 }
 
-RCT_EXPORT_METHOD(isInitialized:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(isInitialized:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 {
     resolve(@([self isPluginInitialized] && [self isSDKInitialized]));
 }
 
-RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion sdkKey:(NSString *)sdkKey resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 {
     // Guard against running init logic multiple times
     if ( [self isPluginInitialized] )
@@ -291,7 +291,7 @@ RCT_EXPORT_METHOD(initialize:(NSString *)pluginVersion :(NSString *)sdkKey :(RCT
 
 #pragma mark - General Public API
 
-RCT_EXPORT_METHOD(isTablet:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(isTablet:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 {
     resolve(@([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad));
 }
@@ -312,7 +312,7 @@ RCT_EXPORT_METHOD(setHasUserConsent:(BOOL)hasUserConsent)
     [ALPrivacySettings setHasUserConsent: hasUserConsent];
 }
 
-RCT_EXPORT_METHOD(hasUserConsent:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(hasUserConsent:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 {
     resolve(@([ALPrivacySettings hasUserConsent]));
 }
@@ -322,7 +322,7 @@ RCT_EXPORT_METHOD(setDoNotSell:(BOOL)doNotSell)
     [ALPrivacySettings setDoNotSell: doNotSell];
 }
 
-RCT_EXPORT_METHOD(isDoNotSell:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(isDoNotSell:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 {
     resolve(@([ALPrivacySettings isDoNotSell]));
 }
@@ -337,7 +337,7 @@ RCT_EXPORT_METHOD(setMuted:(BOOL)muted)
     self.sdk.settings.muted = muted;
 }
 
-RCT_EXPORT_METHOD(isMuted:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(isMuted:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 {
     resolve(@(self.sdk.settings.muted));
 }
@@ -357,7 +357,7 @@ RCT_EXPORT_METHOD(setCreativeDebuggerEnabled:(BOOL)enabled)
     self.sdk.settings.creativeDebuggerEnabled = enabled;
 }
 
-RCT_EXPORT_METHOD(setExtraParameter:(NSString *)key :(nullable NSString *)value)
+RCT_EXPORT_METHOD(setExtraParameter:(NSString *)key value:(nullable NSString *)value)
 {
     if ( ![key al_isValidString] )
     {
@@ -397,7 +397,7 @@ RCT_EXPORT_METHOD(setConsentFlowDebugUserGeography:(NSString *)userGeography)
     self.sdk.settings.termsAndPrivacyPolicyFlowSettings.debugUserGeography = [self toAppLovinConsentFlowUserGeography: userGeography];
 }
 
-RCT_EXPORT_METHOD(showCmpForExistingUser:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(showCmpForExistingUser:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 {
     if ( ![self isPluginInitialized] )
     {
@@ -420,7 +420,7 @@ RCT_EXPORT_METHOD(showCmpForExistingUser:(RCTPromiseResolveBlock)resolve :(RCTPr
     }];
 }
 
-RCT_EXPORT_METHOD(hasSupportedCmp:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(hasSupportedCmp:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 {
     if ( ![self isPluginInitialized] )
     {
@@ -433,7 +433,7 @@ RCT_EXPORT_METHOD(hasSupportedCmp:(RCTPromiseResolveBlock)resolve :(RCTPromiseRe
 
 #pragma mark - Segment Targeting
 
-RCT_EXPORT_METHOD(addSegment:(nonnull NSNumber *)key :(NSArray<NSNumber *> *)values :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(addSegment:(double)key values:(NSArray *)values resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 {
     if ( [self isPluginInitialized] )
     {
@@ -441,12 +441,12 @@ RCT_EXPORT_METHOD(addSegment:(nonnull NSNumber *)key :(NSArray<NSNumber *> *)val
         return;
     }
     
-    [self.segmentCollectionBuilder addSegment: [[MASegment alloc] initWithKey: key values: values]];
+    [self.segmentCollectionBuilder addSegment: [[MASegment alloc] initWithKey: @(key) values: values]];
     
     resolve(nil);
 }
 
-RCT_EXPORT_METHOD(getSegments:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(getSegments:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 {
     if ( ![self isSDKInitialized] )
     {
@@ -483,7 +483,7 @@ RCT_EXPORT_METHOD(trackEvent:(NSString *)event :(NSDictionary<NSString *, id> *)
 
 #pragma mark - Banners
 
-RCT_EXPORT_METHOD(createBanner:(NSString *)adUnitIdentifier :(NSString *)bannerPosition)
+RCT_EXPORT_METHOD(createBanner:(NSString *)adUnitIdentifier position:(NSString *)bannerPosition)
 {
     if ( !self.sdk )
     {
@@ -495,7 +495,7 @@ RCT_EXPORT_METHOD(createBanner:(NSString *)adUnitIdentifier :(NSString *)bannerP
 }
 
 // NOTE: No function overloading in JS so we need new method signature
-RCT_EXPORT_METHOD(createBannerWithOffsets:(NSString *)adUnitIdentifier :(NSString *)bannerPosition :(CGFloat)xOffset :(CGFloat)yOffset)
+RCT_EXPORT_METHOD(createBannerWithOffsets:(NSString *)adUnitIdentifier position:(NSString *)bannerPosition xOffset:(double)xOffset yOffset:(double)yOffset)
 {
     if ( !self.sdk )
     {
@@ -506,7 +506,7 @@ RCT_EXPORT_METHOD(createBannerWithOffsets:(NSString *)adUnitIdentifier :(NSStrin
     [self createAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT atPosition: bannerPosition withOffset: CGPointMake(xOffset, yOffset)];
 }
 
-RCT_EXPORT_METHOD(setBannerBackgroundColor:(NSString *)adUnitIdentifier :(NSString *)hexColorCode)
+RCT_EXPORT_METHOD(setBannerBackgroundColor:(NSString *)adUnitIdentifier hexColorCode:(NSString *)hexColorCode)
 {
     if ( !self.sdk )
     {
@@ -517,7 +517,7 @@ RCT_EXPORT_METHOD(setBannerBackgroundColor:(NSString *)adUnitIdentifier :(NSStri
     [self setAdViewBackgroundColorForAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT hexColorCode: hexColorCode];
 }
 
-RCT_EXPORT_METHOD(setBannerPlacement:(NSString *)adUnitIdentifier :(nullable NSString *)placement)
+RCT_EXPORT_METHOD(setBannerPlacement:(NSString *)adUnitIdentifier placement:(nullable NSString *)placement)
 {
     if ( !self.sdk )
     {
@@ -528,7 +528,7 @@ RCT_EXPORT_METHOD(setBannerPlacement:(NSString *)adUnitIdentifier :(nullable NSS
     [self setAdViewPlacement: placement forAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
 }
 
-RCT_EXPORT_METHOD(setBannerCustomData:(NSString *)adUnitIdentifier :(nullable NSString *)customData)
+RCT_EXPORT_METHOD(setBannerCustomData:(NSString *)adUnitIdentifier customData:(nullable NSString *)customData)
 {
     if ( !self.sdk )
     {
@@ -539,7 +539,7 @@ RCT_EXPORT_METHOD(setBannerCustomData:(NSString *)adUnitIdentifier :(nullable NS
     [self setAdViewCustomData: customData forAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
 }
 
-RCT_EXPORT_METHOD(updateBannerPosition:(NSString *)adUnitIdentifier :(NSString *)bannerPosition)
+RCT_EXPORT_METHOD(updateBannerPosition:(NSString *)adUnitIdentifier position:(NSString *)bannerPosition)
 {
     if ( !self.sdk )
     {
@@ -550,7 +550,7 @@ RCT_EXPORT_METHOD(updateBannerPosition:(NSString *)adUnitIdentifier :(NSString *
     [self updateAdViewPosition: bannerPosition withOffset: CGPointZero forAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
 }
 
-RCT_EXPORT_METHOD(updateBannerOffsets:(NSString *)adUnitIdentifier :(CGFloat)xOffset :(CGFloat)yOffset)
+RCT_EXPORT_METHOD(updateBannerOffsets:(NSString *)adUnitIdentifier xOffset:(double)xOffset yOffset:(double)yOffset)
 {
     if ( !self.sdk )
     {
@@ -561,7 +561,7 @@ RCT_EXPORT_METHOD(updateBannerOffsets:(NSString *)adUnitIdentifier :(CGFloat)xOf
     [self updateAdViewPosition: self.adViewPositions[adUnitIdentifier] withOffset: CGPointMake(xOffset, yOffset) forAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
 }
 
-RCT_EXPORT_METHOD(setBannerWidth:(NSString *)adUnitIdentifier :(CGFloat)width)
+RCT_EXPORT_METHOD(setBannerWidth:(NSString *)adUnitIdentifier width:(double)width)
 {
     if ( !self.sdk )
     {
@@ -572,7 +572,7 @@ RCT_EXPORT_METHOD(setBannerWidth:(NSString *)adUnitIdentifier :(CGFloat)width)
     [self setAdViewWidth: width forAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
 }
 
-RCT_EXPORT_METHOD(setBannerExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
+RCT_EXPORT_METHOD(setBannerExtraParameter:(NSString *)adUnitIdentifier key:(NSString *)key value:(nullable NSString *)value)
 {
     if ( !self.sdk )
     {
@@ -584,7 +584,7 @@ RCT_EXPORT_METHOD(setBannerExtraParameter:(NSString *)adUnitIdentifier :(NSStrin
 }
 
 // NOTE: Even though iOS is ok with `id` generic types, Android is not - so we wrap it via JSON/ReadableMap
-RCT_EXPORT_METHOD(setBannerLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)parameterDict)
+RCT_EXPORT_METHOD(setBannerLocalExtraParameter:(NSString *)adUnitIdentifier parameters:(NSDictionary<NSString *, id> *)parameterDict)
 {
     NSString *key = parameterDict.allKeys.firstObject;
     id value = parameterDict.allValues.firstObject != [NSNull null] ? parameterDict.allValues.firstObject : nil;
@@ -647,14 +647,14 @@ RCT_EXPORT_METHOD(destroyBanner:(NSString *)adUnitIdentifier)
     [self destroyAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT];
 }
 
-RCT_EXPORT_METHOD(getAdaptiveBannerHeightForWidth:(CGFloat)width :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(getAdaptiveBannerHeightForWidth:(double)width resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 {
     resolve(@([DEVICE_SPECIFIC_ADVIEW_AD_FORMAT adaptiveSizeForWidth: width].height));
 }
 
 #pragma mark - MRECs
 
-RCT_EXPORT_METHOD(createMRec:(NSString *)adUnitIdentifier :(NSString *)mrecPosition)
+RCT_EXPORT_METHOD(createMRec:(NSString *)adUnitIdentifier position:(NSString *)mrecPosition)
 {
     if ( !self.sdk )
     {
@@ -665,7 +665,7 @@ RCT_EXPORT_METHOD(createMRec:(NSString *)adUnitIdentifier :(NSString *)mrecPosit
     [self createAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec atPosition: mrecPosition withOffset: CGPointZero];
 }
 
-RCT_EXPORT_METHOD(setMRecPlacement:(NSString *)adUnitIdentifier :(nullable NSString *)placement)
+RCT_EXPORT_METHOD(setMRecPlacement:(NSString *)adUnitIdentifier placement:(nullable NSString *)placement)
 {
     if ( !self.sdk )
     {
@@ -676,7 +676,7 @@ RCT_EXPORT_METHOD(setMRecPlacement:(NSString *)adUnitIdentifier :(nullable NSStr
     [self setAdViewPlacement: placement forAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
 }
 
-RCT_EXPORT_METHOD(setMRecCustomData:(NSString *)adUnitIdentifier :(nullable NSString *)customData)
+RCT_EXPORT_METHOD(setMRecCustomData:(NSString *)adUnitIdentifier customData:(nullable NSString *)customData)
 {
     if ( !self.sdk )
     {
@@ -687,7 +687,7 @@ RCT_EXPORT_METHOD(setMRecCustomData:(NSString *)adUnitIdentifier :(nullable NSSt
     [self setAdViewCustomData: customData forAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
 }
 
-RCT_EXPORT_METHOD(updateMRecPosition:(NSString *)mrecPosition :(NSString *)adUnitIdentifier)
+RCT_EXPORT_METHOD(updateMRecPosition:(NSString *)adUnitIdentifier position:(NSString *)mrecPosition)
 {
     if ( !self.sdk )
     {
@@ -698,13 +698,13 @@ RCT_EXPORT_METHOD(updateMRecPosition:(NSString *)mrecPosition :(NSString *)adUni
     [self updateAdViewPosition: mrecPosition withOffset: CGPointZero forAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec];
 }
 
-RCT_EXPORT_METHOD(setMRecExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
+RCT_EXPORT_METHOD(setMRecExtraParameter:(NSString *)adUnitIdentifier key:(NSString *)key value:(nullable NSString *)value)
 {
     [self setAdViewExtraParameterForAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec key: key value: value];
 }
 
 // NOTE: Even though iOS is ok with `id` generic types, Android is not - so we wrap it via JSON/ReadableMap
-RCT_EXPORT_METHOD(setMRecLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)parameterDict)
+RCT_EXPORT_METHOD(setMRecLocalExtraParameter:(NSString *)adUnitIdentifier parameters:(NSDictionary<NSString *, id> *)parameterDict)
 {
     NSString *key = parameterDict.allKeys.firstObject;
     id value = parameterDict.allValues.firstObject != [NSNull null] ? parameterDict.allValues.firstObject : nil;
@@ -781,7 +781,7 @@ RCT_EXPORT_METHOD(loadInterstitial:(NSString *)adUnitIdentifier)
     [interstitial loadAd];
 }
 
-RCT_EXPORT_METHOD(isInterstitialReady:(NSString *)adUnitIdentifier :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(isInterstitialReady:(NSString *)adUnitIdentifier resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 {
     if ( !self.sdk )
     {
@@ -794,7 +794,7 @@ RCT_EXPORT_METHOD(isInterstitialReady:(NSString *)adUnitIdentifier :(RCTPromiseR
     resolve(@([interstitial isReady]));
 }
 
-RCT_EXPORT_METHOD(showInterstitial:(NSString *)adUnitIdentifier :(nullable NSString *)placement :(nullable NSString *)customData)
+RCT_EXPORT_METHOD(showInterstitial:(NSString *)adUnitIdentifier placement:(nullable NSString *)placement customData:(nullable NSString *)customData)
 {
     if ( !self.sdk )
     {
@@ -806,7 +806,7 @@ RCT_EXPORT_METHOD(showInterstitial:(NSString *)adUnitIdentifier :(nullable NSStr
     [interstitial showAdForPlacement: placement customData: customData];
 }
 
-RCT_EXPORT_METHOD(setInterstitialExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
+RCT_EXPORT_METHOD(setInterstitialExtraParameter:(NSString *)adUnitIdentifier key:(NSString *)key value:(nullable NSString *)value)
 {
     if ( !self.sdk )
     {
@@ -819,7 +819,7 @@ RCT_EXPORT_METHOD(setInterstitialExtraParameter:(NSString *)adUnitIdentifier :(N
 }
 
 // NOTE: Even though iOS is ok with `id` generic types, Android is not - so we wrap it via JSON/ReadableMap
-RCT_EXPORT_METHOD(setInterstitialLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)parameterDict)
+RCT_EXPORT_METHOD(setInterstitialLocalExtraParameter:(NSString *)adUnitIdentifier parameters:(NSDictionary<NSString *, id> *)parameterDict)
 {
     NSString *key = parameterDict.allKeys.firstObject;
     id value = parameterDict.allValues.firstObject != [NSNull null] ? parameterDict.allValues.firstObject : nil;
@@ -842,7 +842,7 @@ RCT_EXPORT_METHOD(loadRewardedAd:(NSString *)adUnitIdentifier)
     [rewardedAd loadAd];
 }
 
-RCT_EXPORT_METHOD(isRewardedAdReady:(NSString *)adUnitIdentifier :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(isRewardedAdReady:(NSString *)adUnitIdentifier resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 {
     if ( !self.sdk )
     {
@@ -855,7 +855,7 @@ RCT_EXPORT_METHOD(isRewardedAdReady:(NSString *)adUnitIdentifier :(RCTPromiseRes
     resolve(@([rewardedAd isReady]));
 }
 
-RCT_EXPORT_METHOD(showRewardedAd:(NSString *)adUnitIdentifier :(nullable NSString *)placement :(nullable NSString *)customData)
+RCT_EXPORT_METHOD(showRewardedAd:(NSString *)adUnitIdentifier placement:(nullable NSString *)placement customData:(nullable NSString *)customData)
 {
     if ( !self.sdk )
     {
@@ -867,7 +867,7 @@ RCT_EXPORT_METHOD(showRewardedAd:(NSString *)adUnitIdentifier :(nullable NSStrin
     [rewardedAd showAdForPlacement: placement customData: customData];
 }
 
-RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSString *)key :(nullable NSString *)value)
+RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier key:(NSString *)key value:(nullable NSString *)value)
 {
     if ( !self.sdk )
     {
@@ -880,7 +880,7 @@ RCT_EXPORT_METHOD(setRewardedAdExtraParameter:(NSString *)adUnitIdentifier :(NSS
 }
 
 // NOTE: Even though iOS is ok with `id` generic types, Android is not - so we wrap it via JSON/ReadableMap
-RCT_EXPORT_METHOD(setRewardedAdLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)parameterDict)
+RCT_EXPORT_METHOD(setRewardedAdLocalExtraParameter:(NSString *)adUnitIdentifier parameters:(NSDictionary<NSString *, id> *)parameterDict)
 {
     NSString *key = parameterDict.allKeys.firstObject;
     id value = parameterDict.allValues.firstObject != [NSNull null] ? parameterDict.allValues.firstObject : nil;
@@ -903,7 +903,7 @@ RCT_EXPORT_METHOD(loadAppOpenAd:(NSString *)adUnitIdentifier)
     [appOpenAd loadAd];
 }
 
-RCT_EXPORT_METHOD(isAppOpenAdReady:(NSString *)adUnitIdentifier :(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(isAppOpenAdReady:(NSString *)adUnitIdentifier resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 {
     if ( !self.sdk )
     {
@@ -941,7 +941,7 @@ RCT_EXPORT_METHOD(setAppOpenAdExtraParameter:(NSString *)adUnitIdentifier key:(N
 }
 
 // NOTE: Even though iOS is ok with `id` generic types, Android is not - so we wrap it via JSON/ReadableMap
-RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :(NSDictionary<NSString *, id> *)parameterDict)
+RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier parameters:(NSDictionary<NSString *, id> *)parameterDict)
 {
     NSString *key = parameterDict.allKeys.firstObject;
     id value = parameterDict.allValues.firstObject != [NSNull null] ? parameterDict.allValues.firstObject : nil;
@@ -953,21 +953,21 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier :
 #pragma mark - AdView Preloading
 
 RCT_EXPORT_METHOD(preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier
-                                                :(NSString *)adFormatStr
-                                                :(nullable NSString *)placement
-                                                :(nullable NSString *)customData
-                                                :(nullable NSDictionary<NSString *, id> *)extraParameterDict
-                                                :(nullable NSDictionary<NSString *, id> *)localExtraParameterDict
-                                                :(RCTPromiseResolveBlock)resolve
-                                                :(RCTPromiseRejectBlock)reject)
+                  adFormat:(NSString *)adFormatStr
+                  placement:(nullable NSString *)placement
+                  customData:(nullable NSString *)customData
+                  extraParameters:(nullable NSDictionary<NSString *, id> *)extraParameterDict
+                  localExtraParameters:(nullable NSDictionary<NSString *, id> *)localExtraParameterDict
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
     MAAdFormat *adFormat;
     
-    if ( [MAAdFormat.banner.label isEqualToString: adFormatStr] )
+    if ( [@"BANNER" al_isEqualToStringIgnoringCase: adFormatStr] )
     {
         adFormat = DEVICE_SPECIFIC_ADVIEW_AD_FORMAT;
     }
-    else if ( [MAAdFormat.mrec.label isEqualToString: adFormatStr] )
+    else if ( [@"MREC" al_isEqualToStringIgnoringCase: adFormatStr] )
     {
         adFormat = MAAdFormat.mrec;
     }
@@ -987,11 +987,11 @@ RCT_EXPORT_METHOD(preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier
                                   withPromiseRejecter: reject];
 }
 
-RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(nonnull NSNumber *)adViewId
-                                                :(RCTPromiseResolveBlock)resolve
-                                                :(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(double)adViewId
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
-    [AppLovinMAXAdView destroyNativeUIComponentAdView: adViewId
+    [AppLovinMAXAdView destroyNativeUIComponentAdView: @(adViewId)
                                   withPromiseResolver: resolve
                                   withPromiseRejecter: reject];
 }
@@ -2172,6 +2172,11 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(nonnull NSNumber *)adViewId
              @"MAX_ERROR_CODE_DONT_KEEP_ACTIVITIES_ENABLED" : @(-5602)};
 }
 
+- (NSDictionary *)getConstants
+{
+    return [self constantsToExport];
+}
+
 - (void)startObserving
 {
     self.hasListeners = YES;
@@ -2181,5 +2186,12 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(nonnull NSNumber *)adViewId
 {
     self.hasListeners = NO;
 }
+
+#ifdef RCT_NEW_ARCH_ENABLED
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
+{
+    return std::make_shared<facebook::react::NativeAppLovinMAXModuleSpecJSI>(params);
+}
+#endif
 
 @end

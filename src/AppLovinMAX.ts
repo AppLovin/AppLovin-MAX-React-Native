@@ -1,8 +1,6 @@
-import { NativeModules } from 'react-native';
 import type { AppLovinMAXType } from './types/AppLovinMAX';
 import type { Configuration } from './types/Configuration';
-
-const NativeAppLovinMAX = NativeModules.AppLovinMAX;
+import NativeAppLovinMAX from './specs/NativeAppLovinMAXModule';
 
 const VERSION = '8.2.0';
 
@@ -101,10 +99,11 @@ const getSegments = async (): Promise<Map<number, number[]> | null> => {
     const map = new Map<number, number[]>();
 
     for (const key in segments) {
-        if (segments.hasOwnProperty(key)) {
-            // Convert the key from a string to a number. In JavaScript, an object cannot have an
-            // integer as a key, but the Map object can have keys of any data type.
-            map.set(Number(key), segments[key]);
+        // Convert the key from a string to a number. In JavaScript, an object cannot have an
+        // integer as a key, but the Map object can have keys of any data type.
+        const value = segments[key];
+        if (value) {
+            map.set(Number(key), value);
         }
     }
 

@@ -126,19 +126,19 @@ public class AppLovinMAXNativeAdView
 
     public void loadAd()
     {
-        if ( AppLovinMAXModule.getInstance().getSdk() == null )
+        if ( AppLovinMAXModuleImpl.getInstance().getSdk() == null )
         {
-            AppLovinMAXModule.logUninitializedAccessError( "AppLovinMAXNativeAdView.loadAd" );
+            AppLovinMAXModuleImpl.logUninitializedAccessError( "AppLovinMAXNativeAdView.loadAd" );
             return;
         }
 
         if ( isLoading.compareAndSet( false, true ) )
         {
-            AppLovinMAXModule.d( "Loading a native ad for Ad Unit ID: " + adUnitId + "..." );
+            AppLovinMAXModuleImpl.d( "Loading a native ad for Ad Unit ID: " + adUnitId + "..." );
 
             if ( adLoader == null || !adUnitId.equals( adLoader.getAdUnitId() ) )
             {
-                adLoader = new MaxNativeAdLoader( adUnitId, AppLovinMAXModule.getInstance().getSdk(), reactContext );
+                adLoader = new MaxNativeAdLoader( adUnitId, AppLovinMAXModuleImpl.getInstance().getSdk(), reactContext );
                 adLoader.setRevenueListener( this );
                 adLoader.setNativeAdListener( new NativeAdListener() );
             }
@@ -166,7 +166,7 @@ public class AppLovinMAXNativeAdView
         }
         else
         {
-            AppLovinMAXModule.e( "Ignoring request to load native ad for Ad Unit ID " + adUnitId + ", another ad load in progress" );
+            AppLovinMAXModuleImpl.e( "Ignoring request to load native ad for Ad Unit ID " + adUnitId + ", another ad load in progress" );
         }
     }
 
@@ -178,16 +178,16 @@ public class AppLovinMAXNativeAdView
         @Override
         public void onNativeAdLoaded(@Nullable final MaxNativeAdView nativeAdView, @NonNull final MaxAd ad)
         {
-            AppLovinMAXModule.d( "Native ad loaded: " + ad );
+            AppLovinMAXModuleImpl.d( "Native ad loaded: " + ad );
 
             // Log a warning if it is a template native ad returned - as our plugin will be responsible for re-rendering the native ad's assets
             if ( nativeAdView != null )
             {
                 isLoading.set( false );
 
-                AppLovinMAXModule.e( "Native ad is of template type, failing ad load..." );
+                AppLovinMAXModuleImpl.e( "Native ad is of template type, failing ad load..." );
 
-                WritableMap loadFailedInfo = AppLovinMAXModule.getInstance().getAdLoadFailedInfo( adUnitId, null );
+                WritableMap loadFailedInfo = AppLovinMAXModuleImpl.getInstance().getAdLoadFailedInfo( adUnitId, null );
                 reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), AppLovinMAXAdEvents.ON_AD_LOAD_FAILED_EVENT, loadFailedInfo );
 
                 return;
@@ -208,16 +208,16 @@ public class AppLovinMAXNativeAdView
         {
             isLoading.set( false );
 
-            AppLovinMAXModule.e( "Failed to load native ad for Ad Unit ID " + adUnitId + " with error: " + error );
+            AppLovinMAXModuleImpl.e( "Failed to load native ad for Ad Unit ID " + adUnitId + " with error: " + error );
 
-            WritableMap loadFailedInfo = AppLovinMAXModule.getInstance().getAdLoadFailedInfo( adUnitId, error );
+            WritableMap loadFailedInfo = AppLovinMAXModuleImpl.getInstance().getAdLoadFailedInfo( adUnitId, error );
             reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), AppLovinMAXAdEvents.ON_AD_LOAD_FAILED_EVENT, loadFailedInfo );
         }
 
         @Override
         public void onNativeAdClicked(@NonNull final MaxAd ad)
         {
-            WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+            WritableMap adInfo = AppLovinMAXModuleImpl.getInstance().getAdInfo( ad );
             reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), AppLovinMAXAdEvents.ON_AD_CLICKED_EVENT, adInfo );
         }
     }
@@ -227,7 +227,7 @@ public class AppLovinMAXNativeAdView
     @Override
     public void onAdRevenuePaid(@NonNull final MaxAd ad)
     {
-        WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( ad );
+        WritableMap adInfo = AppLovinMAXModuleImpl.getInstance().getAdInfo( ad );
         reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), AppLovinMAXAdEvents.ON_AD_REVENUE_PAID_EVENT, adInfo );
     }
 
@@ -240,7 +240,7 @@ public class AppLovinMAXNativeAdView
         View view = findViewById( tag );
         if ( view == null )
         {
-            AppLovinMAXModule.e( "Cannot find a title view with tag \"" + tag + "\" for " + adUnitId );
+            AppLovinMAXModuleImpl.e( "Cannot find a title view with tag \"" + tag + "\" for " + adUnitId );
             return;
         }
 
@@ -256,7 +256,7 @@ public class AppLovinMAXNativeAdView
         View view = findViewById( tag );
         if ( view == null )
         {
-            AppLovinMAXModule.e( "Cannot find an advertiser view with tag \"" + tag + "\" for " + adUnitId );
+            AppLovinMAXModuleImpl.e( "Cannot find an advertiser view with tag \"" + tag + "\" for " + adUnitId );
             return;
         }
 
@@ -272,7 +272,7 @@ public class AppLovinMAXNativeAdView
         View view = findViewById( tag );
         if ( view == null )
         {
-            AppLovinMAXModule.e( "Cannot find a body view with tag \"" + tag + "\" for " + adUnitId );
+            AppLovinMAXModuleImpl.e( "Cannot find a body view with tag \"" + tag + "\" for " + adUnitId );
             return;
         }
 
@@ -288,7 +288,7 @@ public class AppLovinMAXNativeAdView
         View view = findViewById( tag );
         if ( view == null )
         {
-            AppLovinMAXModule.e( "Cannot find a callToAction view with tag \"" + tag + "\" for " + adUnitId );
+            AppLovinMAXModuleImpl.e( "Cannot find a callToAction view with tag \"" + tag + "\" for " + adUnitId );
             return;
         }
 
@@ -320,7 +320,7 @@ public class AppLovinMAXNativeAdView
         ImageView view = findViewById( tag );
         if ( view == null )
         {
-            AppLovinMAXModule.e( "Cannot find an icon image with tag \"" + tag + "\" for " + adUnitId );
+            AppLovinMAXModuleImpl.e( "Cannot find an icon image with tag \"" + tag + "\" for " + adUnitId );
             return;
         }
 
@@ -355,7 +355,7 @@ public class AppLovinMAXNativeAdView
         ViewGroup view = findViewById( tag );
         if ( view == null )
         {
-            AppLovinMAXModule.e( "Cannot find an options view with tag \"" + tag + "\" for " + adUnitId );
+            AppLovinMAXModuleImpl.e( "Cannot find an options view with tag \"" + tag + "\" for " + adUnitId );
             return;
         }
 
@@ -383,7 +383,7 @@ public class AppLovinMAXNativeAdView
         ViewGroup view = findViewById( tag );
         if ( view == null )
         {
-            AppLovinMAXModule.e( "Cannot find a media view with tag \"" + tag + "\" for " + adUnitId );
+            AppLovinMAXModuleImpl.e( "Cannot find a media view with tag \"" + tag + "\" for " + adUnitId );
             return;
         }
 
@@ -516,7 +516,7 @@ public class AppLovinMAXNativeAdView
         nativeAdInfo.putBoolean( "isOptionsViewAvailable", ( ad.getOptionsView() != null ) );
         nativeAdInfo.putBoolean( "isMediaViewAvailable", ( ad.getMediaView() != null ) );
 
-        WritableMap adInfo = AppLovinMAXModule.getInstance().getAdInfo( nativeAd );
+        WritableMap adInfo = AppLovinMAXModuleImpl.getInstance().getAdInfo( nativeAd );
         adInfo.putMap( "nativeAd", nativeAdInfo );
 
         // 2. NativeAd for `AppLovinNativeAdView.js` to render the views

@@ -117,5 +117,13 @@
         }
       ]
     ]
+  },
+  "codegenConfig": {
+    "name": "RNAppLovinMAXSpec",
+    "type": "all",
+    "jsSrcsDir": "./src/specs",
+    "android": {
+      "javaPackageName": "com.applovin.reactnative"
+    }
   }
 }

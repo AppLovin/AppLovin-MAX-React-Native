@@ -1,10 +1,8 @@
-import { NativeModules } from 'react-native';
 import { addEventListener, removeEventListener } from './EventEmitter';
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo } from './types/AdInfo';
 import type { LocalExtraParameterValue } from './types/AdProps';
 import type { InterstitialAdType } from './types/InterstitialAd';
-
-const { AppLovinMAX } = NativeModules;
+import AppLovinMAX from './specs/NativeAppLovinMAXModule';
 
 const {
     ON_INTERSTITIAL_LOADED_EVENT,
@@ -25,7 +23,7 @@ const loadAd = (adUnitId: string): void => {
 };
 
 const showAd = (adUnitId: string, placement?: string | null, customData?: string | null): void => {
-    AppLovinMAX.showInterstitial(adUnitId, placement ?? null, customData ?? null);
+    AppLovinMAX.showInterstitial(adUnitId, placement ?? undefined, customData ?? undefined);
 };
 
 const setExtraParameter = (adUnitId: string, key: string, value: string | null): void => {

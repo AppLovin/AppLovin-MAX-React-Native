@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Add support for Turbo Native Modules.
 ## 8.2.0
 * Depend on Android SDK 13.1.0 and iOS SDK 13.1.0.
 * Update `AdInfo` to include `adFormat`, `networkPlacement`, `revenuePrecision`, and `latencyMills`, deprecating `AdRevenueInfo`.
