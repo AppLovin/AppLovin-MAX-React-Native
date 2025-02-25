@@ -87,7 +87,7 @@ export type AdInfo = {
     /**
      * The size of the AdView format ad, or size with (width: 0, height: 0) otherwise.
      */
-    size?: {
+    size: {
         width: number;
         height: number;
     };

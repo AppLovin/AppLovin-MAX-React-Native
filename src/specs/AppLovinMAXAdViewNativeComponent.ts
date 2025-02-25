@@ -15,7 +15,7 @@ export type AdInfoEvent = Readonly<{
     revenuePrecision: string;
     latencyMillis: Double;
     dspName?: string | null;
-    size?: Readonly<{
+    size: Readonly<{
         width: Double;
         height: Double;
     }>;
@@ -41,9 +41,9 @@ export type AdDisplayFailedEvent = Readonly<{
     placement?: string | null;
     revenue: Double;
     revenuePrecision: string;
-    dspName?: string | null;
     latencyMillis: Double;
-    size?: Readonly<{
+    dspName?: string | null;
+    size: Readonly<{
         width: Double;
         height: Double;
     }>;

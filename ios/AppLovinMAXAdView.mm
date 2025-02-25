@@ -142,7 +142,6 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
-    
     if ( self )
     {
         static const auto defaultProps = std::make_shared<const AppLovinMAXAdViewProps>();
@@ -155,7 +154,6 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
         
         [self setupEventHandlers];
     }
-    
     return self;
 }
 
@@ -167,24 +165,22 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
         {
             auto adViewEventEmitter = std::static_pointer_cast<AppLovinMAXAdViewEventEmitter const>(_eventEmitter);
             
-            NSDictionary *size = [event valueForKey: @"size"];
-            
             AppLovinMAXAdViewEventEmitter::OnAdLoadedEvent result =
             {
-                .adUnitId = std::string([[event valueForKey: @"adUnitId"] ?: @"" UTF8String]),
-                .adFormat = std::string([[event valueForKey: @"adFormat"] ?: @"" UTF8String]),
-                .adViewId = [[event valueForKey: @"adViewId"] doubleValue],
-                .networkName = std::string([[event valueForKey: @"networkName"] ?: @"" UTF8String]),
-                .networkPlacement = std::string([[event valueForKey: @"networkPlacement"] ?: @"" UTF8String]),
-                .creativeId = std::string([[event valueForKey: @"creativeId"] ?: @"" UTF8String]),
-                .placement = std::string([[event valueForKey: @"placement"] ?: @"" UTF8String]),
-                .revenue = [[event valueForKey: @"revenue"] doubleValue],
-                .revenuePrecision = std::string([[event valueForKey: @"revenuePrecision"] ?: @"" UTF8String]),
-                .latencyMillis = [[event valueForKey: @"latencyMillis"] doubleValue],
-                .dspName = std::string([[event valueForKey: @"dspName"] ?: @"" UTF8String]),
+                .adUnitId = std::string([event[@"adUnitId"] ?: @"" UTF8String]),
+                .adFormat = std::string([event[@"adFormat"] ?: @"" UTF8String]),
+                .adViewId = [event[@"adViewId"] doubleValue],
+                .networkName = std::string([event[@"networkName"] ?: @"" UTF8String]),
+                .networkPlacement = std::string([event[@"networkPlacement"] ?: @"" UTF8String]),
+                .creativeId = std::string([event[@"creativeId"] ?: @"" UTF8String]),
+                .placement = std::string([event[@"placement"] ?: @"" UTF8String]),
+                .revenue = [event[@"revenue"] doubleValue],
+                .revenuePrecision = std::string([event[@"revenuePrecision"] ?: @"" UTF8String]),
+                .latencyMillis = [event[@"latencyMillis"] doubleValue],
+                .dspName = std::string([event[@"dspName"] ?: @"" UTF8String]),
                 .size = {
-                    .width = [[size valueForKey: @"width"] doubleValue],
-                    .height = [[size valueForKey: @"height"] doubleValue],
+                    .width = [event[@"size"][@"width"] doubleValue],
+                    .height = [event[@"size"][@"height"] doubleValue],
                 }
             };
             
@@ -200,13 +196,13 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
             
             AppLovinMAXAdViewEventEmitter::OnAdLoadFailedEvent result =
             {
-                .adUnitId = std::string([[event valueForKey: @"adUnitId"] ?: @"" UTF8String]),
-                .adViewId = [[event valueForKey: @"adViewId"] doubleValue],
-                .code = [[event valueForKey: @"code"] doubleValue],
-                .message = std::string([[event valueForKey: @"message"] ?: @"" UTF8String]),
-                .mediatedNetworkErrorCode = [[event valueForKey: @"mediatedNetworkErrorCode"] doubleValue],
-                .mediatedNetworkErrorMessage = std::string([[event valueForKey: @"mediatedNetworkErrorMessage"] ?: @"" UTF8String]),
-                .adLoadFailureInfo = std::string([[event valueForKey: @"adLoadFailureInfo"] ?: @"" UTF8String])
+                .adUnitId = std::string([event[@"adUnitId"] ?: @"" UTF8String]),
+                .adViewId = [event[@"adViewId"] doubleValue],
+                .code = [event[@"code"] doubleValue],
+                .message = std::string([event[@"message"] ?: @"" UTF8String]),
+                .mediatedNetworkErrorCode = [event[@"mediatedNetworkErrorCode"] doubleValue],
+                .mediatedNetworkErrorMessage = std::string([event[@"mediatedNetworkErrorMessage"] ?: @"" UTF8String]),
+                .adLoadFailureInfo = std::string([event[@"adLoadFailureInfo"] ?: @"" UTF8String])
             };
             
             adViewEventEmitter->onAdLoadFailedEvent(result);
@@ -219,28 +215,25 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
         {
             auto adViewEventEmitter = std::static_pointer_cast<AppLovinMAXAdViewEventEmitter const>(_eventEmitter);
             
-            NSDictionary *size = [event valueForKey: @"size"];
-            
             AppLovinMAXAdViewEventEmitter::OnAdDisplayFailedEvent result =
             {
-                .adUnitId = std::string([[event valueForKey: @"adUnitId"] ?: @"" UTF8String]),
-                .adFormat = std::string([[event valueForKey: @"adFormat"] ?: @"" UTF8String]),
-                .adViewId = [[event valueForKey: @"adViewId"] doubleValue],
-                .networkName = std::string([[event valueForKey: @"networkName"] ?: @"" UTF8String]),
-                .networkPlacement = std::string([[event valueForKey: @"networkPlacement"] ?: @"" UTF8String]),
-                .creativeId = std::string([[event valueForKey: @"creativeId"] ?: @"" UTF8String]),
-                .placement = std::string([[event valueForKey: @"placement"] ?: @"" UTF8String]),
-                .revenue = [[event valueForKey: @"revenue"] doubleValue],
-                .revenuePrecision = std::string([[event valueForKey: @"revenuePrecision"] ?: @"" UTF8String]),
-                .dspName = std::string([[event valueForKey: @"dspName"] ?: @"" UTF8String]),
-                .latencyMillis = [[event valueForKey: @"latencyMillis"] doubleValue],
-                .code = [[event valueForKey: @"code"] doubleValue],
-                .message = std::string([[event valueForKey: @"message"] ?: @"" UTF8String]),
-                .mediatedNetworkErrorCode = [[event valueForKey: @"mediatedNetworkErrorCode"] doubleValue],
-                .mediatedNetworkErrorMessage = std::string([[event valueForKey: @"mediatedNetworkErrorMessage"] ?: @"" UTF8String]),
+                .adUnitId = std::string([event[@"adUnitId"] ?: @"" UTF8String]),
+                .adFormat = std::string([event[@"adFormat"] ?: @"" UTF8String]),
+                .adViewId = [event[@"adViewId"] doubleValue],
+                .networkName = std::string([event[@"networkName"] ?: @"" UTF8String]),
+                .networkPlacement = std::string([event[@"networkPlacement"] ?: @"" UTF8String]),
+                .creativeId = std::string([event[@"creativeId"] ?: @"" UTF8String]),
+                .placement = std::string([event[@"placement"] ?: @"" UTF8String]),
+                .revenue = [event[@"revenue"] doubleValue],
+                .revenuePrecision = std::string([event[@"revenuePrecision"] ?: @"" UTF8String]),
+                .latencyMillis = [event[@"latencyMillis"] doubleValue],
+                .code = [event[@"code"] doubleValue],
+                .message = std::string([event[@"message"] ?: @"" UTF8String]),
+                .mediatedNetworkErrorCode = [event[@"mediatedNetworkErrorCode"] doubleValue],
+                .mediatedNetworkErrorMessage = std::string([event[@"mediatedNetworkErrorMessage"] ?: @"" UTF8String]),
                 .size = {
-                    .width = [[size valueForKey: @"width"] doubleValue],
-                    .height = [[size valueForKey: @"height"] doubleValue],
+                    .width = [event[@"size"][@"width"] doubleValue],
+                    .height = [event[@"size"][@"height"] doubleValue],
                 }
             };
             
@@ -254,24 +247,21 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
         {
             auto adViewEventEmitter = std::static_pointer_cast<AppLovinMAXAdViewEventEmitter const>(_eventEmitter);
             
-            NSDictionary *size = [event valueForKey: @"size"];
-            
             AppLovinMAXAdViewEventEmitter::OnAdClickedEvent result =
             {
-                .adUnitId = std::string([[event valueForKey: @"adUnitId"] ?: @"" UTF8String]),
-                .adFormat = std::string([[event valueForKey: @"adFormat"] ?: @"" UTF8String]),
-                .adViewId = [[event valueForKey: @"adViewId"] doubleValue],
-                .networkName = std::string([[event valueForKey: @"networkName"] ?: @"" UTF8String]),
-                .networkPlacement = std::string([[event valueForKey: @"networkPlacement"] ?: @"" UTF8String]),
-                .creativeId = std::string([[event valueForKey: @"creativeId"] ?: @"" UTF8String]),
-                .placement = std::string([[event valueForKey: @"placement"] ?: @"" UTF8String]),
-                .revenue = [[event valueForKey: @"revenue"] doubleValue],
-                .revenuePrecision = std::string([[event valueForKey: @"revenuePrecision"] ?: @"" UTF8String]),
-                .latencyMillis = [[event valueForKey: @"latencyMillis"] doubleValue],
-                .dspName = std::string([[event valueForKey: @"dspName"] ?: @"" UTF8String]),
+                .adUnitId = std::string([event[@"adUnitId"] ?: @"" UTF8String]),
+                .adFormat = std::string([event[@"adFormat"] ?: @"" UTF8String]),
+                .adViewId = [event[@"adViewId"] doubleValue],
+                .networkName = std::string([event[@"networkName"] ?: @"" UTF8String]),
+                .networkPlacement = std::string([event[@"networkPlacement"] ?: @"" UTF8String]),
+                .creativeId = std::string([event[@"creativeId"] ?: @"" UTF8String]),
+                .placement = std::string([event[@"placement"] ?: @"" UTF8String]),
+                .revenue = [event[@"revenue"] doubleValue],
+                .revenuePrecision = std::string([event[@"revenuePrecision"] ?: @"" UTF8String]),
+                .latencyMillis = [event[@"latencyMillis"] doubleValue],
                 .size = {
-                    .width = [[size valueForKey: @"width"] doubleValue],
-                    .height = [[size valueForKey: @"height"] doubleValue],
+                    .width = [event[@"size"][@"width"] doubleValue],
+                    .height = [event[@"size"][@"height"] doubleValue],
                 }
             };
             
@@ -285,24 +275,21 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
         {
             auto adViewEventEmitter = std::static_pointer_cast<AppLovinMAXAdViewEventEmitter const>(_eventEmitter);
             
-            NSDictionary *size = [event valueForKey: @"size"];
-            
             AppLovinMAXAdViewEventEmitter::OnAdExpandedEvent result =
             {
-                .adUnitId = std::string([[event valueForKey: @"adUnitId"] ?: @"" UTF8String]),
-                .adFormat = std::string([[event valueForKey: @"adFormat"] ?: @"" UTF8String]),
-                .adViewId = [[event valueForKey: @"adViewId"] doubleValue],
-                .networkName = std::string([[event valueForKey: @"networkName"] ?: @"" UTF8String]),
-                .networkPlacement = std::string([[event valueForKey: @"networkPlacement"] ?: @"" UTF8String]),
-                .creativeId = std::string([[event valueForKey: @"creativeId"] ?: @"" UTF8String]),
-                .placement = std::string([[event valueForKey: @"placement"] ?: @"" UTF8String]),
-                .revenue = [[event valueForKey: @"revenue"] doubleValue],
-                .revenuePrecision = std::string([[event valueForKey: @"revenuePrecision"] ?: @"" UTF8String]),
-                .latencyMillis = [[event valueForKey: @"latencyMillis"] doubleValue],
-                .dspName = std::string([[event valueForKey: @"dspName"] ?: @"" UTF8String]),
+                .adUnitId = std::string([event[@"adUnitId"] ?: @"" UTF8String]),
+                .adFormat = std::string([event[@"adFormat"] ?: @"" UTF8String]),
+                .adViewId = [event[@"adViewId"] doubleValue],
+                .networkName = std::string([event[@"networkName"] ?: @"" UTF8String]),
+                .networkPlacement = std::string([event[@"networkPlacement"] ?: @"" UTF8String]),
+                .creativeId = std::string([event[@"creativeId"] ?: @"" UTF8String]),
+                .placement = std::string([event[@"placement"] ?: @"" UTF8String]),
+                .revenue = [event[@"revenue"] doubleValue],
+                .revenuePrecision = std::string([event[@"revenuePrecision"] ?: @"" UTF8String]),
+                .latencyMillis = [event[@"latencyMillis"] doubleValue],
                 .size = {
-                    .width = [[size valueForKey: @"width"] doubleValue],
-                    .height = [[size valueForKey: @"height"] doubleValue],
+                    .width = [event[@"size"][@"width"] doubleValue],
+                    .height = [event[@"size"][@"height"] doubleValue],
                 }
             };
             
@@ -316,24 +303,21 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
         {
             auto adViewEventEmitter = std::static_pointer_cast<AppLovinMAXAdViewEventEmitter const>(_eventEmitter);
             
-            NSDictionary *size = [event valueForKey: @"size"];
-            
             AppLovinMAXAdViewEventEmitter::OnAdCollapsedEvent result =
             {
-                .adUnitId = std::string([[event valueForKey: @"adUnitId"] ?: @"" UTF8String]),
-                .adFormat = std::string([[event valueForKey: @"adFormat"] ?: @"" UTF8String]),
-                .adViewId = [[event valueForKey: @"adViewId"] doubleValue],
-                .networkName = std::string([[event valueForKey: @"networkName"] ?: @"" UTF8String]),
-                .networkPlacement = std::string([[event valueForKey: @"networkPlacement"] ?: @"" UTF8String]),
-                .creativeId = std::string([[event valueForKey: @"creativeId"] ?: @"" UTF8String]),
-                .placement = std::string([[event valueForKey: @"placement"] ?: @"" UTF8String]),
-                .revenue = [[event valueForKey: @"revenue"] doubleValue],
-                .revenuePrecision = std::string([[event valueForKey: @"revenuePrecision"] ?: @"" UTF8String]),
-                .latencyMillis = [[event valueForKey: @"latencyMillis"] doubleValue],
-                .dspName = std::string([[event valueForKey: @"dspName"] ?: @"" UTF8String]),
+                .adUnitId = std::string([event[@"adUnitId"] ?: @"" UTF8String]),
+                .adFormat = std::string([event[@"adFormat"] ?: @"" UTF8String]),
+                .adViewId = [event[@"adViewId"] doubleValue],
+                .networkName = std::string([event[@"networkName"] ?: @"" UTF8String]),
+                .networkPlacement = std::string([event[@"networkPlacement"] ?: @"" UTF8String]),
+                .creativeId = std::string([event[@"creativeId"] ?: @"" UTF8String]),
+                .placement = std::string([event[@"placement"] ?: @"" UTF8String]),
+                .revenue = [event[@"revenue"] doubleValue],
+                .revenuePrecision = std::string([event[@"revenuePrecision"] ?: @"" UTF8String]),
+                .latencyMillis = [event[@"latencyMillis"] doubleValue],
                 .size = {
-                    .width = [[size valueForKey: @"width"] doubleValue],
-                    .height = [[size valueForKey: @"height"] doubleValue],
+                    .width = [event[@"size"][@"width"] doubleValue],
+                    .height = [event[@"size"][@"height"] doubleValue],
                 }
             };
             
@@ -347,24 +331,21 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
         {
             auto adViewEventEmitter = std::static_pointer_cast<AppLovinMAXAdViewEventEmitter const>(_eventEmitter);
             
-            NSDictionary *size = [event valueForKey: @"size"];
-            
             AppLovinMAXAdViewEventEmitter::OnAdRevenuePaidEvent result =
             {
-                .adUnitId = std::string([[event valueForKey: @"adUnitId"] ?: @"" UTF8String]),
-                .adFormat = std::string([[event valueForKey: @"adFormat"] ?: @"" UTF8String]),
-                .adViewId = [[event valueForKey: @"adViewId"] doubleValue],
-                .networkName = std::string([[event valueForKey: @"networkName"] ?: @"" UTF8String]),
-                .networkPlacement = std::string([[event valueForKey: @"networkPlacement"] ?: @"" UTF8String]),
-                .creativeId = std::string([[event valueForKey: @"creativeId"] ?: @"" UTF8String]),
-                .placement = std::string([[event valueForKey: @"placement"] ?: @"" UTF8String]),
-                .revenue = [[event valueForKey: @"revenue"] doubleValue],
-                .revenuePrecision = std::string([[event valueForKey: @"revenuePrecision"] ?: @"" UTF8String]),
-                .latencyMillis = [[event valueForKey: @"latencyMillis"] doubleValue],
-                .dspName = std::string([[event valueForKey: @"dspName"] ?: @"" UTF8String]),
+                .adUnitId = std::string([event[@"adUnitId"] ?: @"" UTF8String]),
+                .adFormat = std::string([event[@"adFormat"] ?: @"" UTF8String]),
+                .adViewId = [event[@"adViewId"] doubleValue],
+                .networkName = std::string([event[@"networkName"] ?: @"" UTF8String]),
+                .networkPlacement = std::string([event[@"networkPlacement"] ?: @"" UTF8String]),
+                .creativeId = std::string([event[@"creativeId"] ?: @"" UTF8String]),
+                .placement = std::string([event[@"placement"] ?: @"" UTF8String]),
+                .revenue = [event[@"revenue"] doubleValue],
+                .revenuePrecision = std::string([event[@"revenuePrecision"] ?: @"" UTF8String]),
+                .latencyMillis = [event[@"latencyMillis"] doubleValue],
                 .size = {
-                    .width = [[size valueForKey: @"width"] doubleValue],
-                    .height = [[size valueForKey: @"height"] doubleValue],
+                    .width = [event[@"size"][@"width"] doubleValue],
+                    .height = [event[@"size"][@"height"] doubleValue],
                 }
             };
             
@@ -378,7 +359,7 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
     const auto &oldViewProps = *std::static_pointer_cast<AppLovinMAXAdViewProps const>(_props);
     const auto &newViewProps = *std::static_pointer_cast<AppLovinMAXAdViewProps const>(props);
     
-    BOOL isAdUnitIdSet = NO;
+    BOOL isAdUnitIdSet;
     
     if ( oldViewProps.adUnitId != newViewProps.adUnitId )
     {
@@ -438,7 +419,7 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
     {
         NSMutableArray *extraParameters = [NSMutableArray array];
         
-        for ( const auto &parameter : newViewProps.extraParameters )
+        for ( const auto &parameter: newViewProps.extraParameters )
         {
             NSDictionary *dict = @{@"key": RCTNSStringFromString(parameter.key),
                                    @"value": RCTNSStringFromString(parameter.value)};
@@ -495,12 +476,12 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
         [self attachAdViewIfNeeded];
     }
     
-    [super updateProps:props oldProps:oldProps];
+    [super updateProps: props oldProps: oldProps];
 }
 
 - (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
 {
-    if ([commandName isEqualToString:@"loadAd"])
+    if ([commandName isEqualToString: @"loadAd"])
     {
         [self loadAd];
     }
@@ -714,7 +695,7 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
             flattenedExtraParameters = [NSMutableDictionary dictionary];
             for ( NSDictionary *dict in self.extraParameters )
             {
-                [flattenedExtraParameters setObject: dict[@"value"] forKey: dict[@"key"]];
+                flattenedExtraParameters[dict[@"key"]] = dict[@"value"];
             }
         }
         
@@ -724,7 +705,7 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
             flattenedLocalExtraParameters = [NSMutableDictionary dictionary];
             for ( NSDictionary *dict in self.localExtraParameters )
             {
-                [flattenedLocalExtraParameters setObject: dict[@"value"] forKey: dict[@"key"]];
+                flattenedLocalExtraParameters[dict[@"key"]] = dict[@"value"];
             }
         }
         
