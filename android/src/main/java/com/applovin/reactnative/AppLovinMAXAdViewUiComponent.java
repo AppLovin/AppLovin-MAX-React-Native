@@ -11,7 +11,7 @@ import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxAdView;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.uimanager.UIManagerHelper;
 
 import java.util.Map;
 
@@ -22,6 +22,7 @@ class AppLovinMAXAdViewUiComponent
     implements MaxAdListener, MaxAdViewAdListener, MaxAdRevenueListener
 {
     private final ReactContext reactContext;
+    private final int          surfaceId;
     private final MaxAdView    adView;
 
     @Nullable
@@ -30,6 +31,7 @@ class AppLovinMAXAdViewUiComponent
     public AppLovinMAXAdViewUiComponent(final String adUnitId, final MaxAdFormat adFormat, final ReactContext context)
     {
         reactContext = context;
+        surfaceId = UIManagerHelper.getSurfaceId( context );
 
         adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModuleImpl.getInstance().getSdk(), context );
         adView.setListener( this );
@@ -271,7 +273,7 @@ class AppLovinMAXAdViewUiComponent
     {
         if ( containerView != null )
         {
-            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( containerView.getId(), name, params );
+            AppLovinMAXModuleImpl.getInstance().sendReactNativeViewEvent( surfaceId, containerView.getId(), name, params );
         }
     }
 }
