@@ -693,9 +693,9 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
         if ( self.extraParameters )
         {
             flattenedExtraParameters = [NSMutableDictionary dictionary];
-            for ( NSDictionary *dict in self.extraParameters )
+            for ( NSDictionary *parameter in self.extraParameters )
             {
-                flattenedExtraParameters[dict[@"key"]] = dict[@"value"];
+                flattenedExtraParameters[parameter[@"key"]] = parameter[@"value"];
             }
         }
         
@@ -703,9 +703,9 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
         if ( self.localExtraParameters )
         {
             flattenedLocalExtraParameters = [NSMutableDictionary dictionary];
-            for ( NSDictionary *dict in self.localExtraParameters )
+            for ( NSDictionary *parameter in self.localExtraParameters )
             {
-                flattenedLocalExtraParameters[dict[@"key"]] = dict[@"value"];
+                flattenedLocalExtraParameters[parameter[@"key"]] = parameter[@"value"];
             }
         }
         
