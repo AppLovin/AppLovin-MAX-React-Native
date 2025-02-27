@@ -22,8 +22,10 @@ RCT_EXPORT_VIEW_PROPERTY(customData, NSString)
 RCT_EXPORT_VIEW_PROPERTY(adaptiveBannerEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(autoRefresh, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(loadOnMount, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(extraParameters, NSDictionary)
-RCT_EXPORT_VIEW_PROPERTY(localExtraParameters, NSDictionary)
+RCT_EXPORT_VIEW_PROPERTY(extraParameters, NSArray)
+RCT_EXPORT_VIEW_PROPERTY(strLocalExtraParameters, NSArray)
+RCT_EXPORT_VIEW_PROPERTY(numLocalExtraParameters, NSArray)
+RCT_EXPORT_VIEW_PROPERTY(boolLocalExtraParameters, NSArray)
 
 RCT_EXPORT_VIEW_PROPERTY(onAdLoadedEvent, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onAdLoadFailedEvent, RCTDirectEventBlock)
@@ -37,6 +39,8 @@ RCT_EXPORT_VIEW_PROPERTY(onAdRevenuePaidEvent, RCTDirectEventBlock)
 {
     return YES;
 }
+
+#ifndef RCT_NEW_ARCH_ENABLED
 
 - (UIView *)view
 {
@@ -58,5 +62,7 @@ RCT_EXPORT_METHOD(loadAd:(nonnull NSNumber *)viewTag)
         [adView loadAd];
     }];
 }
+
+#endif // RCT_NEW_ARCH_ENABLED
 
 @end

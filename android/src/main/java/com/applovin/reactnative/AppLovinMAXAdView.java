@@ -5,9 +5,13 @@ import android.text.TextUtils;
 
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.ads.MaxAdView;
+import com.applovin.sdk.AppLovinSdkUtils;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.views.view.ReactViewGroup;
 
 import java.util.HashMap;
@@ -52,7 +56,7 @@ public class AppLovinMAXAdView
     {
         for ( Map.Entry<Integer, AppLovinMAXAdViewUiComponent> entry : preloadedUiComponentInstances.entrySet() )
         {
-            if ( entry.getValue().getAdUnitId().equals ( adUnitId ) )
+            if ( entry.getValue().getAdUnitId().equals( adUnitId ) )
             {
                 return entry.getValue().getAdView();
             }
@@ -147,11 +151,11 @@ public class AppLovinMAXAdView
             return;
         }
 
-        if ( MaxAdFormat.BANNER.getLabel().equals( value ) )
+        if ( "BANNER".equalsIgnoreCase( value ) )
         {
             adFormat = AppLovinMAXModuleImpl.getDeviceSpecificBannerAdViewAdFormat( reactContext );
         }
-        else if ( MaxAdFormat.MREC.getLabel().equals( value ) )
+        else if ( "MREC".equalsIgnoreCase( value ) )
         {
             adFormat = MaxAdFormat.MREC;
         }
@@ -211,19 +215,84 @@ public class AppLovinMAXAdView
         loadOnMount = enabled;
     }
 
-    public void setExtraParameters(@Nullable final ReadableMap readableMap)
+    public void setExtraParameters(@Nullable final ReadableArray readableArray)
     {
-        if ( readableMap != null )
+        if ( readableArray == null ) return;
+
+        Map<String, Object> extraParametersMap = new HashMap<>();
+
+        for ( int i = 0; i < readableArray.size(); i++ )
         {
-            extraParameters = readableMap.toHashMap();
+            ReadableMap map = readableArray.getMap( i );
+
+            String key = map.getString( "key" );
+
+            if ( !AppLovinSdkUtils.isValidString( key ) ) continue;
+
+            if ( map.hasKey( "value" ) )
+            {
+                Dynamic value = map.getDynamic( "value" );
+                ReadableType type = map.getType( "value" );
+
+                if ( type == ReadableType.String )
+                {
+                    extraParametersMap.put( key, value.asString() );
+                }
+                else if ( type == ReadableType.Null )
+                {
+                    extraParametersMap.put( key, null );
+                }
+            }
         }
+
+        extraParameters = extraParametersMap;
     }
 
-    public void setLocalExtraParameters(@Nullable final ReadableMap readableMap)
+    public void setLocalExtraParameters(@Nullable final ReadableArray readableArray)
     {
-        if ( readableMap != null )
+        if ( readableArray == null ) return;
+
+        Map<String, Object> localExtraParametersMap = new HashMap<>();
+
+        for ( int i = 0; i < readableArray.size(); i++ )
         {
-            localExtraParameters = readableMap.toHashMap();
+            ReadableMap map = readableArray.getMap( i );
+
+            String key = map.getString( "key" );
+
+            if ( !AppLovinSdkUtils.isValidString( key ) ) continue;
+
+            if ( map.hasKey( "value" ) )
+            {
+                Dynamic value = map.getDynamic( "value" );
+                ReadableType type = map.getType( "value" );
+
+                if ( type == ReadableType.String )
+                {
+                    localExtraParametersMap.put( key, value.asString() );
+                }
+                else if ( type == ReadableType.Number )
+                {
+                    localExtraParametersMap.put( key, value.asDouble() );
+                }
+                else if ( type == ReadableType.Boolean )
+                {
+                    localExtraParametersMap.put( key, value.asBoolean() );
+                }
+                else if ( type == ReadableType.Null )
+                {
+                    localExtraParametersMap.put( key, null );
+                }
+            }
+        }
+
+        if ( localExtraParameters != null )
+        {
+            localExtraParameters.putAll( localExtraParametersMap );
+        }
+        else
+        {
+            localExtraParameters = localExtraParametersMap;
         }
     }
 

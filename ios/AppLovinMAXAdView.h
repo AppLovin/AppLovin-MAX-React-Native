@@ -9,9 +9,14 @@
 
 @class MAAdView;
 
-NS_ASSUME_NONNULL_BEGIN
-
+#ifdef RCT_NEW_ARCH_ENABLED
+#import <React/RCTViewComponentView.h>
+@interface AppLovinMAXAdView : RCTViewComponentView
+#else
 @interface AppLovinMAXAdView : UIView
+#endif
+
+NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy) RCTDirectEventBlock onAdLoadedEvent;
 @property (nonatomic, copy) RCTDirectEventBlock onAdLoadFailedEvent;
