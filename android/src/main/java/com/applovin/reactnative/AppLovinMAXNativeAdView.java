@@ -17,10 +17,16 @@ import com.applovin.mediation.nativeAds.MaxNativeAd.MaxNativeAdImage;
 import com.applovin.mediation.nativeAds.MaxNativeAdListener;
 import com.applovin.mediation.nativeAds.MaxNativeAdLoader;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
+import com.applovin.sdk.AppLovinSdkUtils;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.view.ReactViewGroup;
 
@@ -44,6 +50,7 @@ public class AppLovinMAXNativeAdView
     private static final int ADVERTISER_VIEW_TAG      = 8;
 
     private final ReactContext       reactContext;
+    private final int                surfaceId;
     @Nullable
     private       MaxNativeAdLoader  adLoader;
     @Nullable
@@ -76,6 +83,7 @@ public class AppLovinMAXNativeAdView
     {
         super( context );
         reactContext = (ReactContext) context;
+        surfaceId = UIManagerHelper.getSurfaceId( context );
     }
 
     public void destroy()
@@ -108,19 +116,84 @@ public class AppLovinMAXNativeAdView
         customData = value;
     }
 
-    public void setExtraParameters(@Nullable final ReadableMap readableMap)
+    public void setExtraParameters(@Nullable final ReadableArray readableArray)
     {
-        if ( readableMap != null )
+        if ( readableArray == null ) return;
+
+        Map<String, Object> extraParametersMap = new HashMap<>();
+
+        for ( int i = 0; i < readableArray.size(); i++ )
         {
-            extraParameters = readableMap.toHashMap();
+            ReadableMap map = readableArray.getMap( i );
+
+            String key = map.getString( "key" );
+
+            if ( !AppLovinSdkUtils.isValidString( key ) ) continue;
+
+            if ( map.hasKey( "value" ) )
+            {
+                Dynamic value = map.getDynamic( "value" );
+                ReadableType type = map.getType( "value" );
+
+                if ( type == ReadableType.String )
+                {
+                    extraParametersMap.put( key, value.asString() );
+                }
+                else if ( type == ReadableType.Null )
+                {
+                    extraParametersMap.put( key, null );
+                }
+            }
         }
+
+        extraParameters = extraParametersMap;
     }
 
-    public void setLocalExtraParameters(@Nullable final ReadableMap readableMap)
+    public void setLocalExtraParameters(@Nullable final ReadableArray readableArray)
     {
-        if ( readableMap != null )
+        if ( readableArray == null ) return;
+
+        Map<String, Object> localExtraParametersMap = new HashMap<>();
+
+        for ( int i = 0; i < readableArray.size(); i++ )
         {
-            localExtraParameters = readableMap.toHashMap();
+            ReadableMap map = readableArray.getMap( i );
+
+            String key = map.getString( "key" );
+
+            if ( !AppLovinSdkUtils.isValidString( key ) ) continue;
+
+            if ( map.hasKey( "value" ) )
+            {
+                Dynamic value = map.getDynamic( "value" );
+                ReadableType type = map.getType( "value" );
+
+                if ( type == ReadableType.String )
+                {
+                    localExtraParametersMap.put( key, value.asString() );
+                }
+                else if ( type == ReadableType.Number )
+                {
+                    localExtraParametersMap.put( key, value.asDouble() );
+                }
+                else if ( type == ReadableType.Boolean )
+                {
+                    localExtraParametersMap.put( key, value.asBoolean() );
+                }
+                else if ( type == ReadableType.Null )
+                {
+                    localExtraParametersMap.put( key, null );
+                }
+            }
+        }
+
+        if ( localExtraParameters != null )
+        {
+            localExtraParameters.putAll( localExtraParametersMap );
+        }
+        else
+        {
+            localExtraParameters = localExtraParametersMap;
         }
     }
 
@@ -170,6 +243,45 @@ public class AppLovinMAXNativeAdView
         }
     }
 
+    public void updateAssetView(final int assetViewTag, final String assetViewName)
+    {
+        if ( assetViewName.equals( "TitleView" ) )
+        {
+            setTitleView( assetViewTag );
+        }
+        else if ( assetViewName.equals( "AdvertiserView" ) )
+        {
+            setAdvertiserView( assetViewTag );
+        }
+        else if ( assetViewName.equals( "BodyView" ) )
+        {
+            setBodyView( assetViewTag );
+        }
+        else if ( assetViewName.equals( "CallToActionView" ) )
+        {
+            setCallToActionView( assetViewTag );
+        }
+        else if ( assetViewName.equals( "IconView" ) )
+        {
+            setIconView( assetViewTag );
+        }
+        else if ( assetViewName.equals( "OptionsView" ) )
+        {
+            setOptionsView( assetViewTag );
+        }
+        else if ( assetViewName.equals( "MediaView" ) )
+        {
+            setMediaView( assetViewTag );
+        }
+    }
+
+    public void renderNativeAd()
+    {
+        // Renders the ad only after the last asset view is set
+        renderNativeAdHandler.removeCallbacksAndMessages( null );
+        renderNativeAdHandler.postDelayed( renderNativeAdTask, 50 );
+    }
+
     /// Ad Loader Listener
 
     private class NativeAdListener
@@ -211,14 +323,14 @@ public class AppLovinMAXNativeAdView
             AppLovinMAXModuleImpl.e( "Failed to load native ad for Ad Unit ID " + adUnitId + " with error: " + error );
 
             WritableMap loadFailedInfo = AppLovinMAXModuleImpl.getInstance().getAdLoadFailedInfo( adUnitId, error );
-            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), AppLovinMAXAdEvents.ON_AD_LOAD_FAILED_EVENT, loadFailedInfo );
+            AppLovinMAXModuleImpl.getInstance().sendReactNativeViewEvent( surfaceId, getId(), AppLovinMAXAdEvents.ON_AD_LOAD_FAILED_EVENT, loadFailedInfo );
         }
 
         @Override
         public void onNativeAdClicked(@NonNull final MaxAd ad)
         {
             WritableMap adInfo = AppLovinMAXModuleImpl.getInstance().getAdInfo( ad );
-            reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), AppLovinMAXAdEvents.ON_AD_CLICKED_EVENT, adInfo );
+            AppLovinMAXModuleImpl.getInstance().sendReactNativeViewEvent( surfaceId, getId(), AppLovinMAXAdEvents.ON_AD_CLICKED_EVENT, adInfo );
         }
     }
 
@@ -228,7 +340,7 @@ public class AppLovinMAXNativeAdView
     public void onAdRevenuePaid(@NonNull final MaxAd ad)
     {
         WritableMap adInfo = AppLovinMAXModuleImpl.getInstance().getAdInfo( ad );
-        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), AppLovinMAXAdEvents.ON_AD_REVENUE_PAID_EVENT, adInfo );
+        AppLovinMAXModuleImpl.getInstance().sendReactNativeViewEvent( surfaceId, getId(), AppLovinMAXAdEvents.ON_AD_REVENUE_PAID_EVENT, adInfo );
     }
 
     /// Native Ad Component Methods
@@ -337,14 +449,6 @@ public class AppLovinMAXNativeAdView
                 view.setImageDrawable( icon.getDrawable() );
             }
         }
-        else
-        {
-            ImageView iconView = (ImageView) nativeAd.getNativeAd().getIconView();
-            if ( iconView != null )
-            {
-                view.setImageDrawable( iconView.getDrawable() );
-            }
-        }
     }
 
     public void setOptionsView(final int tag)
@@ -448,12 +552,6 @@ public class AppLovinMAXNativeAdView
         {
             loadAd();
         }
-        else
-        {
-            // Renders the ad only after the last asset view is set
-            renderNativeAdHandler.removeCallbacksAndMessages( null );
-            renderNativeAdHandler.postDelayed( renderNativeAdTask, 50 );
-        }
     }
 
     @Override
@@ -516,9 +614,6 @@ public class AppLovinMAXNativeAdView
         nativeAdInfo.putBoolean( "isOptionsViewAvailable", ( ad.getOptionsView() != null ) );
         nativeAdInfo.putBoolean( "isMediaViewAvailable", ( ad.getMediaView() != null ) );
 
-        WritableMap adInfo = AppLovinMAXModuleImpl.getInstance().getAdInfo( nativeAd );
-        adInfo.putMap( "nativeAd", nativeAdInfo );
-
         // 2. NativeAd for `AppLovinNativeAdView.js` to render the views
 
         WritableMap jsNativeAd = Arguments.createMap();
@@ -544,20 +639,16 @@ public class AppLovinMAXNativeAdView
                 jsNativeAd.putBoolean( "image", true );
             }
         }
-        else if ( ad.getIconView() != null )
-        {
-            jsNativeAd.putBoolean( "image", true );
-        }
 
         jsNativeAd.putBoolean( "isOptionsViewAvailable", ( ad.getOptionsView() != null ) );
         jsNativeAd.putBoolean( "isMediaViewAvailable", ( ad.getMediaView() != null ) );
 
-        WritableMap arg = Arguments.createMap();
-        arg.putMap( "adInfo", adInfo );
-        arg.putMap( "nativeAd", jsNativeAd );
+        WritableMap adInfo = AppLovinMAXModuleImpl.getInstance().getAdInfo( nativeAd );
+        adInfo.putMap( "nativeAd", nativeAdInfo );
+        adInfo.putMap( "nativeAdImpl", jsNativeAd );
 
         // Send to `AppLovinNativeAdView.js`
-        reactContext.getJSModule( RCTEventEmitter.class ).receiveEvent( getId(), AppLovinMAXAdEvents.ON_AD_LOADED_EVENT, arg );
+        AppLovinMAXModuleImpl.getInstance().sendReactNativeViewEvent( surfaceId, getId(), AppLovinMAXAdEvents.ON_AD_LOADED_EVENT, adInfo );
     }
 
     private void maybeDestroyCurrentAd()
