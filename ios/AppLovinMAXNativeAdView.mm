@@ -575,46 +575,15 @@ using namespace facebook::react;
 - (void)setIconView:(NSNumber *)tag
 {
     UIView *view = [self.bridge.uiManager viewForReactTag: tag];
-
-#ifdef RCT_NEW_ARCH_ENABLED
     if ( !view )
     {
         [[AppLovinMAX shared] log: @"Cannot find an icon image view with tag \"%@\" for %@", tag, self.adUnitId];
         return;
-     }
-
-    view.tag = ICON_VIEW_TAG;
-
-    [self.clickableViews addObject: view];
-#else
-    if ( ![view isKindOfClass: [RCTImageView class]] )
-    {
-        [[AppLovinMAX shared] log: @"Cannot find an icon image view with tag \"%@\" for %@", tag, self.adUnitId];
-        return;
     }
     
     view.tag = ICON_VIEW_TAG;
     
     [self.clickableViews addObject: view];
-    
-    MANativeAdImage *icon = self.nativeAd.nativeAd.icon;
-    if ( icon )
-    {
-        // Check if "URL" was missing and therefore need to set the image data
-        if ( !icon.URL && icon.image )
-        {
-            RCTImageView *iconImageView = (RCTImageView *) view;
-            if ( [iconImageView respondsToSelector: @selector(setImage:)] )
-            {
-                [iconImageView performSelector: @selector(setImage:) withObject: icon.image];
-            }
-            else
-            {
-                [[AppLovinMAX shared] log: @"Unable to set native ad IconView image"];
-            }
-        }
-    }
-#endif
 }
 
 - (void)setOptionsView:(NSNumber *)tag
@@ -737,12 +706,8 @@ using namespace facebook::react;
         }
         else if ( ad.icon.image )
         {
-#ifdef RCT_NEW_ARCH_ENABLED
             NSData *imageData = UIImagePNGRepresentation(ad.icon.image);
             jsNativeAd[@"imageSource"] = [imageData base64EncodedStringWithOptions: 0];
-#else
-            jsNativeAd[@"image"] = @(YES);
-#endif
         }
     }
     

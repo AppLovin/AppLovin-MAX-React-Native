@@ -103,6 +103,7 @@ RCT_EXPORT_METHOD(updateAssetView:(nonnull NSNumber *)viewTag assetViewTag:(NSIn
 RCT_EXPORT_METHOD(renderNativeAd:(nonnull NSNumber *)viewTag)
 {
     [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+
         UIView *view = viewRegistry[viewTag];
         if ( ![view isKindOfClass: [AppLovinMAXNativeAdView class]] )
         {
@@ -112,7 +113,6 @@ RCT_EXPORT_METHOD(renderNativeAd:(nonnull NSNumber *)viewTag)
         
         AppLovinMAXNativeAdView *nativeAdView = (AppLovinMAXNativeAdView *) view;
         [nativeAdView renderNativeAd];
-        
     }];
 }
 
