@@ -5,13 +5,9 @@ import android.text.TextUtils;
 
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.ads.MaxAdView;
-import com.applovin.sdk.AppLovinSdkUtils;
-import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.views.view.ReactViewGroup;
 
 import java.util.HashMap;
@@ -215,84 +211,26 @@ public class AppLovinMAXAdView
         loadOnMount = enabled;
     }
 
-    public void setExtraParameters(@Nullable final ReadableArray readableArray)
+    public void setExtraParameters(@Nullable final ReadableArray extraParameters)
     {
-        if ( readableArray == null ) return;
-
-        Map<String, Object> extraParametersMap = new HashMap<>();
-
-        for ( int i = 0; i < readableArray.size(); i++ )
-        {
-            ReadableMap map = readableArray.getMap( i );
-
-            String key = map.getString( "key" );
-
-            if ( !AppLovinSdkUtils.isValidString( key ) ) continue;
-
-            if ( map.hasKey( "value" ) )
-            {
-                Dynamic value = map.getDynamic( "value" );
-                ReadableType type = map.getType( "value" );
-
-                if ( type == ReadableType.String )
-                {
-                    extraParametersMap.put( key, value.asString() );
-                }
-                else if ( type == ReadableType.Null )
-                {
-                    extraParametersMap.put( key, null );
-                }
-            }
-        }
-
-        extraParameters = extraParametersMap;
+        this.extraParameters = AppLovinMAXUtils.convertReadbleArrayToHashMap( extraParameters );
     }
 
-    public void setLocalExtraParameters(@Nullable final ReadableArray readableArray)
+    public void setLocalExtraParameters(@Nullable final ReadableArray localExtraParameters)
     {
-        if ( readableArray == null ) return;
+        Map<String, Object> localExtraParametersMap = AppLovinMAXUtils.convertReadbleArrayToHashMap( localExtraParameters );
 
-        Map<String, Object> localExtraParametersMap = new HashMap<>();
+        if ( localExtraParametersMap == null ) return;
 
-        for ( int i = 0; i < readableArray.size(); i++ )
+        // Accumulate the result since this function may be called multiple times
+        // to handle different value types, including string, number, boolean, and null.
+        if ( this.localExtraParameters != null )
         {
-            ReadableMap map = readableArray.getMap( i );
-
-            String key = map.getString( "key" );
-
-            if ( !AppLovinSdkUtils.isValidString( key ) ) continue;
-
-            if ( map.hasKey( "value" ) )
-            {
-                Dynamic value = map.getDynamic( "value" );
-                ReadableType type = map.getType( "value" );
-
-                if ( type == ReadableType.String )
-                {
-                    localExtraParametersMap.put( key, value.asString() );
-                }
-                else if ( type == ReadableType.Number )
-                {
-                    localExtraParametersMap.put( key, value.asDouble() );
-                }
-                else if ( type == ReadableType.Boolean )
-                {
-                    localExtraParametersMap.put( key, value.asBoolean() );
-                }
-                else if ( type == ReadableType.Null )
-                {
-                    localExtraParametersMap.put( key, null );
-                }
-            }
-        }
-
-        if ( localExtraParameters != null )
-        {
-            localExtraParameters.putAll( localExtraParametersMap );
+            this.localExtraParameters.putAll( localExtraParametersMap );
         }
         else
         {
-            localExtraParameters = localExtraParametersMap;
+            this.localExtraParameters = localExtraParametersMap;
         }
     }
 
