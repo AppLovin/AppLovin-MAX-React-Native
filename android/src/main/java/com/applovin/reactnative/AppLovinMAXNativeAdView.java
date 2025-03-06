@@ -17,15 +17,10 @@ import com.applovin.mediation.nativeAds.MaxNativeAd.MaxNativeAdImage;
 import com.applovin.mediation.nativeAds.MaxNativeAdListener;
 import com.applovin.mediation.nativeAds.MaxNativeAdLoader;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
-import com.applovin.sdk.AppLovinSdkUtils;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.view.ReactViewGroup;
@@ -116,84 +111,26 @@ public class AppLovinMAXNativeAdView
         customData = value;
     }
 
-    public void setExtraParameters(@Nullable final ReadableArray readableArray)
+    public void setExtraParameters(@Nullable final ReadableArray extraParameters)
     {
-        if ( readableArray == null ) return;
-
-        Map<String, Object> extraParametersMap = new HashMap<>();
-
-        for ( int i = 0; i < readableArray.size(); i++ )
-        {
-            ReadableMap map = readableArray.getMap( i );
-
-            String key = map.getString( "key" );
-
-            if ( !AppLovinSdkUtils.isValidString( key ) ) continue;
-
-            if ( map.hasKey( "value" ) )
-            {
-                Dynamic value = map.getDynamic( "value" );
-                ReadableType type = map.getType( "value" );
-
-                if ( type == ReadableType.String )
-                {
-                    extraParametersMap.put( key, value.asString() );
-                }
-                else if ( type == ReadableType.Null )
-                {
-                    extraParametersMap.put( key, null );
-                }
-            }
-        }
-
-        extraParameters = extraParametersMap;
+        this.extraParameters = AppLovinMAXUtils.convertReadbleArrayToHashMap( extraParameters );
     }
 
-    public void setLocalExtraParameters(@Nullable final ReadableArray readableArray)
+    public void setLocalExtraParameters(@Nullable final ReadableArray localExtraParameters)
     {
-        if ( readableArray == null ) return;
+        Map<String, Object> localExtraParametersMap = AppLovinMAXUtils.convertReadbleArrayToHashMap( localExtraParameters );
 
-        Map<String, Object> localExtraParametersMap = new HashMap<>();
+        if ( localExtraParametersMap == null ) return;
 
-        for ( int i = 0; i < readableArray.size(); i++ )
+        // Accumulate the result since this function may be called multiple times
+        // to handle different value types, including string, number, boolean, and null.
+        if ( this.localExtraParameters != null )
         {
-            ReadableMap map = readableArray.getMap( i );
-
-            String key = map.getString( "key" );
-
-            if ( !AppLovinSdkUtils.isValidString( key ) ) continue;
-
-            if ( map.hasKey( "value" ) )
-            {
-                Dynamic value = map.getDynamic( "value" );
-                ReadableType type = map.getType( "value" );
-
-                if ( type == ReadableType.String )
-                {
-                    localExtraParametersMap.put( key, value.asString() );
-                }
-                else if ( type == ReadableType.Number )
-                {
-                    localExtraParametersMap.put( key, value.asDouble() );
-                }
-                else if ( type == ReadableType.Boolean )
-                {
-                    localExtraParametersMap.put( key, value.asBoolean() );
-                }
-                else if ( type == ReadableType.Null )
-                {
-                    localExtraParametersMap.put( key, null );
-                }
-            }
-        }
-
-        if ( localExtraParameters != null )
-        {
-            localExtraParameters.putAll( localExtraParametersMap );
+            this.localExtraParameters.putAll( localExtraParametersMap );
         }
         else
         {
-            localExtraParameters = localExtraParametersMap;
+            this.localExtraParameters = localExtraParametersMap;
         }
     }
 
@@ -245,31 +182,31 @@ public class AppLovinMAXNativeAdView
 
     public void updateAssetView(final int assetViewTag, final String assetViewName)
     {
-        if ( assetViewName.equals( "TitleView" ) )
+        if ( "TitleView".equals( assetViewName ) )
         {
             setTitleView( assetViewTag );
         }
-        else if ( assetViewName.equals( "AdvertiserView" ) )
+        else if ( "AdvertiserView".equals( assetViewName ) )
         {
             setAdvertiserView( assetViewTag );
         }
-        else if ( assetViewName.equals( "BodyView" ) )
+        else if ( "BodyView".equals( assetViewName ) )
         {
             setBodyView( assetViewTag );
         }
-        else if ( assetViewName.equals( "CallToActionView" ) )
+        else if ( "CallToActionView".equals( assetViewName ) )
         {
             setCallToActionView( assetViewTag );
         }
-        else if ( assetViewName.equals( "IconView" ) )
+        else if ( "IconView".equals( assetViewName ) )
         {
             setIconView( assetViewTag );
         }
-        else if ( assetViewName.equals( "OptionsView" ) )
+        else if ( "OptionsView".equals( assetViewName ) )
         {
             setOptionsView( assetViewTag );
         }
-        else if ( assetViewName.equals( "MediaView" ) )
+        else if ( "MediaView".equals( assetViewName ) )
         {
             setMediaView( assetViewTag );
         }

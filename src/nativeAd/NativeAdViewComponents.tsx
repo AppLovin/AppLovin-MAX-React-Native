@@ -54,8 +54,17 @@ export const CallToActionView = (props: TextProps) => {
 export const IconView = (props: Omit<ImageProps, 'source'>) => {
     const { imageRef, nativeAd } = useContext(NativeAdViewContext);
     const defaultIcon = require('./img/blank_icon.png');
-    const imageSource =
-        (nativeAd?.url && { uri: nativeAd.url }) || (nativeAd.image ? defaultIcon : nativeAd.imageSource ? { uri: `data:image/jpeg;base64,${nativeAd.imageSource}` } : defaultIcon);
+
+    const imageSource = (() => {
+        if (nativeAd?.url) {
+            return { uri: nativeAd.url };
+        }
+        if (nativeAd?.imageSource) {
+            return { uri: `data:image/jpeg;base64,${nativeAd.imageSource}` };
+        }
+        return defaultIcon;
+    })();
+
     return <Image {...props} ref={imageRef} source={imageSource} />;
 };
 
@@ -72,7 +81,7 @@ export const MediaView = (props: ViewProps) => {
 export const StarRatingView = (props: ViewProps) => {
     const { style, ...restProps } = props;
     const maxStarCount = 5;
-    const starTextStyle = StyleSheet.flatten(style) as TextStyle;
+    const starTextStyle = useMemo(() => StyleSheet.flatten(style) as TextStyle, [style]);
     const starColor = starTextStyle.color ?? '#ffe234';
     const starSize = starTextStyle.fontSize ?? 10;
     const { nativeAd } = useContext(NativeAdViewContext);

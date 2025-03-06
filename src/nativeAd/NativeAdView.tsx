@@ -130,7 +130,9 @@ const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps & Vie
                 if (nativeAdImpl.isMediaViewAvailable) updateAssetView(mediaViewRef, 'MediaView');
             }
 
-            Commands.renderNativeAd(nativeAdViewRef.current!);
+            if (nativeAdViewRef.current) {
+                Commands.renderNativeAd(nativeAdViewRef.current);
+            }
 
             handleNativeAdViewEvent(event, onAdLoaded);
         },

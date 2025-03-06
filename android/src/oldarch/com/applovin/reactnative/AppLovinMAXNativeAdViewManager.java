@@ -13,8 +13,6 @@ import androidx.annotation.Nullable;
 public class AppLovinMAXNativeAdViewManager
     extends ViewGroupManager<AppLovinMAXNativeAdView>
 {
-    public AppLovinMAXNativeAdViewManager() { }
-
     @NonNull
     @Override
     protected AppLovinMAXNativeAdView createViewInstance(@NonNull final ThemedReactContext reactContext)

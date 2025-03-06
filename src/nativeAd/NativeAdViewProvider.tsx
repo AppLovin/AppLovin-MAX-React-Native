@@ -7,14 +7,18 @@ import type { NativeProps } from '../specs/AppLovinMAXNativeAdViewNativeComponen
 
 export type NativeAdViewType = React.Component<NativeProps> & NativeMethods;
 
+type TextRef = React.ElementRef<typeof Text>;
+type ImageRef = React.ElementRef<typeof Image>;
+type ViewRef = React.ElementRef<typeof View>;
+
 export type NativeAdViewContextType = {
-    titleRef: React.RefObject<React.ElementRef<typeof Text>>;
-    advertiserRef: React.RefObject<React.ElementRef<typeof Text>>;
-    bodyRef: React.RefObject<React.ElementRef<typeof Text>>;
-    callToActionRef: React.RefObject<React.ElementRef<typeof Text>>;
-    imageRef: React.RefObject<React.ElementRef<typeof Image>>;
-    optionViewRef: React.RefObject<React.ElementRef<typeof View>>;
-    mediaViewRef: React.RefObject<React.ElementRef<typeof View>>;
+    titleRef: React.RefObject<TextRef>;
+    advertiserRef: React.RefObject<TextRef>;
+    bodyRef: React.RefObject<TextRef>;
+    callToActionRef: React.RefObject<TextRef>;
+    imageRef: React.RefObject<ImageRef>;
+    optionViewRef: React.RefObject<ViewRef>;
+    mediaViewRef: React.RefObject<ViewRef>;
     nativeAd: NativeAd;
     setNativeAd: React.Dispatch<React.SetStateAction<NativeAd>>;
 };
@@ -37,13 +41,13 @@ export const NativeAdViewContext = createContext<NativeAdViewContextType>({
 });
 
 export const NativeAdViewProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const titleRef = useRef<React.ElementRef<typeof Text> | null>(null);
-    const advertiserRef = useRef<React.ElementRef<typeof Text> | null>(null);
-    const bodyRef = useRef<React.ElementRef<typeof Text> | null>(null);
-    const callToActionRef = useRef<React.ElementRef<typeof Text> | null>(null);
-    const imageRef = useRef<React.ElementRef<typeof Image> | null>(null);
-    const optionViewRef = useRef<React.ElementRef<typeof View> | null>(null);
-    const mediaViewRef = useRef<React.ElementRef<typeof View> | null>(null);
+    const titleRef = useRef<TextRef | null>(null);
+    const advertiserRef = useRef<TextRef | null>(null);
+    const bodyRef = useRef<TextRef | null>(null);
+    const callToActionRef = useRef<TextRef | null>(null);
+    const imageRef = useRef<ImageRef | null>(null);
+    const optionViewRef = useRef<ViewRef | null>(null);
+    const mediaViewRef = useRef<ViewRef | null>(null);
     const [nativeAd, setNativeAd] = useState<NativeAd>(defaultNativeAd);
 
     const providerValue = React.useMemo(
