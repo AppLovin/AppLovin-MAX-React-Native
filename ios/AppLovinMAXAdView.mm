@@ -481,7 +481,7 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
 
 - (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
 {
-    if ([commandName isEqualToString: @"loadAd"])
+    if ( [commandName isEqualToString: @"loadAd"] )
     {
         [self loadAd];
     }
