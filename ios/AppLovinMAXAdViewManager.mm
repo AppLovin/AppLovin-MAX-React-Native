@@ -24,7 +24,6 @@ RCT_EXPORT_VIEW_PROPERTY(autoRefresh, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(loadOnMount, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(extraParameters, NSArray)
 RCT_EXPORT_VIEW_PROPERTY(strLocalExtraParameters, NSArray)
-RCT_EXPORT_VIEW_PROPERTY(numLocalExtraParameters, NSArray)
 RCT_EXPORT_VIEW_PROPERTY(boolLocalExtraParameters, NSArray)
 
 RCT_EXPORT_VIEW_PROPERTY(onAdLoadedEvent, RCTDirectEventBlock)

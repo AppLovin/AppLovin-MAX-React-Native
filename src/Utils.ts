@@ -2,11 +2,10 @@ import type { LocalExtraParameterValue } from './types/AdProps';
 
 export const makeExtraParametersArray = (input?: Record<string, string | null>) => (input ? Object.entries(input).map(([key, value]) => ({ key, value })) : []);
 
-type LocalExtraParameterType = 'string' | 'number' | 'bool';
+type LocalExtraParameterType = 'string' | 'bool';
 
 type LocalExtraParameterValueMap = {
     string: string | null;
-    number: number | null;
     bool: boolean | null;
 };
 
@@ -20,7 +19,6 @@ export const makeLocalExtraParametersArray = <T extends LocalExtraParameterType>
         .filter(([_, value]) => {
             if (value === null) return true;
             if (type === 'string') return typeof value === 'string';
-            if (type === 'number') return typeof value === 'number';
             if (type === 'bool') return typeof value === 'boolean';
             return false;
         })

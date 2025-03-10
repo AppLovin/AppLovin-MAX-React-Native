@@ -106,12 +106,6 @@ class AppLovinMAXAdViewManager
         AppLovinMAXAdViewManagerImpl.setLocalExtraParameters( view, value );
     }
 
-    @ReactProp(name = "numLocalExtraParameters")
-    public void setNumLocalExtraParameters(final AppLovinMAXAdView view, @Nullable final ReadableArray value)
-    {
-        AppLovinMAXAdViewManagerImpl.setLocalExtraParameters( view, value );
-    }
-
     @ReactProp(name = "boolLocalExtraParameters")
     public void setBoolLocalExtraParameters(final AppLovinMAXAdView view, @Nullable final ReadableArray value)
     {

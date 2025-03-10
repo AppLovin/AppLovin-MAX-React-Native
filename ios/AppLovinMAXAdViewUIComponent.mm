@@ -71,7 +71,8 @@
 {
     for ( NSString *key in parameterDict )
     {
-        [self.adView setExtraParameterForKey: key value: [parameterDict al_stringForKey: key]];
+        id value = parameterDict[key];
+        [self.adView setExtraParameterForKey: key value: (value != [NSNull null] ? value : nil)];
     }
 }
 

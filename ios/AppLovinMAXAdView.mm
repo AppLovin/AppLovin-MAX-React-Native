@@ -141,7 +141,7 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
-    self = [super initWithFrame:frame];
+    self = [super initWithFrame: frame];
     if ( self )
     {
         static const auto defaultProps = std::make_shared<const AppLovinMAXAdViewProps>();
@@ -443,20 +443,6 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
         [self setStrLocalExtraParameters: strLocalExtraParameters];
     }
     
-    if ( newViewProps.numLocalExtraParameters.size() > 0 )
-    {
-        NSMutableArray *numLocalExtraParameters = [NSMutableArray array];
-        
-        for ( const auto &parameter: newViewProps.numLocalExtraParameters )
-        {
-            NSDictionary *dict = @{@"key": RCTNSStringFromString(parameter.key),
-                                   @"value": @(parameter.value)};
-            [numLocalExtraParameters addObject: dict];
-        }
-        
-        [self setNumLocalExtraParameters: numLocalExtraParameters];
-    }
-    
     if ( newViewProps.boolLocalExtraParameters.size() > 0 )
     {
         NSMutableArray *boolLocalExtraParameters = [NSMutableArray array];
@@ -586,43 +572,25 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
 
 - (void)setStrLocalExtraParameters:(NSArray<NSDictionary<NSString *, id> *> *)strLocalExtraParameters
 {
-    if ( !_localExtraParameters )
+    if (!self.localExtraParameters)
     {
-        _localExtraParameters = [strLocalExtraParameters mutableCopy];
+        self.localExtraParameters = [strLocalExtraParameters copy];
     }
     else
     {
-        NSMutableArray *updatedArray = [_localExtraParameters mutableCopy];
-        [updatedArray addObjectsFromArray: strLocalExtraParameters];
-        _localExtraParameters = [updatedArray copy];
-    }
-}
-
-- (void)setNumLocalExtraParameters:(NSArray<NSDictionary<NSString *, id> *> *)numLocalExtraParameters
-{
-    if ( !_localExtraParameters )
-    {
-        _localExtraParameters = [numLocalExtraParameters mutableCopy];
-    }
-    else
-    {
-        NSMutableArray *updatedArray = [_localExtraParameters mutableCopy];
-        [updatedArray addObjectsFromArray: numLocalExtraParameters];
-        _localExtraParameters = [updatedArray copy];
+        self.localExtraParameters = [self.localExtraParameters arrayByAddingObjectsFromArray: strLocalExtraParameters];
     }
 }
 
 - (void)setBoolLocalExtraParameters:(NSArray<NSDictionary<NSString *, id> *> *)boolLocalExtraParameters
 {
-    if ( !_localExtraParameters )
+    if (!self.localExtraParameters)
     {
-        _localExtraParameters = [boolLocalExtraParameters mutableCopy];
+        self.localExtraParameters = [boolLocalExtraParameters copy];
     }
     else
     {
-        NSMutableArray *updatedArray = [_localExtraParameters mutableCopy];
-        [updatedArray addObjectsFromArray: boolLocalExtraParameters];
-        _localExtraParameters = [updatedArray copy];
+        self.localExtraParameters = [self.localExtraParameters arrayByAddingObjectsFromArray: boolLocalExtraParameters];
     }
 }
 
@@ -777,7 +745,7 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
 #ifdef RCT_NEW_ARCH_ENABLED
 Class<RCTComponentViewProtocol> AppLovinMAXAdViewCls(void)
 {
-    return AppLovinMAXAdView.class;
+    return [AppLovinMAXAdView class];
 }
 #endif
 
