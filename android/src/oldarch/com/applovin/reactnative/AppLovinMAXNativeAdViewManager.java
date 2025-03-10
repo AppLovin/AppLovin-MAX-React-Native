@@ -71,12 +71,6 @@ public class AppLovinMAXNativeAdViewManager
         AppLovinMAXNativeAdViewManagerImpl.setLocalExtraParameters( view, value );
     }
 
-    @ReactProp(name = "numLocalExtraParameters")
-    public void setNumLocalExtraParameters(final AppLovinMAXNativeAdView view, @Nullable final ReadableArray value)
-    {
-        AppLovinMAXNativeAdViewManagerImpl.setLocalExtraParameters( view, value );
-    }
-
     @ReactProp(name = "boolLocalExtraParameters")
     public void setBoolLocalExtraParameters(final AppLovinMAXNativeAdView view, @Nullable final ReadableArray value)
     {

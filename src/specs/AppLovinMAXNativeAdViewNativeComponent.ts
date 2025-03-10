@@ -64,10 +64,6 @@ export interface NativeProps extends ViewProps {
         key: string;
         value: string | null;
     }> | null;
-    numLocalExtraParameters?: ReadonlyArray<{
-        key: string;
-        value: Double | null;
-    }> | null;
     boolLocalExtraParameters?: ReadonlyArray<{
         key: string;
         value: boolean | null;

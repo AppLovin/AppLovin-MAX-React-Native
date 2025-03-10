@@ -91,12 +91,6 @@ public class AppLovinMAXNativeAdViewManager
     }
 
     @Override
-    public void setNumLocalExtraParameters(final AppLovinMAXNativeAdView view, @Nullable final ReadableArray value)
-    {
-        AppLovinMAXNativeAdViewManagerImpl.setLocalExtraParameters( view, value );
-    }
-
-    @Override
     public void setBoolLocalExtraParameters(final AppLovinMAXNativeAdView view, @Nullable final ReadableArray value)
     {
         AppLovinMAXNativeAdViewManagerImpl.setLocalExtraParameters( view, value );

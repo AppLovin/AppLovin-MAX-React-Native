@@ -83,7 +83,7 @@ using namespace facebook::react;
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
-    self = [super initWithFrame:frame];
+    self = [super initWithFrame: frame];
     if ( self )
     {
         static const auto defaultProps = std::make_shared<const AppLovinMAXNativeAdViewProps>();
@@ -280,20 +280,6 @@ using namespace facebook::react;
         [self setStrLocalExtraParameters: strLocalExtraParameters];
     }
     
-    if ( newViewProps.numLocalExtraParameters.size() > 0 )
-    {
-        NSMutableArray *numLocalExtraParameters = [NSMutableArray array];
-        
-        for ( const auto &parameter: newViewProps.numLocalExtraParameters )
-        {
-            NSDictionary *dict = @{@"key": RCTNSStringFromString(parameter.key),
-                                   @"value": @(parameter.value)};
-            [numLocalExtraParameters addObject: dict];
-        }
-        
-        [self setNumLocalExtraParameters: numLocalExtraParameters];
-    }
-    
     if ( newViewProps.boolLocalExtraParameters.size() > 0 )
     {
         NSMutableArray *boolLocalExtraParameters = [NSMutableArray array];
@@ -397,43 +383,25 @@ using namespace facebook::react;
 
 - (void)setStrLocalExtraParameters:(NSArray<NSDictionary *> *)strLocalExtraParameters
 {
-    if ( !_localExtraParameters )
+    if (!self.localExtraParameters)
     {
-        _localExtraParameters = [strLocalExtraParameters mutableCopy];
+        self.localExtraParameters = [strLocalExtraParameters copy];
     }
     else
     {
-        NSMutableArray *updatedArray = [_localExtraParameters mutableCopy];
-        [updatedArray addObjectsFromArray: strLocalExtraParameters];
-        _localExtraParameters = [updatedArray copy];
-    }
-}
-
-- (void)setNumLocalExtraParameters:(NSArray<NSDictionary *> *)numLocalExtraParameters
-{
-    if ( !_localExtraParameters )
-    {
-        _localExtraParameters = [numLocalExtraParameters mutableCopy];
-    }
-    else
-    {
-        NSMutableArray *updatedArray = [_localExtraParameters mutableCopy];
-        [updatedArray addObjectsFromArray: numLocalExtraParameters];
-        _localExtraParameters = [updatedArray copy];
+        self.localExtraParameters = [self.localExtraParameters arrayByAddingObjectsFromArray: strLocalExtraParameters];
     }
 }
 
 - (void)setBoolLocalExtraParameters:(NSArray<NSDictionary *> *)boolLocalExtraParameters
 {
-    if ( !_localExtraParameters )
+    if (!self.localExtraParameters)
     {
-        _localExtraParameters = [boolLocalExtraParameters mutableCopy];
+        self.localExtraParameters = [boolLocalExtraParameters copy];
     }
     else
     {
-        NSMutableArray *updatedArray = [_localExtraParameters mutableCopy];
-        [updatedArray addObjectsFromArray: boolLocalExtraParameters];
-        _localExtraParameters = [updatedArray copy];
+        self.localExtraParameters = [self.localExtraParameters arrayByAddingObjectsFromArray: boolLocalExtraParameters];
     }
 }
 
@@ -456,7 +424,8 @@ using namespace facebook::react;
         for ( NSDictionary *parameter in self.extraParameters )
         {
             NSString *key = parameter[@"key"];
-            [self.adLoader setExtraParameterForKey: key value: [parameter al_stringForKey: key]];
+            id value = parameter[@"value"];
+            [self.adLoader setExtraParameterForKey: key value: (value != [NSNull null] ? value : nil)];
         }
         
         for ( NSDictionary *parameter in self.localExtraParameters )
@@ -478,31 +447,31 @@ using namespace facebook::react;
 
 - (void)updateAssetView:(double)assetViewTag assetViewName:(NSString *)assetViewName
 {
-    if ( [assetViewName isEqualToString: @("TitleView")] )
+    if ( [assetViewName isEqualToString: @"TitleView"] )
     {
         [self setTitleView: @(assetViewTag)];
     }
-    else if ( [assetViewName isEqualToString: @("AdvertiserView")] )
+    else if ( [assetViewName isEqualToString: @"AdvertiserView"] )
     {
         [self setAdvertiserView: @(assetViewTag)];
     }
-    else if ( [assetViewName isEqualToString: @("BodyView")] )
+    else if ( [assetViewName isEqualToString: @"BodyView"] )
     {
         [self setBodyView: @(assetViewTag)];
     }
-    else if ( [assetViewName isEqualToString: @("CallToActionView")] )
+    else if ( [assetViewName isEqualToString: @"CallToActionView"] )
     {
         [self setCallToActionView: @(assetViewTag)];
     }
-    else if ( [assetViewName isEqualToString: @("IconView")] )
+    else if ( [assetViewName isEqualToString: @"IconView"] )
     {
         [self setIconView: @(assetViewTag)];
     }
-    else if ( [assetViewName isEqualToString: @("OptionsView")] )
+    else if ( [assetViewName isEqualToString: @"OptionsView"] )
     {
         [self setOptionsView: @(assetViewTag)];
     }
-    else if ( [assetViewName isEqualToString: @("MediaView")] )
+    else if ( [assetViewName isEqualToString: @"MediaView"] )
     {
         [self setMediaView: @(assetViewTag)];
     }
@@ -620,7 +589,7 @@ using namespace facebook::react;
     [self.nativeAd.nativeAd.mediaView al_pinToSuperview];
 }
 
--(void)renderNativeAd
+- (void)renderNativeAd
 {
     if ( !self.adLoader ) return;
     
@@ -714,7 +683,7 @@ using namespace facebook::react;
     jsNativeAd[@"isOptionsViewAvailable"] = ad.optionsView ? @(YES) : @(NO);
     jsNativeAd[@"isMediaViewAvailable"] = ad.mediaView ? @(YES) : @(NO);
     
-    NSMutableDictionary *adInfo = [[AppLovinMAX shared] adInfoForAd: self.nativeAd].mutableCopy;
+    NSMutableDictionary *adInfo = [[[AppLovinMAX shared] adInfoForAd: self.nativeAd] mutableCopy];
     adInfo[@"nativeAd"] = nativeAdInfo;
     adInfo[@"nativeAdImpl"] = jsNativeAd;
     
@@ -773,6 +742,6 @@ using namespace facebook::react;
 #ifdef RCT_NEW_ARCH_ENABLED
 Class<RCTComponentViewProtocol> AppLovinMAXNativeAdViewCls(void)
 {
-    return AppLovinMAXNativeAdView.class;
+    return [AppLovinMAXNativeAdView class];
 }
 #endif

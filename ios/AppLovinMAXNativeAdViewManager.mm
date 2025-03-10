@@ -19,7 +19,6 @@ RCT_EXPORT_VIEW_PROPERTY(placement, NSString)
 RCT_EXPORT_VIEW_PROPERTY(customData, NSString)
 RCT_EXPORT_VIEW_PROPERTY(extraParameters, NSArray)
 RCT_EXPORT_VIEW_PROPERTY(strLocalExtraParameters, NSArray)
-RCT_EXPORT_VIEW_PROPERTY(numLocalExtraParameters, NSArray)
 RCT_EXPORT_VIEW_PROPERTY(boolLocalExtraParameters, NSArray)
 
 // Callback
@@ -69,31 +68,31 @@ RCT_EXPORT_METHOD(updateAssetView:(nonnull NSNumber *)viewTag assetViewTag:(NSIn
         
         AppLovinMAXNativeAdView *nativeAdView = (AppLovinMAXNativeAdView *) view;
         
-        if ( [assetViewName isEqualToString: @("TitleView")] )
+        if ( [assetViewName isEqualToString: @"TitleView"] )
         {
             [nativeAdView setTitleView: @(assetViewTag)];
         }
-        else if ( [assetViewName isEqualToString: @("AdvertiserView")] )
+        else if ( [assetViewName isEqualToString: @"AdvertiserView"] )
         {
             [nativeAdView setAdvertiserView: @(assetViewTag)];
         }
-        else if ( [assetViewName isEqualToString: @("BodyView")] )
+        else if ( [assetViewName isEqualToString: @"BodyView"] )
         {
             [nativeAdView setBodyView: @(assetViewTag)];
         }
-        else if ( [assetViewName isEqualToString: @("CallToActionView")] )
+        else if ( [assetViewName isEqualToString: @"CallToActionView"] )
         {
             [nativeAdView setCallToActionView: @(assetViewTag)];
         }
-        else if ( [assetViewName isEqualToString: @("IconView")] )
+        else if ( [assetViewName isEqualToString: @"IconView"] )
         {
             [nativeAdView setIconView: @(assetViewTag)];
         }
-        else if ( [assetViewName isEqualToString: @("OptionsView")] )
+        else if ( [assetViewName isEqualToString: @"OptionsView"] )
         {
             [nativeAdView setOptionsView: @(assetViewTag)];
         }
-        else if ( [assetViewName isEqualToString: @("MediaView")] )
+        else if ( [assetViewName isEqualToString: @"MediaView"] )
         {
             [nativeAdView setMediaView: @(assetViewTag)];
         }
