@@ -226,7 +226,6 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
             loadOnMount={loadOnMount}
             extraParameters={makeExtraParametersArray(extraParameters)}
             strLocalExtraParameters={makeLocalExtraParametersArray(localExtraParameters, 'string')}
-            numLocalExtraParameters={makeLocalExtraParametersArray(localExtraParameters, 'number')}
             boolLocalExtraParameters={makeLocalExtraParametersArray(localExtraParameters, 'bool')}
             onAdLoadedEvent={onAdLoadedEvent}
             onAdLoadFailedEvent={onAdLoadFailedEvent}
