@@ -28,6 +28,11 @@ export type NativeAd = {
     image?: boolean;
 
     /**
+     * The data of the icon.
+     */
+    imageSource?: string | null;
+
+    /**
      * The URL string of the icon.
      */
     url?: string;
