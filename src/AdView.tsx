@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { useEffect, useState, useRef, useCallback, useImperativeHandle, useReducer, forwardRef } from 'react';
-import { requireNativeComponent, StyleSheet, UIManager, findNodeHandle, useWindowDimensions, View } from 'react-native';
-import type { ViewProps, ViewStyle, StyleProp, NativeMethods, DimensionValue } from 'react-native';
-import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo } from './types/AdInfo';
-import type { AdNativeEvent } from './types/AdEvent';
-import type { AdViewProps, AdViewHandler, NativeUIComponentAdViewOptions, AdViewId } from './types/AdViewProps';
-import { addEventListener, removeEventListener } from './EventEmitter';
-
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import type { NativeSyntheticEvent, ViewProps, ViewStyle, StyleProp, DimensionValue } from 'react-native';
 import AppLovinMAX from './specs/NativeAppLovinMAXModule';
+import AdViewComponent, { Commands } from './specs/AppLovinMAXAdViewNativeComponent';
+import type { AdInfoEvent, AdLoadFailedEvent, AdDisplayFailedEvent } from './specs/AppLovinMAXAdViewNativeComponent';
+import { addEventListener, removeEventListener } from './EventEmitter';
+import type { AdInfo, AdLoadFailedInfo } from './types/AdInfo';
+import type { AdViewProps, AdViewHandler, NativeUIComponentAdViewOptions, AdViewId } from './types/AdViewProps';
+import { makeExtraParametersArray, makeLocalExtraParametersArray } from './Utils';
 
 const { ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT, ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT } = AppLovinMAX.getConstants();
 
@@ -40,20 +41,6 @@ export enum AdViewPosition {
     BOTTOM_CENTER = 'bottom_center',
     BOTTOM_RIGHT = 'bottom_right',
 }
-
-type AdViewNativeEvents = {
-    onAdLoadedEvent(event: AdNativeEvent<AdInfo>): void;
-    onAdLoadFailedEvent(event: AdNativeEvent<AdLoadFailedInfo>): void;
-    onAdDisplayFailedEvent(event: AdNativeEvent<AdDisplayFailedInfo>): void;
-    onAdClickedEvent(event: AdNativeEvent<AdInfo>): void;
-    onAdExpandedEvent(event: AdNativeEvent<AdInfo>): void;
-    onAdCollapsedEvent(event: AdNativeEvent<AdInfo>): void;
-    onAdRevenuePaidEvent(event: AdNativeEvent<AdInfo>): void;
-};
-
-const AdViewComponent = requireNativeComponent<AdViewProps & ViewProps & AdViewNativeEvents>('AppLovinMAXAdView');
-
-type AdViewType = React.Component<AdViewProps> & NativeMethods;
 
 type SizeKey = 'width' | 'height';
 type SizeRecord = Partial<Record<SizeKey, DimensionValue>>;
@@ -90,6 +77,21 @@ const sizeBannerDimensions = async (sizeProps: SizeRecord, adaptiveBannerEnabled
     }
 
     return { width, height };
+};
+
+const handleAdViewEvent = <T extends AdInfoEvent | AdLoadFailedEvent | AdDisplayFailedEvent>(event: NativeSyntheticEvent<T>, callback?: (adInfo: T) => void) => {
+    if (!callback) return;
+
+    let adInfo: any = { ...event.nativeEvent };
+
+    if ('size' in event.nativeEvent) {
+        adInfo.size = {
+            width: event.nativeEvent.size?.width ?? 0,
+            height: event.nativeEvent.size?.height ?? 0,
+        };
+    }
+
+    callback(adInfo);
 };
 
 /**
@@ -147,38 +149,17 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
     const { width: screenWidth } = useWindowDimensions();
     const adFormatSize = useRef<SizeRecord>({});
     const [, forceUpdate] = useReducer((x) => x + 1, 0);
-    const adViewRef = useRef<AdViewType | null>(null);
+    const adViewRef = useRef<React.ElementRef<typeof AdViewComponent> | undefined>();
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
     const sizeProps = useRef<SizeRecord>({});
     const dimensions = useRef<SizeRecord>({});
 
-    const loadAd = useCallback(() => {
-        if (adViewRef.current) {
-            UIManager.dispatchViewManagerCommand(
-                findNodeHandle(adViewRef.current),
-                // @ts-ignore: Issue in RN ts defs
-                UIManager.getViewManagerConfig('AppLovinMAXAdView').Commands.loadAd,
-                undefined
-            );
-        }
-    }, []);
-
-    useImperativeHandle(ref, () => ({ loadAd }), [loadAd]);
-
-    const saveElement = useCallback((element: AdViewType | null) => {
-        adViewRef.current = element;
-    }, []);
+    useImperativeHandle(ref, () => ({ loadAd: () => Commands.loadAd(adViewRef.current!) }), []);
 
     useEffect(() => {
         (async () => {
-            if (adFormat === AdFormat.BANNER) {
-                const isTablet = await AppLovinMAX.isTablet();
-                adFormatSize.current = isTablet
-                    ? { width: ADVIEW_SIZE.leader.width, height: ADVIEW_SIZE.leader.height }
-                    : { width: ADVIEW_SIZE.banner.width, height: ADVIEW_SIZE.banner.height };
-            } else {
-                adFormatSize.current = { width: ADVIEW_SIZE.mrec.width, height: ADVIEW_SIZE.mrec.height };
-            }
+            const isTablet = adFormat === AdFormat.BANNER ? await AppLovinMAX.isTablet() : false;
+            adFormatSize.current = adFormat === AdFormat.BANNER ? (isTablet ? ADVIEW_SIZE.leader : ADVIEW_SIZE.banner) : ADVIEW_SIZE.mrec;
 
             const initialized = await AppLovinMAX.isInitialized();
             setIsInitialized(initialized);
@@ -213,54 +194,19 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
         })();
     }, [adFormat, adaptiveBannerEnabled, isInitialized, screenWidth, style]);
 
-    const onAdLoadedEvent = useCallback(
-        (event: AdNativeEvent<AdInfo>) => {
-            onAdLoaded?.(event.nativeEvent);
-        },
-        [onAdLoaded]
-    );
+    const onAdLoadedEvent = useCallback((event: NativeSyntheticEvent<AdInfoEvent>) => handleAdViewEvent(event, onAdLoaded), [onAdLoaded]);
 
-    const onAdLoadFailedEvent = useCallback(
-        (event: AdNativeEvent<AdLoadFailedInfo>) => {
-            onAdLoadFailed?.(event.nativeEvent);
-        },
-        [onAdLoadFailed]
-    );
+    const onAdLoadFailedEvent = useCallback((event: NativeSyntheticEvent<AdLoadFailedEvent>) => handleAdViewEvent(event, onAdLoadFailed), [onAdLoadFailed]);
 
-    const onAdDisplayFailedEvent = useCallback(
-        (event: AdNativeEvent<AdDisplayFailedInfo>) => {
-            onAdDisplayFailed?.(event.nativeEvent);
-        },
-        [onAdDisplayFailed]
-    );
+    const onAdDisplayFailedEvent = useCallback((event: NativeSyntheticEvent<AdDisplayFailedEvent>) => handleAdViewEvent(event, onAdDisplayFailed), [onAdDisplayFailed]);
 
-    const onAdClickedEvent = useCallback(
-        (event: AdNativeEvent<AdInfo>) => {
-            onAdClicked?.(event.nativeEvent);
-        },
-        [onAdClicked]
-    );
+    const onAdClickedEvent = useCallback((event: NativeSyntheticEvent<AdInfoEvent>) => handleAdViewEvent(event, onAdClicked), [onAdClicked]);
 
-    const onAdExpandedEvent = useCallback(
-        (event: AdNativeEvent<AdInfo>) => {
-            onAdExpanded?.(event.nativeEvent);
-        },
-        [onAdExpanded]
-    );
+    const onAdExpandedEvent = useCallback((event: NativeSyntheticEvent<AdInfoEvent>) => handleAdViewEvent(event, onAdExpanded), [onAdExpanded]);
 
-    const onAdCollapsedEvent = useCallback(
-        (event: AdNativeEvent<AdInfo>) => {
-            onAdCollapsed?.(event.nativeEvent);
-        },
-        [onAdCollapsed]
-    );
+    const onAdCollapsedEvent = useCallback((event: NativeSyntheticEvent<AdInfoEvent>) => handleAdViewEvent(event, onAdCollapsed), [onAdCollapsed]);
 
-    const onAdRevenuePaidEvent = useCallback(
-        (event: AdNativeEvent<AdInfo>) => {
-            onAdRevenuePaid?.(event.nativeEvent);
-        },
-        [onAdRevenuePaid]
-    );
+    const onAdRevenuePaidEvent = useCallback((event: NativeSyntheticEvent<AdInfoEvent>) => handleAdViewEvent(event, onAdRevenuePaid), [onAdRevenuePaid]);
 
     if (!isInitialized || Object.keys(dimensions.current).length === 0) {
         // Early return if not initialized or dimensions are not set
@@ -269,7 +215,7 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
 
     return (
         <AdViewComponent
-            ref={saveElement}
+            ref={(element) => (adViewRef.current = element ?? undefined)}
             adUnitId={adUnitId}
             adFormat={adFormat}
             adViewId={adViewId || 0}
@@ -278,8 +224,9 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
             adaptiveBannerEnabled={adaptiveBannerEnabled}
             autoRefresh={autoRefresh}
             loadOnMount={loadOnMount}
-            extraParameters={extraParameters}
-            localExtraParameters={localExtraParameters}
+            extraParameters={makeExtraParametersArray(extraParameters)}
+            strLocalExtraParameters={makeLocalExtraParametersArray(localExtraParameters, 'str')}
+            boolLocalExtraParameters={makeLocalExtraParametersArray(localExtraParameters, 'bool')}
             onAdLoadedEvent={onAdLoadedEvent}
             onAdLoadFailedEvent={onAdLoadFailedEvent}
             onAdDisplayFailedEvent={onAdDisplayFailedEvent}
