@@ -11,6 +11,23 @@
 #import "AppLovinMAX.h"
 #import "AppLovinMAXNativeAdView.h"
 
+#ifdef RCT_NEW_ARCH_ENABLED
+
+#import <react/renderer/components/RNAppLovinMAXSpec/ComponentDescriptors.h>
+#import <react/renderer/components/RNAppLovinMAXSpec/EventEmitters.h>
+#import <react/renderer/components/RNAppLovinMAXSpec/Props.h>
+#import <react/renderer/components/RNAppLovinMAXSpec/RCTComponentViewHelpers.h>
+#import <React/RCTConversions.h>
+#import "RCTFabricComponentsPlugins.h"
+
+@interface RCTBridge (Private)
++ (RCTBridge *)currentBridge;
+@end
+
+using namespace facebook::react;
+
+#endif
+
 #define TITLE_LABEL_TAG          1
 #define MEDIA_VIEW_CONTAINER_TAG 2
 #define ICON_VIEW_TAG            3
@@ -25,7 +42,11 @@
 - (void)handleNativeAdViewRenderedForAd:(MAAd *)ad;
 @end
 
+#ifdef RCT_NEW_ARCH_ENABLED
+@interface AppLovinMAXNativeAdView()<RCTAppLovinMAXNativeAdViewViewProtocol, MANativeAdDelegate, MAAdRevenueDelegate>
+#else
 @interface AppLovinMAXNativeAdView()<MANativeAdDelegate, MAAdRevenueDelegate>
+#endif
 
 @property (nonatomic, weak) RCTBridge *bridge;
 @property (nonatomic, strong, nullable) MANativeAdLoader *adLoader;
@@ -37,8 +58,8 @@
 @property (nonatomic, copy) NSString *adUnitId;
 @property (nonatomic, copy, nullable) NSString *placement;
 @property (nonatomic, copy, nullable) NSString *customData;
-@property (nonatomic, copy, nullable) NSDictionary *extraParameters;
-@property (nonatomic, copy, nullable) NSDictionary *localExtraParameters;
+@property (nonatomic, copy, nullable) NSArray<NSDictionary<NSString *, id> *> *extraParameters;
+@property (nonatomic, copy, nullable) NSArray<NSDictionary<NSString *, id> *> *localExtraParameters;
 
 // Callback to `AppLovinNativeAdView.js`
 @property (nonatomic, copy) RCTDirectEventBlock onAdLoadedEvent;
@@ -53,6 +74,264 @@
 
 @implementation AppLovinMAXNativeAdView
 
+#ifdef RCT_NEW_ARCH_ENABLED
+
++ (ComponentDescriptorProvider)componentDescriptorProvider
+{
+    return concreteComponentDescriptorProvider<AppLovinMAXNativeAdViewComponentDescriptor>();
+}
+
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame: frame];
+    if ( self )
+    {
+        static const auto defaultProps = std::make_shared<const AppLovinMAXNativeAdViewProps>();
+        _props = defaultProps;
+        
+        self.bridge = [RCTBridge currentBridge];
+        self.isLoading = [[ALAtomicBoolean alloc] init];
+        self.isAdUnitIdSet = [[ALAtomicBoolean alloc] init];
+        self.clickableViews = [NSMutableArray array];
+        
+        [self setupEventHandlers];
+    }
+    return self;
+}
+
+- (void)setupEventHandlers
+{
+    self.onAdLoadedEvent = [self](NSDictionary *event)
+    {
+        if ( _eventEmitter )
+        {
+            auto nativeAdViewEventEmitter = std::static_pointer_cast<AppLovinMAXNativeAdViewEventEmitter const>(_eventEmitter);
+            
+            NSDictionary *nativeAd = event[@"nativeAd"];
+            NSDictionary *nativeAdImpl = event[@"nativeAdImpl"];
+            
+            AppLovinMAXNativeAdViewEventEmitter::OnAdLoadedEvent result =
+            {
+                .adUnitId = std::string([event[@"adUnitId"] ?: @"" UTF8String]),
+                .adFormat = std::string([event[@"adFormat"] ?: @"" UTF8String]),
+                .networkName = std::string([event[@"networkName"] ?: @"" UTF8String]),
+                .networkPlacement = std::string([event[@"networkPlacement"] ?: @"" UTF8String]),
+                .creativeId = std::string([event[@"creativeId"] ?: @"" UTF8String]),
+                .placement = std::string([event[@"placement"] ?: @"" UTF8String]),
+                .revenue = [event[@"revenue"] doubleValue],
+                .revenuePrecision = std::string([event[@"revenuePrecision"] ?: @"" UTF8String]),
+                .latencyMillis = [event[@"latencyMillis"] doubleValue],
+                .dspName = std::string([event[@"dspName"] ?: @"" UTF8String]),
+                .size = {
+                    .width = [event[@"size"][@"width"] doubleValue],
+                    .height = [event[@"size"][@"height"] doubleValue],
+                },
+                .nativeAd = {
+                    .title = std::string([nativeAd[@"title"] ?: @"" UTF8String]),
+                    .advertiser = std::string([nativeAd[@"advertiser"] ?: @"" UTF8String]),
+                    .body = std::string([nativeAd[@"body"] ?: @"" UTF8String]),
+                    .callToAction = std::string([nativeAd[@"callToAction"] ?: @"" UTF8String]),
+                    .starRating = [nativeAd[@"starRating"] doubleValue],
+                    .mediaContentAspectRatio = [nativeAd[@"mediaContentAspectRatio"] doubleValue],
+                    .isIconImageAvailable = [nativeAd[@"isIconImageAvailable"] boolValue],
+                    .isOptionsViewAvailable = [nativeAd[@"isOptionsViewAvailable"] boolValue],
+                    .isMediaViewAvailable = [nativeAd[@"isMediaViewAvailable"] boolValue],
+                },
+                .nativeAdImpl = {
+                    .title = std::string([nativeAdImpl[@"title"] ?: @"" UTF8String]),
+                    .advertiser = std::string([nativeAdImpl[@"advertiser"] ?: @"" UTF8String]),
+                    .body = std::string([nativeAdImpl[@"body"] ?: @"" UTF8String]),
+                    .callToAction = std::string([nativeAdImpl[@"callToAction"] ?: @"" UTF8String]),
+                    .image = [nativeAdImpl[@"image"] boolValue],
+                    .imageSource = std::string([nativeAdImpl[@"imageSource"] ?: @"" UTF8String]),
+                    .url = std::string([nativeAdImpl[@"url"] ?: @"" UTF8String]),
+                    .starRating = [nativeAdImpl[@"starRating"] doubleValue],
+                    .isOptionsViewAvailable = [nativeAdImpl[@"isOptionsViewAvailable"] boolValue],
+                    .isMediaViewAvailable = [nativeAdImpl[@"isMediaViewAvailable"] boolValue],
+                }
+            };
+            
+            nativeAdViewEventEmitter->onAdLoadedEvent(result);
+        }
+    };
+    
+    self.onAdLoadFailedEvent = [self](NSDictionary *event)
+    {
+        if ( _eventEmitter )
+        {
+            auto nativeAdViewEventEmitter = std::static_pointer_cast<AppLovinMAXNativeAdViewEventEmitter const>(_eventEmitter);
+            
+            AppLovinMAXNativeAdViewEventEmitter::OnAdLoadFailedEvent result =
+            {
+                .adUnitId = std::string([event[@"adUnitId"] ?: @"" UTF8String]),
+                .code = [event[@"code"] doubleValue],
+                .message = std::string([event[@"message"] ?: @"" UTF8String]),
+                .mediatedNetworkErrorCode = [event[@"mediatedNetworkErrorCode"] doubleValue],
+                .mediatedNetworkErrorMessage = std::string([event[@"mediatedNetworkErrorMessage"] ?: @"" UTF8String]),
+                .adLoadFailureInfo = std::string([event[@"adLoadFailureInfo"] ?: @"" UTF8String])
+            };
+            
+            nativeAdViewEventEmitter->onAdLoadFailedEvent(result);
+        }
+    };
+    
+    self.onAdClickedEvent = [self](NSDictionary *event)
+    {
+        if ( _eventEmitter )
+        {
+            auto nativeAdViewEventEmitter = std::static_pointer_cast<AppLovinMAXNativeAdViewEventEmitter const>(_eventEmitter);
+            
+            AppLovinMAXNativeAdViewEventEmitter::OnAdClickedEvent result =
+            {
+                .adUnitId = std::string([event[@"adUnitId"] ?: @"" UTF8String]),
+                .adFormat = std::string([event[@"adFormat"] ?: @"" UTF8String]),
+                .networkName = std::string([event[@"networkName"] ?: @"" UTF8String]),
+                .networkPlacement = std::string([event[@"networkPlacement"] ?: @"" UTF8String]),
+                .creativeId = std::string([event[@"creativeId"] ?: @"" UTF8String]),
+                .placement = std::string([event[@"placement"] ?: @"" UTF8String]),
+                .revenue = [event[@"revenue"] doubleValue],
+                .revenuePrecision = std::string([event[@"revenuePrecision"] ?: @"" UTF8String]),
+                .latencyMillis = [event[@"latencyMillis"] doubleValue],
+                .dspName = std::string([event[@"dspName"] ?: @"" UTF8String]),
+                .size = {
+                    .width = [event[@"size"][@"width"] doubleValue],
+                    .height = [event[@"size"][@"height"] doubleValue],
+                },
+            };
+            
+            nativeAdViewEventEmitter->onAdClickedEvent(result);
+        }
+    };
+    
+    self.onAdRevenuePaidEvent = [self](NSDictionary *event)
+    {
+        if ( _eventEmitter )
+        {
+            auto nativeAdViewEventEmitter = std::static_pointer_cast<AppLovinMAXNativeAdViewEventEmitter const>(_eventEmitter);
+            
+            AppLovinMAXNativeAdViewEventEmitter::OnAdRevenuePaidEvent result =
+            {
+                .adUnitId = std::string([event[@"adUnitId"] ?: @"" UTF8String]),
+                .adFormat = std::string([event[@"adFormat"] ?: @"" UTF8String]),
+                .networkName = std::string([event[@"networkName"] ?: @"" UTF8String]),
+                .networkPlacement = std::string([event[@"networkPlacement"] ?: @"" UTF8String]),
+                .creativeId = std::string([event[@"creativeId"] ?: @"" UTF8String]),
+                .placement = std::string([event[@"placement"] ?: @"" UTF8String]),
+                .revenue = [event[@"revenue"] doubleValue],
+                .revenuePrecision = std::string([event[@"revenuePrecision"] ?: @"" UTF8String]),
+                .latencyMillis = [event[@"latencyMillis"] doubleValue],
+                .dspName = std::string([event[@"dspName"] ?: @"" UTF8String]),
+                .size = {
+                    .width = [event[@"size"][@"width"] doubleValue],
+                    .height = [event[@"size"][@"height"] doubleValue],
+                },
+            };
+            
+            nativeAdViewEventEmitter->onAdRevenuePaidEvent(result);
+        }
+    };
+}
+
+- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
+{
+    const auto &oldViewProps = *std::static_pointer_cast<AppLovinMAXNativeAdViewProps const>(_props);
+    const auto &newViewProps = *std::static_pointer_cast<AppLovinMAXNativeAdViewProps const>(props);
+    
+    if ( oldViewProps.adUnitId != newViewProps.adUnitId )
+    {
+        [self setAdUnitId: RCTNSStringFromString(newViewProps.adUnitId)];
+    }
+    
+    if ( oldViewProps.placement != newViewProps.placement )
+    {
+        [self setPlacement: RCTNSStringFromStringNilIfEmpty(newViewProps.placement)];
+    }
+    
+    if ( oldViewProps.customData != newViewProps.customData )
+    {
+        [self setCustomData: RCTNSStringFromStringNilIfEmpty(newViewProps.customData)];
+    }
+    
+    if ( newViewProps.extraParameters.size() > 0 )
+    {
+        NSMutableArray *extraParameters = [NSMutableArray array];
+        
+        for ( const auto &parameter: newViewProps.extraParameters )
+        {
+            NSDictionary *dict = @{@"key": RCTNSStringFromString(parameter.key),
+                                   @"value": RCTNSStringFromString(parameter.value)};
+            [extraParameters addObject: dict];
+        }
+        
+        _extraParameters = extraParameters;
+    }
+    
+    if ( newViewProps.strLocalExtraParameters.size() > 0 )
+    {
+        NSMutableArray *strLocalExtraParameters = [NSMutableArray array];
+        
+        for ( const auto &parameter: newViewProps.strLocalExtraParameters )
+        {
+            NSDictionary *dict = @{@"key": RCTNSStringFromString(parameter.key),
+                                   @"value": RCTNSStringFromString(parameter.value)};
+            [strLocalExtraParameters addObject: dict];
+        }
+        
+        [self setStrLocalExtraParameters: strLocalExtraParameters];
+    }
+    
+    if ( newViewProps.boolLocalExtraParameters.size() > 0 )
+    {
+        NSMutableArray *boolLocalExtraParameters = [NSMutableArray array];
+        
+        for ( const auto &parameter: newViewProps.boolLocalExtraParameters )
+        {
+            NSDictionary *dict = @{@"key": RCTNSStringFromString(parameter.key),
+                                   @"value": @(parameter.value)};
+            [boolLocalExtraParameters addObject: dict];
+        }
+        
+        [self setBoolLocalExtraParameters: boolLocalExtraParameters];
+    }
+    
+    if ( [self.isAdUnitIdSet compareAndSet: YES update: NO] )
+    {
+        [self loadAd];
+    }
+    
+    [super updateProps: props oldProps: oldProps];
+}
+
+- (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
+{
+    if ( [commandName isEqualToString: @"loadAd"] )
+    {
+        [self loadAd];
+    }
+    else if ( [commandName isEqualToString: @"updateAssetView"] )
+    {
+        NSNumber *assetViewTag = (NSNumber *) args[0];
+        NSString *assetViewName = (NSString *) args[1];
+        [self updateAssetView: assetViewTag.doubleValue assetViewName: assetViewName];
+    }
+    else if ( [commandName isEqualToString: @"renderNativeAd"] )
+    {
+        [self renderNativeAd];
+    }
+}
+
+- (void)prepareForRecycle
+{
+    [super prepareForRecycle];
+    
+    static const auto defaultProps = std::make_shared<const AppLovinMAXNativeAdViewProps>();
+    _props = defaultProps;
+    
+    [self destroyCurrentAdIfNeeded];
+}
+
+#else // RCT_NEW_ARCH_ENABLED
+
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
     self = [super init];
@@ -65,6 +344,8 @@
     }
     return self;
 }
+
+#endif // RCT_NEW_ARCH_ENABLED
 
 // Lazily loaded for when Ad Unit ID is available
 - (nullable MANativeAdLoader *)adLoader
@@ -100,6 +381,30 @@
     [self.isAdUnitIdSet set: YES];
 }
 
+- (void)setStrLocalExtraParameters:(NSArray<NSDictionary *> *)strLocalExtraParameters
+{
+    if (!self.localExtraParameters)
+    {
+        self.localExtraParameters = [strLocalExtraParameters copy];
+    }
+    else
+    {
+        self.localExtraParameters = [self.localExtraParameters arrayByAddingObjectsFromArray: strLocalExtraParameters];
+    }
+}
+
+- (void)setBoolLocalExtraParameters:(NSArray<NSDictionary *> *)boolLocalExtraParameters
+{
+    if (!self.localExtraParameters)
+    {
+        self.localExtraParameters = [boolLocalExtraParameters copy];
+    }
+    else
+    {
+        self.localExtraParameters = [self.localExtraParameters arrayByAddingObjectsFromArray: boolLocalExtraParameters];
+    }
+}
+
 // Called when Ad Unit ID is set, and via RN layer
 - (void)loadAd
 {
@@ -116,14 +421,17 @@
         self.adLoader.placement = self.placement;
         self.adLoader.customData = self.customData;
         
-        for ( NSString *key in self.extraParameters )
+        for ( NSDictionary *parameter in self.extraParameters )
         {
-            [self.adLoader setExtraParameterForKey: key value: [self.extraParameters al_stringForKey: key]];
+            NSString *key = parameter[@"key"];
+            id value = parameter[@"value"];
+            [self.adLoader setExtraParameterForKey: key value: (value != [NSNull null] ? value : nil)];
         }
         
-        for ( NSString *key in self.localExtraParameters )
+        for ( NSDictionary *parameter in self.localExtraParameters )
         {
-            id value = self.localExtraParameters[key];
+            NSString *key = parameter[@"key"];
+            id value = parameter[@"value"];
             [self.adLoader setLocalExtraParameterForKey: key value: (value != [NSNull null] ? value : nil)];
         }
         
@@ -136,6 +444,38 @@
 }
 
 #pragma mark - Views to Replace
+
+- (void)updateAssetView:(double)assetViewTag assetViewName:(NSString *)assetViewName
+{
+    if ( [assetViewName isEqualToString: @"TitleView"] )
+    {
+        [self setTitleView: @(assetViewTag)];
+    }
+    else if ( [assetViewName isEqualToString: @"AdvertiserView"] )
+    {
+        [self setAdvertiserView: @(assetViewTag)];
+    }
+    else if ( [assetViewName isEqualToString: @"BodyView"] )
+    {
+        [self setBodyView: @(assetViewTag)];
+    }
+    else if ( [assetViewName isEqualToString: @"CallToActionView"] )
+    {
+        [self setCallToActionView: @(assetViewTag)];
+    }
+    else if ( [assetViewName isEqualToString: @"IconView"] )
+    {
+        [self setIconView: @(assetViewTag)];
+    }
+    else if ( [assetViewName isEqualToString: @"OptionsView"] )
+    {
+        [self setOptionsView: @(assetViewTag)];
+    }
+    else if ( [assetViewName isEqualToString: @"MediaView"] )
+    {
+        [self setMediaView: @(assetViewTag)];
+    }
+}
 
 - (void)setTitleView:(NSNumber *)tag
 {
@@ -204,7 +544,7 @@
 - (void)setIconView:(NSNumber *)tag
 {
     UIView *view = [self.bridge.uiManager viewForReactTag: tag];
-    if ( ![view isKindOfClass: [RCTImageView class]] )
+    if ( !view )
     {
         [[AppLovinMAX shared] log: @"Cannot find an icon image view with tag \"%@\" for %@", tag, self.adUnitId];
         return;
@@ -213,33 +553,6 @@
     view.tag = ICON_VIEW_TAG;
     
     [self.clickableViews addObject: view];
-    
-    MANativeAdImage *icon = self.nativeAd.nativeAd.icon;
-    if ( icon )
-    {
-        // Check if "URL" was missing and therefore need to set the image data
-        if ( !icon.URL && icon.image )
-        {
-            RCTImageView *iconImageView = (RCTImageView *) view;
-            if ( [iconImageView respondsToSelector: @selector(setImage:)] )
-            {
-                [iconImageView performSelector: @selector(setImage:) withObject: icon.image];
-            }
-            else
-            {
-                [[AppLovinMAX shared] log: @"Unable to set native ad IconView image"];
-            }
-        }
-    }
-    else
-    {
-        UIView *iconView = self.nativeAd.nativeAd.iconView;
-        if ( iconView )
-        {
-            [view addSubview: iconView];
-            [iconView al_pinToSuperview];
-        }
-    }
 }
 
 - (void)setOptionsView:(NSNumber *)tag
@@ -276,6 +589,14 @@
     [self.nativeAd.nativeAd.mediaView al_pinToSuperview];
 }
 
+- (void)renderNativeAd
+{
+    if ( !self.adLoader ) return;
+    
+    [self.adLoader registerClickableViews: self.clickableViews withContainer: self forAd: self.nativeAd];
+    [self.adLoader handleNativeAdViewRenderedForAd: self.nativeAd];
+}
+
 /**
  * Invoked:
  * 1. after all the JavaScript properties are set when mounting NativeAdView
@@ -286,13 +607,6 @@
     if ( [self.isAdUnitIdSet compareAndSet:YES update: NO] )
     {
         [self loadAd];
-    }
-    else
-    {
-        if ( !self.adLoader ) return;     
-
-        [self.adLoader registerClickableViews: self.clickableViews withContainer: self forAd: self.nativeAd];
-        [self.adLoader handleNativeAdViewRenderedForAd: self.nativeAd];
     }
 }
 
@@ -344,9 +658,6 @@
     nativeAdInfo[@"isOptionsViewAvailable"] = @(ad.optionsView != nil);
     nativeAdInfo[@"isMediaViewAvailable"] = @(ad.mediaView != nil);
     
-    NSMutableDictionary *adInfo = [[AppLovinMAX shared] adInfoForAd: self.nativeAd].mutableCopy;
-    adInfo[@"nativeAd"] = nativeAdInfo;
-    
     // 2. NativeAd for `AppLovinNativeAdView.js` to render the views
     
     NSMutableDictionary<NSString *, id> *jsNativeAd = [NSMutableDictionary dictionaryWithCapacity: 5];
@@ -364,23 +675,20 @@
         }
         else if ( ad.icon.image )
         {
-            jsNativeAd[@"image"] = @(YES);
+            NSData *imageData = UIImagePNGRepresentation(ad.icon.image);
+            jsNativeAd[@"imageSource"] = [imageData base64EncodedStringWithOptions: 0];
         }
-    }
-    else if ( ad.iconView )
-    {
-        jsNativeAd[@"image"] = @(YES);
     }
     
     jsNativeAd[@"isOptionsViewAvailable"] = ad.optionsView ? @(YES) : @(NO);
     jsNativeAd[@"isMediaViewAvailable"] = ad.mediaView ? @(YES) : @(NO);
     
-    NSMutableDictionary<NSString *, id> *arg = [NSMutableDictionary dictionaryWithCapacity: 2];
-    arg[@"adInfo"] = adInfo;
-    arg[@"nativeAd"] = jsNativeAd;
+    NSMutableDictionary *adInfo = [[[AppLovinMAX shared] adInfoForAd: self.nativeAd] mutableCopy];
+    adInfo[@"nativeAd"] = nativeAdInfo;
+    adInfo[@"nativeAdImpl"] = jsNativeAd;
     
     // Send to `AppLovinNativeAdView.js`
-    self.onAdLoadedEvent(arg);
+    self.onAdLoadedEvent(adInfo);
 }
 
 - (void)didFailToLoadNativeAdForAdUnitIdentifier:(NSString *)adUnitIdentifier withError:(MAError *)error
@@ -430,3 +738,10 @@
 }
 
 @end
+
+#ifdef RCT_NEW_ARCH_ENABLED
+Class<RCTComponentViewProtocol> AppLovinMAXNativeAdViewCls(void)
+{
+    return [AppLovinMAXNativeAdView class];
+}
+#endif
