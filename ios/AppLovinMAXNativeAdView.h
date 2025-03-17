@@ -31,9 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setMediaView:(NSNumber *)tag;
 - (void)renderNativeAd;
 
-#ifndef RCT_NEW_ARCH_ENABLED
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
-#endif
 
 @end
 

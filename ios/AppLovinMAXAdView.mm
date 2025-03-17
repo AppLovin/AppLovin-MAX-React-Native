@@ -594,15 +594,11 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
     }
 }
 
-#ifndef RCT_NEW_ARCH_ENABLED
-
 // Invoked after all the JavaScript properties are set when mounting AdView
 - (void)didSetProps:(NSArray<NSString *> *)changedProps
 {
     [self attachAdViewIfNeeded];
 }
-
-#endif // RCT_NEW_ARCH_ENABLED
 
 - (void)attachAdViewIfNeeded
 {

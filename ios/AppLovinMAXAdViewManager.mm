@@ -39,8 +39,6 @@ RCT_EXPORT_VIEW_PROPERTY(onAdRevenuePaidEvent, RCTDirectEventBlock)
     return YES;
 }
 
-#ifndef RCT_NEW_ARCH_ENABLED
-
 - (UIView *)view
 {
     return [[AppLovinMAXAdView alloc] init];
@@ -61,7 +59,5 @@ RCT_EXPORT_METHOD(loadAd:(nonnull NSNumber *)viewTag)
         [adView loadAd];
     }];
 }
-
-#endif // RCT_NEW_ARCH_ENABLED
 
 @end
