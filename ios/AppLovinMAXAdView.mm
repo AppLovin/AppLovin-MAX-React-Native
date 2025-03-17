@@ -10,7 +10,21 @@
 #import "AppLovinMAXAdView.h"
 #import "AppLovinMAXAdViewUIComponent.h"
 
+#ifdef RCT_NEW_ARCH_ENABLED
+
+#import <react/renderer/components/RNAppLovinMAXSpec/ComponentDescriptors.h>
+#import <react/renderer/components/RNAppLovinMAXSpec/EventEmitters.h>
+#import <react/renderer/components/RNAppLovinMAXSpec/Props.h>
+#import <react/renderer/components/RNAppLovinMAXSpec/RCTComponentViewHelpers.h>
+#import <React/RCTConversions.h>
+#import "RCTFabricComponentsPlugins.h"
+
+using namespace facebook::react;
+
+@interface AppLovinMAXAdView() <RCTAppLovinMAXAdViewViewProtocol>
+#else
 @interface AppLovinMAXAdView()
+#endif
 
 @property (nonatomic, strong, nullable) AppLovinMAXAdViewUIComponent *uiComponent; // nil when unmounted
 
@@ -23,8 +37,8 @@
 @property (nonatomic, assign, readonly, getter=isAdaptiveBannerEnabled) BOOL adaptiveBannerEnabled;
 @property (nonatomic, assign, readonly, getter=isAutoRefreshEnabled) BOOL autoRefresh;
 @property (nonatomic, assign, readonly, getter=isLoadOnMount) BOOL loadOnMount;
-@property (nonatomic, copy, nullable) NSDictionary<NSString *, id> *extraParameters;
-@property (nonatomic, copy, nullable) NSDictionary<NSString *, id> *localExtraParameters;
+@property (nonatomic, copy, nullable) NSArray<NSDictionary<NSString *, id> *> *extraParameters;
+@property (nonatomic, copy, nullable) NSArray<NSDictionary<NSString *, id> *> *localExtraParameters;
 
 @end
 
@@ -39,7 +53,6 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
     uiComponentInstances = [NSMutableDictionary dictionaryWithCapacity: 2];
     preloadedUIComponentInstances = [NSMutableDictionary dictionaryWithCapacity: 2];
 }
-
 
 // Returns an MAAdView to support Amazon integrations. This method returns the first instance that
 // matches the Ad Unit ID, consistent with the behavior introduced when this feature was first
@@ -72,7 +85,7 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
     return preloadedUIComponentInstances[adViewId];
 }
 
-+ (void)preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier 
++ (void)preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier
                               adFormat:(MAAdFormat *)adFormat
                              placement:(nullable NSString *)placement
                             customData:(nullable NSString *)customData
@@ -119,6 +132,359 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
     resolve(nil);
 }
 
+#ifdef RCT_NEW_ARCH_ENABLED
+
++ (ComponentDescriptorProvider)componentDescriptorProvider
+{
+    return concreteComponentDescriptorProvider<AppLovinMAXAdViewComponentDescriptor>();
+}
+
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame: frame];
+    if ( self )
+    {
+        static const auto defaultProps = std::make_shared<const AppLovinMAXAdViewProps>();
+        _props = defaultProps;
+        
+        const auto &initProps = *std::static_pointer_cast<AppLovinMAXAdViewProps const>(_props);
+        _adaptiveBannerEnabled = initProps.adaptiveBannerEnabled;
+        _autoRefresh = initProps.autoRefresh;
+        _loadOnMount = initProps.loadOnMount;
+        
+        [self setupEventHandlers];
+    }
+    return self;
+}
+
+- (void)setupEventHandlers
+{
+    self.onAdLoadedEvent = [self](NSDictionary *event)
+    {
+        if ( _eventEmitter )
+        {
+            auto adViewEventEmitter = std::static_pointer_cast<AppLovinMAXAdViewEventEmitter const>(_eventEmitter);
+            
+            AppLovinMAXAdViewEventEmitter::OnAdLoadedEvent result =
+            {
+                .adUnitId = std::string([event[@"adUnitId"] ?: @"" UTF8String]),
+                .adFormat = std::string([event[@"adFormat"] ?: @"" UTF8String]),
+                .adViewId = [event[@"adViewId"] doubleValue],
+                .networkName = std::string([event[@"networkName"] ?: @"" UTF8String]),
+                .networkPlacement = std::string([event[@"networkPlacement"] ?: @"" UTF8String]),
+                .creativeId = std::string([event[@"creativeId"] ?: @"" UTF8String]),
+                .placement = std::string([event[@"placement"] ?: @"" UTF8String]),
+                .revenue = [event[@"revenue"] doubleValue],
+                .revenuePrecision = std::string([event[@"revenuePrecision"] ?: @"" UTF8String]),
+                .latencyMillis = [event[@"latencyMillis"] doubleValue],
+                .dspName = std::string([event[@"dspName"] ?: @"" UTF8String]),
+                .size = {
+                    .width = [event[@"size"][@"width"] doubleValue],
+                    .height = [event[@"size"][@"height"] doubleValue],
+                }
+            };
+            
+            adViewEventEmitter->onAdLoadedEvent(result);
+        }
+    };
+    
+    self.onAdLoadFailedEvent = [self](NSDictionary *event)
+    {
+        if ( _eventEmitter )
+        {
+            auto adViewEventEmitter = std::static_pointer_cast<AppLovinMAXAdViewEventEmitter const>(_eventEmitter);
+            
+            AppLovinMAXAdViewEventEmitter::OnAdLoadFailedEvent result =
+            {
+                .adUnitId = std::string([event[@"adUnitId"] ?: @"" UTF8String]),
+                .adViewId = [event[@"adViewId"] doubleValue],
+                .code = [event[@"code"] doubleValue],
+                .message = std::string([event[@"message"] ?: @"" UTF8String]),
+                .mediatedNetworkErrorCode = [event[@"mediatedNetworkErrorCode"] doubleValue],
+                .mediatedNetworkErrorMessage = std::string([event[@"mediatedNetworkErrorMessage"] ?: @"" UTF8String]),
+                .adLoadFailureInfo = std::string([event[@"adLoadFailureInfo"] ?: @"" UTF8String])
+            };
+            
+            adViewEventEmitter->onAdLoadFailedEvent(result);
+        }
+    };
+    
+    self.onAdDisplayFailedEvent = [self](NSDictionary *event)
+    {
+        if ( _eventEmitter )
+        {
+            auto adViewEventEmitter = std::static_pointer_cast<AppLovinMAXAdViewEventEmitter const>(_eventEmitter);
+            
+            AppLovinMAXAdViewEventEmitter::OnAdDisplayFailedEvent result =
+            {
+                .adUnitId = std::string([event[@"adUnitId"] ?: @"" UTF8String]),
+                .adFormat = std::string([event[@"adFormat"] ?: @"" UTF8String]),
+                .adViewId = [event[@"adViewId"] doubleValue],
+                .networkName = std::string([event[@"networkName"] ?: @"" UTF8String]),
+                .networkPlacement = std::string([event[@"networkPlacement"] ?: @"" UTF8String]),
+                .creativeId = std::string([event[@"creativeId"] ?: @"" UTF8String]),
+                .placement = std::string([event[@"placement"] ?: @"" UTF8String]),
+                .revenue = [event[@"revenue"] doubleValue],
+                .revenuePrecision = std::string([event[@"revenuePrecision"] ?: @"" UTF8String]),
+                .latencyMillis = [event[@"latencyMillis"] doubleValue],
+                .code = [event[@"code"] doubleValue],
+                .message = std::string([event[@"message"] ?: @"" UTF8String]),
+                .mediatedNetworkErrorCode = [event[@"mediatedNetworkErrorCode"] doubleValue],
+                .mediatedNetworkErrorMessage = std::string([event[@"mediatedNetworkErrorMessage"] ?: @"" UTF8String]),
+                .size = {
+                    .width = [event[@"size"][@"width"] doubleValue],
+                    .height = [event[@"size"][@"height"] doubleValue],
+                }
+            };
+            
+            adViewEventEmitter->onAdDisplayFailedEvent(result);
+        }
+    };
+    
+    self.onAdClickedEvent = [self](NSDictionary *event)
+    {
+        if ( _eventEmitter )
+        {
+            auto adViewEventEmitter = std::static_pointer_cast<AppLovinMAXAdViewEventEmitter const>(_eventEmitter);
+            
+            AppLovinMAXAdViewEventEmitter::OnAdClickedEvent result =
+            {
+                .adUnitId = std::string([event[@"adUnitId"] ?: @"" UTF8String]),
+                .adFormat = std::string([event[@"adFormat"] ?: @"" UTF8String]),
+                .adViewId = [event[@"adViewId"] doubleValue],
+                .networkName = std::string([event[@"networkName"] ?: @"" UTF8String]),
+                .networkPlacement = std::string([event[@"networkPlacement"] ?: @"" UTF8String]),
+                .creativeId = std::string([event[@"creativeId"] ?: @"" UTF8String]),
+                .placement = std::string([event[@"placement"] ?: @"" UTF8String]),
+                .revenue = [event[@"revenue"] doubleValue],
+                .revenuePrecision = std::string([event[@"revenuePrecision"] ?: @"" UTF8String]),
+                .latencyMillis = [event[@"latencyMillis"] doubleValue],
+                .size = {
+                    .width = [event[@"size"][@"width"] doubleValue],
+                    .height = [event[@"size"][@"height"] doubleValue],
+                }
+            };
+            
+            adViewEventEmitter->onAdClickedEvent(result);
+        }
+    };
+    
+    self.onAdExpandedEvent = [self](NSDictionary *event)
+    {
+        if ( _eventEmitter )
+        {
+            auto adViewEventEmitter = std::static_pointer_cast<AppLovinMAXAdViewEventEmitter const>(_eventEmitter);
+            
+            AppLovinMAXAdViewEventEmitter::OnAdExpandedEvent result =
+            {
+                .adUnitId = std::string([event[@"adUnitId"] ?: @"" UTF8String]),
+                .adFormat = std::string([event[@"adFormat"] ?: @"" UTF8String]),
+                .adViewId = [event[@"adViewId"] doubleValue],
+                .networkName = std::string([event[@"networkName"] ?: @"" UTF8String]),
+                .networkPlacement = std::string([event[@"networkPlacement"] ?: @"" UTF8String]),
+                .creativeId = std::string([event[@"creativeId"] ?: @"" UTF8String]),
+                .placement = std::string([event[@"placement"] ?: @"" UTF8String]),
+                .revenue = [event[@"revenue"] doubleValue],
+                .revenuePrecision = std::string([event[@"revenuePrecision"] ?: @"" UTF8String]),
+                .latencyMillis = [event[@"latencyMillis"] doubleValue],
+                .size = {
+                    .width = [event[@"size"][@"width"] doubleValue],
+                    .height = [event[@"size"][@"height"] doubleValue],
+                }
+            };
+            
+            adViewEventEmitter->onAdExpandedEvent(result);
+        }
+    };
+    
+    self.onAdCollapsedEvent = [self](NSDictionary *event)
+    {
+        if ( _eventEmitter )
+        {
+            auto adViewEventEmitter = std::static_pointer_cast<AppLovinMAXAdViewEventEmitter const>(_eventEmitter);
+            
+            AppLovinMAXAdViewEventEmitter::OnAdCollapsedEvent result =
+            {
+                .adUnitId = std::string([event[@"adUnitId"] ?: @"" UTF8String]),
+                .adFormat = std::string([event[@"adFormat"] ?: @"" UTF8String]),
+                .adViewId = [event[@"adViewId"] doubleValue],
+                .networkName = std::string([event[@"networkName"] ?: @"" UTF8String]),
+                .networkPlacement = std::string([event[@"networkPlacement"] ?: @"" UTF8String]),
+                .creativeId = std::string([event[@"creativeId"] ?: @"" UTF8String]),
+                .placement = std::string([event[@"placement"] ?: @"" UTF8String]),
+                .revenue = [event[@"revenue"] doubleValue],
+                .revenuePrecision = std::string([event[@"revenuePrecision"] ?: @"" UTF8String]),
+                .latencyMillis = [event[@"latencyMillis"] doubleValue],
+                .size = {
+                    .width = [event[@"size"][@"width"] doubleValue],
+                    .height = [event[@"size"][@"height"] doubleValue],
+                }
+            };
+            
+            adViewEventEmitter->onAdCollapsedEvent(result);
+        }
+    };
+    
+    self.onAdRevenuePaidEvent = [self](NSDictionary *event)
+    {
+        if ( _eventEmitter )
+        {
+            auto adViewEventEmitter = std::static_pointer_cast<AppLovinMAXAdViewEventEmitter const>(_eventEmitter);
+            
+            AppLovinMAXAdViewEventEmitter::OnAdRevenuePaidEvent result =
+            {
+                .adUnitId = std::string([event[@"adUnitId"] ?: @"" UTF8String]),
+                .adFormat = std::string([event[@"adFormat"] ?: @"" UTF8String]),
+                .adViewId = [event[@"adViewId"] doubleValue],
+                .networkName = std::string([event[@"networkName"] ?: @"" UTF8String]),
+                .networkPlacement = std::string([event[@"networkPlacement"] ?: @"" UTF8String]),
+                .creativeId = std::string([event[@"creativeId"] ?: @"" UTF8String]),
+                .placement = std::string([event[@"placement"] ?: @"" UTF8String]),
+                .revenue = [event[@"revenue"] doubleValue],
+                .revenuePrecision = std::string([event[@"revenuePrecision"] ?: @"" UTF8String]),
+                .latencyMillis = [event[@"latencyMillis"] doubleValue],
+                .size = {
+                    .width = [event[@"size"][@"width"] doubleValue],
+                    .height = [event[@"size"][@"height"] doubleValue],
+                }
+            };
+            
+            adViewEventEmitter->onAdRevenuePaidEvent(result);
+        }
+    };
+}
+
+- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
+{
+    const auto &oldViewProps = *std::static_pointer_cast<AppLovinMAXAdViewProps const>(_props);
+    const auto &newViewProps = *std::static_pointer_cast<AppLovinMAXAdViewProps const>(props);
+    
+    BOOL isAdUnitIdSet;
+    
+    if ( oldViewProps.adUnitId != newViewProps.adUnitId )
+    {
+        [self setAdUnitId: RCTNSStringFromString(newViewProps.adUnitId)];
+        isAdUnitIdSet = YES;
+    }
+    
+    if ( oldViewProps.adFormat != newViewProps.adFormat )
+    {
+        NSString *adFormatStr = RCTNSStringFromString(newViewProps.adFormat);
+        
+        if ( [@"BANNER" al_isEqualToStringIgnoringCase: adFormatStr] )
+        {
+            _adFormat = DEVICE_SPECIFIC_ADVIEW_AD_FORMAT;
+        }
+        else if ( [@"MREC" al_isEqualToStringIgnoringCase: adFormatStr] )
+        {
+            _adFormat = MAAdFormat.mrec;
+        }
+        else
+        {
+            [[AppLovinMAX shared] log: @"Attempting to set an invalid ad format of \"%@\" for %@", adFormatStr, self.adUnitId];
+        }
+    }
+    
+    if ( oldViewProps.adViewId != newViewProps.adViewId )
+    {
+        [self setAdViewId: @(newViewProps.adViewId)];
+    }
+    
+    if ( oldViewProps.placement != newViewProps.placement )
+    {
+        [self setPlacement: RCTNSStringFromStringNilIfEmpty(newViewProps.placement)];
+    }
+    
+    if ( oldViewProps.customData != newViewProps.customData )
+    {
+        [self setCustomData: RCTNSStringFromStringNilIfEmpty(newViewProps.customData)];
+    }
+    
+    if ( oldViewProps.adaptiveBannerEnabled != newViewProps.adaptiveBannerEnabled )
+    {
+        [self setAdaptiveBannerEnabled: newViewProps.adaptiveBannerEnabled];
+    }
+    
+    if ( oldViewProps.autoRefresh != newViewProps.autoRefresh )
+    {
+        [self setAutoRefresh: newViewProps.autoRefresh];
+    }
+    
+    if ( oldViewProps.loadOnMount != newViewProps.loadOnMount )
+    {
+        [self setLoadOnMount: newViewProps.loadOnMount];
+    }
+    
+    if ( newViewProps.extraParameters.size() > 0 )
+    {
+        NSMutableArray *extraParameters = [NSMutableArray array];
+        
+        for ( const auto &parameter: newViewProps.extraParameters )
+        {
+            NSDictionary *dict = @{@"key": RCTNSStringFromString(parameter.key),
+                                   @"value": RCTNSStringFromString(parameter.value)};
+            [extraParameters addObject: dict];
+        }
+        
+        _extraParameters = extraParameters;
+    }
+    
+    if ( newViewProps.strLocalExtraParameters.size() > 0 )
+    {
+        NSMutableArray *strLocalExtraParameters = [NSMutableArray array];
+        
+        for ( const auto &parameter: newViewProps.strLocalExtraParameters )
+        {
+            NSDictionary *dict = @{@"key": RCTNSStringFromString(parameter.key),
+                                   @"value": RCTNSStringFromString(parameter.value)};
+            [strLocalExtraParameters addObject: dict];
+        }
+        
+        [self setStrLocalExtraParameters: strLocalExtraParameters];
+    }
+    
+    if ( newViewProps.boolLocalExtraParameters.size() > 0 )
+    {
+        NSMutableArray *boolLocalExtraParameters = [NSMutableArray array];
+        
+        for ( const auto &parameter: newViewProps.boolLocalExtraParameters )
+        {
+            NSDictionary *dict = @{@"key": RCTNSStringFromString(parameter.key),
+                                   @"value": @(parameter.value)};
+            [boolLocalExtraParameters addObject: dict];
+        }
+        
+        [self setBoolLocalExtraParameters: boolLocalExtraParameters];
+    }
+    
+    if ( isAdUnitIdSet )
+    {
+        [self attachAdViewIfNeeded];
+    }
+    
+    [super updateProps: props oldProps: oldProps];
+}
+
+- (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
+{
+    if ( [commandName isEqualToString: @"loadAd"] )
+    {
+        [self loadAd];
+    }
+}
+
+- (void)prepareForRecycle
+{
+    [super prepareForRecycle];
+    
+    static const auto defaultProps = std::make_shared<const AppLovinMAXAdViewProps>();
+    _props = defaultProps;
+    
+    [self destroyCurrentAdIfNeeded];
+}
+
+#endif // RCT_NEW_ARCH_ENABLED
+
 - (void)setAdUnitId:(NSString *)adUnitId
 {
     // Ad Unit ID must be set prior to creating MAAdView
@@ -131,26 +497,26 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
     _adUnitId = adUnitId;
 }
 
-- (void)setAdFormat:(NSString *)adFormat
+- (void)setAdFormat:(NSString *)adFormatStr
 {
     // Ad format must be set prior to creating MAAdView
     if ( self.uiComponent )
     {
-        [[AppLovinMAX shared] log: @"Attempting to set ad format %@ after the native UI component is created", adFormat];
+        [[AppLovinMAX shared] log: @"Attempting to set ad format %@ after the native UI component is created", adFormatStr];
         return;
     }
     
-    if ( [MAAdFormat.banner.label isEqualToString: adFormat] )
+    if ( [@"BANNER" al_isEqualToStringIgnoringCase: adFormatStr] )
     {
         _adFormat = DEVICE_SPECIFIC_ADVIEW_AD_FORMAT;
     }
-    else if ( [MAAdFormat.mrec.label isEqualToString: adFormat] )
+    else if ( [@"MREC" al_isEqualToStringIgnoringCase: adFormatStr] )
     {
         _adFormat = MAAdFormat.mrec;
     }
     else
     {
-        [[AppLovinMAX shared] log: @"Attempting to set an invalid ad format of \"%@\" for %@", adFormat, self.adUnitId];
+        [[AppLovinMAX shared] log: @"Attempting to set an invalid ad format of \"%@\" for %@", adFormatStr, self.adUnitId];
     }
 }
 
@@ -202,6 +568,30 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
 - (void)setLoadOnMount:(BOOL)loadOnMount
 {
     _loadOnMount = loadOnMount;
+}
+
+- (void)setStrLocalExtraParameters:(NSArray<NSDictionary<NSString *, id> *> *)strLocalExtraParameters
+{
+    if (!self.localExtraParameters)
+    {
+        self.localExtraParameters = [strLocalExtraParameters copy];
+    }
+    else
+    {
+        self.localExtraParameters = [self.localExtraParameters arrayByAddingObjectsFromArray: strLocalExtraParameters];
+    }
+}
+
+- (void)setBoolLocalExtraParameters:(NSArray<NSDictionary<NSString *, id> *> *)boolLocalExtraParameters
+{
+    if (!self.localExtraParameters)
+    {
+        self.localExtraParameters = [boolLocalExtraParameters copy];
+    }
+    else
+    {
+        self.localExtraParameters = [self.localExtraParameters arrayByAddingObjectsFromArray: boolLocalExtraParameters];
+    }
 }
 
 // Invoked after all the JavaScript properties are set when mounting AdView
@@ -263,10 +653,30 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
         
         [[AppLovinMAX shared] log: @"Mounting a new AdView (%@) for Ad Unit ID %@", self.adViewId, self.adUnitId];
         
+        NSMutableDictionary<NSString *, id> *flattenedExtraParameters;
+        if ( self.extraParameters )
+        {
+            flattenedExtraParameters = [NSMutableDictionary dictionary];
+            for ( NSDictionary *parameter in self.extraParameters )
+            {
+                flattenedExtraParameters[parameter[@"key"]] = parameter[@"value"];
+            }
+        }
+        
+        NSMutableDictionary<NSString *, id> *flattenedLocalExtraParameters;
+        if ( self.localExtraParameters )
+        {
+            flattenedLocalExtraParameters = [NSMutableDictionary dictionary];
+            for ( NSDictionary *parameter in self.localExtraParameters )
+            {
+                flattenedLocalExtraParameters[parameter[@"key"]] = parameter[@"value"];
+            }
+        }
+        
         self.uiComponent.placement = self.placement;
         self.uiComponent.customData = self.customData;
-        self.uiComponent.extraParameters = self.extraParameters;
-        self.uiComponent.localExtraParameters = self.localExtraParameters;
+        self.uiComponent.extraParameters = flattenedExtraParameters;
+        self.uiComponent.localExtraParameters = flattenedLocalExtraParameters;
         self.uiComponent.adaptiveBannerEnabled = [self isAdaptiveBannerEnabled];
         self.uiComponent.autoRefreshEnabled = [self isAutoRefreshEnabled];
         
@@ -290,6 +700,31 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
     [self.uiComponent loadAd];
 }
 
+- (void)destroyCurrentAdIfNeeded
+{
+    if ( !self.uiComponent ) return;
+    
+    [self.uiComponent detachAdView];
+    
+    AppLovinMAXAdViewUIComponent *preloadedUIComponent = preloadedUIComponentInstances[self.adViewId];
+    
+    if ( self.uiComponent == preloadedUIComponent )
+    {
+        [[AppLovinMAX shared] log: @"Unmounting the preloaded AdView (%@) for Ad Unit ID %@", self.adViewId, self.adUnitId];
+        
+        self.uiComponent.autoRefreshEnabled = NO;
+    }
+    else
+    {
+        [[AppLovinMAX shared] log: @"Unmounting the AdView (%@) to destroy for Ad Unit ID %@", self.adViewId, self.adUnitId];
+        
+        [uiComponentInstances removeObjectForKey: self.adViewId];
+        [self.uiComponent destroy];
+    }
+    
+    self.uiComponent = nil;
+}
+
 - (void)didMoveToWindow
 {
     [super didMoveToWindow];
@@ -297,29 +732,16 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
     // This view is unmounted
     if ( !self.window )
     {
-        if ( self.uiComponent )
-        {
-            [self.uiComponent detachAdView];
-            
-            AppLovinMAXAdViewUIComponent *preloadedUIComponent = preloadedUIComponentInstances[self.adViewId];
-            
-            if ( self.uiComponent == preloadedUIComponent )
-            {
-                [[AppLovinMAX shared] log: @"Unmounting the preloaded AdView (%@) for Ad Unit ID %@", self.adViewId, self.adUnitId];
-                
-                self.uiComponent.autoRefreshEnabled = NO;
-            }
-            else
-            {
-                [[AppLovinMAX shared] log: @"Unmounting the AdView (%@) to destroy for Ad Unit ID %@", self.adViewId, self.adUnitId];
-                
-                [uiComponentInstances removeObjectForKey: self.adViewId];
-                [self.uiComponent destroy];
-            }
-        }
-        
-        self.uiComponent = nil;
+        [self destroyCurrentAdIfNeeded];
     }
 }
 
 @end
+
+#ifdef RCT_NEW_ARCH_ENABLED
+Class<RCTComponentViewProtocol> AppLovinMAXAdViewCls(void)
+{
+    return [AppLovinMAXAdView class];
+}
+#endif
+

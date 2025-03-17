@@ -330,7 +330,7 @@ using namespace facebook::react;
     [self destroyCurrentAdIfNeeded];
 }
 
-#else // RCT_NEW_ARCH_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
@@ -344,8 +344,6 @@ using namespace facebook::react;
     }
     return self;
 }
-
-#endif // RCT_NEW_ARCH_ENABLED
 
 // Lazily loaded for when Ad Unit ID is available
 - (nullable MANativeAdLoader *)adLoader

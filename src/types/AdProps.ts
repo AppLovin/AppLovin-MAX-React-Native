@@ -29,13 +29,13 @@ export type AdProps = {
      * A dictionary value representing the extra parameters to set a list of key-value string pairs
      * for the ad.
      */
-    extraParameters?: { [key: string]: string | null };
+    extraParameters?: { [key: string]: string };
 
     /**
      * A dictionary value representing the local extra parameters to set a list of key-value pairs
      * to pass to the adapter instances.
      */
-    localExtraParameters?: { [key: string]: LocalExtraParameterValue };
+    localExtraParameters?: { [key: string]: string | boolean };
 
     /**
      * A callback fuction that {@link AdView} or {@link NativeAdView} fires when it loads a new ad.

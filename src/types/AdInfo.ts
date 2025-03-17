@@ -77,7 +77,7 @@ export type AdInfo = {
     /**
      * The underlying waterfall of ad responses.
      */
-    waterfall: AdWaterfallInfo;
+    waterfall?: AdWaterfallInfo;
 
     /**
      * The native ad info.

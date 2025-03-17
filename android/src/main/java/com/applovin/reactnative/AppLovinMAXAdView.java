@@ -7,7 +7,7 @@ import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.ads.MaxAdView;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.views.view.ReactViewGroup;
 
 import java.util.HashMap;
@@ -52,7 +52,7 @@ public class AppLovinMAXAdView
     {
         for ( Map.Entry<Integer, AppLovinMAXAdViewUiComponent> entry : preloadedUiComponentInstances.entrySet() )
         {
-            if ( entry.getValue().getAdUnitId().equals ( adUnitId ) )
+            if ( entry.getValue().getAdUnitId().equals( adUnitId ) )
             {
                 return entry.getValue().getAdView();
             }
@@ -147,11 +147,11 @@ public class AppLovinMAXAdView
             return;
         }
 
-        if ( MaxAdFormat.BANNER.getLabel().equals( value ) )
+        if ( "BANNER".equalsIgnoreCase( value ) )
         {
             adFormat = AppLovinMAXModuleImpl.getDeviceSpecificBannerAdViewAdFormat( reactContext );
         }
-        else if ( MaxAdFormat.MREC.getLabel().equals( value ) )
+        else if ( "MREC".equalsIgnoreCase( value ) )
         {
             adFormat = MaxAdFormat.MREC;
         }
@@ -211,19 +211,26 @@ public class AppLovinMAXAdView
         loadOnMount = enabled;
     }
 
-    public void setExtraParameters(@Nullable final ReadableMap readableMap)
+    public void setExtraParameters(@Nullable final ReadableArray extraParameters)
     {
-        if ( readableMap != null )
-        {
-            extraParameters = readableMap.toHashMap();
-        }
+        this.extraParameters = AppLovinMAXUtils.convertReadbleArrayToHashMap( extraParameters );
     }
 
-    public void setLocalExtraParameters(@Nullable final ReadableMap readableMap)
+    public void setLocalExtraParameters(@Nullable final ReadableArray localExtraParameters)
     {
-        if ( readableMap != null )
+        Map<String, Object> localExtraParametersMap = AppLovinMAXUtils.convertReadbleArrayToHashMap( localExtraParameters );
+
+        if ( localExtraParametersMap == null ) return;
+
+        // Accumulate the result since this function may be called multiple times
+        // to handle different value types, including string, number, boolean, and null.
+        if ( this.localExtraParameters != null )
         {
-            localExtraParameters = readableMap.toHashMap();
+            this.localExtraParameters.putAll( localExtraParametersMap );
+        }
+        else
+        {
+            this.localExtraParameters = localExtraParametersMap;
         }
     }
 

@@ -32,8 +32,6 @@ RCT_EXPORT_VIEW_PROPERTY(onAdRevenuePaidEvent, RCTDirectEventBlock)
     return YES;
 }
 
-#ifndef RCT_NEW_ARCH_ENABLED
-
 - (UIView *)view
 {
     return [[AppLovinMAXNativeAdView alloc] initWithBridge: self.bridge];
@@ -114,7 +112,5 @@ RCT_EXPORT_METHOD(renderNativeAd:(nonnull NSNumber *)viewTag)
         [nativeAdView renderNativeAd];
     }];
 }
-
-#endif // RCT_NEW_ARCH_ENABLED
 
 @end
