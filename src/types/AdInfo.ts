@@ -2,85 +2,83 @@ import type { ErrorCode } from '../ErrorCode';
 import type { AdViewId } from './AdViewProps';
 
 /**
- * Represents an ad that has been served by AppLovin MAX.
+ * Represents a successfully loaded ad served by AppLovin MAX.
  */
 export type AdInfo = {
     /**
-     * The ad unit ID for which this ad was loaded.
+     * The ad unit ID that was used to load this ad.
      */
     adUnitId: string;
 
     /**
-     * The format of this ad.
+     * The format of the ad.
      */
     adFormat: string;
 
     /**
-     * The unique ID of the native UI component AdView.
+     * The unique identifier of the associated native AdView component, if any.
      */
     adViewId?: AdViewId;
 
     /**
-     * The creative ID tied to the ad, if any. You can report creative issues to the corresponding
-     * ad network using this ID.
+     * The creative ID associated with the ad.
+     * This can be used to report issues with the creative.
      *
-     * @see {@link https://support.applovin.com/hc/en-us/articles/13986039797389-Creative-Debugger#h_01HC10588YYDNZMS1GPCVRD2E7}
+     * @see https://support.applovin.com/hc/en-us/articles/13986039797389
      */
     creativeId?: string | null;
 
     /**
-     * The ad network from which this ad was loaded.
-     *
-     * @see {@link https://support.applovin.com/hc/en-us/articles/13986039797389-Creative-Debugger#h_01HC10588YWTJHYE1E35HWQTX7}
+     * The name of the ad network that served the ad.
      */
     networkName: string;
 
     /**
-     * The ad network placement for which this ad was loaded.
+     * The name of the placement as configured on the ad network side.
      */
     networkPlacement: string;
 
     /**
-     * The placement name that you assign when you integrate each ad format, for granular reporting
-     * in postbacks.
+     * The custom placement name defined in your integration.
+     * Used for postback reporting.
      */
     placement?: string | null;
 
     /**
-     *  The ad’s revenue amount. In the case where no revenue amount exists, or it is not available
-     *  yet, returns 0.
+     * The revenue generated from the ad impression, in USD.
+     * Defaults to 0 if not available.
      */
     revenue: number;
 
     /**
-     * The precision of the revenue value for this ad.
+     * The precision level of the revenue value reported for this ad.
      *
-     * Possible values are:
-     * - "publisher_defined" - If the revenue is the price assigned to the line item by the publisher.
-     * - "exact" - If the revenue is the resulting price of a real-time auction.
-     * - "estimated" - If the revenue is the price obtained by auto-CPM.
-     * - "undefined" - If we do not have permission from the ad network to share impression-level data.
-     * - "" - An empty string, if revenue and precision are not valid (for example, in test mode).
+     * Possible values:
+     * - `"exact"` — Revenue from a real-time auction.
+     * - `"estimated"` — Revenue estimated via auto-CPM.
+     * - `"publisher_defined"` — Revenue set manually by the publisher.
+     * - `"undefined"` — The ad network does not permit impression-level revenue data.
+     * - `""` — Empty when revenue and precision are unavailable (e.g., in test mode).
      */
     revenuePrecision: string;
 
     /**
-     * The DSP network that provides the loaded ad when the ad is served through AppLovin Exchange.
+     * The name of the DSP (Demand-Side Platform), if served through AppLovin Exchange.
      */
     dspName?: string | null;
 
     /**
-     * The latency of the mediation ad load request in milliseconds.
+     * Total mediation load time in milliseconds.
      */
     latencyMillis: number;
 
     /**
-     * The underlying waterfall of ad responses.
+     * The full ad waterfall associated with this ad request.
      */
     waterfall?: AdWaterfallInfo;
 
     /**
-     * The native ad info.
+     * The native ad, if available.
      */
     nativeAd?: AdNativeInfo | null;
 
@@ -94,264 +92,259 @@ export type AdInfo = {
 };
 
 /**
- * Encapsulates various data for MAX load errors.
+ * Represents a failure when attempting to load an ad.
  */
 export type AdLoadFailedInfo = {
     /**
-     * The ad unit ID for which this ad was loaded.
+     * The ad unit ID for which the load failed.
      */
     adUnitId: string;
 
     /**
-     * The unique ID of the native UI component AdView.
+     * The native AdView component ID, if available.
      */
     adViewId?: AdViewId;
 
     /**
-     * The error code for the error.
+     * AppLovin MAX-defined error code.
      */
     code: ErrorCode;
 
     /**
-     * The error message for the error.
+     * Descriptive message for the error.
      */
     message?: string | null;
 
     /**
-     * The mediated network's error code for the error.
+     * Error code from the mediated network.
      */
     mediatedNetworkErrorCode: number;
 
     /**
-     * The mediated network's error message for the error.
+     * Error message from the mediated network.
      */
     mediatedNetworkErrorMessage: string;
 
     /**
-     * The message for the error.
+     * Additional debug information for ad load failure (legacy).
      */
     adLoadFailureInfo?: string | null;
 
     /**
-     * The underlying waterfall of ad responses.
+     * Waterfall data associated with the failed request.
      */
     waterfall?: AdWaterfallInfo | null;
 };
 
 /**
- * Encapsulates various data for MAX display errors.
+ * Represents an error that occurred when displaying an ad.
  */
 export type AdDisplayFailedInfo = AdInfo & {
     /**
-     * The error code for the error.
+     * AppLovin MAX-defined error code.
      */
     code: ErrorCode;
 
     /**
-     * The error message for the error.
+     * Descriptive message for the error.
      */
     message?: string | null;
 
     /**
-     * The mediated network's error code for the error.
+     * Error code from the mediated network.
      */
     mediatedNetworkErrorCode: number;
 
     /**
-     * The mediated network's error message for the error.
+     * Error message from the mediated network.
      */
     mediatedNetworkErrorMessage: string;
 };
 
 /**
- * Represents a reward given to the user.
+ * Represents a successful reward event from a rewarded ad.
  */
 export type AdRewardInfo = AdInfo & {
     /**
-     * The reward label.
+     * The label of the reward.
      */
     rewardLabel?: string | null;
 
     /**
-     * The rewarded amount.
+     * The reward amount, as a string.
      */
     rewardAmount: string;
 };
 
 /**
- * Represents a native ad.
+ * Describes metadata for a native ad, including asset availability.
  */
 export type AdNativeInfo = {
     /**
-     * The native ad title text for {@link TitleView}.
+     * Title text of the native ad for use in {@link TitleView}.
      */
     title?: string;
 
     /**
-     * The native ad advertiser text for {@link AdvertiserView}.
+     * Advertiser name for {@link AdvertiserView}.
      */
     advertiser?: string;
 
     /**
-     * The native ad body text for {@link BodyView}}.
+     * Body text for {@link BodyView}.
      */
     body?: string;
 
     /**
-     * The native ad CTA (call to action) text for {@link CallToActionView}.
+     * Call-to-action label for {@link CallToActionView}.
      */
     callToAction?: string;
 
     /**
-     * The star rating of the native ad in the [0.0, 5.0] range for {@link StarRatingView}, if provided by the network.
+     * Star rating (0.0 to 5.0) for {@link StarRatingView}.
      */
     starRating?: number;
 
     /**
-     * The aspect ratio (width-to-height) for {@link MediaView} if provided by the network.
+     * Aspect ratio (width / height) for {@link MediaView}, if available.
      */
     mediaContentAspectRatio?: number;
 
     /**
-     * Whether or not the content for {@link IconView} is available.
+     * Whether an icon image is available for {@link IconView}.
      */
     isIconImageAvailable: boolean;
 
     /**
-     * Whether or not the content for {@link OptionsView} is available.
+     * Whether the options menu view is available for {@link OptionsView}.
      */
     isOptionsViewAvailable: boolean;
 
     /**
-     * Whether or not the content for {@link MediaView} is available.
+     * Whether a media view is available for {@link MediaView}.
      */
     isMediaViewAvailable: boolean;
 };
 
 /**
- * Represents an ad waterfall, encapsulating various metadata such as total latency, underlying ad
- * responses, etc.
+ * Contains metadata about the ad waterfall evaluated during an ad request.
  */
 export type AdWaterfallInfo = {
     /**
-     * The ad waterfall name.
+     * The waterfall name for this request.
      */
     name: string;
 
     /**
-     * The ad waterfall test name.
+     * The test name, if the waterfall is part of an A/B test.
      */
     testName: string;
 
     /**
-     * The list of {@link AdNetworkResponseInfo} info objects relating to each ad in the waterfall,
-     * ordered by their position.
+     * Ordered list of network responses attempted during mediation.
      */
     networkResponses: AdNetworkResponseInfo[];
 
     /**
-     * The total latency in milliseconds for this waterfall to finish processing.
+     * Total time taken to complete the waterfall, in milliseconds.
      */
     latencyMillis: number;
 };
 
 /**
- * This enum contains possible states of an ad in the waterfall.
- * Each adapter response {@link AdNetworkResponseInfo} corresponds to one of these states.
+ * Enumeration of possible ad load states for each network in the waterfall.
  */
 export enum AdLoadState {
     /**
-     * The AppLovin MAX SDK did not attempt to load an ad from this network in the waterfall because
-     * an ad higher in the waterfall loaded successfully.
+     * SDK did not attempt to load an ad from this network.
      */
     LoadStateAdLoadNotAttempted = 0,
 
     /**
-     * An ad successfully loaded from this network.
+     * An ad was successfully loaded from this network.
      */
     LoadStateAdLoaded = 1,
 
     /**
-     * An ad failed to load from this network.
+     * The network failed to load an ad.
      */
     LoadStateAdFailedToLoad = 2,
 }
 
 /**
- * Encapsulates load and display errors.
+ * General error info object used in waterfall response details.
  */
 export type AdErrorInfo = {
     /**
-     * The error code for the error.
+     * AppLovin MAX-defined error code.
      */
     code: ErrorCode;
 
     /**
-     * The error message for the error.
+     * Descriptive error message.
      */
     message?: string;
 
     /**
-     * @deprecated
+     * @deprecated Use `message` instead.
      */
     adLoadFailureInfo?: string;
 };
 
 /**
- * This class represents an ad response in a waterfall.
+ * Contains information about a single mediated network response.
  */
 export type AdNetworkResponseInfo = {
     /**
-     * The state of the ad that this object represents. For more info, see the {@link AdLoadState} enum.
+     * The result of the load attempt.
      */
     adLoadState: AdLoadState;
 
     /**
-     * The mediated network that this adapter response info object represents.
+     * Metadata about the mediated network.
      */
     mediatedNetwork?: AdMediatedNetworkInfo;
 
     /**
-     * The credentials used to load an ad from this adapter, as entered in the AppLovin MAX dashboard.
+     * A key-value map of adapter-specific credentials, as configured in the MAX dashboard.
      */
     credentials: { [key: string]: string | number | boolean | object | null };
 
     /**
-     * The ad load error this network response resulted in. Will be unavailable if an attempt to
-     * load an ad has not been made or an ad was loaded successfully (i.e. {@link adLoadState}
-     * is NOT LoadStateAdFailedToLoad).
+     * The ad load error resulting from this network response. This will be unavailable if no ad load
+     * attempt was made or if the ad loaded successfully (i.e., [adLoadState] is NOT [LoadStateAdFailedToLoad]).
      */
     error?: AdErrorInfo;
 
     /**
-     * The amount of time the network took to load (either successfully or not) an ad, in milliseconds.
-     * If an attempt to load an ad has not been made (i.e. {@link adLoadState} is LoadStateAdLoadNotAttempted),
-     * the value will be -1.
+     * The amount of time, in milliseconds, the network took to load an ad—regardless of success.
+     * If no ad load attempt was made (i.e., [adLoadState] is [LoadStateAdLoadNotAttempted]),
+     * this value will be -1.
      */
     latencyMillis: number;
 };
 
 /**
- * This class represents information for a mediated network.
+ * Metadata about a mediated ad network.
  */
 export type AdMediatedNetworkInfo = {
     /**
-     * The name of the mediated network.
+     * Name of the mediated network.
      */
     name: string;
 
     /**
-     * The class name of the adapter for the mediated network.
+     * Fully-qualified adapter class name.
      */
     adapterClassName: string;
 
     /**
-     * The version of the adapter for the mediated network.
+     * Version of the adapter.
      */
     adapterVersion: string;
 
     /**
-     * The version of the mediated network’s SDK.
+     * Version of the mediated network’s SDK.
      */
     sdkVersion: string;
 };

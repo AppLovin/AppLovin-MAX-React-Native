@@ -3,95 +3,94 @@ import type { AdInfo } from './AdInfo';
 import type { AdFormat } from '../AdView';
 
 /**
- * A handler of {@link AdView}.
+ * A reference to the {@link AdView} instance, allowing imperative control.
  */
 export type AdViewHandler = {
     /**
-     * If the {@link loadOnMount} attribute is set to false, you can call this API to start loading ads in this AdView.
+     * Triggers a manual ad load starting.
+     * This is only needed if {@link loadOnMount} is set to `false`.
      */
     loadAd(): void;
 };
 
 /**
- * A unique identifier for referencing a specific AdView instance.
+ * A unique identifier for referencing a specific {@link AdView} instance.
  *
- * - If the value is a number, it represents the ID of a preloaded or assigned AdView.
- * - A value of `undefined` indicates that the AdView has not been preloaded or assigned an ID yet.
+ * - A number represents the ID of a preloaded or managed AdView.
+ * - `undefined` means the AdView is not preloaded or assigned an ID.
  */
 export type AdViewId = number | undefined;
 
 /**
- * Represents an {@link AdView} - Banner / MREC.
+ * Props used to configure and render an {@link AdView} (i.e. Banner or MREC).
  */
 export type AdViewProps = AdProps & {
     /**
-     * An enum value representing the ad format to load ads for. Must be either
-     * {@link AdFormat.BANNER} or {@link AdFormat.MREC}.
+     * The ad format to load for this view.
+     * Must be {@link AdFormat.BANNER} or {@link AdFormat.MREC}.
      */
     adFormat: AdFormat;
 
     /**
-     * A unique identifier representing the AdView instance.
-     * Used to manage and track the specific AdView.
+     * A unique identifier for the AdView instance.
+     * Used for tracking and preloading specific ad views.
      */
     adViewId?: AdViewId;
 
     /**
-     * A boolean indicating whether adaptive banners are enabled.
+     * Enables adaptive banner sizing if `true`.
+     * Ignored for MREC ads.
      */
     adaptiveBannerEnabled?: boolean;
 
     /**
-     * A boolean indicating whether auto-refresh is enabled.
-     * Auto-refresh is enabled by default.
+     * Enables or disables automatic ad refresh.
+     * Defaults to `true`.
      */
     autoRefresh?: boolean;
 
     /**
-     * A boolean indicating whether an ad should load automatically
-     * when the {@link AdView} is mounted. Defaults to `true`.
+     * If `true`, the ad will be loaded automatically when the component mounts.
+     * Set to `false` for ads to be loaded manually using the ref after the component mounts.
+     *
+     * @default true
      */
     loadOnMount?: boolean;
 
     /**
-     * A callback function triggered when the {@link AdView} expands the ad.
-     *
-     * @param adInfo - Information about the ad that was expanded.
+     * Called when the ad is expanded.
      */
     onAdExpanded?: (adInfo: AdInfo) => void;
 
     /**
-     * A callback function triggered when the {@link AdView} collapses the ad.
-     *
-     * @param adInfo - Information about the ad that was collapsed.
+     * Called when the ad collapses back to its original state.
      */
     onAdCollapsed?: (adInfo: AdInfo) => void;
 };
 
 /**
- * A list of options to create a native UI component for preloading {@link AdView}.
+ * Options used when preloading a native UI {@link AdView} component.
  */
 export type NativeUIComponentAdViewOptions = {
     /**
-     * A string value representing the placement name that you assign when you integrate each ad
-     * format, for granular reporting in ad events.
+     * The placement name used for analytics and reporting.
      */
     placement?: string | null;
 
     /**
-     * The custom data to tie the showing ad to.
+     * Custom data to associate with the ad for postbacks or targeting.
      */
     customData?: string | null;
 
     /**
-     * A dictionary value representing the extra parameters to set a list of key-value string pairs
-     * for the ad.
+     * A dictionary of key-value pairs used to pass extra parameters
+     * to the SDK (string-only values).
      */
     extraParameters?: { [key: string]: string | null };
 
     /**
-     * A dictionary value representing the local extra parameters to set a list of key-value pairs
-     * to pass to the adapter instances.
+     * A dictionary of key-value pairs used to pass local extra parameters
+     * to the mediation adapter (string, boolean, number, etc.).
      */
     localExtraParameters?: { [key: string]: LocalExtraParameterValue };
 };

@@ -4,159 +4,155 @@ import type { LocalExtraParameterValue } from './AdProps';
 import type { AdViewPosition } from '../AdView';
 
 /**
- * Define a view-based ad (i.e. Banner / MREC)
+ * Defines the interface for view-based ads such as Banners and MRECs.
  */
 export type ViewAdType = {
     /**
-     * Destroys the banner/MREC.
+     * Destroys the banner or MREC ad.
      *
-     * @param adUnitId The ad unit ID of the ad to destroy.
+     * @param adUnitId - The ad unit ID of the ad to destroy.
      */
     destroyAd(adUnitId: string): void;
 
     /**
-     * Shows the banner/MREC.
+     * Displays the banner or MREC ad.
      *
-     * @param adUnitId The ad unit ID of the ad to show.
+     * @param adUnitId - The ad unit ID of the ad to show.
      */
     showAd(adUnitId: string): void;
 
     /**
-     * Hides the banner/MREC.
+     * Hides the banner or MREC ad.
      *
-     * @param adUnitId The ad unit ID of the ad to hide.
+     * @param adUnitId - The ad unit ID of the ad to hide.
      */
     hideAd(adUnitId: string): void;
 
     /**
-     * Sets a placement to tie the showing ad’s events to.
+     * Sets a placement to associate with the showing ad’s events.
      *
-     * @param adUnitId The ad unit ID of the ad to set a placement for.
-     * @param placement The placement to tie the showing ad's events to.
+     * @param adUnitId - The ad unit ID.
+     * @param placement - The placement name.
      */
     setPlacement(adUnitId: string, placement: string | null): void;
 
     /**
-     * Sets custom data to tie the showing ad’s events to.
+     * Sets custom data to associate with the showing ad’s events.
      *
-     * @param adUnitId The ad unit ID of the ad to set custom data for.
-     * @param customData The custom data to tie the showing ad's events to. Maximum size is 8KB.
+     * @param adUnitId - The ad unit ID.
+     * @param customData - Optional custom string (max 8 KB).
      */
     setCustomData(adUnitId: string, customData: string | null): void;
 
     /**
-     * Updates the banner/mrec position.
+     * Updates the position of the banner or MREC.
      *
-     * @param adUnitId The ad unit ID of the ad to update the position of.
-     * @param bannerPosition {@link AdViewPosition} position.
+     * @param adUnitId - The ad unit ID.
+     * @param bannerPosition - The new position on screen.
      */
     updatePosition(adUnitId: string, bannerPosition: AdViewPosition): void;
 
     /**
-     * Sets an extra key/value parameter for the ad.
+     * Sets an extra parameter for the ad.
      *
-     * @param adUnitId The ad unit ID of the ad to set a parameter for.
-     * @param key Key parameter.
-     * @param value Value parameter.
+     * @param adUnitId - The ad unit ID.
+     * @param key - Parameter name.
+     * @param value - Parameter value (or `null` to clear it).
      */
     setExtraParameter(adUnitId: string, key: string, value: string | null): void;
 
     /**
-     * Set a local extra parameter to pass to the adapter instances.
+     * Sets a local extra parameter to be passed to the mediation adapter.
      *
-     * @param adUnitId The ad unit ID of the ad to set a local parameter for.
-     * @param key Key parameter.
-     * @param value Value parameter.
+     * @param adUnitId - The ad unit ID.
+     * @param key - Parameter name.
+     * @param value - Parameter value (string, number, boolean, object, or null).
      */
     setLocalExtraParameter(adUnitId: string, key: string, value: LocalExtraParameterValue): void;
 
     /**
-     * Starts or resumes auto-refreshing of the banner/mrec.
+     * Starts or resumes auto-refresh for the ad.
      *
-     * @param adUnitId The ad unit ID of the ad to start or resume auto-refreshing.
+     * @param adUnitId - The ad unit ID.
      */
     startAutoRefresh(adUnitId: string): void;
 
     /**
-     * Pauses auto-refreshing of the banner/mrec.
+     * Pauses auto-refresh for the ad.
      *
-     * @param adUnitId The ad unit ID of the ad to stop auto-refreshing.
+     * @param adUnitId - The ad unit ID.
      */
     stopAutoRefresh(adUnitId: string): void;
 
     /**
-     * Adds the specified event listener to receive {@link AdInfo} when a view-base ad loads a new ad.
+     * Registers a listener for when a new ad is successfully loaded.
      *
-     * @param listener Listener to be notified.
+     * @param listener - Callback to be notified with {@link AdInfo}.
      */
     addAdLoadedEventListener(listener: AdEventListener<AdInfo>): void;
 
     /**
-     * Removes the event listener to receive {@link AdInfo} when a view-base ad loads a new ad.
+     * Unregisters the ad loaded listener.
      */
     removeAdLoadedEventListener(): void;
 
     /**
-     * Adds the specified event listener to receive {@link AdLoadFailedInfo} when a view-base ad
-     * could not load a new ad.
+     * Registers a listener for when ad loading fails.
      *
-     * @param listener Listener to be notified.
+     * @param listener - Callback to be notified with {@link AdLoadFailedInfo}.
      */
     addAdLoadFailedEventListener(listener: AdEventListener<AdLoadFailedInfo>): void;
 
     /**
-     * Removes the event listener to receive {@link AdLoadFailedInfo} when a view-base ad could not
-     * load a new ad.
+     * Unregisters the ad load failure listener.
      */
     removeAdLoadFailedEventListener(): void;
 
     /**
-     * Adds the specified event listener to receive {@link AdInfo} when the user clicks the ad.
+     * Registers a listener for ad click events.
      *
-     * @param listener Listener to be notified.
+     * @param listener - Callback to be notified with {@link AdInfo}.
      */
     addAdClickedEventListener(listener: AdEventListener<AdInfo>): void;
 
     /**
-     * Removes the event listener to receive {@link AdInfo} when the user clicks the ad.
+     * Unregisters the ad click listener.
      */
     removeAdClickedEventListener(): void;
 
     /**
-     * Adds the specified event listener to receive {@link AdInfo} when a view-base ad collapses the ad.
+     * Registers a listener for when the ad collapses (e.g. after expansion).
      *
-     * @param listener Listener to be notified.
+     * @param listener - Callback to be notified with {@link AdInfo}.
      */
     addAdCollapsedEventListener(listener: AdEventListener<AdInfo>): void;
 
     /**
-     * Removes the event listener to receive {@link AdInfo} when a view-base ad collapses the ad.
+     * Unregisters the ad collapsed listener.
      */
     removeAdCollapsedEventListener(): void;
 
     /**
-     * Adds the specified event listener to receive {@link AdInfo} when a view-base ad expands the ad.
+     * Registers a listener for when the ad expands.
      *
-     * @param listener Listener to be notified.
+     * @param listener - Callback to be notified with {@link AdInfo}.
      */
     addAdExpandedEventListener(listener: AdEventListener<AdInfo>): void;
 
     /**
-     * Removes the event listener to receive {@link AdInfo} when a view-base ad expands the ad.
+     * Unregisters the ad expanded listener.
      */
     removeAdExpandedEventListener(): void;
 
     /**
-     * Adds the specified event listener to receive {@link AdInfo} when a view-base ad pays
-     * ad revenue to the publisher.
+     * Registers a listener for when the ad pays revenue to the publisher.
      *
-     * @param listener Listener to be notified.
+     * @param listener - Callback to be notified with {@link AdInfo}.
      */
     addAdRevenuePaidListener(listener: AdEventListener<AdInfo>): void;
 
     /**
-     * Removes the event listener to receive {@link AdInfo} when when a view-base ad pays ad
-     * revenue to the publisher.
+     * Unregisters the ad revenue paid listener.
      */
     removeAdRevenuePaidListener(): void;
 };

@@ -1,64 +1,63 @@
 import type { AdDisplayFailedInfo, AdInfo, AdLoadFailedInfo } from './AdInfo';
 
 /**
- * Local extra parameters can be of type: string, number, boolean, array, map, and null.
+ * Represents the allowed value types for local extra parameters passed to the ad adapter.
+ * Can be a primitive, object, or null.
  */
 export type LocalExtraParameterValue = string | number | boolean | object | null;
 
 /**
- * Defines the base properties for the UI component ads i.e {@link AdView} and {@link NativeAdView}.
+ * Defines the base props shared by ad UI components like {@link AdView} and {@link NativeAdView}.
  */
 export type AdProps = {
     /**
-     * A string value representing the ad unit ID to load ads for.
+     * The ad unit ID used to load ads.
      */
     adUnitId: string;
 
     /**
-     * A string value representing the placement name that you assign when you integrate each ad
-     * format, for granular reporting in ad events.
+     * The placement name defined in your integration, used for granular reporting.
      */
     placement?: string | null;
 
     /**
-     * The custom data to tie the showing ad to.
+     * Optional custom data to attach to the ad, used for analytics or targeting.
      */
     customData?: string | null;
 
     /**
-     * A dictionary value representing the extra parameters to set a list of key-value string pairs
-     * for the ad.
+     * Extra parameters to be sent as key-value string pairs.
      */
     extraParameters?: { [key: string]: string };
 
     /**
-     * A dictionary value representing the local extra parameters to set a list of key-value pairs
-     * to pass to the adapter instances.
+     * Local extra parameters sent to the adapter instance.
+     * Supports string and boolean values only.
      */
     localExtraParameters?: { [key: string]: string | boolean };
 
     /**
-     * A callback fuction that {@link AdView} or {@link NativeAdView} fires when it loads a new ad.
+     * Called when a new ad is successfully loaded.
      */
     onAdLoaded?: (adInfo: AdInfo) => void;
 
     /**
-     * A callback fuction that {@link AdView} or {@link NativeAdView} fires when it could not load a new ad.
+     * Called when the SDK fails to load a new ad.
      */
     onAdLoadFailed?: (error: AdLoadFailedInfo) => void;
 
     /**
-     * A callback fuction that {@link AdView} or {@link NativeAdView} fires when it fails to display the ad.
+     * Called when the ad fails to display after being loaded.
      */
     onAdDisplayFailed?: (error: AdDisplayFailedInfo) => void;
 
     /**
-     * A callback fuction that {@link AdView} or {@link NativeAdView} fires when the user clicks the ad.
+     * Called when the ad is clicked by the user.
      */
     onAdClicked?: (adInfo: AdInfo) => void;
 
     /**
-     * A callback fuction that {@link AdView} or {@link NativeAdView} fires when it pays ad revenue to the publisher.
+     * Called when ad revenue is paid to the publisher.
      */
     onAdRevenuePaid?: (adInfo: AdInfo) => void;
 };

@@ -13,7 +13,7 @@ import { makeExtraParametersArray, makeLocalExtraParametersArray } from './Utils
 const { ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT, ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT } = AppLovinMAX.getConstants();
 
 /**
- * Defines a format of an ad.
+ * Defines the format of an ad.
  */
 export enum AdFormat {
     /**
@@ -28,7 +28,7 @@ export enum AdFormat {
 }
 
 /**
- * Defines a position of a banner or MREC ad.
+ * Defines the position for rendering a banner or MREC ad within its container.
  */
 export enum AdViewPosition {
     TOP_CENTER = 'top_center',
@@ -51,7 +51,7 @@ const ADVIEW_SIZE = {
     mrec: { width: 300, height: 250 },
 };
 
-// Returns 'auto' for unspecified width / height
+// Extracts width and height from the style prop, defaulting to 'auto' when unspecified.
 const getOutlineViewSize = (style: StyleProp<ViewStyle>): [DimensionValue, DimensionValue] => {
     const viewStyle = StyleSheet.flatten(style) || {};
     return [viewStyle.width ?? 'auto', viewStyle.height ?? 'auto'];
@@ -95,32 +95,41 @@ const handleAdViewEvent = <T extends AdInfoEvent | AdLoadFailedEvent | AdDisplay
 };
 
 /**
- * The {@link AdView} component renders banner or MREC ads with responsive sizing.
- * - **Banners**: 320x50 on phones, 728x90 on tablets.
- * - **MRECs**: 300x250 on all devices.
+ * Renders a banner or MREC ad using a native view, with adaptive or responsive sizing.
  *
- * Use {@link AppLovinMAX.isTablet()} to determine device type for layout adjustments.
- * For adaptive banners, use {@link BannerAd.getAdaptiveHeightForWidth()} for precise sizing.
+ * - **Banners**: 320×50 on phones, 728×90 on tablets.
+ * - **MRECs**: Fixed size of 300×250 on all devices.
+ *
+ * Internally uses {@link AppLovinMAX.isTablet()} to determine banner size on tablets.
+ * You can also use this method externally to assist with layout decisions.
+ *
+ * For adaptive banners, use {@link BannerAd.getAdaptiveHeightForWidth()} to determine the appropriate height.
  *
  * **Preloading**:
- * When preloading an {@link AdView} using {@link preloadNativeUIComponentAdView},
- * the returned {@link AdViewId} must be passed to identify the preloaded instance.
+ * If you preload an ad for AdView using {@link preloadNativeUIComponentAdView},
+ * pass the returned {@link AdViewId} to this component to display the preloaded instance.
+ *
+ * **Note:** The AppLovin SDK must be initialized before using this component.
  *
  * ### Example:
- * ```js
+ * ```tsx
  * <AdView
  *   adUnitId={adUnitId}
  *   adFormat={AdFormat.BANNER}
  *   placement="my_placement"
  *   customData="my_customData"
- *   extraParameters={{"key1":"value1", "key2":"value2"}}
- *   localExtraParameters={{"key1":123", "key2":object}}
+ *   extraParameters={{ key1: "value1", key2: "value2" }}
+ *   localExtraParameters={{ key1: "value1", key2: true }}
  *   adaptiveBannerEnabled={false}
  *   autoRefresh={false}
  *   style={styles.banner}
  *   onAdLoaded={(adInfo: AdInfo) => { ... }}
  * />
  * ```
+ *
+ * For complete implementation examples, see:
+ * - https://github.com/AppLovin/AppLovin-MAX-React-Native/blob/master/example/src/NativeBannerExample.tsx
+ * - https://github.com/AppLovin/AppLovin-MAX-React-Native/blob/master/example/src/NativeMRecExample.tsx
  */
 export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(function AdView(
     {
@@ -164,7 +173,7 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
             const initialized = await AppLovinMAX.isInitialized();
             setIsInitialized(initialized);
             if (!initialized) {
-                console.warn('AdView is mounted before the initialization of the AppLovin MAX React Native module');
+                console.warn('AdView was mounted before the AppLovin MAX React Native module was initialized.');
             }
         })();
     }, [adFormat]);
@@ -195,17 +204,11 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
     }, [adFormat, adaptiveBannerEnabled, isInitialized, screenWidth, style]);
 
     const onAdLoadedEvent = useCallback((event: NativeSyntheticEvent<AdInfoEvent>) => handleAdViewEvent(event, onAdLoaded), [onAdLoaded]);
-
     const onAdLoadFailedEvent = useCallback((event: NativeSyntheticEvent<AdLoadFailedEvent>) => handleAdViewEvent(event, onAdLoadFailed), [onAdLoadFailed]);
-
     const onAdDisplayFailedEvent = useCallback((event: NativeSyntheticEvent<AdDisplayFailedEvent>) => handleAdViewEvent(event, onAdDisplayFailed), [onAdDisplayFailed]);
-
     const onAdClickedEvent = useCallback((event: NativeSyntheticEvent<AdInfoEvent>) => handleAdViewEvent(event, onAdClicked), [onAdClicked]);
-
     const onAdExpandedEvent = useCallback((event: NativeSyntheticEvent<AdInfoEvent>) => handleAdViewEvent(event, onAdExpanded), [onAdExpanded]);
-
     const onAdCollapsedEvent = useCallback((event: NativeSyntheticEvent<AdInfoEvent>) => handleAdViewEvent(event, onAdCollapsed), [onAdCollapsed]);
-
     const onAdRevenuePaidEvent = useCallback((event: NativeSyntheticEvent<AdInfoEvent>) => handleAdViewEvent(event, onAdRevenuePaid), [onAdRevenuePaid]);
 
     if (!isInitialized || Object.keys(dimensions.current).length === 0) {
@@ -247,10 +250,10 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
  * - Unmounting {@link AdView} does not destroy the preloaded component—it will be reused on the next mount.
  * - You must manually destroy the preloaded component when it is no longer needed using {@link destroyNativeUIComponentAdView}.
  *
- * @param adUnitId - The Ad Unit ID for which the ads should be preloaded.
+ * @param adUnitId - The Ad Unit ID for which ads should be preloaded.
  * @param adFormat - The ad format to preload. Must be either {@link AdFormat.BANNER} or {@link AdFormat.MREC}.
  * @param options - Optional properties to configure the native UI component (e.g., placement, custom data).
- * @returns A promise resolving to an {@link AdViewId}, which uniquely identifies the preloaded component.
+ * @returns A promise that resolves to an {@link AdViewId}, uniquely identifying the preloaded component instance.
  * @throws An error if the preload request fails.
  */
 export const preloadNativeUIComponentAdView = async (adUnitId: string, adFormat: AdFormat, options: NativeUIComponentAdViewOptions = {}): Promise<AdViewId> => {
@@ -275,8 +278,7 @@ export const destroyNativeUIComponentAdView = async (adViewId: AdViewId): Promis
 };
 
 /**
- * Adds the specified event listener to receive {@link AdInfo} when a native UI component loads a
- * new ad.
+ * Adds the specified event listener to receive {@link AdInfo} when a native UI component loads a new ad.
  *
  * @param listener Listener to be notified.
  */
@@ -285,15 +287,14 @@ export const addNativeUIComponentAdViewAdLoadedEventListener = (listener: (adInf
 };
 
 /**
- * Removes the event listener to receive {@link AdInfo} when a native UI component loads a new ad.
+ * Removes the event listener registered to receive {@link AdInfo} when a native UI component loads a new ad.
  */
 export const removeNativeUIComponentAdViewAdLoadedEventListener = (): void => {
     removeEventListener(ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOADED_EVENT);
 };
 
 /**
- * Adds the specified event listener to receive {@link AdLoadFailedInfo} when a native UI component
- * could not load a new ad.
+ * Adds the specified event listener to receive {@link AdLoadFailedInfo} when a native UI component could not load a new ad.
  *
  * @param listener Listener to be notified.
  */
@@ -302,8 +303,7 @@ export const addNativeUIComponentAdViewAdLoadFailedEventListener = (listener: (e
 };
 
 /**
- * Removes the event listener to receive {@link AdLoadFailedInfo} when a native UI component could
- * not load a new ad.
+ * Removes the event listener registered to receive {@link AdLoadFailedInfo} when a native UI component could not load a new ad.
  */
 export const removeNativeUIComponentAdViewAdLoadFailedEventListener = (): void => {
     removeEventListener(ON_NATIVE_UI_COMPONENT_ADVIEW_AD_LOAD_FAILED_EVENT);

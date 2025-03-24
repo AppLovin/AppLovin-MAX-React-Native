@@ -1,25 +1,32 @@
+/**
+ * Provides methods to manage user privacy settings for AppLovin MAX.
+ */
 export type PrivacyType = {
     /**
-     * Sets whether or not the user provided consent for information-sharing with AppLovin.
+     * Sets whether the user has granted consent for data collection and sharing.
      *
-     * @param hasUserConsent true if the user provided consent for information sharing.
+     * @param hasUserConsent - `true` if the user has provided consent.
      */
     setHasUserConsent(hasUserConsent: boolean): void;
 
     /**
-     * Checks if user set consent for information sharing.
+     * Checks whether the user has granted consent for information sharing.
+     *
+     * @returns A promise that resolves to `true` if the user has granted consent.
      */
     hasUserConsent(): Promise<boolean>;
 
     /**
-     * Sets whether or not the user opted out of the sale of their personal information.
+     * Sets whether the user has opted out of the sale of their personal information.
      *
-     * @param doNotSell true if the user opted out of the sale of their personal information.
+     * @param doNotSell - `true` if the user opted out of personal data sale.
      */
     setDoNotSell(doNotSell: boolean): void;
 
     /**
-     * Checks if the user opted out of the sale of their personal information.
+     * Checks whether the user has opted out of the sale of their personal information.
+     *
+     * @returns A promise that resolves to `true` if the user has opted out.
      */
     isDoNotSell(): Promise<boolean>;
 };

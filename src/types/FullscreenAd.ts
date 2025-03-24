@@ -3,139 +3,132 @@ import type { AdInfo, AdLoadFailedInfo, AdDisplayFailedInfo } from './AdInfo';
 import type { LocalExtraParameterValue } from './AdProps';
 
 /**
- * Defines a full-screen ad (i.e Intestitial / Rewarded / AppOpen)
+ * Defines the interface for managing full-screen ads such as Interstitial, Rewarded, and AppOpen ads.
  */
 export type FullscreenAdType = {
     /**
-     * Whether or not this ad is ready to be shown.
+     * Checks whether an ad is ready to be shown.
      *
-     * @param adUnitId The ad unit ID of the ad to check whether it is ready to be shown.
+     * @param adUnitId - The ad unit ID to check.
+     * @returns A promise that resolves to `true` if the ad is ready.
      */
     isAdReady(adUnitId: string): Promise<boolean>;
 
     /**
-     * Loads an interstitial ad.
+     * Loads a full-screen ad for the given ad unit ID.
      *
-     * @param adUnitId The ad unit ID to load an ad for.
+     * @param adUnitId - The ad unit ID to load.
      */
     loadAd(adUnitId: string): void;
 
     /**
-     * Shows the loaded interstitial ad, optionallly for a given placement and custom data to tie ad
-     * events to.
+     * Shows a loaded full-screen ad.
      *
-     * @param adUnitId The ad unit ID of the ad to show.
-     * @param placement The placement to tie the showing ad's events to.
-     * @param customData The custom data to tie the showing ad's events to. Maximum size is 8KB.
+     * @param adUnitId - The ad unit ID of the ad to show.
+     * @param placement - Optional placement name for event reporting.
+     * @param customData - Optional custom string data (max size: 8 KB).
      */
     showAd(adUnitId: string, placement?: string | null, customData?: string | null): void;
 
     /**
-     * Sets an extra key/value parameter for the ad.
+     * Sets an extra parameter to pass to the SDK for the specified ad unit.
      *
-     * @param adUnitId The ad unit ID of the ad to set a parameter for.
-     * @param key Parameter key.
-     * @param value Parameter value.
+     * @param adUnitId - The ad unit ID.
+     * @param key - The parameter name.
+     * @param value - The parameter value or `null` to clear it.
      */
     setExtraParameter(adUnitId: string, key: string, value: string | null): void;
 
     /**
-     * Sets a local extra parameter to pass to the adapter instances.
+     * Sets a local extra parameter to pass to the adapter for the specified ad unit.
      *
-     * @param adUnitId The ad unit ID of the ad to set a local parameter for.
-     * @param key Parameter key.
-     * @param value Parameter value.
+     * @param adUnitId - The ad unit ID.
+     * @param key - The parameter name.
+     * @param value - The parameter value (string, number, boolean, object, or null).
      */
     setLocalExtraParameter(adUnitId: string, key: string, value: LocalExtraParameterValue): void;
 
     /**
-     * Adds the specified event listener to receive {@link AdInfo} when a full-screen ad loads a new ad.
+     * Registers a listener for when an ad is successfully loaded.
      *
-     * @param listener Listener to be notified.
+     * @param listener - Callback to be notified with {@link AdInfo}.
      */
     addAdLoadedEventListener(listener: AdEventListener<AdInfo>): void;
 
     /**
-     * Removes the event listener to receive {@link AdInfo} when a full-screen ad loads a new ad.
+     * Unregisters the ad loaded listener.
      */
     removeAdLoadedEventListener(): void;
 
     /**
-     * Adds the specified event listener to receive {@link AdLoadFailedInfo} when a full-screen ad
-     * could not load a new ad.
+     * Registers a listener for when an ad fails to load.
      *
-     * @param listener Listener to be notified.
+     * @param listener - Callback to be notified with {@link AdLoadFailedInfo}.
      */
     addAdLoadFailedEventListener(listener: AdEventListener<AdLoadFailedInfo>): void;
 
     /**
-     * Removes the event listener to receive {@ link adLoadFailedInfo} when a full-screen ad could
-     * not load a new ad.
+     * Unregisters the ad load failure listener.
      */
     removeAdLoadFailedEventListener(): void;
 
     /**
-     * Adds the specified event listener to receive {@link AdInfo} when the user clicks the ad.
+     * Registers a listener for ad click events.
      *
-     * @param listener Listener to be notified.
+     * @param listener - Callback to be notified with {@link AdInfo}.
      */
     addAdClickedEventListener(listener: AdEventListener<AdInfo>): void;
 
     /**
-     * Removes the event listener to receive {@link AdInfo} when the user clicks the ad.
+     * Unregisters the ad click listener.
      */
     removeAdClickedEventListener(): void;
 
     /**
-     * Adds the specified event listener to receive {@link AdInfo} when a full-screen ad displays the ad.
+     * Registers a listener for when an ad is displayed.
      *
-     * @param listener Listener to be notified.
+     * @param listener - Callback to be notified with {@link AdInfo}.
      */
     addAdDisplayedEventListener(listener: AdEventListener<AdInfo>): void;
 
     /**
-     * Removes the event listener to receive {@link AdInfo} when a full-screen ad displays the ad.
+     * Unregisters the ad display listener.
      */
     removeAdDisplayedEventListener(): void;
 
     /**
-     * Adds the specified event listener to receive {@link AdDisplayFailedInfo} when a full-screen
-     * ad fails to display the ad.
+     * Registers a listener for when an ad fails to display.
      *
-     * @param listener Listener to be notified.
+     * @param listener - Callback to be notified with {@link AdDisplayFailedInfo}.
      */
     addAdFailedToDisplayEventListener(listener: AdEventListener<AdDisplayFailedInfo>): void;
 
     /**
-     * Removes the event listener to receive {@link AdDisplayFailedInfo} when a full-screen ad
-     * fails to display the ad.
+     * Unregisters the ad display failure listener.
      */
     removeAdFailedToDisplayEventListener(): void;
 
     /**
-     * Adds the specified event listener to receive {@link AdInfo} when a full-screen ad hides the
-     * ad.
+     * Registers a listener for when an ad is hidden (dismissed).
      *
-     * @param listener Listener to be notified.
+     * @param listener - Callback to be notified with {@link AdInfo}.
      */
     addAdHiddenEventListener(listener: AdEventListener<AdInfo>): void;
 
     /**
-     * Removes the event listener to receive {@link AdInfo} when a full-screen ad hides the ad.
+     * Unregisters the ad hidden listener.
      */
     removeAdHiddenEventListener(): void;
 
     /**
-     * Adds the specified event listener to receive {@link AdInfo} when a full-screen ad
-     * pays ad revenue to the publisher.
+     * Registers a listener for when ad revenue is paid.
      *
-     * @param listener Listener to be notified.
+     * @param listener - Callback to be notified with {@link AdInfo}.
      */
     addAdRevenuePaidListener(listener: AdEventListener<AdInfo>): void;
 
     /**
-     * Removes the event listener to receive {@link AdInfo} when a full-screen ad pays
-     * ad revenue to the publisher.
+     * Unregisters the ad revenue paid listener.
      */
     removeAdRevenuePaidListener(): void;
 };
