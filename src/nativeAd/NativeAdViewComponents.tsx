@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useContext, useMemo } from 'react';
 import { Text, Image, View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
-import type { ViewProps, ImageProps, TextStyle, TextProps } from 'react-native';
+import type { ViewProps, ImageProps, TextStyle, TextProps, StyleProp, ViewStyle } from 'react-native';
 import { NativeAdViewContext } from './NativeAdViewProvider';
 
 export const TitleView = (props: TextProps) => {
@@ -78,12 +78,12 @@ export const MediaView = (props: ViewProps) => {
     return <View {...props} ref={mediaViewRef} />;
 };
 
-export const StarRatingView = (props: ViewProps) => {
+export const StarRatingView = (props: Omit<ViewProps, 'style'> & { style?: StyleProp<ViewStyle & TextStyle> }) => {
     const { style, ...restProps } = props;
     const maxStarCount = 5;
-    const starTextStyle = useMemo(() => StyleSheet.flatten(style) as TextStyle, [style]);
-    const starColor = starTextStyle.color ?? '#ffe234';
-    const starSize = starTextStyle.fontSize ?? 10;
+    const starTextStyle = useMemo(() => StyleSheet.flatten(style), [style]);
+    const starColor = starTextStyle?.color ?? '#ffe234';
+    const starSize = starTextStyle?.fontSize ?? 10;
     const { nativeAd } = useContext(NativeAdViewContext);
 
     // Memoize the star rendering process
