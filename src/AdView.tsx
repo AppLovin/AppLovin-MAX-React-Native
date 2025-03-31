@@ -81,17 +81,7 @@ const sizeBannerDimensions = async (sizeProps: SizeRecord, adaptiveBannerEnabled
 
 const handleAdViewEvent = <T extends AdInfoEvent | AdLoadFailedEvent | AdDisplayFailedEvent>(event: NativeSyntheticEvent<T>, callback?: (adInfo: T) => void) => {
     if (!callback) return;
-
-    let adInfo: any = { ...event.nativeEvent };
-
-    if ('size' in event.nativeEvent) {
-        adInfo.size = {
-            width: event.nativeEvent.size?.width ?? 0,
-            height: event.nativeEvent.size?.height ?? 0,
-        };
-    }
-
-    callback(adInfo);
+    callback(event.nativeEvent);
 };
 
 /**
@@ -163,7 +153,11 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
     const sizeProps = useRef<SizeRecord>({});
     const dimensions = useRef<SizeRecord>({});
 
-    useImperativeHandle(ref, () => ({ loadAd: () => Commands.loadAd(adViewRef.current!) }), []);
+    const loadAd = useCallback(() => {
+        adViewRef.current && Commands.loadAd(adViewRef.current);
+    }, []);
+
+    useImperativeHandle(ref, () => ({ loadAd }), [loadAd]);
 
     useEffect(() => {
         (async () => {
@@ -194,11 +188,15 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
                     forceUpdate();
                 }
             } else {
-                dimensions.current = {
+                const mrecSize = {
                     width: width === 'auto' ? adFormatSize.current.width : width,
                     height: height === 'auto' ? adFormatSize.current.height : height,
                 };
-                forceUpdate();
+
+                if (dimensions.current.width !== mrecSize.width || dimensions.current.height !== mrecSize.height) {
+                    dimensions.current = mrecSize;
+                    forceUpdate();
+                }
             }
         })();
     }, [adFormat, adaptiveBannerEnabled, isInitialized, screenWidth, style]);
@@ -213,7 +211,7 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
 
     if (!isInitialized || Object.keys(dimensions.current).length === 0) {
         // Early return if not initialized or dimensions are not set
-        return <View style={Object.assign({}, style, dimensions.current)} {...otherProps} />;
+        return <View style={style} {...otherProps} />;
     }
 
     return (
@@ -237,7 +235,7 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
             onAdExpandedEvent={onAdExpandedEvent}
             onAdCollapsedEvent={onAdCollapsedEvent}
             onAdRevenuePaidEvent={onAdRevenuePaidEvent}
-            style={Object.assign({}, style, dimensions.current)}
+            style={[style, dimensions.current]}
             {...otherProps}
         />
     );

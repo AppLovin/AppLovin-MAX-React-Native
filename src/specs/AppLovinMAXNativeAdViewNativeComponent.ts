@@ -83,19 +83,19 @@ export interface NativeProps extends ViewProps {
     extraParameters?: ReadonlyArray<{
         key: string;
         value: string | null;
-    }> | null;
+    }>;
 
     /** Local string parameters passed to the mediation adapter. */
     strLocalExtraParameters?: ReadonlyArray<{
         key: string;
         value: string | null;
-    }> | null;
+    }>;
 
     /** Local boolean parameters passed to the mediation adapter. */
     boolLocalExtraParameters?: ReadonlyArray<{
         key: string;
         value: boolean | null;
-    }> | null;
+    }>;
 
     /** Called when a native ad is successfully loaded. */
     onAdLoadedEvent: DirectEventHandler<AdInfoEvent>;

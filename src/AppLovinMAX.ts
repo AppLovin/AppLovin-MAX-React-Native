@@ -88,9 +88,7 @@ export enum CMPErrorCode {
  * @param sdkKey - Your AppLovin SDK key.
  * @returns A promise that resolves with the SDK configuration.
  */
-const initialize = (sdkKey: string): Promise<Configuration> => {
-    return NativeAppLovinMAX.initialize(VERSION, sdkKey);
-};
+const initialize = (sdkKey: string): Promise<Configuration> => NativeAppLovinMAX.initialize(VERSION, sdkKey);
 
 /**
  * Retrieves the user segments.
@@ -107,9 +105,8 @@ const getSegments = async (): Promise<Map<number, number[]> | null> => {
 
     const map = new Map<number, number[]>();
 
-    for (const key in segments) {
+    for (const [key, value] of Object.entries(segments)) {
         // In JavaScript, object keys are always strings, so we convert them to numbers for the Map.
-        const value = segments[key];
         if (value) {
             map.set(Number(key), value);
         }

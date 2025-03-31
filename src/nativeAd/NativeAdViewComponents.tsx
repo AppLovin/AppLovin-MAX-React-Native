@@ -88,7 +88,7 @@ export const IconView = (props: Omit<ImageProps, 'source'>) => {
     const { imageRef, nativeAd } = useContext(NativeAdViewContext);
     const defaultIcon = require('./img/blank_icon.png');
 
-    const imageSource = (() => {
+    const imageSource = useMemo(() => {
         if (nativeAd?.url) {
             return { uri: nativeAd.url };
         }
@@ -96,7 +96,7 @@ export const IconView = (props: Omit<ImageProps, 'source'>) => {
             return { uri: `data:image/jpeg;base64,${nativeAd.imageSource}` };
         }
         return defaultIcon;
-    })();
+    }, [nativeAd.url, nativeAd.imageSource, defaultIcon]);
 
     return <Image {...props} ref={imageRef} source={imageSource} />;
 };

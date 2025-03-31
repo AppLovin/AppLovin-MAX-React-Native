@@ -7,7 +7,11 @@ import type { LocalExtraParameterValue } from './types/AdProps';
  * @param input - An optional map of key-value string pairs (or null values).
  * @returns An array of `{ key, value }` objects. Returns an empty array if input is undefined.
  */
-export const makeExtraParametersArray = (input?: Record<string, string | null>) => (input ? Object.entries(input).map(([key, value]) => ({ key, value })) : []);
+export const makeExtraParametersArray = (input?: Record<string, string | null>): { key: string; value: string | null }[] => {
+    if (!input) return [];
+
+    return Object.entries(input).map(([key, value]) => ({ key, value }));
+};
 
 type LocalExtraParameterType = 'str' | 'bool';
 
