@@ -1,3 +1,8 @@
+/**
+ * Provides the NativeAdView component, which manages loading and rendering of native ads using the
+ * AppLovin MAX SDK in React Native.
+ */
+
 import * as React from 'react';
 import { forwardRef, useContext, useImperativeHandle, useRef, useState, useEffect, useCallback } from 'react';
 import { findNodeHandle, View } from 'react-native';
@@ -11,8 +16,7 @@ import type { NativeAdViewHandler, NativeAdViewProps } from '../types/NativeAdVi
 import { makeExtraParametersArray, makeLocalExtraParametersArray } from '../Utils';
 
 /**
- * The {@link NativeAdView} component that you use building a native ad. This loads a native ad and
- * renders it with the asset views:
+ * The {@link NativeAdView} component renders a native ad and binds it to asset views:
  *
  * - {@link IconView}
  * - {@link TitleView}
@@ -22,19 +26,21 @@ import { makeExtraParametersArray, makeLocalExtraParametersArray } from '../Util
  * - {@link MediaView}
  * - {@link CallToActionView}
  *
- * {@link NativeAdView} fills each asset view with the data of a native ad as soon as it loads the native
- * ad, but you need to provide the layout and style of the asset views.
- * {@link NativeAdView} can reload a new native ad by using the ref handler.
+ * Each asset view must be manually laid out and styled.
+ * The component automatically populates content once an ad is loaded.
+ * You can reload the ad using the component’s ref via `loadAd()`.
+ *
+ * **Note:** The AppLovin SDK must be initialized before using this component.
  *
  * ### Example:
- * ```js
+ * ```tsx
  * <NativeAdView
  *   ref={nativeAdViewHandler}
  *   adUnitId={adUnitId}
  *   style={styles.nativead}
  *   onAdLoaded={(adInfo: AdInfo) => { ... }}
  * >
- *   <View style={ ... }>
+ *   <View style={...}>
  *     <IconView style={styles.icon} />
  *     <TitleView style={styles.title} />
  *     <AdvertiserView style={styles.advertiser} />
@@ -46,6 +52,9 @@ import { makeExtraParametersArray, makeLocalExtraParametersArray } from '../Util
  *   </View>
  * </NativeAdView>
  * ```
+ *
+ * For a complete implementation example, see:
+ * https://github.com/AppLovin/AppLovin-MAX-React-Native/blob/master/example/src/NativeAdViewExample.tsx
  */
 export const NativeAdView = forwardRef<NativeAdViewHandler, NativeAdViewProps & ViewProps>(function NativeAdView(props, ref) {
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
@@ -72,6 +81,10 @@ export const NativeAdView = forwardRef<NativeAdViewHandler, NativeAdViewProps & 
     );
 });
 
+/**
+ * Extracts native ad info from a synthetic event and invokes the provided callback, if any.
+ * Ensures optional native ad fields have fallback defaults.
+ */
 const handleNativeAdViewEvent = <T extends AdInfoEvent | AdLoadFailedEvent>(event: NativeSyntheticEvent<T>, callback?: (adInfo: T) => void) => {
     if (!callback) return;
 
@@ -98,13 +111,16 @@ const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps & Vie
 
     const nativeAdViewRef = useRef<React.ElementRef<typeof NativeAdViewComponent> | undefined>();
 
-    // Load a new ad
+    // Triggers a native ad load via the native command
     const loadAd = useCallback(() => {
         nativeAdViewRef.current && Commands.loadAd(nativeAdViewRef.current);
     }, []);
 
     useImperativeHandle(ref, () => ({ loadAd }), [loadAd]);
 
+    /**
+     * Updates the native asset view binding for a given view type (e.g., TitleView, MediaView).
+     */
     const updateAssetView = useCallback((assetViewRef: React.RefObject<View>, type: string) => {
         if (!nativeAdViewRef.current || !assetViewRef.current) return;
 
@@ -114,6 +130,12 @@ const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps & Vie
         }
     }, []);
 
+    /**
+     * Handles native ad load event:
+     * - Updates context with the new native ad data
+     * - Notifies native module of updated asset view mappings
+     * - Triggers native rendering after all asset views are registered
+     */
     const onAdLoadedEvent = useCallback(
         (event: NativeSyntheticEvent<AdInfoEvent>) => {
             const nativeAdImpl = event.nativeEvent.nativeAdImpl;

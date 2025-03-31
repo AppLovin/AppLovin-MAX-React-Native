@@ -1,23 +1,26 @@
 import type { CMPErrorCode } from '../AppLovinMAX';
 
+/**
+ * Represents an error returned from the Consent Management Platform (CMP) flow.
+ */
 export type CMPError = {
     /**
-     * The error code for this error.
+     * The AppLovin-defined CMP error code.
      */
     code: CMPErrorCode;
 
     /**
-     * The error message for this error.
+     * A descriptive error message from the AppLovin SDK.
      */
     message: string;
 
     /**
-     * The error code returned by the CMP.
+     * The raw error code returned by the CMP.
      */
     cmpCode: number;
 
     /**
-     * The error message returned by the CMP.
+     * The raw error message returned by the CMP.
      */
     cmpMessage: string;
 };

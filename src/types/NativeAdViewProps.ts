@@ -1,16 +1,17 @@
 import type { AdProps } from './AdProps';
 
 /**
- * A handler of {@link NativeAdView}.
+ * A reference handler for the {@link NativeAdView} component.
  */
 export type NativeAdViewHandler = {
     /**
-     * Loads a native ad.
+     * Triggers a native ad load.
      */
     loadAd(): void;
 };
 
 /**
- * Represents a {@link NativeAdView}.
+ * Props passed to the {@link NativeAdView} component.
+ * Extends the base {@link AdProps} used for all ad components.
  */
 export type NativeAdViewProps = AdProps;

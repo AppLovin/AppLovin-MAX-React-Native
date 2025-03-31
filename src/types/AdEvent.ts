@@ -1,15 +1,21 @@
 import type { AdInfo, AdLoadFailedInfo, AdDisplayFailedInfo, AdRewardInfo } from './AdInfo';
 
+/**
+ * Represents any ad event object that can be emitted by the native AppLovin MAX module.
+ */
 export type AdEventObject = AdInfo | AdLoadFailedInfo | AdDisplayFailedInfo | AdRewardInfo;
 
 /**
- * Defines a generic event listener for the pragrammatic methods to receive an event from the native
- * module.
+ * A generic event listener for handling ad events in programmatic APIs.
+ *
+ * @template T - A specific ad event type.
  */
 export type AdEventListener<T extends AdEventObject> = (event: T) => void;
 
 /**
- * Defines a generic event object for the UI components i.e. AdView and NativeAdView to receive an
- * event from the native module.
+ * Wraps an ad event in a `nativeEvent` field, following the React Native synthetic event pattern.
+ * Used for UI component props such as {@link AdView} and {@link NativeAdView}.
+ *
+ * @template T - A specific ad event type.
  */
 export type AdNativeEvent<T extends AdEventObject> = { nativeEvent: T };

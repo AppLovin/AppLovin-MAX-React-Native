@@ -2,18 +2,20 @@ import type { AdEventListener } from './AdEvent';
 import type { AdRewardInfo } from './AdInfo';
 import type { FullscreenAdType } from './FullscreenAd';
 
+/**
+ * Defines the interface for managing rewarded ads.
+ * Extends {@link FullscreenAdType} with reward-specific callbacks.
+ */
 export type RewardedAdType = FullscreenAdType & {
     /**
-     * Adds the specified event listener to receive {@link AdRewardInfo} when {@link RewardedAd}
-     * rewards the user.
+     * Registers a listener for when a reward is granted to the user.
      *
-     * @param listener Listener to be notified.
+     * @param listener - Callback to be notified with {@link AdRewardInfo}.
      */
     addAdReceivedRewardEventListener(listener: AdEventListener<AdRewardInfo>): void;
 
     /**
-     * Removes the event listener to receive {@link AdRewardInfo} when {@link RewardedAd} rewards
-     * the user.
+     * Unregisters the reward event listener.
      */
     removeAdReceivedRewardEventListener(): void;
 };

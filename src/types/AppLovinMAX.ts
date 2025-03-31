@@ -3,154 +3,151 @@ import type { CMPError } from './CMPError';
 import type { ConsentFlowUserGeography } from '../AppLovinMAX';
 
 /**
- * Represents the AppLovinMAX module.
+ * Defines the AppLovin MAX module interface exposed to JavaScript.
  */
 export type AppLovinMAXType = {
     /**
-     * Indicates whether or not the AppLovinMAX SDK has fully initialized without errors and
-     * {@link AppLovinMAX.initialize()} has called the completion callback.
+     * Checks whether the AppLovin MAX SDK has finished initializing.
+     *
+     * @returns A promise that resolves to `true` if the SDK is initialized, or `false` otherwise.
      */
     isInitialized(): Promise<boolean>;
 
     /**
-     * Initializes the AppLovinMAX SDK, and returns {@link Configuration} when it finishes initializing.
+     * Initializes the AppLovin MAX SDK.
      *
-     * @param sdkKey SDK key to use for the instance of the AppLovinMAX SDK.
+     * @param sdkKey - Your AppLovin SDK key.
+     * @returns A promise that resolves with the initialization configuration.
      */
     initialize(sdkKey: string): Promise<Configuration>;
 
     /**
-     * Sets a list of the ad units for the SDK to initialize only those networks.
+     * Restricts initialization to the specified ad unit IDs only.
      *
-     * @param adUnitIds Ad units to be initialized with the SDK.
+     * @param adUnitIds - An array of ad unit IDs to initialize.
      */
     setInitializationAdUnitIds(adUnitIds: string[]): void;
 
     /**
-     * Presents the mediation debugger UI.
+     * Displays the AppLovin Mediation Debugger UI.
      */
     showMediationDebugger(): void;
 
     /**
-     * Whether this device is a tablet.
+     * Checks whether the current device is a tablet.
+     *
+     * @returns A promise that resolves to `true` if the device is a tablet.
      */
     isTablet(): Promise<boolean>;
 
     /**
-     * Sets an ID for the current user. AppLovin ties this identifier to SDK events and AppLovin’s
-     * optional S2S postbacks.
+     * Sets a user ID for use in SDK events and S2S postbacks.
      *
-     * @param userId User id.
+     * @param userId - The custom user ID to associate with this device.
      */
     setUserId(userId: string): void;
 
     /**
-     * Sets a muted state (or not) as the initial state for video ads.
+     * Sets whether video ads should start in a muted state.
      *
-     * @param muted If ads should begin in a muted state.
+     * @param muted - `true` to mute ads by default.
      */
     setMuted(muted: boolean): void;
 
     /**
-     * Whether to begin video ads in a muted state or not.
+     * Gets whether video ads will start muted.
+     *
+     * @returns A promise that resolves to `true` if ads will begin muted.
      */
     isMuted(): Promise<boolean>;
 
     /**
-     * A toggle for verbose logging for the AppLovinMAX SDK.
+     * Enables or disables verbose logging in the AppLovin MAX SDK.
      *
-     * @param verboseLoggingEnabled true if the AppLovinMAX SDK should output log messages.
+     * @param verboseLoggingEnabled - `true` to enable verbose logs.
      */
     setVerboseLogging(verboseLoggingEnabled: boolean): void;
 
     /**
-     * Enables devices to receive test ads by passing in the advertising identifier (IDFA or IDFV) of
-     * each test device. Refer to AppLovin logs for the IDFA or IDFV of your current device.
+     * Registers test devices using their advertising IDs (IDFA/IDFV).
      *
-     * @param advertisingIds A list of the advertising ids.
+     * @param advertisingIds - An array of advertising IDs to register.
      */
     setTestDeviceAdvertisingIds(advertisingIds: string[]): void;
 
     /**
-     * Whether the Creative Debugger displays after you flip the device screen down twice.
+     * Enables or disables the Creative Debugger gesture (flip screen down twice).
      *
-     * @param enabled Default to true.
+     * @param enabled - `true` to enable the Creative Debugger (default: true).
      */
     setCreativeDebuggerEnabled(enabled: boolean): void;
 
     /**
-     * Sets an extra parameter to pass to the AppLovin server.
+     * Sets an extra parameter to send with SDK requests.
      *
-     * @param key Parameter key.
-     * @param value Parameter value.
+     * @param key - The name of the parameter.
+     * @param value - The value of the parameter, or `null` to clear it.
      */
     setExtraParameter(key: string, value: string | null): void;
 
     /**
-     * Enables the MAX Terms and Privacy Policy Flow.
+     * Enables the AppLovin MAX Terms and Privacy Policy flow.
      *
-     * @param enabled true to enable the MAX Terms and Privacy Policy Flow.
+     * @param enabled - `true` to enable the flow.
      */
     setTermsAndPrivacyPolicyFlowEnabled(enabled: boolean): void;
 
     /**
-     * The URL of your company’s privacy policy, as a string. This is required in order to enable
-     * the Terms Flow.
+     * Sets the URL for your company’s privacy policy (required to enable the terms flow).
      *
-     * @param urlString The URL string to point your company’s privacy policy.
+     * @param urlString - A valid URL string to your privacy policy.
      */
     setPrivacyPolicyUrl(urlString: string): void;
 
     /**
-     * The URL of your company’s terms of service, as a string. This is optional; you can enable
-     * the Terms Flow with or without it.
+     * Sets the URL for your company’s terms of service (optional).
      *
-     * @param urlString The URL string to point your company’s terms of service.
+     * @param urlString - A valid URL string to your terms of service.
      */
     setTermsOfServiceUrl(urlString: string): void;
 
     /**
-     * Set debug user geography. You may use this to test CMP flow by setting this to {@link ConsentFlowUserGeography.GDPR}.
+     * Sets a mock geography for testing the CMP flow (e.g., GDPR).
      *
-     * @note The debug geography is used only when the app is in debug mode.
+     * @note This only applies when running the app in debug mode.
+     *
+     * @param userGeography - The mock user geography to simulate.
      */
     setConsentFlowDebugUserGeography(userGeography: ConsentFlowUserGeography): void;
 
     /**
-     * Shows the CMP flow to an existing user.
-     * Note that this resets the user’s existing consent information.
+     * Displays the CMP flow for an existing user and resets their consent status.
      *
-     * The function returns when the flow finishes showing. On success, returns null. On failure,
-     * returns one of the {@link CMPError} codes.
-     *
-     * @return {Promise<CMPError|null>}
+     * @returns A promise that resolves to `null` on success, or a {@link CMPError} on failure.
      */
     showCmpForExistingUser(): Promise<CMPError | null>;
 
     /**
-     * Returns true if a supported CMP SDK is detected.
+     * Checks if a supported CMP SDK is available.
      *
-     * @return {boolean}
+     * @returns A promise that resolves to `true` if a CMP is detected.
      */
     hasSupportedCmp(): Promise<boolean>;
 
     /**
-     * Adds a segment. Both the key and the values must be integers.
+     * Adds a new user segment.
      *
-     * @param key An integer key.
-     * @param values An array of integers.
-     * @returns A promise that resolves upon the successful addition. The resolved object contains
-     * void.
-     * @throws Throws an error if the segments can not be added.
+     * @param key - An integer key identifying the segment.
+     * @param values - An array of integer values for the segment.
+     * @returns A promise that resolves on success, or rejects if the operation fails.
      */
     addSegment(key: number, values: number[]): Promise<void>;
 
     /**
-     * Returns a list of segments.
+     * Retrieves the list of user segments.
      *
-     * @returns A promise that resolves upon a successful inquiry. The resolved object contains a
-     * Map object that holds a list of segments, each represented by a key and an array of integers.
-     * @throws Throws an error if the segments can not be gotten.
+     * @returns A promise that resolves to a map of segment keys to arrays of values,
+     * or `null` if no segments are available.
      */
     getSegments(): Promise<Map<number, number[]> | null>;
 };

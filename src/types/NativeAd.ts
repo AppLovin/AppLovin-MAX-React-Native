@@ -1,54 +1,55 @@
 /**
- * Represents a native ad for rendering in {@link NativeAdView}. This type is intended for internal use only.
+ * Represents the structure of a native ad used internally by {@link NativeAdView}.
+ * This type is intended for internal use only.
  */
 export type NativeAd = {
     /**
-     * The native ad title text.
+     * The ad title text.
      */
     title?: string | null;
 
     /**
-     * The native ad advertiser text.
+     * The advertiser name.
      */
     advertiser?: string | null;
 
     /**
-     * The native ad body text.
+     * The ad body text.
      */
     body?: string | null;
 
     /**
-     * The native ad CTA button text.
+     * The call-to-action text.
      */
     callToAction?: string | null;
 
     /**
-     * Whether or not this has an image icon.
+     * Indicates whether an icon image is available.
      */
     image?: boolean;
 
     /**
-     * The data of the icon.
+     * The base64-encoded image source for the icon (if provided inline).
      */
     imageSource?: string | null;
 
     /**
-     * The URL string of the icon.
+     * The URL of the icon image.
      */
     url?: string;
 
     /**
-     * The star rating of the native ad.
+     * The star rating of the ad, typically in the range [0.0 – 5.0].
      */
     starRating?: number;
 
     /**
-     * Whether or not the Options view is available.
+     * Whether the native Options view is available.
      */
     isOptionsViewAvailable: boolean;
 
     /**
-     * Whether or not the Media view is available.
+     * Whether the native Media view (video or image) is available.
      */
     isMediaViewAvailable: boolean;
 };
