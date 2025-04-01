@@ -137,8 +137,6 @@ const styles = StyleSheet.create({
         color: 'gray',
     },
     starRatingView: {
-        fontSize: 10, // size of each star as unicode symbol
-        color: '#ffe234',
         backgroundColor: '#EFEFEF',
     },
     optionsView: {

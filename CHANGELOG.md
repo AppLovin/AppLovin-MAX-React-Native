@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Fix a type error from applying text-specific props to `StarRatingView`.
 ## 9.0.0
 * Add support for Fabric Native Components in `AdView`s and `NativeAdView`s.
 * Add support for Turbo Native Modules.
