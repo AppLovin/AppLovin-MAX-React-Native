@@ -17,7 +17,7 @@
 import * as React from 'react';
 import { useContext, useMemo } from 'react';
 import { Text, Image, View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
-import type { ViewProps, ImageProps, TextStyle, TextProps } from 'react-native';
+import type { ViewProps, ImageProps, TextProps } from 'react-native';
 import { NativeAdViewContext } from './NativeAdViewProvider';
 
 /**
@@ -118,48 +118,64 @@ export const MediaView = (props: ViewProps) => {
 };
 
 /**
+ * Props for the {@link StarRatingView} component, which displays a star rating
+ * using Unicode stars (★ and ☆) styled with color, shadow, and size.
+ */
+type StarRatingViewProps = ViewProps & {
+    /**
+     * The color used for filled (active) stars.
+     * Defaults to gold (#ffe234).
+     */
+    color?: string;
+
+    /**
+     * The color used for empty (inactive) stars.
+     * Defaults to light gray (#dedede).
+     */
+    shadowColor?: string;
+
+    /**
+     * The size of each star, which also determines their visual size.
+     * Defaults to 10.
+     */
+    size?: number;
+};
+
+/**
  * Renders the star rating of the ad, using Unicode stars (★ and ☆).
  * Filled stars are rendered over hollow stars using a clipped view.
  */
-export const StarRatingView = (props: ViewProps) => {
-    const { style, ...restProps } = props;
-    const maxStarCount = 5;
-    const starTextStyle = useMemo(() => StyleSheet.flatten(style) as TextStyle, [style]);
-    const starColor = starTextStyle.color ?? '#ffe234';
-    const starSize = starTextStyle.fontSize ?? 10;
+export const StarRatingView = ({ color = '#ffe234', shadowColor = '#dedede', size = 10, style }: StarRatingViewProps) => {
     const { nativeAd } = useContext(NativeAdViewContext);
+    const maxStarCount = 5;
+
+    const containerStyle = useMemo(() => StyleSheet.flatten([style, styles.starRatingContainer]), [style]);
 
     const stars = useMemo(() => {
-        if (!nativeAd.starRating) {
-            return Array.from({ length: maxStarCount }).map((_, index) => (
-                <Text key={index} style={{ fontSize: starSize }}>
-                    {' '}
-                </Text>
-            ));
-        }
+        const starRating = Math.max(0, Math.min(maxStarCount, nativeAd.starRating ?? 0));
 
         return Array.from({ length: maxStarCount }).map((_, index) => {
-            const starRating = nativeAd.starRating!;
-            const width = (starRating - index) * starSize;
+            const isFull = starRating > index;
+            const width = Math.min(size, Math.max(0, (starRating - index) * size));
 
             return (
                 <View key={index}>
-                    <Text style={{ fontSize: starSize, color: starColor }}>{String.fromCodePoint(0x2606)}</Text>
-                    {starRating > index && (
-                        <View style={[{ width: width }, styles.starRating]}>
-                            <Text style={{ fontSize: starSize, color: starColor }}>{String.fromCodePoint(0x2605)}</Text>
+                    <Text style={{ fontSize: size, color: isFull ? color : shadowColor }}>{String.fromCodePoint(0x2606)}</Text>
+                    {isFull && (
+                        <View style={[{ width }, styles.starRating]}>
+                            <Text style={{ fontSize: size, color }}>{String.fromCodePoint(0x2605)}</Text>
                         </View>
                     )}
                 </View>
             );
         });
-    }, [nativeAd.starRating, starColor, starSize]);
+    }, [nativeAd.starRating, color, shadowColor, size]);
 
-    return (
-        <View {...restProps} style={[style, styles.starRatingContainer]}>
-            {stars}
-        </View>
-    );
+    if (!nativeAd.starRating) {
+        return <View style={containerStyle} />;
+    }
+
+    return <View style={containerStyle}>{stars}</View>;
 };
 
 const styles = StyleSheet.create({
