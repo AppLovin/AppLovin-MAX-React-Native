@@ -87,19 +87,7 @@ export const NativeAdView = forwardRef<NativeAdViewHandler, NativeAdViewProps & 
  */
 const handleNativeAdViewEvent = <T extends AdInfoEvent | AdLoadFailedEvent>(event: NativeSyntheticEvent<T>, callback?: (adInfo: T) => void) => {
     if (!callback) return;
-
-    let adInfo: any = { ...event.nativeEvent };
-
-    if ('nativeAd' in event.nativeEvent) {
-        adInfo.nativeAd = {
-            ...event.nativeEvent.nativeAd,
-            isIconImageAvailable: event.nativeEvent.nativeAd?.isIconImageAvailable ?? false,
-            isOptionsViewAvailable: event.nativeEvent.nativeAd?.isOptionsViewAvailable ?? false,
-            isMediaViewAvailable: event.nativeEvent.nativeAd?.isMediaViewAvailable ?? false,
-        };
-    }
-
-    callback(adInfo);
+    callback(event.nativeEvent);
 };
 
 const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps & ViewProps>(function NativeAdViewImpl(

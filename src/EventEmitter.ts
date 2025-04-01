@@ -22,7 +22,7 @@ const subscriptions: Record<string, EventSubscription> = {};
  * @param handler - The callback to handle the event.
  */
 export const addEventListener = <T extends AdEventObject>(event: string, handler: AdEventListener<T>): void => {
-    const subscription: EventSubscription = emitter.addListener(event, handler);
+    const subscription = emitter.addListener(event, handler);
     const currentSubscription = subscriptions[event];
     if (currentSubscription) {
         currentSubscription.remove();
