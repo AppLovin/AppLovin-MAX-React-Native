@@ -57,28 +57,6 @@ const getOutlineViewSize = (style: StyleProp<ViewStyle>): [DimensionValue, Dimen
     return [viewStyle.width ?? 'auto', viewStyle.height ?? 'auto'];
 };
 
-const sizeBannerDimensions = async (sizeProps: SizeRecord, adaptiveBannerEnabled: boolean, screenWidth: number, bannerFormatSize: SizeRecord): Promise<SizeRecord> => {
-    const width = sizeProps.width === 'auto' ? screenWidth : sizeProps.width;
-
-    let height;
-    if (sizeProps.height === 'auto') {
-        if (adaptiveBannerEnabled) {
-            try {
-                height = await AppLovinMAX.getAdaptiveBannerHeightForWidth(screenWidth);
-            } catch (error) {
-                console.error('Error getting adaptive banner height:', error);
-                height = bannerFormatSize.height;
-            }
-        } else {
-            height = bannerFormatSize.height;
-        }
-    } else {
-        height = sizeProps.height;
-    }
-
-    return { width, height };
-};
-
 const handleAdViewEvent = <T extends AdInfoEvent | AdLoadFailedEvent | AdDisplayFailedEvent>(event: NativeSyntheticEvent<T>, callback?: (adInfo: T) => void) => {
     if (!callback) return;
     callback(event.nativeEvent);
@@ -150,7 +128,6 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
     const [, forceUpdate] = useReducer((x) => x + 1, 0);
     const adViewRef = useRef<React.ElementRef<typeof AdViewComponent> | undefined>();
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
-    const sizeProps = useRef<SizeRecord>({});
     const dimensions = useRef<SizeRecord>({});
 
     const loadAd = useCallback(() => {
@@ -175,28 +152,35 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
     useEffect(() => {
         const [width, height] = getOutlineViewSize(style);
 
-        if (sizeProps.current.width === width && sizeProps.current.height === height) return;
-
-        sizeProps.current = { width, height };
+        if (dimensions.current.width === width && dimensions.current.height === height) return;
 
         (async () => {
-            if (adFormat === AdFormat.BANNER) {
-                const adaptedSize = await sizeBannerDimensions(sizeProps.current, adaptiveBannerEnabled, screenWidth, adFormatSize.current);
+            const isBanner = adFormat === AdFormat.BANNER;
+            const isWidthAuto = width === 'auto';
+            const isHeightAuto = height === 'auto';
 
-                if (dimensions.current.width !== adaptedSize.width || dimensions.current.height !== adaptedSize.height) {
-                    dimensions.current = adaptedSize;
-                    forceUpdate();
-                }
-            } else {
-                const mrecSize = {
-                    width: width === 'auto' ? adFormatSize.current.width : width,
-                    height: height === 'auto' ? adFormatSize.current.height : height,
-                };
+            const resolvedWidth = isWidthAuto ? (isBanner ? screenWidth : adFormatSize.current.width) : width;
 
-                if (dimensions.current.width !== mrecSize.width || dimensions.current.height !== mrecSize.height) {
-                    dimensions.current = mrecSize;
-                    forceUpdate();
+            let resolvedHeight: DimensionValue | undefined = height;
+
+            if (isHeightAuto) {
+                if (isBanner && adaptiveBannerEnabled) {
+                    try {
+                        resolvedHeight = await AppLovinMAX.getAdaptiveBannerHeightForWidth(screenWidth);
+                    } catch (error) {
+                        console.error('Error getting adaptive banner height:', error);
+                        resolvedHeight = adFormatSize.current.height;
+                    }
+                } else {
+                    resolvedHeight = adFormatSize.current.height;
                 }
+            }
+
+            const newSize = { width: resolvedWidth, height: resolvedHeight };
+
+            if (dimensions.current.width !== newSize.width || dimensions.current.height !== newSize.height) {
+                dimensions.current = newSize;
+                forceUpdate();
             }
         })();
     }, [adFormat, adaptiveBannerEnabled, isInitialized, screenWidth, style]);
