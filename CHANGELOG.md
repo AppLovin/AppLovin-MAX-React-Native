@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+* Depend on Android SDK 13.2.0 and iOS SDK 13.2.0.
 * Fix a type error from applying text-specific props to `StarRatingView`.
 ## 9.0.0
 * Add support for Fabric Native Components in `AdView`s and `NativeAdView`s.
