@@ -157,7 +157,8 @@ const styles = StyleSheet.create({
         fontSize: 20,
     },
     adview: {
-        width: '100%',
+        alignSelf: 'center',
+        width: 'auto',
         height: 'auto',
     },
     placeholder: {
