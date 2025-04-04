@@ -241,7 +241,7 @@ public class AppLovinMAXAdView
 
         if ( uiComponent != null )
         {
-            uiComponent.measureAndLayout( 0, 0, getWidth(), getHeight() );
+            postDelayed( () -> uiComponent.measureAndLayout( 0, 0, getWidth(), getHeight() ), 500 );
         }
     }
 
