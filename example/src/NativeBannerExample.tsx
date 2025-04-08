@@ -4,7 +4,15 @@ import { AdView, AdFormat } from 'react-native-applovin-max';
 import type { AdInfo, AdLoadFailedInfo, AdViewId } from 'react-native-applovin-max';
 import AppButton from './components/AppButton';
 
-type Props = {
+const NativeBannerExample = ({
+    adUnitId,
+    adViewId,
+    isInitialized,
+    log,
+    isNativeUIBannerShowing,
+    isProgrammaticBannerShowing,
+    setIsNativeUIBannerShowing,
+}: {
     adUnitId: string;
     adViewId?: AdViewId;
     isInitialized: boolean;
@@ -12,17 +20,13 @@ type Props = {
     isNativeUIBannerShowing: boolean;
     isProgrammaticBannerShowing: boolean;
     setIsNativeUIBannerShowing: (showing: boolean) => void;
-};
-
-const NativeBannerExample = ({ adUnitId, adViewId, isInitialized, log, isNativeUIBannerShowing, isProgrammaticBannerShowing, setIsNativeUIBannerShowing }: Props) => {
+}) => {
     return (
         <>
             <AppButton
                 title={isNativeUIBannerShowing ? 'Hide Native UI Banner' : 'Show Native UI Banner'}
                 enabled={isInitialized && !isProgrammaticBannerShowing}
-                onPress={() => {
-                    setIsNativeUIBannerShowing(!isNativeUIBannerShowing);
-                }}
+                onPress={() => setIsNativeUIBannerShowing(!isNativeUIBannerShowing)}
             />
             {isNativeUIBannerShowing && (
                 <View style={styles.container}>
@@ -32,22 +36,22 @@ const NativeBannerExample = ({ adUnitId, adViewId, isInitialized, log, isNativeU
                         adFormat={AdFormat.BANNER}
                         style={styles.banner}
                         onAdLoaded={(adInfo: AdInfo) => {
-                            log('Banner ad ( ' + adInfo.adViewId + ' ) loaded from ' + adInfo.networkName);
+                            log('Banner ad (' + adInfo.adViewId + ') loaded from ' + adInfo.networkName);
                         }}
                         onAdLoadFailed={(errorInfo: AdLoadFailedInfo) => {
-                            log('Banner ad ( ' + errorInfo.adViewId + ' ) failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+                            log('Banner ad (' + errorInfo.adViewId + ') failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
                         }}
                         onAdClicked={(adInfo: AdInfo) => {
-                            log('Banner ad ( ' + adInfo.adViewId + ' ) clicked');
+                            log('Banner ad (' + adInfo.adViewId + ') clicked');
                         }}
                         onAdExpanded={(adInfo: AdInfo) => {
-                            log('Banner ad ( ' + adInfo.adViewId + ' ) expanded');
+                            log('Banner ad (' + adInfo.adViewId + ') expanded');
                         }}
                         onAdCollapsed={(adInfo: AdInfo) => {
-                            log('Banner ad ( ' + adInfo.adViewId + ' ) collapsed');
+                            log('Banner ad (' + adInfo.adViewId + ') collapsed');
                         }}
                         onAdRevenuePaid={(adInfo: AdInfo) => {
-                            log('Banner ad ( ' + adInfo.adViewId + ' ) revenue paid: ' + adInfo.revenue);
+                            log('Banner ad (' + adInfo.adViewId + ') revenue paid: ' + adInfo.revenue);
                         }}
                     />
                 </View>
@@ -61,18 +65,14 @@ const styles = StyleSheet.create({
         width: '100%',
         position: 'absolute',
         bottom: Platform.select({
-            ios: 36, // For bottom safe area
+            ios: 36, // Adjust for iOS safe area
             android: 0,
         }),
-        // Set background color for banners to be fully functional
+        // Set background color to ensure banner visibility on all layouts
         backgroundColor: '#000000',
     },
     banner: {
         alignSelf: 'center',
-        width: 'auto',
-        // Automatically sized to 50 on phones and 90 on tablets. When adaptiveBannerEnabled is on,
-        // sized to AppLovinMAX.getAdaptiveBannerHeightForWidth().
-        height: 'auto',
     },
 });
 

@@ -5,100 +5,149 @@ import { NativeAdView, TitleView, AdvertiserView, BodyView, CallToActionView, Ic
 import type { AdInfo, AdLoadFailedInfo, NativeAdViewHandler } from 'react-native-applovin-max';
 import AppButton from './components/AppButton';
 
-type Props = {
+const DEFAULT_ASPECT_RATIO = 16 / 9;
+
+const NativeAdContainer = ({
+    adUnitId,
+    onLoaded,
+    onLoadFailed,
+    onClicked,
+    onRevenuePaid,
+    mediaViewSize,
+    setMediaViewContainerSize,
+    nativeAdViewRef,
+}: {
+    adUnitId: string;
+    onLoaded: (adInfo: AdInfo) => void;
+    onLoadFailed: (errorInfo: AdLoadFailedInfo) => void;
+    onClicked: (adInfo: AdInfo) => void;
+    onRevenuePaid: (adInfo: AdInfo) => void;
+    mediaViewSize: { width?: number; height?: number; aspectRatio?: number };
+    setMediaViewContainerSize: (size: { width?: number; height?: number }) => void;
+    nativeAdViewRef: React.RefObject<NativeAdViewHandler>;
+}) => {
+    return (
+        <NativeAdView
+            adUnitId={adUnitId}
+            placement="myplacement"
+            customData="mycustomdata"
+            ref={nativeAdViewRef}
+            style={styles.nativeAdContainer}
+            onAdLoaded={onLoaded}
+            onAdLoadFailed={onLoadFailed}
+            onAdClicked={onClicked}
+            onAdRevenuePaid={onRevenuePaid}
+        >
+            {/* Asset layout */}
+            <View style={styles.headerAssetContainer}>
+                <IconView style={styles.icon} />
+                <View style={styles.titleSectionAssetContainer}>
+                    <TitleView numberOfLines={1} style={styles.title} />
+                    <AdvertiserView numberOfLines={1} style={styles.advertiser} />
+                    <StarRatingView />
+                </View>
+                <OptionsView style={styles.optionsView} />
+            </View>
+            <BodyView numberOfLines={2} style={styles.body} />
+
+            {/* Measure the width of the MediaView container */}
+            <View
+                onLayout={(event) => {
+                    const { width, height } = event.nativeEvent.layout;
+                    setMediaViewContainerSize({ width, height });
+                }}
+                style={styles.mediaViewAssetContainer}
+            >
+                {/* Dynamically sized MediaView */}
+                <MediaView style={{ ...styles.mediaView, ...mediaViewSize }} />
+            </View>
+            <CallToActionView style={styles.callToAction} />
+        </NativeAdView>
+    );
+};
+
+// A functional component to demonstrate showing a Native Ad using NativeAdView
+const NativeAdViewExample = ({
+    adUnitId,
+    isInitialized,
+    log,
+    isNativeAdShowing,
+    setIsNativeAdShowing,
+}: {
     adUnitId: string;
     isInitialized: boolean;
     log: (str: string) => void;
     isNativeAdShowing: boolean;
     setIsNativeAdShowing: (showing: boolean) => void;
-};
-
-const NATIVE_AD_MEDIAVIEW_WIDTH = 340;
-const NATIVE_AD_MEDIAVIEW_HEIGHT = 200;
-
-export const NativeAdViewExample = ({ adUnitId, isInitialized, log, isNativeAdShowing, setIsNativeAdShowing }: Props) => {
-    const DEFAULT_ASPECT_RATIO = 16 / 9;
-    const [aspectRatio, setAspectRatio] = useState(DEFAULT_ASPECT_RATIO);
-    const [mediaViewSize, setMediaViewSize] = useState({});
+}) => {
     const [isNativeAdLoading, setIsNativeAdLoading] = useState(false);
+    const [mediaViewAspectRatio, setMediaViewAspectRatio] = useState(DEFAULT_ASPECT_RATIO);
+    const [mediaViewContainerSize, setMediaViewContainerSize] = useState<{ width?: number; height?: number }>({});
+    const [mediaViewSize, setMediaViewSize] = useState<{ width?: number; height?: number }>({});
 
-    // Ref for NativeAdView
     const nativeAdViewRef = useRef<NativeAdViewHandler>(null);
 
-    // adjust the size of MediaView when `aspectRatio` changes
+    // Adjust MediaView size using container dimensions and ad's aspect ratio
     useEffect(() => {
-        if (aspectRatio * NATIVE_AD_MEDIAVIEW_HEIGHT > NATIVE_AD_MEDIAVIEW_WIDTH) {
-            setMediaViewSize({ aspectRatio: aspectRatio, width: NATIVE_AD_MEDIAVIEW_WIDTH, height: undefined });
-        } else {
-            setMediaViewSize({ aspectRatio: aspectRatio, width: undefined, height: NATIVE_AD_MEDIAVIEW_HEIGHT });
+        if (!mediaViewAspectRatio) return;
+
+        const { width: containerWidth, height: containerHeight } = mediaViewContainerSize;
+
+        if (!containerWidth || !containerHeight) return;
+
+        let height = containerHeight;
+        let width = containerHeight * mediaViewAspectRatio;
+
+        if (width > containerWidth) {
+            // Adjust again so width is not exceeded
+            width = containerWidth;
+            height = width / mediaViewAspectRatio;
         }
-    }, [aspectRatio]);
+
+        const { width: mediaViewWidth, height: mediaViewHeight } = mediaViewSize;
+
+        if (width !== mediaViewWidth || height !== mediaViewHeight) {
+            setMediaViewSize({ width, height });
+        }
+    }, [mediaViewContainerSize, mediaViewAspectRatio, mediaViewSize]);
 
     return (
         <>
-            <AppButton
-                title={isNativeAdShowing ? 'Hide Native Ad' : 'Show Native Ad'}
-                enabled={isInitialized}
-                onPress={() => {
-                    setIsNativeAdShowing(!isNativeAdShowing);
-                }}
-            />
+            <AppButton title={isNativeAdShowing ? 'Hide Native Ad' : 'Show Native Ad'} enabled={isInitialized} onPress={() => setIsNativeAdShowing(!isNativeAdShowing)} />
+
             {isNativeAdShowing && (
                 <View style={styles.container}>
-                    <NativeAdView
+                    <NativeAdContainer
                         adUnitId={adUnitId}
-                        placement="myplacement"
-                        customData="mycustomdata"
-                        ref={nativeAdViewRef}
-                        style={styles.nativead}
-                        onAdLoaded={(adInfo: AdInfo) => {
-                            if (adInfo?.nativeAd?.mediaContentAspectRatio) {
-                                setAspectRatio(adInfo?.nativeAd?.mediaContentAspectRatio);
-                            }
+                        onLoaded={(adInfo) => {
+                            setMediaViewAspectRatio(adInfo?.nativeAd?.mediaContentAspectRatio || DEFAULT_ASPECT_RATIO);
                             log('Native ad loaded from ' + adInfo.networkName);
                             setIsNativeAdLoading(false);
                         }}
-                        onAdLoadFailed={(errorInfo: AdLoadFailedInfo) => {
+                        onLoadFailed={(errorInfo) => {
                             log('Native ad failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
                             setIsNativeAdLoading(false);
                         }}
-                        onAdClicked={(adInfo: AdInfo) => {
+                        onClicked={(adInfo) => {
                             log('Native ad clicked on ' + adInfo.adUnitId);
                         }}
-                        onAdRevenuePaid={(adInfo: AdInfo) => {
+                        onRevenuePaid={(adInfo) => {
                             log('Native ad revenue paid: ' + adInfo.revenue);
                         }}
-                    >
-                        <View style={styles.assetContainer}>
-                            <View style={styles.assetUpperContainer}>
-                                <IconView style={styles.icon} />
-                                <View style={styles.assetTitleContainer}>
-                                    <TitleView numberOfLines={1} style={styles.title} />
-                                    <AdvertiserView numberOfLines={1} style={styles.advertiser} />
-                                    <StarRatingView style={styles.starRatingView} />
-                                </View>
-                                <OptionsView style={styles.optionsView} />
-                            </View>
-                            <BodyView numberOfLines={2} style={styles.body} />
-                            <MediaView style={{ ...styles.mediaView, ...mediaViewSize }} />
-                            <CallToActionView style={styles.callToAction} />
-                        </View>
-                    </NativeAdView>
+                        mediaViewSize={mediaViewSize}
+                        setMediaViewContainerSize={setMediaViewContainerSize}
+                        nativeAdViewRef={nativeAdViewRef}
+                    />
+
                     <AppButton
-                        title={'RELOAD'}
+                        title="Reload"
                         enabled={!isNativeAdLoading}
                         onPress={() => {
                             setIsNativeAdLoading(true);
                             nativeAdViewRef.current?.loadAd();
                         }}
                     />
-                    <AppButton
-                        title={'CLOSE'}
-                        enabled={!isNativeAdLoading}
-                        onPress={() => {
-                            setIsNativeAdShowing(!isNativeAdShowing);
-                        }}
-                    />
+                    <AppButton title="Close" enabled={!isNativeAdLoading} onPress={() => setIsNativeAdShowing(!isNativeAdShowing)} />
                 </View>
             )}
         </>
@@ -109,80 +158,76 @@ const styles = StyleSheet.create({
     container: {
         position: 'absolute', // must have a view behind for touch event propagation
         top: '30%',
+        height: '50%',
         width: '100%',
         padding: 10,
-        backgroundColor: '#0583aa',
         zIndex: 1,
         elevation: Platform.OS === 'android' ? 1 : 0,
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        backgroundColor: '#0583aa',
     },
-    nativead: {
+    nativeAdContainer: {
+        flexGrow: 1,
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'space-between',
         padding: 10,
-        width: '100%',
         backgroundColor: '#EFEFEF',
+    },
+    headerAssetContainer: {
+        flexGrow: 0,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    titleSectionAssetContainer: {
+        marginLeft: 8,
+        flex: 1,
+        flexDirection: 'column',
+    },
+    mediaViewAssetContainer: {
+        flexGrow: 1,
+        width: '100%',
     },
     icon: {
         width: 48,
         height: 48,
     },
     title: {
-        width: 260,
-        fontSize: 16,
-        textAlign: 'left',
-        fontWeight: 'bold',
-        color: 'black',
-    },
-    advertiser: {
         fontSize: 12,
         textAlign: 'left',
-        color: 'gray',
+        fontWeight: 'bold',
     },
-    starRatingView: {
-        backgroundColor: '#EFEFEF',
+    advertiser: {
+        fontSize: 10,
+        textAlign: 'left',
     },
     optionsView: {
-        width: 20,
-        height: 20,
-        backgroundColor: '#EFEFEF',
+        width: 12,
+        height: 12,
     },
     body: {
-        padding: 8,
-        fontSize: 14,
+        flexGrow: 0,
+        padding: 4,
+        height: 40,
+        fontSize: 12,
         textAlign: 'center',
         textAlignVertical: 'center',
     },
     mediaView: {
         alignSelf: 'center',
-        width: NATIVE_AD_MEDIAVIEW_WIDTH,
-        height: NATIVE_AD_MEDIAVIEW_HEIGHT,
-        maxWidth: NATIVE_AD_MEDIAVIEW_WIDTH,
-        maxHeight: NATIVE_AD_MEDIAVIEW_HEIGHT,
-        zIndex: 1,
-        elevation: Platform.OS === 'android' ? 1 : 0,
+        backgroundColor: '#EFEFEF',
     },
     callToAction: {
+        flexGrow: 0,
         marginTop: 10,
         padding: 8,
         width: '100%',
-        fontSize: 18,
+        fontSize: 14,
         textAlign: 'center',
-        fontWeight: 'bold',
         textTransform: 'uppercase',
         color: 'white',
         backgroundColor: '#2d545e',
-    },
-    assetContainer: {
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-    },
-    assetUpperContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    assetTitleContainer: {
-        marginLeft: 4,
-        flexDirection: 'column',
-        flexGrow: 1,
     },
 });
 

@@ -4,7 +4,25 @@ import { StyleSheet, Text, ScrollView, View, Dimensions, Platform } from 'react-
 import { AdFormat, AdView, type AdViewId } from 'react-native-applovin-max';
 import AppButton from './components/AppButton';
 
-type Props = {
+const ADVIEW_REPETITIONS = 2;
+
+const SAMPLE_TEXT = `
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+`;
+
+const ScrolledAdViewExample = ({
+    bannerAdUnitId,
+    mrecAdUnitId,
+    bannerAdViewId,
+    bannerAdView2Id,
+    mrecAdViewId,
+    mrecAdView2Id,
+    isInitialized,
+    isNativeAdShowing,
+}: {
     bannerAdUnitId: string;
     mrecAdUnitId: string;
     bannerAdViewId?: AdViewId;
@@ -13,11 +31,16 @@ type Props = {
     mrecAdView2Id?: AdViewId;
     isInitialized: boolean;
     isNativeAdShowing: boolean;
-};
-
-const ScrolledAdViewExample = ({ bannerAdUnitId, mrecAdUnitId, bannerAdViewId, bannerAdView2Id, mrecAdViewId, mrecAdView2Id, isInitialized, isNativeAdShowing }: Props) => {
+}) => {
     const [isAdEnabled, setIsAdEnabled] = useState(true);
     const [isScrollViewShowing, setIsScrollViewShowing] = useState(false);
+
+    const renderAdBlock = (key: string, adView: JSX.Element) => (
+        <View key={key}>
+            <Text style={styles.text}>{SAMPLE_TEXT}</Text>
+            {isAdEnabled ? adView : <Text style={styles.placeholder}>AD PLACEHOLDER</Text>}
+        </View>
+    );
 
     return (
         <>
@@ -31,106 +54,30 @@ const ScrolledAdViewExample = ({ bannerAdUnitId, mrecAdUnitId, bannerAdViewId, b
             {isScrollViewShowing && (
                 <View style={styles.container}>
                     <ScrollView style={styles.scrollView}>
-                        <AppButton
-                            title={'CLOSE'}
-                            enabled={true}
-                            onPress={() => {
-                                setIsScrollViewShowing(false);
-                            }}
-                        />
-                        <AppButton
-                            title={isAdEnabled ? 'DISABLE ADS' : 'ENABLE ADS'}
-                            enabled={true}
-                            onPress={() => {
-                                setIsAdEnabled(!isAdEnabled);
-                            }}
-                        />
-                        <View>
-                            <Text style={styles.text}>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
-                                laborum.
-                            </Text>
+                        <AppButton title="Close" enabled onPress={() => setIsScrollViewShowing(false)} />
+                        <AppButton title={isAdEnabled ? 'Hide Ads' : 'Show Ads'} enabled onPress={() => setIsAdEnabled(!isAdEnabled)} />
 
-                            {isAdEnabled ? (
-                                <AdView adUnitId={bannerAdUnitId} adFormat={AdFormat.BANNER} adViewId={bannerAdViewId} style={styles.adview} />
-                            ) : (
-                                <Text style={styles.placeholder}>AD PLACEHOLDER</Text>
-                            )}
-
-                            <Text style={styles.text}>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
-                                laborum.
-                            </Text>
-                        </View>
-                        <View>
-                            <Text style={styles.text}>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
-                                laborum.
-                            </Text>
-
-                            {isAdEnabled ? (
-                                <AdView adUnitId={mrecAdUnitId} adFormat={AdFormat.MREC} adViewId={mrecAdViewId} style={styles.adview} />
-                            ) : (
-                                <Text style={styles.placeholder}>AD PLACEHOLDER</Text>
-                            )}
-
-                            <Text style={styles.text}>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
-                                laborum.
-                            </Text>
-                        </View>
-                        <View>
-                            <Text style={styles.text}>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
-                                laborum.
-                            </Text>
-
-                            {isAdEnabled ? (
-                                <AdView adUnitId={bannerAdUnitId} adFormat={AdFormat.BANNER} adViewId={bannerAdView2Id} style={styles.adview} />
-                            ) : (
-                                <Text style={styles.placeholder}>AD PLACEHOLDER</Text>
-                            )}
-
-                            <Text style={styles.text}>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
-                                laborum.
-                            </Text>
-                        </View>
-                        <View>
-                            <Text style={styles.text}>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
-                                laborum.
-                            </Text>
-
-                            {isAdEnabled ? (
-                                <AdView adUnitId={mrecAdUnitId} adFormat={AdFormat.MREC} adViewId={mrecAdView2Id} style={styles.adview} />
-                            ) : (
-                                <Text style={styles.placeholder}>AD PLACEHOLDER</Text>
-                            )}
-
-                            <Text style={styles.text}>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
-                                laborum.
-                            </Text>
-                        </View>
+                        {Array.from({ length: ADVIEW_REPETITIONS }).flatMap((_, index) => {
+                            const keyBase = `block-${index}`;
+                            return [
+                                renderAdBlock(
+                                    `${keyBase}-banner`,
+                                    <AdView
+                                        adUnitId={bannerAdUnitId}
+                                        adFormat={AdFormat.BANNER}
+                                        adViewId={index % 2 === 0 ? bannerAdViewId : bannerAdView2Id}
+                                        style={styles.adview}
+                                    />
+                                ),
+                                renderAdBlock(
+                                    `${keyBase}-mrec`,
+                                    <AdView adUnitId={mrecAdUnitId} adFormat={AdFormat.MREC} adViewId={index % 2 === 0 ? mrecAdViewId : mrecAdView2Id} style={styles.adview} />
+                                ),
+                            ];
+                        })}
                     </ScrollView>
-                    {isAdEnabled ? <AdView adUnitId={bannerAdUnitId} adFormat={AdFormat.BANNER} style={styles.adview} /> : <Text style={styles.placeholder}>AD PLACEHOLDER</Text>}
+
+                    {isAdEnabled ? <AdView adUnitId={bannerAdUnitId} adFormat={AdFormat.BANNER} style={styles.adview} /> : <Text style={styles.placeholder}>Placeholder</Text>}
                 </View>
             )}
         </>
@@ -153,13 +100,11 @@ const styles = StyleSheet.create({
         backgroundColor: 'pink',
     },
     text: {
-        margin: 10,
+        margin: 4,
         fontSize: 20,
     },
     adview: {
         alignSelf: 'center',
-        width: 'auto',
-        height: 'auto',
     },
     placeholder: {
         marginTop: 10,
