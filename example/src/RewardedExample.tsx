@@ -29,7 +29,7 @@ const RewardedExample = ({ adUnitId, isInitialized, log }: { adUnitId: string; i
         function onAdLoadFailed(errorInfo: AdLoadFailedInfo) {
             setAdLoadState(RewardedAdLoadState.notLoaded);
 
-            if (retryAttempt.current >= MAX_EXPONENTIAL_RETRY_COUNT) {
+            if (retryAttempt.current > MAX_EXPONENTIAL_RETRY_COUNT) {
                 log('Rewarded ad failed to load. Max retry attempts reached. Code: ' + errorInfo.code);
                 return;
             }
@@ -37,7 +37,7 @@ const RewardedExample = ({ adUnitId, isInitialized, log }: { adUnitId: string; i
             // Retry with exponential backoff, capped at MAX_RETRY_DELAY_SECONDS.
             retryAttempt.current += 1;
             const retryDelay = Math.min(MAX_RETRY_DELAY_SECONDS, Math.pow(2, retryAttempt.current));
-            log?.(`Rewarded ad failed to load (code: ${errorInfo.code}) - retrying in ${retryDelay}s`);
+            log(`Rewarded ad failed to load (code: ${errorInfo.code}) - retrying in ${retryDelay}s`);
 
             setTimeout(() => {
                 setAdLoadState(RewardedAdLoadState.loading);

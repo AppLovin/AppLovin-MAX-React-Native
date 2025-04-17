@@ -4,6 +4,8 @@ import { StyleSheet, Text, ScrollView, View, Dimensions, Platform } from 'react-
 import { AdFormat, AdView, type AdViewId } from 'react-native-applovin-max';
 import AppButton from './components/AppButton';
 
+// Number of times AdViews are repeated in the ScrollView.
+// Each repetition includes one Banner AdView and one MREC AdView.
 const ADVIEW_REPETITIONS = 2;
 
 const SAMPLE_TEXT = `

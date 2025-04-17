@@ -49,7 +49,8 @@ const ProgrammaticBannerExample = ({
                 // Create programmatic banner — auto-sized (320x50 for phones, 728x90 for tablets)
                 BannerAd.createAd(adUnitId, AdViewPosition.BOTTOM_CENTER, 0, 50);
 
-                // Set banner background color (must be hex string). Using black in this case.
+                // Set banner background color (must be hex string) to be fully functional.
+                // Using black in this case.
                 BannerAd.setBackgroundColor(adUnitId, '#000000');
 
                 setIsProgrammaticBannerCreated(true);

@@ -29,7 +29,7 @@ const InterstitialExample = ({ adUnitId, isInitialized, log }: { adUnitId: strin
         function onAdLoadFailed(errorInfo: AdLoadFailedInfo) {
             setAdLoadState(InterstitialAdLoadState.notLoaded);
 
-            if (retryAttempt.current >= MAX_EXPONENTIAL_RETRY_COUNT) {
+            if (retryAttempt.current > MAX_EXPONENTIAL_RETRY_COUNT) {
                 log('Interstitial ad failed to load with code ' + errorInfo.code);
                 return;
             }
