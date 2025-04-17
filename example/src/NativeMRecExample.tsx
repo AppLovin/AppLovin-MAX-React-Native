@@ -4,7 +4,15 @@ import { AdView, AdFormat } from 'react-native-applovin-max';
 import type { AdInfo, AdLoadFailedInfo, AdViewId } from 'react-native-applovin-max';
 import AppButton from './components/AppButton';
 
-type Props = {
+const NativeMRecExample = ({
+    adUnitId,
+    adViewId,
+    isInitialized,
+    log,
+    isNativeUIMRecShowing,
+    isProgrammaticMRecShowing,
+    setIsNativeUIMRecShowing,
+}: {
     adUnitId: string;
     adViewId?: AdViewId;
     isInitialized: boolean;
@@ -12,17 +20,13 @@ type Props = {
     isNativeUIMRecShowing: boolean;
     isProgrammaticMRecShowing: boolean;
     setIsNativeUIMRecShowing: (showing: boolean) => void;
-};
-
-const NativeMRecExample = ({ adUnitId, adViewId, isInitialized, log, isNativeUIMRecShowing, isProgrammaticMRecShowing, setIsNativeUIMRecShowing }: Props) => {
+}) => {
     return (
         <>
             <AppButton
                 title={isNativeUIMRecShowing ? 'Hide Native UI MREC' : 'Show Native UI MREC'}
                 enabled={isInitialized && !isProgrammaticMRecShowing}
-                onPress={() => {
-                    setIsNativeUIMRecShowing(!isNativeUIMRecShowing);
-                }}
+                onPress={() => setIsNativeUIMRecShowing(!isNativeUIMRecShowing)}
             />
             {isNativeUIMRecShowing && (
                 <View style={styles.container}>
@@ -32,22 +36,22 @@ const NativeMRecExample = ({ adUnitId, adViewId, isInitialized, log, isNativeUIM
                         adViewId={adViewId}
                         style={styles.mrec}
                         onAdLoaded={(adInfo: AdInfo) => {
-                            log('MREC ad ( ' + adInfo.adViewId + ' ) loaded from ' + adInfo.networkName);
+                            log('MREC ad (' + adInfo.adViewId + ') loaded from ' + adInfo.networkName);
                         }}
                         onAdLoadFailed={(errorInfo: AdLoadFailedInfo) => {
-                            log('MREC ad ( ' + errorInfo.adViewId + ' ) failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
+                            log('MREC ad (' + errorInfo.adViewId + ') failed to load with error code ' + errorInfo.code + ' and message: ' + errorInfo.message);
                         }}
                         onAdClicked={(adInfo: AdInfo) => {
-                            log('MREC ad ( ' + adInfo.adViewId + ' ) clicked');
+                            log('MREC ad (' + adInfo.adViewId + ') clicked');
                         }}
                         onAdExpanded={(adInfo: AdInfo) => {
-                            log('MREC ad ( ' + adInfo.adViewId + ' ) expanded');
+                            log('MREC ad (' + adInfo.adViewId + ') expanded');
                         }}
                         onAdCollapsed={(adInfo: AdInfo) => {
-                            log('MREC ad ( ' + adInfo.adViewId + ' ) collapsed');
+                            log('MREC ad (' + adInfo.adViewId + ') collapsed');
                         }}
                         onAdRevenuePaid={(adInfo: AdInfo) => {
-                            log('MREC ad ( ' + adInfo.adViewId + ' ) revenue paid: ' + adInfo.revenue);
+                            log('MREC ad (' + adInfo.adViewId + ') revenue paid: ' + adInfo.revenue);
                         }}
                     />
                 </View>
@@ -61,14 +65,12 @@ const styles = StyleSheet.create({
         width: '100%',
         position: 'absolute',
         bottom: Platform.select({
-            ios: 36, // For bottom safe area
+            ios: 36, // Adjust for bottom safe area on iOS
             android: 0,
         }),
     },
     mrec: {
         alignSelf: 'center',
-        width: 'auto',
-        height: 'auto',
     },
 });
 
