@@ -16,7 +16,6 @@ enum RewardedAdLoadState {
 const RewardedExample = ({ adUnitId, isInitialized, log }: { adUnitId: string; isInitialized: boolean; log: (str: string) => void }) => {
     const [adLoadState, setAdLoadState] = useState<RewardedAdLoadState>(RewardedAdLoadState.notLoaded);
     const retryAttempt = useRef(0);
-    const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         function onAdLoaded(adInfo: AdInfo) {
@@ -40,7 +39,7 @@ const RewardedExample = ({ adUnitId, isInitialized, log }: { adUnitId: string; i
             const retryDelay = Math.min(MAX_RETRY_DELAY_SECONDS, Math.pow(2, retryAttempt.current));
             log?.(`Rewarded ad failed to load (code: ${errorInfo.code}) - retrying in ${retryDelay}s`);
 
-            retryTimeoutRef.current = setTimeout(() => {
+            setTimeout(() => {
                 setAdLoadState(RewardedAdLoadState.loading);
                 log('Retrying to load rewarded ad...');
                 RewardedAd.loadAd(adUnitId);
@@ -64,10 +63,6 @@ const RewardedExample = ({ adUnitId, isInitialized, log }: { adUnitId: string; i
 
         // Clean up listeners and retry timeout on unmount.
         return () => {
-            if (retryTimeoutRef.current) {
-                clearTimeout(retryTimeoutRef.current);
-            }
-
             RewardedAd.removeAdLoadedEventListener();
             RewardedAd.removeAdLoadFailedEventListener();
             RewardedAd.removeAdClickedEventListener();

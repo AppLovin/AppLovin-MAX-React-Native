@@ -16,7 +16,6 @@ enum InterstitialAdLoadState {
 const InterstitialExample = ({ adUnitId, isInitialized, log }: { adUnitId: string; isInitialized: boolean; log: (str: string) => void }) => {
     const [adLoadState, setAdLoadState] = useState<InterstitialAdLoadState>(InterstitialAdLoadState.notLoaded);
     const retryAttempt = useRef(0);
-    const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         function onAdLoaded(adInfo: AdInfo) {
@@ -42,7 +41,7 @@ const InterstitialExample = ({ adUnitId, isInitialized, log }: { adUnitId: strin
             const retryDelay = Math.min(MAX_RETRY_DELAY_SECONDS, Math.pow(2, retryAttempt.current));
             log(`Interstitial ad failed to load (code: ${errorInfo.code}) - retrying in ${retryDelay}s`);
 
-            retryTimeoutRef.current = setTimeout(() => {
+            setTimeout(() => {
                 setAdLoadState(InterstitialAdLoadState.loading);
                 log('Retrying to load interstitial ad...');
                 InterstitialAd.loadAd(adUnitId);
@@ -65,10 +64,6 @@ const InterstitialExample = ({ adUnitId, isInitialized, log }: { adUnitId: strin
 
         // Cleanup listeners on unmount
         return () => {
-            if (retryTimeoutRef.current) {
-                clearTimeout(retryTimeoutRef.current);
-            }
-
             InterstitialAd.removeAdLoadedEventListener();
             InterstitialAd.removeAdLoadFailedEventListener();
             InterstitialAd.removeAdClickedEventListener();
