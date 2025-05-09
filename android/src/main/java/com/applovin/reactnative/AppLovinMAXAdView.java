@@ -76,6 +76,7 @@ public class AppLovinMAXAdView
 
     public static void preloadNativeUIComponentAdView(final String adUnitId,
                                                       final MaxAdFormat adFormat,
+                                                      final boolean isAdaptive,
                                                       @Nullable final String placement,
                                                       @Nullable final String customData,
                                                       @Nullable final Map<String, Object> extraParameters,
@@ -83,7 +84,7 @@ public class AppLovinMAXAdView
                                                       final Promise promise,
                                                       final ReactContext context)
     {
-        AppLovinMAXAdViewUiComponent preloadedUiComponent = new AppLovinMAXAdViewUiComponent( adUnitId, adFormat, context );
+        AppLovinMAXAdViewUiComponent preloadedUiComponent = new AppLovinMAXAdViewUiComponent( adUnitId, adFormat, isAdaptive, context );
         preloadedUiComponentInstances.put( preloadedUiComponent.hashCode(), preloadedUiComponent );
 
         preloadedUiComponent.setPlacement( placement );
@@ -189,11 +190,6 @@ public class AppLovinMAXAdView
     public void setAdaptiveBannerEnabled(final boolean enabled)
     {
         adaptiveBannerEnabled = enabled;
-
-        if ( uiComponent != null )
-        {
-            uiComponent.setAdaptiveBannerEnabled( adaptiveBannerEnabled );
-        }
     }
 
     public void setAutoRefreshEnabled(final boolean enabled)
@@ -314,14 +310,13 @@ public class AppLovinMAXAdView
                 {
                     AppLovinMAXModuleImpl.d( "Mounting the preloaded AdView (" + adViewId + ") for Ad Unit ID " + adUnitId );
 
-                    uiComponent.setAdaptiveBannerEnabled( adaptiveBannerEnabled );
                     uiComponent.setAutoRefreshEnabled( autoRefreshEnabled );
                     uiComponent.attachAdView( AppLovinMAXAdView.this );
                     return;
                 }
             }
 
-            uiComponent = new AppLovinMAXAdViewUiComponent( adUnitId, adFormat, reactContext );
+            uiComponent = new AppLovinMAXAdViewUiComponent( adUnitId, adFormat, adaptiveBannerEnabled, reactContext );
             adViewId = uiComponent.hashCode();
             uiComponentInstances.put( adViewId, uiComponent );
 
@@ -331,7 +326,6 @@ public class AppLovinMAXAdView
             uiComponent.setCustomData( customData );
             uiComponent.setExtraParameters( extraParameters );
             uiComponent.setLocalExtraParameters( localExtraParameters );
-            uiComponent.setAdaptiveBannerEnabled( adaptiveBannerEnabled );
             uiComponent.setAutoRefreshEnabled( autoRefreshEnabled );
 
             uiComponent.attachAdView( AppLovinMAXAdView.this );

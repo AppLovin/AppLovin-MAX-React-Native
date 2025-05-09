@@ -73,6 +73,11 @@ export type AdViewProps = AdProps & {
  */
 export type NativeUIComponentAdViewOptions = {
     /**
+     * Whether adaptive banner sizing is enabled. Defaults to `true`.
+     */
+    isAdaptive?: boolean;
+
+    /**
      * The placement name used for analytics and reporting.
      */
     placement?: string | null;
