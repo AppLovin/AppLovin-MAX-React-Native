@@ -32,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier 
                               adFormat:(MAAdFormat *)adFormat
+                            isAdaptive:(BOOL)isAdaptive
                              placement:(nullable NSString *)placement
                             customData:(nullable NSString *)customData
                        extraParameters:(nullable NSDictionary<NSString *, id> *)extraParameters

@@ -13,8 +13,9 @@ export type BannerAdType = ViewAdType & {
      * @param position - The position of the banner on screen.
      * @param xOffset - Optional horizontal offset from the left (default: 0).
      * @param yOffset - Optional vertical offset from the top (default: 0).
+     * @param isAdaptive - Optional flag to enable adaptive banners (default: true).
      */
-    createAd(adUnitId: string, position: AdViewPosition, xOffset?: number, yOffset?: number): void;
+    createAd(adUnitId: string, position: AdViewPosition, xOffset?: number, yOffset?: number, isAdaptive?: boolean): void;
 
     /**
      * Sets the background color of the banner.

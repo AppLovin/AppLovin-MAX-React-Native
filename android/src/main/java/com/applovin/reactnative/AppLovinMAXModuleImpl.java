@@ -23,6 +23,7 @@ import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxAdListener;
 import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxAdViewAdListener;
+import com.applovin.mediation.MaxAdViewConfiguration;
 import com.applovin.mediation.MaxAdWaterfallInfo;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.MaxErrorCode;
@@ -525,7 +526,7 @@ public class AppLovinMAXModuleImpl
 
     // BANNERS
 
-    public void createBanner(final String adUnitId, final String bannerPosition)
+    public void createBanner(final String adUnitId, final String bannerPosition, final boolean isAdaptive)
     {
         if ( sdk == null )
         {
@@ -533,11 +534,11 @@ public class AppLovinMAXModuleImpl
             return;
         }
 
-        createAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), bannerPosition, DEFAULT_AD_VIEW_OFFSET );
+        createAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), bannerPosition, DEFAULT_AD_VIEW_OFFSET, isAdaptive );
     }
 
     // NOTE: No function overloading in JS so we need new method signature
-    public void createBannerWithOffsets(final String adUnitId, final String bannerPosition, final float x, final float y)
+    public void createBannerWithOffsets(final String adUnitId, final String bannerPosition, final float x, final float y, final boolean isAdaptive)
     {
         if ( sdk == null )
         {
@@ -545,7 +546,7 @@ public class AppLovinMAXModuleImpl
             return;
         }
 
-        createAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), bannerPosition, getOffsetPixels( x, y, reactContext ) );
+        createAdView( adUnitId, getDeviceSpecificBannerAdViewAdFormat(), bannerPosition, getOffsetPixels( x, y, reactContext ), isAdaptive );
     }
 
     public void setBannerBackgroundColor(final String adUnitId, final String hexColorCode)
@@ -701,7 +702,7 @@ public class AppLovinMAXModuleImpl
             return;
         }
 
-        createAdView( adUnitId, MaxAdFormat.MREC, mrecPosition, DEFAULT_AD_VIEW_OFFSET );
+        createAdView( adUnitId, MaxAdFormat.MREC, mrecPosition, DEFAULT_AD_VIEW_OFFSET, false );
     }
 
     public void setMRecPlacement(final String adUnitId, @Nullable final String placement)
@@ -1035,7 +1036,7 @@ public class AppLovinMAXModuleImpl
 
     // ADVIEW PRELOADING
 
-    public void preloadNativeUIComponentAdView(final String adUnitId, final String adFormatStr, @Nullable final String placement, @Nullable final String customData, @Nullable final ReadableMap extraParameterMap, @Nullable final ReadableMap localExtraParameterMap, final Promise promise)
+    public void preloadNativeUIComponentAdView(final String adUnitId, final String adFormatStr, final boolean isAdaptive, @Nullable final String placement, @Nullable final String customData, @Nullable final ReadableMap extraParameterMap, @Nullable final ReadableMap localExtraParameterMap, final Promise promise)
     {
         MaxAdFormat adFormat;
 
@@ -1059,6 +1060,7 @@ public class AppLovinMAXModuleImpl
 
         reactContext.runOnUiQueueThread( () -> AppLovinMAXAdView.preloadNativeUIComponentAdView( adUnitId,
                                                                                                  finalAdFormat,
+                                                                                                 isAdaptive,
                                                                                                  placement,
                                                                                                  customData,
                                                                                                  extraParameters,
@@ -1347,7 +1349,7 @@ public class AppLovinMAXModuleImpl
 
     // INTERNAL METHODS
 
-    private void createAdView(final String adUnitId, final MaxAdFormat adFormat, final String adViewPosition, final Point adViewOffsetPixels)
+    private void createAdView(final String adUnitId, final MaxAdFormat adFormat, final String adViewPosition, final Point adViewOffsetPixels, final boolean isAdaptive)
     {
         // Run on main thread to ensure there are no concurrency issues with other ad view methods
         reactContext.runOnUiQueueThread( () -> {
@@ -1355,7 +1357,7 @@ public class AppLovinMAXModuleImpl
             d( "Creating " + adFormat.getLabel() + " with ad unit id \"" + adUnitId + "\", position: \"" + adViewPosition + "\", and offset: " + adViewOffsetPixels );
 
             // Retrieve ad view from the map
-            final MaxAdView adView = retrieveAdView( adUnitId, adFormat, adViewPosition, adViewOffsetPixels );
+            final MaxAdView adView = retrieveAdView( adUnitId, adFormat, adViewPosition, adViewOffsetPixels, isAdaptive );
             if ( adView == null )
             {
                 e( adFormat.getLabel() + " does not exist" );
@@ -1390,7 +1392,7 @@ public class AppLovinMAXModuleImpl
 
             d( "Setting placement \"" + placement + "\" for " + adFormat.getLabel() + " with ad unit id \"" + adUnitId + "\"" );
 
-            final MaxAdView adView = retrieveAdView( adUnitId, adFormat, "", DEFAULT_AD_VIEW_OFFSET );
+            final MaxAdView adView = retrieveAdView( adUnitId, adFormat, "", DEFAULT_AD_VIEW_OFFSET, true );
             if ( adView == null )
             {
                 e( adFormat.getLabel() + " does not exist" );
@@ -1407,7 +1409,7 @@ public class AppLovinMAXModuleImpl
 
             d( "Setting custom data \"" + customData + "\" for " + adFormat.getLabel() + " with ad unit id \"" + adUnitId + "\"" );
 
-            final MaxAdView adView = retrieveAdView( adUnitId, adFormat, "", DEFAULT_AD_VIEW_OFFSET );
+            final MaxAdView adView = retrieveAdView( adUnitId, adFormat, "", DEFAULT_AD_VIEW_OFFSET, true );
             if ( adView == null )
             {
                 e( adFormat.getLabel() + " does not exist" );
@@ -1581,6 +1583,8 @@ public class AppLovinMAXModuleImpl
             }
             else if ( "adaptive_banner".equalsIgnoreCase( key ) )
             {
+                e( "Setting adaptive banners via extra parameters is discouraged. Please use the `BannerAd.createAd(adUnitId: string, position: AdViewPosition, xOffset: number, yOffset: number, isAdaptive: boolean)` API for proper adaptive banner configuration." );
+
                 boolean useAdaptiveBannerAdSize = Boolean.parseBoolean( value );
                 if ( useAdaptiveBannerAdSize )
                 {
@@ -1727,15 +1731,31 @@ public class AppLovinMAXModuleImpl
 
     private MaxAdView retrieveAdView(String adUnitId, MaxAdFormat adFormat)
     {
-        return retrieveAdView( adUnitId, adFormat, null, DEFAULT_AD_VIEW_OFFSET );
+        return retrieveAdView( adUnitId, adFormat, null, DEFAULT_AD_VIEW_OFFSET, true );
     }
 
-    private MaxAdView retrieveAdView(String adUnitId, MaxAdFormat adFormat, String adViewPosition, Point adViewOffsetPixels)
+    private MaxAdView retrieveAdView(String adUnitId, MaxAdFormat adFormat, String adViewPosition, Point adViewOffsetPixels, final boolean isAdaptive)
     {
         MaxAdView result = adViews.get( adUnitId );
         if ( result == null && adViewPosition != null && adViewOffsetPixels != null )
         {
-            result = new MaxAdView( adUnitId, adFormat, sdk, reactContext );
+            MaxAdViewConfiguration.Builder builder = MaxAdViewConfiguration.builder();
+
+            // Set adaptive type only for banner ads. If adaptive is enabled, use ANCHORED; otherwise, fall back to NONE.
+            if ( adFormat.isBannerOrLeaderAd() )
+            {
+                if ( isAdaptive )
+                {
+                    builder.setAdaptiveType( MaxAdViewConfiguration.AdaptiveType.ANCHORED );
+                }
+                else
+                {
+                    builder.setAdaptiveType( MaxAdViewConfiguration.AdaptiveType.NONE );
+                    disabledAdaptiveBannerAdUnitIds.add( adUnitId );
+                }
+            }
+
+            result = new MaxAdView( adUnitId, adFormat, builder.build() );
             result.setListener( this );
             result.setRevenueListener( this );
 

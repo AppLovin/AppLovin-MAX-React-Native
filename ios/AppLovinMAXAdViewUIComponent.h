@@ -14,7 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) NSString *customData;
 @property (nonatomic, copy, nullable) NSDictionary<NSString *, id> *extraParameters;
 @property (nonatomic, copy, nullable) NSDictionary<NSString *, id> *localExtraParameters;
-@property (nonatomic, assign, getter=isAdaptiveBannerEnabled) BOOL adaptiveBannerEnabled;
 @property (nonatomic, assign, getter=isAutoRefreshEnabled) BOOL autoRefreshEnabled;
 
 - (void)loadAd;
@@ -22,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)detachAdView;
 - (void)destroy;
 
-- (instancetype)initWithAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat;
+- (instancetype)initWithAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat isAdaptive:(BOOL)isAdaptive;
 
 @end
 

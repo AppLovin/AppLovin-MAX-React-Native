@@ -7,6 +7,7 @@ import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxAdListener;
 import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxAdViewAdListener;
+import com.applovin.mediation.MaxAdViewConfiguration;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxAdView;
 import com.facebook.react.bridge.ReactContext;
@@ -28,15 +29,28 @@ class AppLovinMAXAdViewUiComponent
     @Nullable
     private AppLovinMAXAdView containerView;
 
-    public AppLovinMAXAdViewUiComponent(final String adUnitId, final MaxAdFormat adFormat, final ReactContext context)
+    public AppLovinMAXAdViewUiComponent(final String adUnitId, final MaxAdFormat adFormat, final boolean isAdaptive, final ReactContext context)
     {
         reactContext = context;
         surfaceId = UIManagerHelper.getSurfaceId( context );
 
-        adView = new MaxAdView( adUnitId, adFormat, AppLovinMAXModuleImpl.getInstance().getSdk(), context );
+        MaxAdViewConfiguration.Builder builder = MaxAdViewConfiguration.builder();
+
+        if ( adFormat.isBannerOrLeaderAd() )
+        {
+            if ( isAdaptive )
+            {
+                builder.setAdaptiveType( MaxAdViewConfiguration.AdaptiveType.ANCHORED );
+            }
+            else
+            {
+                builder.setAdaptiveType( MaxAdViewConfiguration.AdaptiveType.NONE );
+            }
+        }
+
+        adView = new MaxAdView( adUnitId, adFormat, builder.build() );
         adView.setListener( this );
         adView.setRevenueListener( this );
-        adView.setExtraParameter( "adaptive_banner", "true" );
 
         // Set this extra parameter to work around a SDK bug that ignores calls to stopAutoRefresh()
         adView.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
@@ -62,11 +76,6 @@ class AppLovinMAXAdViewUiComponent
     public void setCustomData(@Nullable final String value)
     {
         adView.setCustomData( value );
-    }
-
-    public void setAdaptiveBannerEnabled(final boolean enabled)
-    {
-        adView.setExtraParameter( "adaptive_banner", Boolean.toString( enabled ) );
     }
 
     public void setAutoRefreshEnabled(final boolean enabled)

@@ -175,15 +175,15 @@ public class AppLovinMAXModule
     }
 
     @Override
-    public void createBanner(final String adUnitId, final String position)
+    public void createBanner(final String adUnitId, final String position, final boolean isAdaptive)
     {
-        impl.createBanner( adUnitId, position );
+        impl.createBanner( adUnitId, position, isAdaptive );
     }
 
     @Override
-    public void createBannerWithOffsets(final String adUnitId, final String position, final double xOffset, final double yOffset)
+    public void createBannerWithOffsets(final String adUnitId, final String position, final double xOffset, final double yOffset, final boolean isAdaptive)
     {
-        impl.createBannerWithOffsets( adUnitId, position, (float) xOffset, (float) yOffset );
+        impl.createBannerWithOffsets( adUnitId, position, (float) xOffset, (float) yOffset, isAdaptive );
     }
 
     @Override
@@ -427,9 +427,9 @@ public class AppLovinMAXModule
     }
 
     @Override
-    public void preloadNativeUIComponentAdView(final String adUnitId, final String adFormat, @Nullable final String placement, @Nullable final String customData, @Nullable final ReadableMap extraParameters, @Nullable final ReadableMap localExtraParameters, final Promise promise)
+    public void preloadNativeUIComponentAdView(final String adUnitId, final String adFormat, final boolean isAdaptive, @Nullable final String placement, @Nullable final String customData, @Nullable final ReadableMap extraParameters, @Nullable final ReadableMap localExtraParameters, final Promise promise)
     {
-        impl.preloadNativeUIComponentAdView( adUnitId, adFormat, placement, customData, extraParameters, localExtraParameters, promise );
+        impl.preloadNativeUIComponentAdView( adUnitId, adFormat, isAdaptive, placement, customData, extraParameters, localExtraParameters, promise );
     }
 
     @Override

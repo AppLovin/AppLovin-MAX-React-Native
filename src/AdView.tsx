@@ -239,8 +239,8 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
  * @throws An error if the preload request fails.
  */
 export const preloadNativeUIComponentAdView = async (adUnitId: string, adFormat: AdFormat, options: NativeUIComponentAdViewOptions = {}): Promise<AdViewId> => {
-    const { placement = null, customData = null, extraParameters = {}, localExtraParameters = {} } = options;
-    return AppLovinMAX.preloadNativeUIComponentAdView(adUnitId, adFormat, placement, customData, extraParameters, localExtraParameters);
+    const { isAdaptive = true, placement = null, customData = null, extraParameters = {}, localExtraParameters = {} } = options;
+    return AppLovinMAX.preloadNativeUIComponentAdView(adUnitId, adFormat, isAdaptive, placement, customData, extraParameters, localExtraParameters);
 };
 
 /**
