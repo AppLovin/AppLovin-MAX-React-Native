@@ -1583,7 +1583,7 @@ public class AppLovinMAXModuleImpl
             }
             else if ( "adaptive_banner".equalsIgnoreCase( key ) )
             {
-                e( "Setting adaptive banners via extra parameters is discouraged. Please use the `BannerAd.createAd(adUnitId: string, position: AdViewPosition, xOffset: number, yOffset: number, isAdaptive: boolean)` API for proper adaptive banner configuration." );
+                e( "Setting adaptive banners via extra parameters is deprecated and will be removed in a future plugin version. Please use the BannerAd.createAd(adUnitId: string, position: AdViewPosition, xOffset: number, yOffset: number, isAdaptive: boolean) API to properly configure adaptive banners." );
 
                 boolean useAdaptiveBannerAdSize = Boolean.parseBoolean( value );
                 if ( useAdaptiveBannerAdSize )

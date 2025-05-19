@@ -1395,7 +1395,7 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(double)adViewId
         }
         else if ( [@"adaptive_banner" isEqualToString: key] )
         {
-            [self log: @"Setting adaptive banners via extra parameters is discouraged. Please use the `BannerAd.createAd(adUnitId: string, position: AdViewPosition, xOffset: number, yOffset: number, isAdaptive: boolean)` API for proper adaptive banner configuration."];
+            [self log: @"Setting adaptive banners via extra parameters is deprecated and will be removed in a future plugin version. Please use the BannerAd.createAd(adUnitId: string, position: AdViewPosition, xOffset: number, yOffset: number, isAdaptive: boolean) API to properly configure adaptive banners."];
             
             BOOL shouldUseAdaptiveBanner = [NSNumber al_numberWithString: value].boolValue;
             if ( shouldUseAdaptiveBanner )
@@ -1569,12 +1569,12 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(double)adViewId
                 else
                 {
                     builder.adaptiveType = MAAdViewAdaptiveTypeNone;
-                    [self.disabledAdaptiveBannerAdUnitIdentifiers addObject:adUnitIdentifier];
+                    [self.disabledAdaptiveBannerAdUnitIdentifiers addObject: adUnitIdentifier];
                 }
             }
         }];
 
-        result = [[MAAdView alloc] initWithAdUnitIdentifier:adUnitIdentifier adFormat:adFormat configuration:config];
+        result = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitIdentifier adFormat: adFormat configuration: config];
         result.delegate = self;
         result.revenueDelegate = self;
         result.userInteractionEnabled = NO;
