@@ -87,6 +87,7 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
 
 + (void)preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier
                               adFormat:(MAAdFormat *)adFormat
+                            isAdaptive:(BOOL)isAdaptive
                              placement:(nullable NSString *)placement
                             customData:(nullable NSString *)customData
                        extraParameters:(nullable NSDictionary<NSString *, id> *)extraParameters
@@ -94,7 +95,7 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
                    withPromiseResolver:(RCTPromiseResolveBlock)resolve
                    withPromiseRejecter:(RCTPromiseRejectBlock)reject
 {
-    AppLovinMAXAdViewUIComponent *preloadedUIComponent = [[AppLovinMAXAdViewUIComponent alloc] initWithAdUnitIdentifier: adUnitIdentifier adFormat: adFormat];
+    AppLovinMAXAdViewUIComponent *preloadedUIComponent = [[AppLovinMAXAdViewUIComponent alloc] initWithAdUnitIdentifier: adUnitIdentifier adFormat: adFormat isAdaptive: isAdaptive];
     preloadedUIComponentInstances[@(preloadedUIComponent.hash)] = preloadedUIComponent;
     
     preloadedUIComponent.placement = placement;
@@ -548,11 +549,6 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
 - (void)setAdaptiveBannerEnabled:(BOOL)adaptiveBannerEnabled
 {
     _adaptiveBannerEnabled = adaptiveBannerEnabled;
-    
-    if ( self.uiComponent )
-    {
-        self.uiComponent.adaptiveBannerEnabled = adaptiveBannerEnabled;
-    }
 }
 
 - (void)setAutoRefresh:(BOOL)autoRefresh
@@ -640,14 +636,13 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
             {
                 [[AppLovinMAX shared] log: @"Mounting the preloaded AdView (%@) for Ad Unit ID %@", self.adViewId, self.adUnitId];
                 
-                self.uiComponent.adaptiveBannerEnabled = [self isAdaptiveBannerEnabled];
                 self.uiComponent.autoRefreshEnabled = [self isAutoRefreshEnabled];
                 [self.uiComponent attachAdView: self];
                 return;
             }
         }
         
-        self.uiComponent = [[AppLovinMAXAdViewUIComponent alloc] initWithAdUnitIdentifier: adUnitId adFormat: adFormat];
+        self.uiComponent = [[AppLovinMAXAdViewUIComponent alloc] initWithAdUnitIdentifier: adUnitId adFormat: adFormat isAdaptive: [self isAdaptiveBannerEnabled]];
         self.adViewId = @(self.uiComponent.hash);
         uiComponentInstances[self.adViewId] = self.uiComponent;
         
@@ -677,7 +672,6 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
         self.uiComponent.customData = self.customData;
         self.uiComponent.extraParameters = flattenedExtraParameters;
         self.uiComponent.localExtraParameters = flattenedLocalExtraParameters;
-        self.uiComponent.adaptiveBannerEnabled = [self isAdaptiveBannerEnabled];
         self.uiComponent.autoRefreshEnabled = [self isAutoRefreshEnabled];
         
         [self.uiComponent attachAdView: self];

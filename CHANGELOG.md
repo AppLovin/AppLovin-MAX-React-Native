@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Add optional `isAdaptive` flag to `BannerAd.createAd()` and `preloadNativeUIComponentAdView()` to enable adaptive banners (default: true).
 ## 9.1.0
 * Depend on Android SDK 13.2.0 and iOS SDK 13.2.0.
 * Fix LINE MREC (`<AdView/>`) not shown on Android.

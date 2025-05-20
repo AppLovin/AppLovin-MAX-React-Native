@@ -136,8 +136,8 @@ export interface Spec extends TurboModule {
     // Banner Ads
     // ─────────────────────────────────────────────────────────
 
-    createBanner(adUnitId: string, position: string): void;
-    createBannerWithOffsets(adUnitId: string, position: string, xOffset: number, yOffset: number): void;
+    createBanner(adUnitId: string, position: string, isAdaptive: boolean): void;
+    createBannerWithOffsets(adUnitId: string, position: string, xOffset: number, yOffset: number, isAdaptive: boolean): void;
     setBannerBackgroundColor(adUnitId: string, hexColorCode: string): void;
     setBannerPlacement(adUnitId: string, placement: string | null): void;
     setBannerCustomData(adUnitId: string, customData: string | null): void;
@@ -206,6 +206,7 @@ export interface Spec extends TurboModule {
     preloadNativeUIComponentAdView(
         adUnitId: string,
         adFormat: string,
+        isAdaptive: boolean,
         placement?: string | null,
         customData?: string | null,
         extraParameters?: UnsafeObject | null,

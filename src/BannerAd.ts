@@ -14,9 +14,8 @@ const {
     ON_BANNER_AD_REVENUE_PAID,
 } = AppLovinMAX.getConstants();
 
-const createAd = (adUnitId: string, position: AdViewPosition, xOffset: number = 0, yOffset: number = 0): void => {
-    AppLovinMAX.createBannerWithOffsets(adUnitId, position, xOffset, yOffset);
-    AppLovinMAX.setBannerExtraParameter(adUnitId, 'adaptive_banner', 'true');
+const createAd = (adUnitId: string, position: AdViewPosition, xOffset: number = 0, yOffset: number = 0, isAdaptive: boolean = true): void => {
+    AppLovinMAX.createBannerWithOffsets(adUnitId, position, xOffset, yOffset, isAdaptive);
 };
 
 const destroyAd = (adUnitId: string): void => {

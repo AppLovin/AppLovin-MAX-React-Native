@@ -485,7 +485,7 @@ RCT_EXPORT_METHOD(trackEvent:(NSString *)event :(NSDictionary<NSString *, id> *)
 
 #pragma mark - Banners
 
-RCT_EXPORT_METHOD(createBanner:(NSString *)adUnitIdentifier position:(NSString *)bannerPosition)
+RCT_EXPORT_METHOD(createBanner:(NSString *)adUnitIdentifier position:(NSString *)bannerPosition isAdaptive:(BOOL)isAdaptive)
 {
     if ( !self.sdk )
     {
@@ -493,11 +493,11 @@ RCT_EXPORT_METHOD(createBanner:(NSString *)adUnitIdentifier position:(NSString *
         return;
     }
     
-    [self createAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT atPosition: bannerPosition withOffset: CGPointZero];
+    [self createAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT atPosition: bannerPosition withOffset: CGPointZero isAdaptive: isAdaptive];
 }
 
 // NOTE: No function overloading in JS so we need new method signature
-RCT_EXPORT_METHOD(createBannerWithOffsets:(NSString *)adUnitIdentifier position:(NSString *)bannerPosition xOffset:(double)xOffset yOffset:(double)yOffset)
+RCT_EXPORT_METHOD(createBannerWithOffsets:(NSString *)adUnitIdentifier position:(NSString *)bannerPosition xOffset:(double)xOffset yOffset:(double)yOffset isAdaptive:(BOOL)isAdaptive)
 {
     if ( !self.sdk )
     {
@@ -505,7 +505,7 @@ RCT_EXPORT_METHOD(createBannerWithOffsets:(NSString *)adUnitIdentifier position:
         return;
     }
     
-    [self createAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT atPosition: bannerPosition withOffset: CGPointMake(xOffset, yOffset)];
+    [self createAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: DEVICE_SPECIFIC_ADVIEW_AD_FORMAT atPosition: bannerPosition withOffset: CGPointMake(xOffset, yOffset) isAdaptive: isAdaptive];
 }
 
 RCT_EXPORT_METHOD(setBannerBackgroundColor:(NSString *)adUnitIdentifier hexColorCode:(NSString *)hexColorCode)
@@ -664,7 +664,7 @@ RCT_EXPORT_METHOD(createMRec:(NSString *)adUnitIdentifier position:(NSString *)m
         return;
     }
     
-    [self createAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec atPosition: mrecPosition withOffset: CGPointZero];
+    [self createAdViewWithAdUnitIdentifier: adUnitIdentifier adFormat: MAAdFormat.mrec atPosition: mrecPosition withOffset: CGPointZero isAdaptive: NO];
 }
 
 RCT_EXPORT_METHOD(setMRecPlacement:(NSString *)adUnitIdentifier placement:(nullable NSString *)placement)
@@ -956,6 +956,7 @@ RCT_EXPORT_METHOD(setAppOpenAdLocalExtraParameter:(NSString *)adUnitIdentifier p
 
 RCT_EXPORT_METHOD(preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier
                   adFormat:(NSString *)adFormatStr
+                  isAdaptive:(BOOL)isAdaptive
                   placement:(nullable NSString *)placement
                   customData:(nullable NSString *)customData
                   extraParameters:(nullable NSDictionary<NSString *, id> *)extraParameterDict
@@ -981,6 +982,7 @@ RCT_EXPORT_METHOD(preloadNativeUIComponentAdView:(NSString *)adUnitIdentifier
     
     [AppLovinMAXAdView preloadNativeUIComponentAdView: adUnitIdentifier
                                              adFormat: adFormat
+                                           isAdaptive: isAdaptive
                                             placement: placement
                                            customData: customData
                                       extraParameters: extraParameterDict
@@ -1268,14 +1270,14 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(double)adViewId
 
 #pragma mark - Internal Methods
 
-- (void)createAdViewWithAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat atPosition:(NSString *)adViewPosition withOffset:(CGPoint)offset
+- (void)createAdViewWithAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat atPosition:(NSString *)adViewPosition withOffset:(CGPoint)offset isAdaptive:(BOOL)isAdaptive
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         
         [self log: @"Creating %@ with ad unit identifier \"%@\", position: \"%@\", and offset: %@", adFormat, adUnitIdentifier, adViewPosition, NSStringFromCGPoint(offset)];
         
         // Retrieve ad view from the map
-        MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: adViewPosition withOffset: offset];
+        MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: adViewPosition withOffset: offset isAdaptive: isAdaptive];
         adView.hidden = YES;
         self.safeAreaBackground.hidden = YES;
         
@@ -1323,7 +1325,7 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(double)adViewId
         
         [self log: @"Setting placement \"%@\" for \"%@\" with ad unit identifier \"%@\"", placement, adFormat, adUnitIdentifier];
         
-        MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: @"" withOffset: CGPointZero];
+        MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: @"" withOffset: CGPointZero isAdaptive: YES];
         adView.placement = placement;
     });
 }
@@ -1334,7 +1336,7 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(double)adViewId
         
         [self log: @"Setting custom data \"%@\" for \"%@\" with ad unit identifier \"%@\"", customData, adFormat, adUnitIdentifier];
         
-        MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: @"" withOffset: CGPointZero];
+        MAAdView *adView = [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: @"" withOffset: CGPointZero isAdaptive: YES];
         adView.customData = customData;
     });
 }
@@ -1393,6 +1395,8 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(double)adViewId
         }
         else if ( [@"adaptive_banner" isEqualToString: key] )
         {
+            [self log: @"Setting adaptive banners via extra parameters is deprecated and will be removed in a future plugin version. Please use the BannerAd.createAd(adUnitId: string, position: AdViewPosition, xOffset: number, yOffset: number, isAdaptive: boolean) API to properly configure adaptive banners."];
+            
             BOOL shouldUseAdaptiveBanner = [NSNumber al_numberWithString: value].boolValue;
             if ( shouldUseAdaptiveBanner )
             {
@@ -1545,15 +1549,32 @@ RCT_EXPORT_METHOD(destroyNativeUIComponentAdView:(double)adViewId
 
 - (MAAdView *)retrieveAdViewForAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat
 {
-    return [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: nil withOffset: CGPointZero];
+    return [self retrieveAdViewForAdUnitIdentifier: adUnitIdentifier adFormat: adFormat atPosition: nil withOffset: CGPointZero isAdaptive: YES];
 }
 
-- (MAAdView *)retrieveAdViewForAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat atPosition:(NSString *)adViewPosition withOffset:(CGPoint)offset
+- (MAAdView *)retrieveAdViewForAdUnitIdentifier:(NSString *)adUnitIdentifier adFormat:(MAAdFormat *)adFormat atPosition:(NSString *)adViewPosition withOffset:(CGPoint)offset isAdaptive:(BOOL)isAdaptive
 {
     MAAdView *result = self.adViews[adUnitIdentifier];
     if ( !result && adViewPosition )
     {
-        result = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitIdentifier adFormat: adFormat sdk: self.sdk];
+        MAAdViewConfiguration *config = [MAAdViewConfiguration configurationWithBuilderBlock:^(MAAdViewConfigurationBuilder *builder) {
+
+            // Set adaptive type only for banner ads. If adaptive is enabled, use ANCHORED; otherwise, fall back to NONE.
+            if ( [adFormat isBannerOrLeaderAd] )
+            {
+                if ( isAdaptive )
+                {
+                    builder.adaptiveType = MAAdViewAdaptiveTypeAnchored;
+                }
+                else
+                {
+                    builder.adaptiveType = MAAdViewAdaptiveTypeNone;
+                    [self.disabledAdaptiveBannerAdUnitIdentifiers addObject: adUnitIdentifier];
+                }
+            }
+        }];
+
+        result = [[MAAdView alloc] initWithAdUnitIdentifier: adUnitIdentifier adFormat: adFormat configuration: config];
         result.delegate = self;
         result.revenueDelegate = self;
         result.userInteractionEnabled = NO;
