@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 9.2.0
 * Depend on Android SDK 13.3.0 and iOS SDK 13.3.0.
 * Add optional `isAdaptive` flag to `BannerAd.createAd()` and `preloadNativeUIComponentAdView()` to enable adaptive banners (default: true).
 ## 9.1.0
