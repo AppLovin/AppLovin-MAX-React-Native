@@ -2,7 +2,7 @@ import type { AppLovinMAXType } from './types/AppLovinMAX';
 import type { Configuration } from './types/Configuration';
 import NativeAppLovinMAX from './specs/NativeAppLovinMAXModule';
 
-const VERSION = '9.2.0';
+const VERSION = '9.2.1';
 
 /**
  * Represents the user's geography, used to determine which type of consent flow to display.
