@@ -1,6 +1,6 @@
 ## Versions
 
-## x.x.x
+## 9.2.1
 * Depend on Android SDK 13.3.1 and iOS SDK 13.3.1.
 ## 9.2.0
 * Depend on Android SDK 13.3.0 and iOS SDK 13.3.0.
