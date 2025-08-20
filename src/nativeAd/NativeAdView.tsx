@@ -5,7 +5,7 @@
 
 import * as React from 'react';
 import { forwardRef, useContext, useImperativeHandle, useRef, useState, useEffect, useCallback } from 'react';
-import { findNodeHandle, View, Platform } from 'react-native';
+import { findNodeHandle, View } from 'react-native';
 import type { NativeSyntheticEvent, ViewProps } from 'react-native';
 import AppLovinMAX from '../specs/NativeAppLovinMAXModule';
 import NativeAdViewComponent, { Commands } from '../specs/AppLovinMAXNativeAdViewNativeComponent';
