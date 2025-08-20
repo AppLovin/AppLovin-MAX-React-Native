@@ -105,9 +105,7 @@ const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps & Vie
     }, []);
 
     const destroyAd = useCallback(() => {
-        if (Platform.OS === 'ios') {
-            nativeAdViewRef.current && Commands.destroyAd(nativeAdViewRef.current);
-        }
+        nativeAdViewRef.current && Commands.destroyAd(nativeAdViewRef.current);
     }, []);
 
     useImperativeHandle(ref, () => ({ loadAd, destroyAd }), [loadAd, destroyAd]);
