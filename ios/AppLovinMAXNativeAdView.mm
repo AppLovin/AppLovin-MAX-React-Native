@@ -364,11 +364,6 @@ using namespace facebook::react;
     return _adLoader;
 }
 
-- (void)didMoveToWindow
-{
-    [super didMoveToWindow];
-}
-
 - (void)setAdUnitId:(NSString *)adUnitId
 {
     if ( ![adUnitId al_isValidString] ) return;
