@@ -318,6 +318,10 @@ using namespace facebook::react;
     {
         [self renderNativeAd];
     }
+    else if ( [commandName isEqualToString: @"destroyAd"] )
+    {
+        [self destroyCurrentAdIfNeeded];
+    }
 }
 
 - (void)prepareForRecycle
@@ -363,11 +367,6 @@ using namespace facebook::react;
 - (void)didMoveToWindow
 {
     [super didMoveToWindow];
-    
-    if ( !self.window )
-    {
-        [self destroyCurrentAdIfNeeded];
-    }
 }
 
 - (void)setAdUnitId:(NSString *)adUnitId
@@ -733,6 +732,13 @@ using namespace facebook::react;
     }
     
     [self.clickableViews removeAllObjects];
+}
+
+#pragma mark - Public API
+
+- (void)destroyAd
+{
+    [self destroyCurrentAdIfNeeded];
 }
 
 @end

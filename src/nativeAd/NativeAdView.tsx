@@ -5,7 +5,7 @@
 
 import * as React from 'react';
 import { forwardRef, useContext, useImperativeHandle, useRef, useState, useEffect, useCallback } from 'react';
-import { findNodeHandle, View } from 'react-native';
+import { findNodeHandle, View, Platform } from 'react-native';
 import type { NativeSyntheticEvent, ViewProps } from 'react-native';
 import AppLovinMAX from '../specs/NativeAppLovinMAXModule';
 import NativeAdViewComponent, { Commands } from '../specs/AppLovinMAXNativeAdViewNativeComponent';
@@ -104,7 +104,13 @@ const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps & Vie
         nativeAdViewRef.current && Commands.loadAd(nativeAdViewRef.current);
     }, []);
 
-    useImperativeHandle(ref, () => ({ loadAd }), [loadAd]);
+    const destroyAd = useCallback(() => {
+        if (Platform.OS === 'ios') {
+            nativeAdViewRef.current && Commands.destroyAd(nativeAdViewRef.current);
+        }
+    }, []);
+
+    useImperativeHandle(ref, () => ({ loadAd, destroyAd }), [loadAd, destroyAd]);
 
     /**
      * Updates the native asset view binding for a given view type (e.g., TitleView, MediaView).
