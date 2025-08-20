@@ -10,7 +10,7 @@ export type NativeAdViewHandler = {
     loadAd(): void;
 
     /**
-     * Destroys the currently loaded native ad and clears bound views.
+     * Destroys the currently loaded native ad.
      */
     destroyAd(): void;
 };
