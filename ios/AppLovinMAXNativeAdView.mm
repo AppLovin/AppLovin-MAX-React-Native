@@ -602,6 +602,13 @@ using namespace facebook::react;
     }
 }
 
+#pragma mark - Public API
+
+- (void)destroyAd
+{
+    [self destroyCurrentAdIfNeeded];
+}
+
 #pragma mark - Ad Loader Delegate
 
 - (void)didLoadNativeAd:(nullable MANativeAdView *)nativeAdView forAd:(MAAd *)ad
@@ -727,13 +734,6 @@ using namespace facebook::react;
     }
     
     [self.clickableViews removeAllObjects];
-}
-
-#pragma mark - Public API
-
-- (void)destroyAd
-{
-    [self destroyCurrentAdIfNeeded];
 }
 
 @end
