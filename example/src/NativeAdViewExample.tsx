@@ -147,6 +147,13 @@ const NativeAdViewExample = ({
                             nativeAdViewRef.current?.loadAd();
                         }}
                     />
+                    <AppButton
+                        title="Destroy"
+                        enabled={!isNativeAdLoading}
+                        onPress={() => {
+                            nativeAdViewRef.current?.destroyAd?.();
+                        }}
+                    />
                     <AppButton title="Close" enabled={!isNativeAdLoading} onPress={() => setIsNativeAdShowing(!isNativeAdShowing)} />
                 </View>
             )}
