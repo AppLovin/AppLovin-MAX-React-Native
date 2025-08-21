@@ -47,6 +47,10 @@ public class AppLovinMAXNativeAdViewManagerImpl
         {
             renderNativeAd( view );
         }
+        else if ( commandId.equals( "destroyAd" ) )
+        {
+            destroy( view );
+        }
     }
 
     public static void setAdUnitId(final AppLovinMAXNativeAdView view, final String value)

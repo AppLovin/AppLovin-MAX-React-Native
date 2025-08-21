@@ -8,6 +8,11 @@ export type NativeAdViewHandler = {
      * Triggers a native ad load.
      */
     loadAd(): void;
+
+    /**
+     * Destroys the currently loaded native ad.
+     */
+    destroyAd(): void;
 };
 
 /**

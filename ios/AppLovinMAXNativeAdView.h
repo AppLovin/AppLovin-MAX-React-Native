@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setOptionsView:(NSNumber *)tag;
 - (void)setMediaView:(NSNumber *)tag;
 - (void)renderNativeAd;
+- (void)destroyAd;
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 

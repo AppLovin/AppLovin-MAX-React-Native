@@ -104,7 +104,11 @@ const NativeAdViewImpl = forwardRef<NativeAdViewHandler, NativeAdViewProps & Vie
         nativeAdViewRef.current && Commands.loadAd(nativeAdViewRef.current);
     }, []);
 
-    useImperativeHandle(ref, () => ({ loadAd }), [loadAd]);
+    const destroyAd = useCallback(() => {
+        nativeAdViewRef.current && Commands.destroyAd(nativeAdViewRef.current);
+    }, []);
+
+    useImperativeHandle(ref, () => ({ loadAd, destroyAd }), [loadAd, destroyAd]);
 
     /**
      * Updates the native asset view binding for a given view type (e.g., TitleView, MediaView).

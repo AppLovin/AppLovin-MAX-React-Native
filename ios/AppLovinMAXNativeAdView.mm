@@ -318,6 +318,10 @@ using namespace facebook::react;
     {
         [self renderNativeAd];
     }
+    else if ( [commandName isEqualToString: @"destroyAd"] )
+    {
+        [self destroyCurrentAdIfNeeded];
+    }
 }
 
 - (void)prepareForRecycle
@@ -358,16 +362,6 @@ using namespace facebook::react;
     }
     
     return _adLoader;
-}
-
-- (void)didMoveToWindow
-{
-    [super didMoveToWindow];
-    
-    if ( !self.window )
-    {
-        [self destroyCurrentAdIfNeeded];
-    }
 }
 
 - (void)setAdUnitId:(NSString *)adUnitId
@@ -606,6 +600,13 @@ using namespace facebook::react;
     {
         [self loadAd];
     }
+}
+
+#pragma mark - Public API
+
+- (void)destroyAd
+{
+    [self destroyCurrentAdIfNeeded];
 }
 
 #pragma mark - Ad Loader Delegate
