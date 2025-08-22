@@ -1,5 +1,8 @@
 ## Versions
 
+## x.x.x
+* Fix native ads being destroyed when switching tabs on iOS.
+* Add API for destroying native ads.
 ## 9.2.1
 * Depend on Android SDK 13.3.1 and iOS SDK 13.3.1.
 ## 9.2.0
