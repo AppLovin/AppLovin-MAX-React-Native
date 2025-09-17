@@ -1,6 +1,7 @@
 ## Versions
 
 ## x.x.x
+* Depend on Android SDK 13.4.0 and iOS SDK 13.4.0.
 * Fix Android not compiling with new arch enabled.
 ## 9.3.0
 * Depend on Android SDK 13.4.0 and iOS SDK 13.4.0.
