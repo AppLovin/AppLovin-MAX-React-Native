@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Fix banner ads and MRECs being destroyed when switching tabs on iOS.
 ## 9.3.1
 * Fix Android not compiling with new arch enabled.
 ## 9.3.0
