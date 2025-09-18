@@ -719,17 +719,6 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
     self.uiComponent = nil;
 }
 
-- (void)didMoveToWindow
-{
-    [super didMoveToWindow];
-    
-    // This view is unmounted
-    if ( !self.window )
-    {
-        [self destroyCurrentAdIfNeeded];
-    }
-}
-
 @end
 
 #ifdef RCT_NEW_ARCH_ENABLED
