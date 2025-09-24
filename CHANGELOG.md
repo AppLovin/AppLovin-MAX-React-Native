@@ -40,7 +40,7 @@
 ## 8.0.4
 * Update IconView to support native ad icon image view, primarily for BigoAds native ads.
 ## 8.0.3
-* Remove deprecated Terms Flow API `AppLovinMAX.setConsentFlowEnabled()`. Check out our docs for integrating our latest [MAX Terms and Privacy Policy Consent Flow](https://developers.applovin.com/en/max/react-native/overview/terms-and-privacy-policy-flow/).
+* Remove deprecated Terms Flow API `AppLovinMAX.setConsentFlowEnabled()`. Check out our docs for integrating our latest [MAX Terms and Privacy Policy Consent Flow](https://support.axon.ai/en/max/react-native/overview/terms-and-privacy-policy-flow/).
 ## 8.0.2
 * Crash if plugin version is incompatible with native SDK version.
 ## 8.0.1
@@ -48,17 +48,17 @@
 ## 8.0.0
 * Depend on Android SDK 13.0.0 and iOS SDK 13.0.0.
 * Removed COPPA support.
-* Add constants for MAX Error Codes. For more info, check out our [docs](https://developers.applovin.com/en/max/react-native/overview/error-handling#max-error-codes).
+* Add constants for MAX Error Codes. For more info, check out our [docs](https://support.axon.ai/en/max/react-native/overview/error-handling#max-error-codes).
 ## 7.1.1
 * Depend on Android SDK 12.6.1 and iOS SDK 12.6.1.
 * Fix BidMachine media view not clickable on Android.
 ## 7.1.0
-* Replace targeting data APIs with new numeric segments targeting APIs. For migration instructions, please see [here](https://developers.applovin.com/en/react-native/overview/data-and-keyword-passing/#segment-targeting).
+* Replace targeting data APIs with new numeric segments targeting APIs. For migration instructions, please see [here](https://support.axon.ai/en/max/react-native/overview/data-and-keyword-passing#segment-targeting).
 * Depend on Android SDK 12.6.0 and iOS SDK 12.6.0.
 ## 7.0.1
 * Fix native UI component banners and MRECs (`<AdView/>`) not calling the `onAdLoaded` and `onAdLoadFailed` callbacks on Android. Regression from v7.0.0. (https://github.com/AppLovin/AppLovin-MAX-React-Native/issues/354)
 ## 7.0.0
-* Add APIs for preloading native UI component banners and MRECs. For more info, check out our [docs](https://developers.applovin.com/en/react-native/ad-formats/banner-and-mrec-ads#preloading-native-ui-component).
+* Add APIs for preloading native UI component banners and MRECs. For more info, check out our [docs](https://support.axon.ai/en/max/react-native/ad-formats/banner-and-mrec-ads#ad-preloading).
 * Fix native ads rendering multiple times after updating all the asset views.
 * Improve loading time for `<AdView/>`.
 * Upgrade the build platform to support React Native 0.7x.
