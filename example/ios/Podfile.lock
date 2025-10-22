@@ -1243,7 +1243,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-applovin-max (9.3.1):
+  - react-native-applovin-max (9.4.0):
     - AppLovinSDK (= 13.5.0)
     - DoubleConversion
     - glog
@@ -1776,7 +1776,7 @@ SPEC CHECKSUMS:
   React-logger: addd140841248966c2547eb94836399cc1061f4d
   React-Mapbuffer: 029b5332e78af8c67c4b5e65edfc717068b8eac1
   React-microtasksnativemodule: f30949ee318ba90b9668de1e325b98838b9a4da2
-  react-native-applovin-max: 48fb48af20090bc521bce01d5f01a50aa5d66f62
+  react-native-applovin-max: 02153d9744e619ad97718735bf1dc99c77626fdf
   React-nativeconfig: 470fce6d871c02dc5eff250a362d56391b7f52d6
   React-NativeModulesApple: 1586448c61a7c2bd4040cc03ccde66a72037e77e
   React-perflogger: c8860eaab4fe60d628b27bf0086a372c429fc74f
