@@ -73,7 +73,7 @@
 @implementation AppLovinMAX
 static NSString *const SDK_TAG = @"AppLovinSdk";
 static NSString *const TAG = @"AppLovinMAX";
-static NSString *const PLUGIN_VERSION = @"9.4.0";
+static NSString *const PLUGIN_VERSION = @"9.4.1";
 
 static NSString *const USER_GEOGRAPHY_GDPR = @"G";
 static NSString *const USER_GEOGRAPHY_OTHER = @"O";
@@ -149,6 +149,7 @@ RCT_EXPORT_MODULE()
     [super initialize];
     
     ALCompatibleNativeSDKVersions = @{
+        @"9.4.1" : @"13.5.1",
         @"9.4.0" : @"13.5.0",
         @"9.3.1" : @"13.4.0",
         @"9.3.0" : @"13.4.0",
