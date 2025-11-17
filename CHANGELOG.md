@@ -1,5 +1,7 @@
 ## Versions
 
+## x.x.x
+* Depend on Android SDK 13.5.1 and iOS SDK 13.5.1.
 ## 9.4.0
 * Depend on Android SDK 13.5.0 and iOS SDK 13.5.0.
 * Fix banner ads and MRECs being destroyed when switching tabs on iOS.
