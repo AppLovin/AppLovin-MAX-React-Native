@@ -11,6 +11,11 @@ export type AdViewHandler = {
      * This is only needed if {@link loadOnMount} is set to `false`.
      */
     loadAd(): void;
+
+    /**
+     * Destroys the currently loaded ad view.
+     */
+    destroyAd(): void;
 };
 
 /**

@@ -142,13 +142,20 @@ interface NativeCommands {
      * @param viewRef - Reference to the native ad view component.
      */
     loadAd(viewRef: React.ElementRef<AppLovinMAXAdViewNativeComponentType>): void;
+
+    /**
+     * Destroys the currently loaded ad.
+     *
+     * @param viewRef - Reference to the ad view.
+     */
+    destroyAd(viewRef: React.ElementRef<AppLovinMAXAdViewNativeComponentType>): void;
 }
 
 /**
  * JS interface to ad view commands for {@link AppLovinMAXAdView}.
  */
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
-    supportedCommands: ['loadAd'],
+    supportedCommands: ['loadAd', 'destroyAd'],
 });
 
 /**

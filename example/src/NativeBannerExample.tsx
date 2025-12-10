@@ -1,7 +1,8 @@
 import * as React from 'react';
+import { useRef } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { AdView, AdFormat } from 'react-native-applovin-max';
-import type { AdInfo, AdLoadFailedInfo, AdViewId } from 'react-native-applovin-max';
+import type { AdInfo, AdLoadFailedInfo, AdViewId, AdViewHandler } from 'react-native-applovin-max';
 import AppButton from './components/AppButton';
 
 const NativeBannerExample = ({
@@ -21,6 +22,8 @@ const NativeBannerExample = ({
     isProgrammaticBannerShowing: boolean;
     setIsNativeUIBannerShowing: (showing: boolean) => void;
 }) => {
+    const adViewRef = useRef<AdViewHandler>(null);
+
     return (
         <>
             <AppButton
@@ -29,11 +32,24 @@ const NativeBannerExample = ({
                 onPress={() => setIsNativeUIBannerShowing(!isNativeUIBannerShowing)}
             />
             {isNativeUIBannerShowing && (
+                <>
+                    <AppButton
+                        title="Destroy Ad"
+                        enabled={isInitialized && !isProgrammaticBannerShowing}
+                        onPress={() => {
+                            adViewRef.current?.destroyAd();
+                        }}
+                    />
+                </>
+            )}
+            {isNativeUIBannerShowing && (
                 <View style={styles.container}>
                     <AdView
+                        ref={adViewRef}
                         adUnitId={adUnitId}
                         adViewId={adViewId}
                         adFormat={AdFormat.BANNER}
+                        loadOnMount={false}
                         style={styles.banner}
                         onAdLoaded={(adInfo: AdInfo) => {
                             log('Banner ad (' + adInfo.adViewId + ') loaded from ' + adInfo.networkName);

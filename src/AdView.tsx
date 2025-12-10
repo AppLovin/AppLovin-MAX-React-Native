@@ -134,7 +134,11 @@ export const AdView = forwardRef<AdViewHandler, AdViewProps & ViewProps>(functio
         adViewRef.current && Commands.loadAd(adViewRef.current);
     }, []);
 
-    useImperativeHandle(ref, () => ({ loadAd }), [loadAd]);
+    const destroyAd = useCallback(() => {
+        adViewRef.current && Commands.destroyAd(adViewRef.current);
+    }, []);
+
+    useImperativeHandle(ref, () => ({ loadAd, destroyAd }), [loadAd, destroyAd]);
 
     useEffect(() => {
         (async () => {
