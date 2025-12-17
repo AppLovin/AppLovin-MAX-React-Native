@@ -472,7 +472,7 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
     {
         [self loadAd];
     }
-    else if ( [commandName isEqualToString: @"destroyAd"] )
+    else if ( [commandName isEqualToString: @"destroy"] )
     {
         [self destroyCurrentAdIfNeeded];
     }
@@ -698,7 +698,7 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
     [self.uiComponent loadAd];
 }
 
-- (void)destroyAd
+- (void)destroy
 {
     [self destroyCurrentAdIfNeeded];
 }

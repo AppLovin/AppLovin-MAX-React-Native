@@ -37,7 +37,7 @@ const NativeBannerExample = ({
                         title="Destroy Ad"
                         enabled={isInitialized && !isProgrammaticBannerShowing}
                         onPress={() => {
-                            adViewRef.current?.destroyAd();
+                            adViewRef.current?.destroy();
                         }}
                     />
                 </>

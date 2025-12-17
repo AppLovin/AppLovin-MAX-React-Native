@@ -15,7 +15,7 @@ export type AdViewHandler = {
     /**
      * Destroys the currently loaded ad view.
      */
-    destroyAd(): void;
+    destroy(): void;
 };
 
 /**

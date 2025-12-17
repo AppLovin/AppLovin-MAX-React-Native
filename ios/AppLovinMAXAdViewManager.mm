@@ -60,7 +60,7 @@ RCT_EXPORT_METHOD(loadAd:(nonnull NSNumber *)viewTag)
     }];
 }
 
-RCT_EXPORT_METHOD(destroyAd:(nonnull NSNumber *)viewTag)
+RCT_EXPORT_METHOD(destroy:(nonnull NSNumber *)viewTag)
 {
     [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
 
@@ -72,7 +72,7 @@ RCT_EXPORT_METHOD(destroyAd:(nonnull NSNumber *)viewTag)
         }
         
         AppLovinMAXAdView *adView = (AppLovinMAXAdView *) view;
-        [adView destroyAd];
+        [adView destroy];
     }];
 }
 
