@@ -148,4 +148,10 @@ class AppLovinMAXAdViewManager
     {
         AppLovinMAXAdViewManagerImpl.loadAd( view );
     }
+
+    @Override
+    public void destroy(final AppLovinMAXAdView view)
+    {
+        AppLovinMAXAdViewManagerImpl.destroy( view );
+    }
 }

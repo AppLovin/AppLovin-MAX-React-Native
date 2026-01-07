@@ -45,6 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
                    withPromiseRejecter:(RCTPromiseRejectBlock)reject;
 
 - (void)loadAd;
+- (void)destroy;
 
 @end
 

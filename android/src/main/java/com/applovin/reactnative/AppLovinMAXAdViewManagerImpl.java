@@ -35,6 +35,10 @@ class AppLovinMAXAdViewManagerImpl
         {
             loadAd( view );
         }
+        else if ( commandId.equals( "destroyAd" ) )
+        {
+            destroy( view );
+        }
     }
 
     @NonNull
@@ -106,5 +110,10 @@ class AppLovinMAXAdViewManagerImpl
     public static void loadAd(AppLovinMAXAdView view)
     {
         view.loadAd();
+    }
+
+    public static void destroy(AppLovinMAXAdView view)
+    {
+        view.destroy();
     }
 }

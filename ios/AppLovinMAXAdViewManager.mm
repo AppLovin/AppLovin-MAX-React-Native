@@ -60,4 +60,20 @@ RCT_EXPORT_METHOD(loadAd:(nonnull NSNumber *)viewTag)
     }];
 }
 
+RCT_EXPORT_METHOD(destroy:(nonnull NSNumber *)viewTag)
+{
+    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+
+        UIView *view = viewRegistry[viewTag];
+        if ( ![view isKindOfClass: [AppLovinMAXAdView class]] )
+        {
+            [[AppLovinMAX shared] log: @"Cannot find AppLovinMAXAdView with tag %@", viewTag];
+            return;
+        }
+        
+        AppLovinMAXAdView *adView = (AppLovinMAXAdView *) view;
+        [adView destroy];
+    }];
+}
+
 @end
