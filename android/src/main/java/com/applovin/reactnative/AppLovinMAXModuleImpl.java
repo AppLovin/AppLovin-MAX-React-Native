@@ -103,6 +103,7 @@ public class AppLovinMAXModuleImpl
     {
         ALCompatibleNativeSdkVersions.put( "9.4.2", "13.5.1" );
         ALCompatibleNativeSdkVersions.put( "9.4.2", "13.5.1" );
+        ALCompatibleNativeSdkVersions.put( "9.4.2", "13.5.1" );
         ALCompatibleNativeSdkVersions.put( "9.4.1", "13.5.1" );
         ALCompatibleNativeSdkVersions.put( "9.4.0", "13.5.0" );
         ALCompatibleNativeSdkVersions.put( "9.3.1", "13.4.0" );
