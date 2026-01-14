@@ -1,0 +1,43 @@
+name: Publish to npm (OIDC)
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  id-token: write   # REQUIRED for npm OIDC trusted publishing
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    # Optional: if you configured an Environment name in npm Trusted Publisher settings,
+    # set the same environment name here.
+    # environment: npm
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          # Use whatever you support; npm docs show Node 24 in their example.
+          # Node 20/22/24 are common choices.
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+          cache: "npm"
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build (if present)
+        run: npm run build --if-present
+
+      - name: Test
+        run: npm test
+
+      # IMPORTANT: do NOT set NODE_AUTH_TOKEN here.
+      # npm will detect the OIDC environment and publish using trusted publishing.
+      - name: Publish
+        run: npm publish
