@@ -1,7 +1,12 @@
 name: Publish to npm (OIDC)
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Whether to publish to npm"
+        required: true
+        default: "false"
 
 permissions:
   id-token: write   # REQUIRED for npm OIDC trusted publishing
@@ -39,5 +44,6 @@ jobs:
 
       # IMPORTANT: do NOT set NODE_AUTH_TOKEN here.
       # npm will detect the OIDC environment and publish using trusted publishing.
-      - name: Publish
+       - name: Publish (guarded)
+        if: ${{ inputs.publish == 'true' }}
         run: npm publish
