@@ -44,6 +44,6 @@ jobs:
 
       # IMPORTANT: do NOT set NODE_AUTH_TOKEN here.
       # npm will detect the OIDC environment and publish using trusted publishing.
-       - name: Publish (guarded)
+      - name: Publish (guarded)
         if: ${{ inputs.publish == 'true' }}
         run: npm publish
