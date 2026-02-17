@@ -1,5 +1,5 @@
 ## Versions
-## x.x.x
+## 9.5.0
 * Depend on Android SDK 13.6.0 and iOS SDK 13.6.0.
 ## 9.4.2
 * Add API for destroying banner ads and MRECs.
