@@ -561,7 +561,7 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
     
     if ( self.uiComponent )
     {
-        self.uiComponent.autoRefreshEnabled = autoRefresh;
+        self.uiComponent.autoRefreshEnabled = self.window ? autoRefresh : NO;
     }
 }
 
@@ -639,9 +639,9 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
             if ( ![self.uiComponent hasContainerView] )
             {
                 [[AppLovinMAX shared] log: @"Mounting the preloaded AdView (%@) for Ad Unit ID %@", self.adViewId, self.adUnitId];
-                
-                self.uiComponent.autoRefreshEnabled = [self isAutoRefreshEnabled];
+
                 [self.uiComponent attachAdView: self];
+                [self updateAutoRefreshForWindowVisibility];
                 return;
             }
         }
@@ -676,10 +676,9 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
         self.uiComponent.customData = self.customData;
         self.uiComponent.extraParameters = flattenedExtraParameters;
         self.uiComponent.localExtraParameters = flattenedLocalExtraParameters;
-        self.uiComponent.autoRefreshEnabled = [self isAutoRefreshEnabled];
-        
         [self.uiComponent attachAdView: self];
-        
+        [self updateAutoRefreshForWindowVisibility];
+
         if ( [self isLoadOnMount] )
         {
             [self.uiComponent loadAd];
@@ -696,6 +695,51 @@ static NSMutableDictionary<NSNumber *, AppLovinMAXAdViewUIComponent *> *preloade
     }
     
     [self.uiComponent loadAd];
+}
+
+- (void)updateAutoRefreshForWindowVisibility
+{
+    if ( !self.uiComponent ) return;
+
+    BOOL shouldRefresh = self.window ? [self isAutoRefreshEnabled] : NO;
+    self.uiComponent.autoRefreshEnabled = shouldRefresh;
+}
+
+- (void)didMoveToWindow
+{
+    [super didMoveToWindow];
+    [self updateAutoRefreshForWindowVisibility];
+}
+
+- (void)didMoveToSuperview
+{
+    [super didMoveToSuperview];
+
+    if ( self.superview != nil )
+    {
+        [self updateAutoRefreshForWindowVisibility];
+        return;
+    }
+
+    // Superview is nil — could be a real unmount or brief reparenting (e.g. react-native-screens).
+    // Defer one main queue turn to let reparenting settle before deciding to destroy.
+    // Use a strong reference: a weak capture could become nil before the block runs, causing
+    // destroyCurrentAdIfNeeded to never fire while uiComponentInstances still retains the ad.
+    AppLovinMAXAdView *viewRef = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ( viewRef.superview != nil )
+        {
+            [viewRef updateAutoRefreshForWindowVisibility];
+            return;
+        }
+
+        [viewRef destroyCurrentAdIfNeeded];
+    });
+}
+
+- (void)dealloc
+{
+    [self destroyCurrentAdIfNeeded];
 }
 
 - (void)destroy
