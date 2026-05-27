@@ -235,6 +235,7 @@ public class AppLovinMAXAdView
     {
         super.requestLayout();
 
+        // Capture locally to guard against destroy() nulling out uiComponent before the delay fires.
         final AppLovinMAXAdViewUiComponent component = uiComponent;
         if ( component != null )
         {
