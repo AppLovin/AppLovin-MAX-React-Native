@@ -602,6 +602,27 @@ using namespace facebook::react;
     }
 }
 
+- (void)didMoveToSuperview
+{
+    [super didMoveToSuperview];
+
+    if ( self.superview != nil ) return;
+
+    // Superview is nil — could be a real unmount or brief reparenting (e.g. react-native-screens).
+    // Defer one main queue turn to let reparenting settle before deciding to destroy.
+    AppLovinMAXNativeAdView *viewRef = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ( viewRef.superview != nil ) return;
+
+        [viewRef destroyCurrentAdIfNeeded];
+    });
+}
+
+- (void)dealloc
+{
+    [self destroyCurrentAdIfNeeded];
+}
+
 #pragma mark - Public API
 
 - (void)destroyAd

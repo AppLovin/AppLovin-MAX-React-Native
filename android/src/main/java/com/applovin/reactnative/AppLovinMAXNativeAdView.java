@@ -492,6 +492,21 @@ public class AppLovinMAXNativeAdView
     }
 
     @Override
+    protected void onDetachedFromWindow()
+    {
+        super.onDetachedFromWindow();
+
+        // Defer one frame: a tab switch detaches from the window but keeps the parent,
+        // while a real unmount removes the parent. Destroy only in the latter case.
+        post( () -> {
+            if ( getParent() == null )
+            {
+                destroy();
+            }
+        } );
+    }
+
+    @Override
     public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom)
     {
         if ( mediaView != null && view == mediaView.getParent() )
