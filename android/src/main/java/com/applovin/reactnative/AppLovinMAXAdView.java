@@ -235,9 +235,11 @@ public class AppLovinMAXAdView
     {
         super.requestLayout();
 
-        if ( uiComponent != null )
+        // Capture locally to guard against destroy() nulling out uiComponent before the delay fires.
+        final AppLovinMAXAdViewUiComponent component = uiComponent;
+        if ( component != null )
         {
-            postDelayed( () -> uiComponent.measureAndLayout( 0, 0, getWidth(), getHeight() ), 500 );
+            postDelayed( () -> component.measureAndLayout( 0, 0, getWidth(), getHeight() ), 500 );
         }
     }
 
@@ -250,6 +252,19 @@ public class AppLovinMAXAdView
         {
             uiComponent.setAutoRefreshEnabled( false );
         }
+
+        // Defer one frame: a tab switch detaches from the window but keeps the parent,
+        // while a real unmount removes the parent. Destroy only in the latter case.
+        post( () -> {
+            if ( getParent() == null )
+            {
+                destroy();
+            }
+            else if ( uiComponent != null )
+            {
+                uiComponent.setAutoRefreshEnabled( autoRefreshEnabled );
+            }
+        } );
     }
 
     @Override
@@ -369,6 +384,8 @@ public class AppLovinMAXAdView
                 uiComponentInstances.remove( adViewId );
                 uiComponent.destroy();
             }
+
+            uiComponent = null;
         }
     }
 }
