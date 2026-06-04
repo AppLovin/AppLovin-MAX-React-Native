@@ -96,6 +96,13 @@ public class AppLovinMAXNativeAdView
     {
         if ( TextUtils.isEmpty( value ) ) return;
 
+        // Guard against re-triggering ad load when adUnitId prop is re-applied without changing value.
+        // In the new architecture, Fabric may call prop setters on every render cycle even when values
+        // haven't changed (unlike old arch where @ReactProp only fires on actual value changes).
+        // Without this check, a style/layout update on the parent causes setAdUnitId to reset
+        // isAdUnitIdSet = true, and the next onAfterUpdateTransaction triggers a second loadAd().
+        if ( value.equals( adUnitId ) ) return;
+
         adUnitId = value;
 
         isAdUnitIdSet.set( true );
