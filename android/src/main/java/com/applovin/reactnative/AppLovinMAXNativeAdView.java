@@ -468,8 +468,9 @@ public class AppLovinMAXNativeAdView
             if ( nativeAdView.adLoader == null ) return;
 
             nativeAdView.adLoader.a( nativeAdView.clickableViews, nativeAdView, nativeAdView.nativeAd );
+            nativeAdView.sizeToFitAdapterViews();
             nativeAdView.adLoader.b( nativeAdView.nativeAd );
-
+            
             // LINE needs to be sized a while after its mediaView is attached to the React Native
             if ( nativeAdView.mediaView != null && nativeAdView.mediaView.getParent() != null )
             {
@@ -507,6 +508,14 @@ public class AppLovinMAXNativeAdView
     }
 
     @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom)
+    {
+        super.onLayout( changed, left, top, right, bottom );
+
+        sizeToFitAdapterViews();
+    }
+
+    @Override
     public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom)
     {
         if ( mediaView != null && view == mediaView.getParent() )
@@ -527,6 +536,21 @@ public class AppLovinMAXNativeAdView
 
     @Override
     public void onChildViewRemoved(final View parent, final View child) { }
+
+    private void sizeToFitAdapterViews()
+    {
+        for ( int i = 0; i < getChildCount(); i++ )
+        {
+            View child = getChildAt( i );
+
+            // React Native assigns IDs to the views it manages. Adapter-added views, such as
+            // Liftoff Monetize's impression-tracking FrameLayout, retain View.NO_ID.
+            if ( child.getId() == View.NO_ID )
+            {
+                sizeToFit( child, this );
+            }
+        }
+    }
 
     private static void sizeToFit(final @Nullable View view, final View parentView)
     {
