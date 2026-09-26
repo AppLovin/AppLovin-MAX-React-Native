@@ -470,6 +470,10 @@ public class AppLovinMAXNativeAdView
             nativeAdView.adLoader.a( nativeAdView.clickableViews, nativeAdView, nativeAdView.nativeAd );
             nativeAdView.adLoader.b( nativeAdView.nativeAd );
 
+            // Adapters may have just added their own container into this view (see sizeToFitAdapterViews).
+            nativeAdView.sizeToFitAdapterViews();
+            nativeAdView.renderNativeAdHandler.postDelayed( nativeAdView::sizeToFitAdapterViews, 500 );
+
             // LINE needs to be sized a while after its mediaView is attached to the React Native
             if ( nativeAdView.mediaView != null && nativeAdView.mediaView.getParent() != null )
             {
@@ -504,6 +508,32 @@ public class AppLovinMAXNativeAdView
                 destroy();
             }
         } );
+    }
+
+    @Override
+    protected void onLayout(final boolean changed, final int left, final int top, final int right, final int bottom)
+    {
+        super.onLayout( changed, left, top, right, bottom );
+        sizeToFitAdapterViews();
+    }
+
+    /**
+     * Plugins hand adapters this React view as the native ad container instead of a MaxNativeAdView,
+     * and some adapters (e.g. Vungle/Liftoff) respond by adding their own FrameLayout into it and tracking
+     * that FrameLayout for viewability. React Native only lays out the children it mounted, so such a view
+     * stays at 0x0 and the network never sees the ad as visible: no impression is ever counted.
+     * Size every child React Native did not mount (no React tag) to this view.
+     */
+    void sizeToFitAdapterViews()
+    {
+        for ( int i = 0; i < getChildCount(); i++ )
+        {
+            View child = getChildAt( i );
+            if ( child.getId() == View.NO_ID )
+            {
+                sizeToFit( child, this );
+            }
+        }
     }
 
     @Override
