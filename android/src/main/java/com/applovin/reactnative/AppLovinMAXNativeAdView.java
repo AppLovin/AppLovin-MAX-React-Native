@@ -96,6 +96,8 @@ public class AppLovinMAXNativeAdView
     {
         if ( TextUtils.isEmpty( value ) ) return;
 
+        if ( value.equals( adUnitId ) ) return;
+
         adUnitId = value;
 
         isAdUnitIdSet.set( true );

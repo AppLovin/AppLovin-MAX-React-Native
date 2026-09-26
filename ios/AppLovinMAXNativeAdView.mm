@@ -368,7 +368,9 @@ using namespace facebook::react;
 {
     if ( ![adUnitId al_isValidString] ) return;
     
-    _adUnitId = adUnitId;
+    if ( [adUnitId isEqualToString: _adUnitId] ) return;
+    
+    _adUnitId = [adUnitId copy];
     
     [self.isAdUnitIdSet set: YES];
 }
