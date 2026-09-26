@@ -366,7 +366,7 @@ using namespace facebook::react;
 
 - (void)setAdUnitId:(NSString *)adUnitId
 {
-    if ( ![adUnitId al_isValidString] ) return;
+    if ( ![adUnitId al_isValidString] || [adUnitId isEqualToString: _adUnitId] ) return;
     
     _adUnitId = adUnitId;
     
