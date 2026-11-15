@@ -505,8 +505,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/AppLovin/AppLovin-MAX-Swift-Package.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 13.0.0;
+				kind = exactVersion;
+				version = 13.6.3;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

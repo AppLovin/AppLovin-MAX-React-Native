@@ -12,7 +12,7 @@ The `/example` directory contains the demo app. Gradle and CocoaPods automatical
 The module gets the AppLovin SDK through Swift Package Manager; new iOS SDK versions are no longer published to CocoaPods. It requires React Native 0.75 or later.
 
 1. In Xcode, open your app's `ios/<App>.xcworkspace` and select **File > Add Package Dependencies…**.
-2. Add `https://github.com/AppLovin/AppLovin-MAX-Swift-Package` with the rule **Up to Next Major Version** from 13.0.0, and add its `AppLovinSDK` product to your app target. The module pins the exact SDK version it's certified with; without the package on your app target, the build fails with undefined `AL…` symbols.
+2. Add `https://github.com/AppLovin/AppLovin-MAX-Swift-Package` with the rule **Exact Version** `<latest version>`, and add its `AppLovinSDK` product to your app target. `<latest version>` is the iOS SDK version your module release depends on (listed in [CHANGELOG.md](CHANGELOG.md)); the module pins that exact version, and a different version fails to resolve. Update it whenever you update the module. Without the package on your app target, the build fails with undefined `AL…` symbols.
 3. Add the Swift package of each mediated network you're integrating (`https://github.com/AppLovin/AppLovin-MAX-Swift-Package-<Network>`) to your app target, instead of adapter pods in your `Podfile`.
 4. Run `pod install` in your `ios` folder as usual for React Native.
 
