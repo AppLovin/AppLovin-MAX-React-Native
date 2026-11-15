@@ -15,7 +15,13 @@ Pod::Spec.new do |s|
 
   s.source_files = "ios/AppLovinMAX*.{h,mm}"
 
-  s.dependency "AppLovinSDK", "13.6.3"
+  # AppLovinSDK is published as a Swift package only; new versions are not on CocoaPods trunk. React Native's
+  # `spm_dependency` helper (React Native 0.75+) adds the package to this pod's target. Keep the call on one line: the
+  # release script reads and bumps the version on it.
+  unless respond_to?(:spm_dependency, true)
+    raise "react-native-applovin-max requires React Native 0.75 or newer: it gets AppLovinSDK through Swift Package Manager (`spm_dependency`)."
+  end
+  spm_dependency(s, url: "https://github.com/AppLovin/AppLovin-MAX-Swift-Package.git", requirement: { kind: "exactVersion", version: "13.6.3" }, products: ["AppLovinSDK"])
 
   # Use install_modules_dependencies helper to install the dependencies if React Native version >=0.71.0.
   # See https://github.com/facebook/react-native/blob/febf6b7f33fdb4904669f99d795eba4c0f95d7bf/scripts/cocoapods/new_architecture.rb#L79.
