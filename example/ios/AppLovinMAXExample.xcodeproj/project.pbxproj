@@ -11,6 +11,7 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		7A8912122BCFC953004D4757 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7A8912112BCFC953004D4757 /* LaunchScreen.xib */; };
+		7E441E00D043B2AC965CCCA4 /* AppLovinSDK in Frameworks */ = {isa = PBXBuildFile; productRef = E4E12A3970DF911FE2CA57B3 /* AppLovinSDK */; };
 		C8FF67742BB863008A8D7D31 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 674BB867061AAC329378AC08 /* PrivacyInfo.xcprivacy */; };
 		E17C5B9893334A4A6D6988E8 /* libPods-AppLovinMAXExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBA81485E4D340688F503506 /* libPods-AppLovinMAXExample.a */; };
 /* End PBXBuildFile section */
@@ -36,6 +37,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E17C5B9893334A4A6D6988E8 /* libPods-AppLovinMAXExample.a in Frameworks */,
+				7E441E00D043B2AC965CCCA4 /* AppLovinSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -123,6 +125,9 @@
 			dependencies = (
 			);
 			name = AppLovinMAXExample;
+			packageProductDependencies = (
+				E4E12A3970DF911FE2CA57B3 /* AppLovinSDK */,
+			);
 			productName = AppLovinMAXExample;
 			productReference = 13B07F961A680F5B00A75B9A /* AppLovinMAXExample.app */;
 			productType = "com.apple.product-type.application";
@@ -149,6 +154,9 @@
 				Base,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
+			packageReferences = (
+				068AE31E548E88D9BE0120AF /* XCRemoteSwiftPackageReference "AppLovin-MAX-Swift-Package" */,
+			);
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -491,6 +499,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		068AE31E548E88D9BE0120AF /* XCRemoteSwiftPackageReference "AppLovin-MAX-Swift-Package" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AppLovin/AppLovin-MAX-Swift-Package.git";
+			requirement = {
+				kind = exactVersion;
+				version = 13.6.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E4E12A3970DF911FE2CA57B3 /* AppLovinSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 068AE31E548E88D9BE0120AF /* XCRemoteSwiftPackageReference "AppLovin-MAX-Swift-Package" */;
+			productName = AppLovinSDK;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
 }

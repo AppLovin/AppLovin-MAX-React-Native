@@ -1,4 +1,8 @@
 ## Versions
+## x.x.x
+* iOS: get the AppLovin SDK through Swift Package Manager (`spm_dependency`). New iOS SDK versions are no longer published to CocoaPods.
+* Requires React Native 0.75+.
+* Add `https://github.com/AppLovin/AppLovin-MAX-Swift-Package` (product `AppLovinSDK`, rule **Exact Version** set to the iOS SDK version below) to your app target in Xcode, and add iOS mediation adapters as Swift packages instead of adapter pods. Update that version whenever you update the module.
 ## 9.6.0
 * Depend on Android SDK 13.6.3 and iOS SDK 13.6.3.
 ## 9.5.1
